@@ -1,0 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using GamePush;
+
+public class ModuleTests : MonoBehaviour
+{
+    public void CanReview() => GP_App.CanReview();
+
+    public void GameReady() => GP_Game.GameReady();
+}
