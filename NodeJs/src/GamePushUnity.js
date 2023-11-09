@@ -362,7 +362,11 @@ export default class GamePushUnity {
     }
 
     AppCanRequestReview(){
-        return this.gp.app.canRequestReview; 
+        return this.toUnity(this.gp.app.canRequestReview); 
+    }
+
+    AppIsAlreadyReviewed(){
+        return this.toUnity(this.gp.app.isAlreadyReviewed); 
     }
 
     AppAddShortcut(){
