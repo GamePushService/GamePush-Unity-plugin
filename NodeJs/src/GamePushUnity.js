@@ -365,6 +365,14 @@ export default class GamePushUnity {
         return this.gp.app.canRequestReview; 
     }
 
+    AppAddShortcut(){
+        return this.gp.app.addShortcut();
+    }
+
+    AppCanAddShortcut(){
+        return this.gp.app.canAddShortcut();
+    }
+
 
 
     PlayerGetID() {

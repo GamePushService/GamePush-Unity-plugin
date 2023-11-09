@@ -102,6 +102,23 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
 
+    GP_App_AddShortcut: function(){
+        var value = GamePush.AppAddShortcut();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_App_CanAddShortcut: function(){
+        var value = GamePush.AppCanAddShortcut();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+
     /* APP */
 
 

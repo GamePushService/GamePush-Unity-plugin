@@ -94,5 +94,31 @@ namespace GamePush
             return "URL";
 #endif
         }
+
+        [DllImport("__Internal")]
+        private static extern string GP_App_AddShortcut();
+        public static string AddShortcut()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_App_AddShortcut();
+#else
+            if (GP_ConsoleController.Instance.AppConsoleLogs)
+                Console.Log("APP: ReviewRequest: ", "-> URL");
+            return "URL";
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_App_CanAddShortcut();
+        public static string CanAddShortcut()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_App_CanAddShortcut();
+#else
+            if (GP_ConsoleController.Instance.AppConsoleLogs)
+                Console.Log("APP: CanReview: ", "-> URL");
+            return "URL";
+#endif
+        }
     }
 }
