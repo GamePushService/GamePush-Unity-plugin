@@ -2,7 +2,7 @@
 
 
 ## Download:
-[GamePush v1.2.1](https://github.com/GamePushService/GamePush-Unity-plugin/blob/gp-1.2.1/Releases/GamePush/GamePush%20v1.2.1.unitypackage)
+[GamePush v1.2.1](https://github.com/GamePushService/GamePush-Unity-plugin/blob/main/Releases/GamePush/GamePush%20v1.2.1.unitypackage)
 
 ##
 
