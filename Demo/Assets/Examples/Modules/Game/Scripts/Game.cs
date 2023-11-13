@@ -1,6 +1,6 @@
 using UnityEngine;
-
 using GamePush;
+using Examples.Console;
 
 namespace Examples.Game
 {
@@ -29,7 +29,7 @@ namespace Examples.Game
         public void GamePlayStop() => GP_Game.GameplayStop();
 
 
-        private void OnPause() => Debug.Log("GAME: ON PAUSE");
-        private void OnResume() => Debug.Log("GAME: ON RESUME");
+        private void OnPause() => ConsoleUI.Instance.Log("GAME: ON PAUSE");
+        private void OnResume() => ConsoleUI.Instance.Log("GAME: ON RESUME");
     }
 }

@@ -8,35 +8,16 @@ namespace Examples.App
 {
     public class App : MonoBehaviour
     {
-        [SerializeField] private Image _appImage;
 
-        public void Title()
+        public void GameInfo()
         {
-           string title = GP_App.Title();
-            ConsoleUI.Instance.Log("App Title: " + title);
-        }
-
-        public void Description()
-        {
+            string title = GP_App.Title();
             string description = GP_App.Description();
-            ConsoleUI.Instance.Log("App Description: " + description);
-        }
-
-        public void GetImage()
-        {
-            GP_App.GetImage(_appImage);
-        }
-
-        public void Url()
-        {
             string url = GP_App.Url();
-            ConsoleUI.Instance.Log("App URL: " + url);
-        }
 
-        public void ImageUrl()
-        {
-            string imageUrl = GP_App.ImageUrl();
-            ConsoleUI.Instance.Log("App ImageURL: " + imageUrl);
+            ConsoleUI.Instance.Log("App Title: " + title);
+            ConsoleUI.Instance.Log("App Description: " + description);
+            ConsoleUI.Instance.Log("App URL: " + url);
         }
 
         public void ReviewRequest()
@@ -50,8 +31,6 @@ namespace Examples.App
             string result = GP_App.CanReview();
             ConsoleUI.Instance.Log("Can Review: " + result);
         }
-
-
 
         public void AppShortcut()
         {

@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 using GP_Utilities;
 using GP_Utilities.Console;
@@ -9,6 +10,12 @@ namespace GamePush
 {
     public class GP_App : MonoBehaviour
     {
+        public static event UnityAction<int> OnReviewResult;
+        public static event UnityAction<bool> OnAddShortcut;
+
+        private static event Action<int> _onReviewResult;
+        private static event Action<bool> _onAddShortcut;
+
         [DllImport("__Internal")]
         private static extern string GP_App_Title();
         public static string Title()
@@ -21,7 +28,6 @@ namespace GamePush
             return null;
 #endif
         }
-
 
 
         [DllImport("__Internal")]
@@ -54,8 +60,6 @@ namespace GamePush
 #endif
         }
 
-
-
         [DllImport("__Internal")]
         private static extern string GP_App_Url();
         public static string Url()
@@ -71,14 +75,15 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_App_ReviewRequest();
-        public static string ReviewRequest()
+        public static string ReviewRequest(Action<int> onReviewResult = null)
         {
+            _onReviewResult = onReviewResult;
+            
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_App_ReviewRequest();
+            GP_App_ReviewRequest();
 #else
             if (GP_ConsoleController.Instance.AppConsoleLogs)
                 Console.Log("APP: ReviewRequest: ", "-> URL");
-            return "URL";
 #endif
         }
 
@@ -91,14 +96,17 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AppConsoleLogs)
                 Console.Log("APP: CanReview: ", "-> URL");
+            
             return "URL";
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern string GP_App_AddShortcut();
-        public static string AddShortcut()
+        public static string AddShortcut(Action<bool> onAddShortcut = null)
         {
+            _onAddShortcut = onAddShortcut;
+
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_AddShortcut();
 #else
@@ -120,5 +128,7 @@ namespace GamePush
             return "URL";
 #endif
         }
+
+        
     }
 }

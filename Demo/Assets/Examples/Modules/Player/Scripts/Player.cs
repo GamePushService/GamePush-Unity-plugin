@@ -69,8 +69,8 @@ namespace Examples.Player
             //                 GP_Player.GetAvatar(_playerAvatar);
             // #endif
 
-            //_gold.text = "COINS: " + GP_Player.GetInt("coins");
-            //_level.text = "LEVEL: " + GP_Player.GetInt("level");
+            _gold.text = "COINS: " + GP_Player.GetInt("coins");
+            _level.text = "LEVEL: " + GP_Player.GetInt("level");
             _vip.isOn = GP_Player.GetBool("vip");
         }
 
