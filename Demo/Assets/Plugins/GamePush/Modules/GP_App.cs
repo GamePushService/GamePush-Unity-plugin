@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,10 +11,10 @@ namespace GamePush
 {
     public class GP_App : MonoBehaviour
     {
-        public static event UnityAction<int> OnReviewResult;
+        public static event UnityAction<string> OnReviewResult;
         public static event UnityAction<bool> OnAddShortcut;
 
-        private static event Action<int> _onReviewResult;
+        private static event Action<string> _onReviewResult;
         private static event Action<bool> _onAddShortcut;
 
         [DllImport("__Internal")]
@@ -75,7 +76,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_App_ReviewRequest();
-        public static string ReviewRequest(Action<int> onReviewResult = null)
+        public static void ReviewRequest(Action<string> onReviewResult = null)
         {
             _onReviewResult = onReviewResult;
             
@@ -89,46 +90,45 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_App_CanReview();
-        public static string CanReview()
+        public static bool CanReview()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanReview();
 #else
             if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: CanReview: ", "-> URL");
+                Console.Log("APP: CanReview: ", "TRUE");
             
-            return "URL";
+            return true;
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern string GP_App_AddShortcut();
-        public static string AddShortcut(Action<bool> onAddShortcut = null)
+        public static void AddShortcut(Action<bool> onAddShortcut = null)
         {
             _onAddShortcut = onAddShortcut;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_App_AddShortcut();
+            GP_App_AddShortcut();
 #else
             if (GP_ConsoleController.Instance.AppConsoleLogs)
                 Console.Log("APP: ReviewRequest: ", "-> URL");
-            return "URL";
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern string GP_App_CanAddShortcut();
-        public static string CanAddShortcut()
+        public static bool CanAddShortcut()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanAddShortcut();
 #else
             if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: CanReview: ", "-> URL");
-            return "URL";
+                Console.Log("APP: CanReview: ", "TRUE");
+            return true;
 #endif
         }
 
-        
+
     }
 }

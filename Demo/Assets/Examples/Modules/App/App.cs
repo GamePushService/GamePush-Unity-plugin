@@ -22,25 +22,33 @@ namespace Examples.App
 
         public void ReviewRequest()
         {
-            string result = GP_App.ReviewRequest();
+            GP_App.ReviewRequest(OnReviewResult);
+        }
+
+        private void OnReviewResult(string result)
+        {
             ConsoleUI.Instance.Log("Review result: " + result);
         }
 
         public void CanReview()
         {
-            string result = GP_App.CanReview();
+            bool result = GP_App.CanReview();
             ConsoleUI.Instance.Log("Can Review: " + result);
         }
 
         public void AppShortcut()
         {
-            string result = GP_App.AddShortcut();
-            ConsoleUI.Instance.Log("Shortcut result: " + result);
+            GP_App.AddShortcut(OnAddShortcut);
+        }
+
+        private void OnAddShortcut(bool success)
+        {
+            ConsoleUI.Instance.Log("Shortcut result: " + success);
         }
 
         public void CanAppShortcut()
         {
-            string result = GP_App.CanAddShortcut();
+            bool result = GP_App.CanAddShortcut();
             ConsoleUI.Instance.Log("Can Shortcut: " + result);
         }
     }
