@@ -4,6 +4,8 @@
 ## Download:
 [GamePush v1.2.1](https://github.com/GamePushService/GamePush-Unity-plugin/blob/main/Releases/GamePush/GamePush%20v1.2.1.unitypackage)
 
+[Examples for plugin modules](https://github.com/GamePushService/GamePush-Unity-plugin/blob/main/Releases/GamePush/GP_Examples.unitypackage)
+
 ##
 
 ## Documentation:
