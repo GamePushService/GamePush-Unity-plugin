@@ -18,15 +18,32 @@ namespace Examples.Game
             GP_Game.OnResume -= OnResume;
         }
 
-        public void IsPaused() => GP_Game.IsPaused();
+        public void IsPaused()
+        {
+            bool isPaused = GP_Game.IsPaused();
+            ConsoleUI.Instance.Log($"GAME IS PAUSED: {isPaused}");
+        }
 
         public void Pause() => GP_Game.Pause(OnPause);
         public void Resume() => GP_Game.Resume(OnResume);
 
-        public void GameReady() => GP_Game.GameReady();
+        public void GameReady()
+        {
+            GP_Game.GameReady();
+            ConsoleUI.Instance.Log("GAME: READY");
+        }
 
-        public void GamePlayStart() => GP_Game.GameplayStart();
-        public void GamePlayStop() => GP_Game.GameplayStop();
+        public void GamePlayStart()
+        {
+            GP_Game.GameplayStart();
+            ConsoleUI.Instance.Log("GAME: GAMEPLAY START");
+        }
+
+        public void GamePlayStop()
+        {
+            GP_Game.GameplayStop();
+            ConsoleUI.Instance.Log("GAME: GAMEPLAY STOP");
+        }
 
 
         private void OnPause() => ConsoleUI.Instance.Log("GAME: ON PAUSE");
