@@ -95,6 +95,10 @@ export default class GamePushUnity {
         this.gp.on('pause', () => this.trigger('CallOnPause'));
         this.gp.on('resume', () => this.trigger('CallOnResume'));
 
+        // app
+        //this.gp.app.on('requestReview', (result) => this.trigger('CallReviewResult', result));
+        //this.gp.app.on('addShortcut', (success) => this.trigger('CallAddShortcut', success));
+
         //documents
         this.gp.documents.on('open', () => this.trigger('CallOnDocumentsOpen'));
         this.gp.documents.on('close', () => {
@@ -358,7 +362,17 @@ export default class GamePushUnity {
         return this.gp.app.url;
     }
     AppRequestReview(){
-        return this.gp.app.requestReview();
+        return this.gp.app
+        .requestReview()
+        .then((result) => {
+            if(result.success){
+                this.trigger('CallReviewResult', result.rating);
+            }
+            else{
+                this.trigger('CallReviewClose', result.error);
+            }
+            
+        });
     }
 
     AppCanRequestReview(){
@@ -370,11 +384,13 @@ export default class GamePushUnity {
     }
 
     AppAddShortcut(){
-        return this.gp.app.addShortcut();
+        return this.gp.app
+        .addShortcut()
+        .then((success) => this.trigger('CallAddShortcut', success));
     }
 
     AppCanAddShortcut(){
-        return this.gp.app.canAddShortcut();
+        return this.toUnity(this.gp.app.canAddShortcut); 
     }
 
 

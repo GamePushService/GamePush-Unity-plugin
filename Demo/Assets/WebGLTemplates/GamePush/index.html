@@ -46,8 +46,8 @@
 
       await _unityAwaiter.ready;
 
-      if (autocallGameReady != null && autocallGameReady.parseFloat() > 0) {
-        setTimeout(() => gp.gameStart(), autocallGameReady.parseFloat());
+      if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
+        setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
       }
     };
   </script>

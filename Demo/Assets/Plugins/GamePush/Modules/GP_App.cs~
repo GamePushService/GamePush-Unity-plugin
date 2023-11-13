@@ -144,8 +144,9 @@ namespace GamePush
             _onAddShortcut?.Invoke(success == "true");
         }
 
-        private void CallReviewResult(int rating)
+        private void CallReviewResult(string result)
         {
+            int rating = int.Parse(result);
             OnReviewResult?.Invoke(rating);
             _onReviewResult?.Invoke(rating);
         }

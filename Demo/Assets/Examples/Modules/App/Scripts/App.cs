@@ -22,12 +22,18 @@ namespace Examples.App
 
         public void ReviewRequest()
         {
-            GP_App.ReviewRequest(OnReviewResult);
+            GP_App.ReviewRequest(OnReviewResult, OnReviewClose);
+            ConsoleUI.Instance.Log("Send review request");
         }
 
-        private void OnReviewResult(string result)
+        private void OnReviewResult(int result)
         {
             ConsoleUI.Instance.Log("Review result: " + result);
+        }
+
+        private void OnReviewClose(string error)
+        {
+            ConsoleUI.Instance.Log("Review result: " + error);
         }
 
         public void CanReview()
@@ -39,6 +45,7 @@ namespace Examples.App
         public void AppShortcut()
         {
             GP_App.AddShortcut(OnAddShortcut);
+            ConsoleUI.Instance.Log("Send add shortcut request");
         }
 
         private void OnAddShortcut(bool success)
