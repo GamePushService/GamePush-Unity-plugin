@@ -107,7 +107,7 @@ namespace GamePush
             if (GP_ConsoleController.Instance.AppConsoleLogs)
                 Console.Log("APP: CanReview: ", "TRUE");
             
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().CanReview;
 #endif
         }
 

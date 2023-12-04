@@ -99,7 +99,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
                 Console.Log("IS PAYMENTS AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
 #endif
         }
 
@@ -113,7 +113,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
                 Console.Log("IS SUBSCRIPTIONS AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSubscriptionsAvailable;
 #endif
         }
 

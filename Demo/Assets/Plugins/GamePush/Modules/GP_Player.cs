@@ -490,7 +490,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlayerConsoleLogs)
                 Console.Log("PLAYER: IS LOGGED IN: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsLoggedIn;
 #endif
         }
 
@@ -505,7 +505,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlayerConsoleLogs)
                 Console.Log("PLAYER: HAS ANY CREDENTIALS: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().HasAnyCredentials;
 #endif
         }
 
@@ -520,7 +520,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlayerConsoleLogs)
                 Console.Log("PLAYER: IS STUB: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsStub;
 #endif
         }
 
