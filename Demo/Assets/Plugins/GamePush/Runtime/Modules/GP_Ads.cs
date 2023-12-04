@@ -246,6 +246,45 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_Ads_IsCountdownOverlayEnabled();
+        public static bool IsCountdownOverlayEnabled()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Ads_IsCountdownOverlayEnabled() == "true";
+#else
+            if (GP_ConsoleController.Instance.AdsConsoleLogs)
+                Console.Log("Is Countdown Overlay Enabled: ", "FALSE");
+            return false;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_Ads_IsRewardedFailedOverlayEnabled();
+        public static bool IsRewardedFailedOverlayEnabled()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Ads_IsRewardedFailedOverlayEnabled() == "true";
+#else
+            if (GP_ConsoleController.Instance.AdsConsoleLogs)
+                Console.Log("Is Rewarded Failed Overlay Enabled: ", "FALSE");
+            return false;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_Ads_CanShowFullscreenBeforeGamePlay();
+        public static bool CanShowFullscreenBeforeGamePlay()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Ads_CanShowFullscreenBeforeGamePlay() == "true";
+#else
+            if (GP_ConsoleController.Instance.AdsConsoleLogs)
+                Console.Log("Can Show Fullscreen Before Gameplay: ", "FALSE");
+            return false;
+#endif
+        }
+
 
         private void CallAdsStart() => OnAdsStart?.Invoke();
         private void CallAdsClose(string success) => OnAdsClose?.Invoke(success == "true");
