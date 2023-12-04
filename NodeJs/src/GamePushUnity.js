@@ -324,8 +324,6 @@ export default class GamePushUnity {
         return value;
     }
 
-
-
     mapItemsWithChannel(items = {}) {
         return {
             ...items,
@@ -394,6 +392,7 @@ export default class GamePushUnity {
     }
 
 
+    // PLAYER 
 
     PlayerGetID() {
         return this.gp.player.id;
@@ -501,6 +500,8 @@ export default class GamePushUnity {
     }
 
 
+    // LEADERBOARD 
+
     LeaderboardOpen(orderBy, order, limit, withMe, includeFields, displayFields) {
         return this.gp.leaderboard
             .open({
@@ -573,7 +574,7 @@ export default class GamePushUnity {
 
 
 
-    /* LEADER BOARD SCOPED */
+    // LEADERBOARD SCOPED 
 
     LeaderboardScopedOpen(idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
         const id = parseInt(idOrTag, 10) || 0;
@@ -668,11 +669,9 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardFetchPlayerError');
             });
     }
-    /* LEADER BOARD SCOPED */
 
 
-
-    /* ACHIEVEMENTS */
+    // ACHIEVEMENTS
     AchievementsOpen() {
         return this.gp.achievements.open().catch(console.warn);
     }
@@ -735,11 +734,10 @@ export default class GamePushUnity {
     AchievementsGetProgress(idOrTag) {
         return this.gp.achievements.getProgress(idOrTag);
     }
-    /* ACHIEVEMENTS */
 
 
 
-    /* PAYMENTS */
+    // PAYMENTS 
     PaymentsFetchProducts() {
         return this.gp.payments
             .fetchProducts()
@@ -841,9 +839,6 @@ export default class GamePushUnity {
             });
     }
 
-    // Subscriptions
-
-    /* PAYMENTS */
 
     FullscreenOpen() {
         return this.gp.fullscreen.open();
@@ -856,7 +851,7 @@ export default class GamePushUnity {
     }
 
 
-
+    // ADS 
     AdsShowFullscreen() {
         return this.gp.ads.showFullscreen();
     }
@@ -909,13 +904,30 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.ads.isPreloaderPlaying);
     }
 
+    AdsIsCountdownOverlayEnabled() {
+        return this.toUnity(this.gp.ads.isCountdownOverlayEnabled);
+    }
 
+    AdsIsRewardedFailedOverlayEnabled() {
+        return this.toUnity(this.gp.ads.isRewardedFailedOverlayEnabled);
+    }
+
+    AdsCanShowFullscreenBeforeGamePlay() {
+        return this.toUnity(this.gp.ads.canShowFullscreenBeforeGamePlay);
+    }
+
+
+
+    // ANALYTICS 
     AnalyticsHit(url) {
         return this.gp.analytics.hit(url);
     }
     AnalyticsGoal(event, value) {
         return this.gp.analytics.goal(event, value);
     }
+
+
+    /* SOCIAL */
     SocialsShare(text, url, image) {
         return this.gp.socials.share({ text, url, image });
     }
@@ -951,7 +963,7 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.socials.isSupportsNativeCommunityJoin);
     }
 
-    // games collections
+    /* GAMES COLLECTIONS */
     GamesCollectionsOpen(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag || 'ANY' };
@@ -1479,8 +1491,6 @@ export default class GamePushUnity {
         this.gp.channels.fetchChannel({ channelId, });
     }
 
-
-
     Channels_CreateChannel(filter) {
         const query = JSON.parse(filter);
         this.gp.channels.createChannel({ ...query, private: query.ch_private });
@@ -1500,10 +1510,12 @@ export default class GamePushUnity {
         const query = JSON.parse(filter);
         this.gp.channels.fetchMoreChannels(query);
     }
+
     Channels_FetchMembers(filter) {
         const query = JSON.parse(filter);
         this.gp.channels.fetchMembers(query);
     }
+
     Channels_FetchMoreMembers(filter) {
         const query = JSON.parse(filter);
         this.gp.channels.fetchMoreMembers(query);
@@ -1511,6 +1523,7 @@ export default class GamePushUnity {
 
     // Channels
 }
+
 function mapChannel(channel = {}) {
     return {
         ...channel,
@@ -1524,4 +1537,5 @@ function mapItemWithChannel(item = {}) {
         channel: mapChannel(item.channel)
     };
 }
+
 window.GamePushUnity = GamePushUnity;

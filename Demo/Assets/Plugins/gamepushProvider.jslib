@@ -126,7 +126,6 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
 
-
     /* APP */
 
 
@@ -328,7 +327,6 @@ mergeInto(LibraryManager.library, {
     /* ACHIEVEMENTS */
 
 
-
     /* PAYMENTS */
     GP_Payments_FetchProducts: function () {
         GamePush.PaymentsFetchProducts();
@@ -364,7 +362,6 @@ mergeInto(LibraryManager.library, {
     },
 
     /* Subscription */
-
 
     /* PAYMENTS */
 
@@ -473,6 +470,28 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
+    GP_Ads_IsCountdownOverlayEnabled: function () {
+        var value = GamePush.AdsIsCountdownOverlayEnabled();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    GP_Ads_IsRewardedFailedOverlayEnabled: function () {
+        var value = GamePush.AdsIsRewardedFailedOverlayEnabled();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    GP_Ads_CanShowFullscreenBeforeGamePlay: function () {
+        var value = GamePush.AdsCanShowFullscreenBeforeGamePlay();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
     /* ADS */
 
 
