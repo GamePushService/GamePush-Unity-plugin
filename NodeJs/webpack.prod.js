@@ -7,7 +7,7 @@ module.exports = {
     },
     devtool: 'source-map',
     output: {
-        path: path.resolve(__dirname, 'GamePush'),
+        path: path.resolve(__dirname, '../Demo/Assets/WebGLTemplates/GamePush/TemplateData'),
         filename: 'gamepush-unity.js',
         crossOriginLoading: 'anonymous',
     },
