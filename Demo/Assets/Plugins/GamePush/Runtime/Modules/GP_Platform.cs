@@ -41,7 +41,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
                 Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().HasIntegratedAuth;
+            return GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
 #endif
         }
 
@@ -55,7 +55,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
                 Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsExternalLinksAllowed;
+            return GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
 #endif
         }
 

@@ -16,7 +16,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
                 Console.Log("IS MOBILE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsMobile;
+            return GP_Settings.instance.GetFromPlatformSettings().IsMobile;
 #endif
         }
         public static bool IsDesktop()
@@ -26,7 +26,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
                 Console.Log("IS DESKTOP: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsDesktop;
+            return GP_Settings.instance.GetFromPlatformSettings().IsDesktop;
 #endif
         }
     }

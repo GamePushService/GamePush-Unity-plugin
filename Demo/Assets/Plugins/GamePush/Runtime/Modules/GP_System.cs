@@ -16,7 +16,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("SYSTEM: IS DEV: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsDev;
+            return GP_Settings.instance.GetFromPlatformSettings().IsDev;
 #endif
         }
 
@@ -29,7 +29,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("SYSTEM: IS ALLOWED ORIGIN: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsAllowedOrigin;
+            return GP_Settings.instance.GetFromPlatformSettings().IsAllowedOrigin;
 #endif
         }
 

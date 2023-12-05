@@ -14,31 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlatformToEmulate: 0
   Language: 0
+  IsMobile: 1
+  IsDesktop: 1
+  HasIntegratedAuth: 1
+  IsExternalLinksAllowed: 1
+  IsLoggedIn: 1
+  HasAnyCredentials: 1
+  IsStub: 1
+  IsDev: 1
+  IsAllowedOrigin: 1
   Settings:
   - Platform: 0
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
     CanJoinCommunity: 1
     IsPaymentsAvailable: 1
     IsSubscriptionsAvailable: 1
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
   - Platform: 1
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -53,88 +53,52 @@ MonoBehaviour:
     IsStickyAvailable: 1
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 2
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
     CanJoinCommunity: 1
-    IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsPaymentsAvailable: 0
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
     IsStickyAvailable: 1
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 3
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
-    CanJoinCommunity: 1
-    IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
+    CanJoinCommunity: 0
+    IsPaymentsAvailable: 0
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
     IsStickyAvailable: 1
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 4
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
     CanJoinCommunity: 1
-    IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsPaymentsAvailable: 0
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 5
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -150,111 +114,66 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
   - Platform: 6
-    IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
+    IsSupportsShare: 0
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
     CanJoinCommunity: 1
     IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 7
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
-    CanJoinCommunity: 1
-    IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
+    CanJoinCommunity: 0
+    IsPaymentsAvailable: 0
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 8
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
-    CanJoinCommunity: 1
-    IsPaymentsAvailable: 1
-    IsSubscriptionsAvailable: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
+    CanJoinCommunity: 0
+    IsPaymentsAvailable: 0
+    IsSubscriptionsAvailable: 0
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 9
     IsSupportsShare: 1
-    IsSupportsNativeShare: 1
-    IsSupportsNativeInvite: 1
-    IsSupportsNativePosts: 1
-    IsSupportsNativeCommunityJoin: 1
-    CanJoinCommunity: 1
+    IsSupportsNativeShare: 0
+    IsSupportsNativeInvite: 0
+    IsSupportsNativePosts: 0
+    IsSupportsNativeCommunityJoin: 0
+    CanJoinCommunity: 0
     IsPaymentsAvailable: 1
     IsSubscriptionsAvailable: 1
     IsFullscreenAvailable: 1
     IsRewardedAvailable: 1
-    IsStickyAvailable: 1
+    IsStickyAvailable: 0
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
-    CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1
+    CanReview: 0
   - Platform: 10
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -270,12 +189,3 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
-    IsMobile: 1
-    IsDesktop: 1
-    HasIntegratedAuth: 1
-    IsExternalLinksAllowed: 1
-    IsLoggedIn: 1
-    HasAnyCredentials: 1
-    IsStub: 1
-    IsDev: 1
-    IsAllowedOrigin: 1

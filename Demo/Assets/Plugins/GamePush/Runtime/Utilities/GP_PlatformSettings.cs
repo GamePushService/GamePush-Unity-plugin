@@ -26,19 +26,6 @@ namespace GamePush
         public bool IsAdblockEnabled;
         [Header("Review")]
         public bool CanReview;
-        [Header("Device")]
-        public bool IsMobile;
-        public bool IsDesktop;
-        [Header("Platform")]
-        public bool HasIntegratedAuth;
-        public bool IsExternalLinksAllowed;
-        [Header("Player")]
-        public bool IsLoggedIn;
-        public bool HasAnyCredentials;
-        public bool IsStub;
-        [Header("System")]
-        public bool IsDev = true;
-        public bool IsAllowedOrigin = true;
     }
     
     [CreateAssetMenu(fileName = "GP_PlatformSettings", menuName = "GP_Settings/GP_PlatformSettings")]
@@ -46,6 +33,19 @@ namespace GamePush
     {
         [SerializeField] public Platform PlatformToEmulate = Platform.None;
         [SerializeField] public Language Language = Language.English;
+        [Header("Device")]
+        [SerializeField] public bool IsMobile = true;
+        [SerializeField] public bool IsDesktop = true;
+        [Header("Platform")]
+        [SerializeField] public bool HasIntegratedAuth = true;
+        [SerializeField] public bool IsExternalLinksAllowed = true;
+        [Header("Player")]
+        [SerializeField] public bool IsLoggedIn = true;
+        [SerializeField] public bool HasAnyCredentials = true;
+        [SerializeField] public bool IsStub = true;
+        [Header("System")]
+        [SerializeField] public bool IsDev = true;
+        [SerializeField] public bool IsAllowedOrigin = true;
         [SerializeField] public List<PlatformSettings> Settings = new();
 
         public PlatformSettings GetPlatformSettings()
