@@ -992,6 +992,20 @@ export default class GamePushUnity {
     SocialsIsSupportsNativeCommunityJoin() {
         return this.toUnity(this.gp.socials.isSupportsNativeCommunityJoin);
     }
+    SocialsMakeShareLink(shareContent){
+        return this.toUnity(this.gp.socials.makeShareUrl({
+            fromId: this.gp.player.id,
+            content: shareContent,
+        }));
+    }
+    SocialsGetSharePlayerID(){
+        return this.toUnity(this.gp.socials.getShareParam('fromId'));
+    }
+    SocialsGetShareContent(){
+        return this.toUnity(this.gp.socials.getShareParam('content'));
+    }
+    
+
 
     /* GAMES COLLECTIONS */
     GamesCollectionsOpen(idOrTag) {

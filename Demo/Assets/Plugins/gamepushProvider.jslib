@@ -543,6 +543,8 @@ mergeInto(LibraryManager.library, {
     GP_Socials_Share: function (text, url, image) {
         GamePush.SocialsShare(UTF8ToString(text), UTF8ToString(url), UTF8ToString(image));
     },
+
+
     GP_Socials_Post: function (text, url, image) {
         GamePush.SocialsPost(UTF8ToString(text), UTF8ToString(url), UTF8ToString(image));
     },
@@ -604,6 +606,28 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
 
+    },
+
+    GP_Socials_MakeShareLink: function (content) {
+        var value = GamePush.SocialsMakeShareLink(content);
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    GP_Socials_GetSharePlayerID: function () {
+        var value = GamePush.SocialsGetSharePlayerID();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    GP_Socials_GetShareContent: function () {
+        var value = GamePush.SocialsGetShareContent();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
     },
     /* SOCIALS */
 
