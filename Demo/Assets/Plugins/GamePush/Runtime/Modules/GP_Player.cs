@@ -524,6 +524,58 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetActiveDays();
+        public static int GetActiveDays()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetActiveDays();
+#else
+            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
+                Console.Log("PLAYER: ACTIVE DAYS: ", "1");
+            return 0;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetActiveDaysConsecutive();
+        public static int GetActiveDaysConsecutive()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetActiveDaysConsecutive();
+#else
+            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
+                Console.Log("PLAYER: ACTIVE DAYS CONSECUTIVE: ", "1");
+            return 0;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetPlaytimeToday();
+        public static int GetPlaytimeToday()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetPlaytimeToday();
+#else
+            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
+                Console.Log("PLAYER: PLAYTIME TODAY: ", "0");
+            return 0;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetPlaytimeAll();
+        public static int GetPlaytimeAll()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetPlaytimeAll();
+#else
+            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
+                Console.Log("PLAYER: PLAYTIME ALL: ", "0");
+            return 0;
+#endif
+        }
+
         private void CallPlayerChange() => OnPlayerChange?.Invoke();
         private void CallPlayerConnect() => OnConnect?.Invoke();
 

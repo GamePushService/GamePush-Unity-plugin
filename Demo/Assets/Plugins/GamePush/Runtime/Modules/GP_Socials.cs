@@ -173,6 +173,45 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_Socials_MakeShareLink(string content = "");
+        public static string MakeShareLink(string content = "")
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Socials_MakeShareLink(content);
+#else
+            if (GP_ConsoleController.Instance.SocialsConsoleLogs)
+                Console.Log("SOCIALS: ", "SHARE LINK");
+            return "GP_LINK";
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern int GP_Socials_GetSharePlayerID();
+        public static int GetSharePlayerID()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Socials_GetSharePlayerID();
+#else
+            if (GP_ConsoleController.Instance.SocialsConsoleLogs)
+                Console.Log("SOCIALS: ", "SHARE PLAYER ID");
+            return "GP_LINK";
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_Socials_GetShareContent();
+        public static string GetShareContent()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Socials_GetShareContent();
+#else
+            if (GP_ConsoleController.Instance.SocialsConsoleLogs)
+                Console.Log("SOCIALS: ", "SHARE CONTENT");
+            return "GP_LINK";
+#endif
+        }
+
 
         private void CallSocialsShare(string success) => OnShare?.Invoke(success == "true");
         private void CallSocialsPost(string success) => OnPost?.Invoke(success == "true");

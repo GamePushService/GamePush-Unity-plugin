@@ -9,6 +9,10 @@ namespace GamePush
     public class GP_Leaderboard : MonoBehaviour
     {
         public static event UnityAction<string, GP_Data> OnFetchSuccess;
+        public static event UnityAction<string, GP_Data> OnFetchTopPlayers;
+        public static event UnityAction<string, GP_Data> OnFetchAbovePlayers;
+        public static event UnityAction<string, GP_Data> OnFetchBelowPlayers;
+        public static event UnityAction<string, GP_Data> OnFetchPlayer;
         public static event UnityAction OnFetchError;
 
         public static event UnityAction<string, int> OnFetchPlayerRatingSuccess;
@@ -53,15 +57,16 @@ namespace GamePush
             // DESC | ASC
             string order = "DESC",
             int limit = 10,
+            int showNearest = 5,
             // none | first | last
             string withMe = "none",
             // level,exp,rank
             string includeFields = ""
         );
-        public static void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, WithMe withMe = WithMe.none, string includeFields = "")
+        public static void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, withMe.ToString(), includeFields);
+            GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields);
 #else
             if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
                 Console.Log("LEADERBOARD: ", "FETCH");
@@ -93,6 +98,12 @@ namespace GamePush
 
 
         private void CallLeaderboardFetch(string data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        
+        
         private void CallLeaderboardFetchTag(string lastTag) => _leaderboardFetchTag = lastTag;
         private void CallLeaderboardFetchError() => OnFetchError?.Invoke();
 

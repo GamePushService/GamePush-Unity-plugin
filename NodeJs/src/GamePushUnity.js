@@ -94,7 +94,10 @@ export default class GamePushUnity {
         this.gp.on('change:avatarGenerator', (ag) => this.trigger('CallChangeAvatarGenerator', ag));
         this.gp.on('pause', () => this.trigger('CallOnPause'));
         this.gp.on('resume', () => this.trigger('CallOnResume'));
-
+        
+        //device
+        this.gp.on('change:orientation', () => this.trigger('CallChangeOrientation'));
+        
         // app
         //this.gp.app.on('requestReview', (result) => this.trigger('CallReviewResult', result));
         //this.gp.app.on('addShortcut', (success) => this.trigger('CallAddShortcut', success));
@@ -499,10 +502,26 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.player.isStub);
     }
 
+    PlayerGetActiveDays() {
+        return this.toUnity(this.gp.player.stats.activeDays);
+    }
+
+    PlayerGetActiveDaysConsecutive() {
+        return this.toUnity(this.gp.player.stats.activeDaysConsecutive);
+    }
+
+    PlayerGetPlaytimeToday() {
+        return this.toUnity(this.gp.player.stats.playtimeToday);
+    }
+
+    PlayerGetPlaytimeAll() {
+        return this.toUnity(this.gp.player.stats.playtimeAll);
+    }
+
 
     // LEADERBOARD 
 
-    LeaderboardOpen(orderBy, order, limit, withMe, includeFields, displayFields) {
+    LeaderboardOpen(orderBy, order, limit, showNearest, withMe, includeFields, displayFields) {
         return this.gp.leaderboard
             .open({
                 id: this.gp.player.id,
@@ -512,6 +531,7 @@ export default class GamePushUnity {
                     .filter((f) => f),
                 order,
                 limit,
+                showNearest,
                 withMe,
                 includeFields: includeFields
                     .split(',')
@@ -525,7 +545,7 @@ export default class GamePushUnity {
             .catch(console.warn);
     }
 
-    LeaderboardFetch(tag, orderBy, order, limit, withMe, includeFields) {
+    LeaderboardFetch(tag, orderBy, order, limit, showNearest, withMe, includeFields) {
         return this.gp.leaderboard
             .fetch({
                 id: this.gp.player.id,
@@ -535,6 +555,7 @@ export default class GamePushUnity {
                     .filter((f) => f),
                 order,
                 limit,
+                showNearest,
                 withMe,
                 includeFields: includeFields
                     .split(',')
@@ -544,6 +565,10 @@ export default class GamePushUnity {
             .then((leaderboardInfo) => {
                 this.trigger('CallLeaderboardFetchTag', tag);
                 this.trigger('CallLeaderboardFetch', JSON.stringify(leaderboardInfo.players));
+                this.trigger('CallLeaderboardFetchTop', JSON.stringify(leaderboardInfo.topPlayers));
+                this.trigger('CallLeaderboardFetchAbove', JSON.stringify(leaderboardInfo.abovePlayers));
+                this.trigger('CallLeaderboardFetchBelow', JSON.stringify(leaderboardInfo.belowPlayers));
+                this.trigger('CallLeaderboardFetchPlayer', JSON.stringify(leaderboardInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -576,7 +601,7 @@ export default class GamePushUnity {
 
     // LEADERBOARD SCOPED 
 
-    LeaderboardScopedOpen(idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
+    LeaderboardScopedOpen(idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
         return this.gp.leaderboard
@@ -585,6 +610,7 @@ export default class GamePushUnity {
                 variant,
                 order,
                 limit,
+                showNearest,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -617,6 +643,10 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardScopedFetchTag', idOrTag);
                 this.trigger('CallLeaderboardScopedFetchVariant', variant);
                 this.trigger('CallLeaderboardScopedFetch', JSON.stringify(leaderboardScopedInfo.players));
+                this.trigger('CallLeaderboardScopedFetchTop', JSON.stringify(leaderboardScopedInfo.topPlayers));
+                this.trigger('CallLeaderboardScopedFetchAbove', JSON.stringify(leaderboardScopedInfo.abovePlayers));
+                this.trigger('CallLeaderboardScopedFetchBelow', JSON.stringify(leaderboardScopedInfo.belowPlayers));
+                this.trigger('CallLeaderboardScopedFetchPlayer', JSON.stringify(leaderboardScopedInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -962,6 +992,20 @@ export default class GamePushUnity {
     SocialsIsSupportsNativeCommunityJoin() {
         return this.toUnity(this.gp.socials.isSupportsNativeCommunityJoin);
     }
+    SocialsMakeShareLink(shareContent){
+        return this.toUnity(this.gp.socials.makeShareUrl({
+            fromId: this.gp.player.id,
+            content: shareContent,
+        }));
+    }
+    SocialsGetSharePlayerID(){
+        return this.toUnity(this.gp.socials.getShareParam('fromId'));
+    }
+    SocialsGetShareContent(){
+        return this.toUnity(this.gp.socials.getShareParam('content'));
+    }
+    
+
 
     /* GAMES COLLECTIONS */
     GamesCollectionsOpen(idOrTag) {
@@ -1028,6 +1072,9 @@ export default class GamePushUnity {
     //Device
     IsMobile() {
         return this.toUnity(this.gp.isMobile);
+    }
+    IsPortrait() {
+        return this.toUnity(this.gp.isPortrait);
     }
     //Device
 
