@@ -518,7 +518,7 @@ export default class GamePushUnity {
 
     // LEADERBOARD 
 
-    LeaderboardOpen(orderBy, order, limit, withMe, includeFields, displayFields) {
+    LeaderboardOpen(orderBy, order, limit, showNearest, withMe, includeFields, displayFields) {
         return this.gp.leaderboard
             .open({
                 id: this.gp.player.id,
@@ -528,6 +528,7 @@ export default class GamePushUnity {
                     .filter((f) => f),
                 order,
                 limit,
+                showNearest,
                 withMe,
                 includeFields: includeFields
                     .split(',')
@@ -541,7 +542,7 @@ export default class GamePushUnity {
             .catch(console.warn);
     }
 
-    LeaderboardFetch(tag, orderBy, order, limit, withMe, includeFields) {
+    LeaderboardFetch(tag, orderBy, order, limit, showNearest, withMe, includeFields) {
         return this.gp.leaderboard
             .fetch({
                 id: this.gp.player.id,
@@ -551,6 +552,7 @@ export default class GamePushUnity {
                     .filter((f) => f),
                 order,
                 limit,
+                showNearest,
                 withMe,
                 includeFields: includeFields
                     .split(',')
@@ -560,6 +562,10 @@ export default class GamePushUnity {
             .then((leaderboardInfo) => {
                 this.trigger('CallLeaderboardFetchTag', tag);
                 this.trigger('CallLeaderboardFetch', JSON.stringify(leaderboardInfo.players));
+                this.trigger('CallLeaderboardFetchTop', JSON.stringify(leaderboardInfo.topPlayers));
+                this.trigger('CallLeaderboardFetchAbove', JSON.stringify(leaderboardInfo.abovePlayers));
+                this.trigger('CallLeaderboardFetchBelow', JSON.stringify(leaderboardInfo.belowPlayers));
+                this.trigger('CallLeaderboardFetchPlayer', JSON.stringify(leaderboardInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -592,7 +598,7 @@ export default class GamePushUnity {
 
     // LEADERBOARD SCOPED 
 
-    LeaderboardScopedOpen(idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
+    LeaderboardScopedOpen(idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
         return this.gp.leaderboard
@@ -601,6 +607,7 @@ export default class GamePushUnity {
                 variant,
                 order,
                 limit,
+                showNearest,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -633,6 +640,10 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardScopedFetchTag', idOrTag);
                 this.trigger('CallLeaderboardScopedFetchVariant', variant);
                 this.trigger('CallLeaderboardScopedFetch', JSON.stringify(leaderboardScopedInfo.players));
+                this.trigger('CallLeaderboardScopedFetchTop', JSON.stringify(leaderboardScopedInfo.topPlayers));
+                this.trigger('CallLeaderboardScopedFetchAbove', JSON.stringify(leaderboardScopedInfo.abovePlayers));
+                this.trigger('CallLeaderboardScopedFetchBelow', JSON.stringify(leaderboardScopedInfo.belowPlayers));
+                this.trigger('CallLeaderboardScopedFetchPlayer', JSON.stringify(leaderboardScopedInfo.player));
             })
             .catch((err) => {
                 console.warn(err);

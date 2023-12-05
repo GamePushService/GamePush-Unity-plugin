@@ -9,6 +9,10 @@ namespace GamePush
     public class GP_LeaderboardScoped : MonoBehaviour
     {
         public static event UnityAction<string, GP_Data> OnFetchSuccess;
+        public static event UnityAction<string, GP_Data> OnFetchTopPlayers;
+        public static event UnityAction<string, GP_Data> OnFetchAbovePlayers;
+        public static event UnityAction<string, GP_Data> OnFetchBelowPlayers;
+        public static event UnityAction<string, GP_Data> OnFetchPlayer;
         public static event UnityAction<string, string, GP_Data> OnFetchTagVariant;
         public static event UnityAction OnFetchError;
 
@@ -32,8 +36,8 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Leaderboard_Scoped_Open(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, string includeFields = "", string displayFields = "", string withMe = "none");
-        public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
+        private static extern void GP_Leaderboard_Scoped_Open(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", string withMe = "none");
+        public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, includeFields, displayFields, withMe.ToString());
@@ -46,11 +50,11 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Leaderboard_Scoped_Fetch(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, string includeFields = "", string withMe = "none");
-        public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, string includeFields = "", WithMe withMe = WithMe.none)
+        private static extern void GP_Leaderboard_Scoped_Fetch(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, int showNearest = 5, string includeFields = "", string withMe = "none");
+        public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, includeFields, withMe.ToString());
+            GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
 #else
             if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
                 Console.Log("LEADERBOARD SCOPED: ", "FETCH");
@@ -112,6 +116,12 @@ namespace GamePush
             OnFetchSuccess?.Invoke(_leaderboardFetchTag, dataArray);
             OnFetchTagVariant?.Invoke(_leaderboardFetchTag, _leaderboardFetchVariant, dataArray);
         }
+
+        private void CallLeaderboardScopedFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardScopedFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardScopedFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardScopedFetchPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+
 
 
         private void CallLeaderboardScopedPublishRecordComplete() => OnPublishRecordComplete?.Invoke();

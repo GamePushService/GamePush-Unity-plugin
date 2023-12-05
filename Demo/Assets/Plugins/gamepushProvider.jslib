@@ -304,8 +304,8 @@ mergeInto(LibraryManager.library, {
     GP_Leaderboard_Open: function (orderBy, order, limit, withMe, includeFields, displayFields) {
         GamePush.LeaderboardOpen(UTF8ToString(orderBy), UTF8ToString(order), limit, UTF8ToString(withMe), UTF8ToString(includeFields), UTF8ToString(displayFields));
     },
-    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, withMe, includeFields) {
-        GamePush.LeaderboardFetch(UTF8ToString(tag), UTF8ToString(orderBy), UTF8ToString(order), limit, UTF8ToString(withMe), UTF8ToString(includeFields));
+    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, Nearesshowt, withMe, includeFields) {
+        GamePush.LeaderboardFetch(UTF8ToString(tag), UTF8ToString(orderBy), UTF8ToString(order), limit, showNearest, UTF8ToString(withMe), UTF8ToString(includeFields));
     },
     GP_Leaderboard_FetchPlayerRating: function (tag, orderBy, order) {
         GamePush.LeaderboardFetchPlayerRating(UTF8ToString(tag), UTF8ToString(orderBy), UTF8ToString(order));
@@ -318,8 +318,8 @@ mergeInto(LibraryManager.library, {
     GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
         GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
     },
-    GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, includeFields, withMe) {
-        GamePush.LeaderboardScopedFetch(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, UTF8ToString(includeFields), UTF8ToString(withMe));
+    GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
+        GamePush.LeaderboardScopedFetch(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(withMe));
     },
     GP_Leaderboard_Scoped_PublishRecord: function (idOrTag, variant, override, key1, value1, key2, value2, key3, value3) {
         GamePush.LeaderboardScopedPublishRecord(UTF8ToString(idOrTag), UTF8ToString(variant), override, UTF8ToString(key1), value1, UTF8ToString(key2), value2, UTF8ToString(key3), value3);
