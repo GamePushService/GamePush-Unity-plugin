@@ -41,7 +41,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
                 Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
 #endif
         }
 
@@ -55,7 +55,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
                 Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
 #endif
         }
 
@@ -98,17 +98,17 @@ namespace GamePush
 
     public enum Platform : byte
     {
-        YANDEX,
-        VK,
-        CRAZY_GAMES,
-        GAME_DISTRIBUTION,
-        GAME_MONETIZE,
-        OK,
-        SMARTMARKET,
-        GAMEPIX,
-        POKI,
-        VK_PLAY,
-        None,
+        YANDEX = 0,
+        VK = 1,
+        CRAZY_GAMES = 2,
+        GAME_DISTRIBUTION = 3,
+        GAME_MONETIZE = 4,
+        OK = 5,
+        SMARTMARKET = 6,
+        GAMEPIX = 7,
+        POKI = 8,
+        VK_PLAY = 9,
+        None = 10,
     }
 }
 

@@ -14,7 +14,7 @@ namespace GamePush
         public static event UnityAction<List<FetchProducts>> OnFetchProducts;
         public static event UnityAction OnFetchProductsError;
 
-        public static event UnityAction<List<FetchPlayerPurcahses>> OnFetchPlayerPurchases;
+        public static event UnityAction<List<FetchPlayerPurchases>> OnFetchPlayerPurchases;
 
         public static event UnityAction<string> OnPurchaseSuccess;
         public static event UnityAction OnPurchaseError;
@@ -49,6 +49,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
                 Console.Log("PAYMENTS: ", "FETCH PRODUCTS");
+            OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
+            OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
 #endif
         }
 
@@ -99,7 +101,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
                 Console.Log("IS PAYMENTS AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
 #endif
         }
 
@@ -113,7 +115,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
                 Console.Log("IS SUBSCRIPTIONS AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSubscriptionsAvailable;
 #endif
         }
 
@@ -156,7 +158,7 @@ namespace GamePush
 
 
         private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(GP_JSON.GetList<FetchProducts>(data));
-        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(GP_JSON.GetList<FetchPlayerPurcahses>(data));
+        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(GP_JSON.GetList<FetchPlayerPurchases>(data));
 
         private void CallPaymentsFetchProductsError() => OnFetchProductsError?.Invoke();
 
@@ -223,7 +225,7 @@ namespace GamePush
     }
 
     [System.Serializable]
-    public class FetchPlayerPurcahses
+    public class FetchPlayerPurchases
     {
         public int productId;
         public string payload;

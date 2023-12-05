@@ -133,7 +133,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AdsConsoleLogs)
                 Console.Log("IS ADBLOCK ENABLED: ", "FALSE");
-            return false;
+            return GP_Settings.instance.GetPlatformSettings().IsAdblockEnabled;
 #endif
         }
 
@@ -147,7 +147,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AdsConsoleLogs)
                 Console.Log("IS STICKY BANNER AD AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsStickyAvailable;
 #endif
         }
 
@@ -161,7 +161,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AdsConsoleLogs)
                 Console.Log("IS FULL SCREEN AD AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsFullscreenAvailable;
 #endif
         }
 
@@ -175,7 +175,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AdsConsoleLogs)
                 Console.Log("IS REWARD AD AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsRewardedAvailable;
 #endif
         }
 
@@ -189,7 +189,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.AdsConsoleLogs)
                 Console.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsPreloaderAvailable;
 #endif
         }
 

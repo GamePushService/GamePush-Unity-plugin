@@ -96,7 +96,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: IS SUPPORTS SHARE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSupportsShare;
 #endif
         }
 
@@ -109,7 +109,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: IS SUPPORTS NATIVE SHARE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeShare;
 #endif
         }
 
@@ -124,7 +124,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: IS SUPPORTS NATIVE POSTS: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativePosts;
 #endif
         }
 
@@ -139,7 +139,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: IS SUPPORTS NATIVE INVITE: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeInvite;
 #endif
         }
 
@@ -154,7 +154,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: CAN JOIN COMMUNITY: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().CanJoinCommunity;
 #endif
         }
 
@@ -169,7 +169,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: IS SUPPORTS NATIVE COMMUNITY JOIN: ", "TRUE");
-            return true;
+            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeCommunityJoin;
 #endif
         }
 
