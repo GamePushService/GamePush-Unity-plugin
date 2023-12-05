@@ -94,7 +94,10 @@ export default class GamePushUnity {
         this.gp.on('change:avatarGenerator', (ag) => this.trigger('CallChangeAvatarGenerator', ag));
         this.gp.on('pause', () => this.trigger('CallOnPause'));
         this.gp.on('resume', () => this.trigger('CallOnResume'));
-
+        
+        //device
+        this.gp.on('change:orientation', () => this.trigger('CallChangeOrientation'));
+        
         // app
         //this.gp.app.on('requestReview', (result) => this.trigger('CallReviewResult', result));
         //this.gp.app.on('addShortcut', (success) => this.trigger('CallAddShortcut', success));
@@ -1055,6 +1058,9 @@ export default class GamePushUnity {
     //Device
     IsMobile() {
         return this.toUnity(this.gp.isMobile);
+    }
+    IsPortrait() {
+        return this.toUnity(this.gp.isPortrait);
     }
     //Device
 

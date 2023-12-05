@@ -7,6 +7,9 @@ namespace GamePush
 {
     public class GP_Device : MonoBehaviour
     {
+        public static event UnityAction OnChangeOrientation;
+         private void CallChangeOrientation() => OnChangeOrientation?.Invoke();
+
         [DllImport("__Internal")]
         private static extern string GP_IsMobile();
         public static bool IsMobile()
@@ -26,6 +29,19 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
                 Console.Log("IS DESKTOP: ", "TRUE");
+            return true;
+#endif
+        }
+
+         [DllImport("__Internal")]
+        private static extern string GP_IsPortrait();
+        public static bool IsPortrait()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_IsPortrait() == "true";
+#else
+            if (GP_ConsoleController.Instance.DeviceConsoleLogs)
+                Console.Log("IS PORTRAIT: ", "?");
             return true;
 #endif
         }

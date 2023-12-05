@@ -661,6 +661,14 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
 
+    GP_IsPortrait: function () {
+        var value = GamePush.IsPortrait();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
     /*DEVICE*/
 
 
