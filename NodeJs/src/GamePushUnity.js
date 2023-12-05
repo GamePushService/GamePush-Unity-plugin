@@ -499,6 +499,22 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.player.isStub);
     }
 
+    PlayerGetActiveDays() {
+        return this.toUnity(this.gp.player.stats.activeDays);
+    }
+
+    PlayerGetActiveDaysConsecutive() {
+        return this.toUnity(this.gp.player.stats.activeDaysConsecutive);
+    }
+
+    PlayerGetPlaytimeToday() {
+        return this.toUnity(this.gp.player.stats.playtimeToday);
+    }
+
+    PlayerGetPlaytimeAll() {
+        return this.toUnity(this.gp.player.stats.playtimeAll);
+    }
+
 
     // LEADERBOARD 
 
