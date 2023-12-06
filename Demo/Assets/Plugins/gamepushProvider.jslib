@@ -300,10 +300,10 @@ mergeInto(LibraryManager.library, {
 
 
     /* LEADER BOARD */
-    GP_Leaderboard_Open: function (orderBy, order, limit, withMe, includeFields, displayFields) {
+    GP_Leaderboard_Open: function (orderBy, order, limit, showNearest, withMe, includeFields, displayFields) {
         GamePush.LeaderboardOpen(UTF8ToString(orderBy), UTF8ToString(order), limit, UTF8ToString(withMe), UTF8ToString(includeFields), UTF8ToString(displayFields));
     },
-    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, Nearesshowt, withMe, includeFields) {
+    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, showNearest, withMe, includeFields) {
         GamePush.LeaderboardFetch(UTF8ToString(tag), UTF8ToString(orderBy), UTF8ToString(order), limit, showNearest, UTF8ToString(withMe), UTF8ToString(includeFields));
     },
     GP_Leaderboard_FetchPlayerRating: function (tag, orderBy, order) {
@@ -314,7 +314,7 @@ mergeInto(LibraryManager.library, {
 
 
     /* LEADER BOARD SCOPED */
-    GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
+    GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe) {
         GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
     },
     GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, showNearest, includeFields, withMe) {

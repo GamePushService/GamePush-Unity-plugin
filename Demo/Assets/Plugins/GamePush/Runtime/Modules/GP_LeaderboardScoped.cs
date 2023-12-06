@@ -40,7 +40,7 @@ namespace GamePush
         public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, includeFields, displayFields, withMe.ToString());
+            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
 #else
             if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
                 Console.Log("LEADERBOARD SCOPED: ", "OPEN");

@@ -38,10 +38,10 @@ namespace GamePush
                 // level,rank
                 string displayFields = ""
               );
-        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
+        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Open(orderBy, order.ToString(), limit, withMe.ToString(), includeFields, displayFields);
+            GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
 #else
             if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
                 Console.Log("LEADERBOARD: ", "OPEN");

@@ -529,10 +529,8 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                order,
-                limit,
-                showNearest,
-                withMe,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -541,6 +539,8 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .catch(console.warn);
     }
@@ -553,14 +553,14 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                order,
-                limit,
-                showNearest,
-                withMe,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .then((leaderboardInfo) => {
                 this.trigger('CallLeaderboardFetchTag', tag);
@@ -609,8 +609,7 @@ export default class GamePushUnity {
                 ...query,
                 variant,
                 order,
-                limit,
-                showNearest,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -619,25 +618,27 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                withMe,
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .catch(console.warn);
     }
 
-    LeaderboardScopedFetch(idOrTag, variant, order, limit, includeFields, withMe) {
+    LeaderboardScopedFetch(idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
         return this.gp.leaderboard
             .fetchScoped({
                 ...query,
-                variant,
-                order,
-                limit,
+                variant: variant,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
                 withMe,
+                showNearest: showNearest,
             })
             .then((leaderboardScopedInfo) => {
                 this.trigger('CallLeaderboardScopedFetchTag', idOrTag);
