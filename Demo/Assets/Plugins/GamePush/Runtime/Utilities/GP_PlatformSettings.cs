@@ -35,7 +35,7 @@ namespace GamePush
         [SerializeField] public Language Language = Language.English;
         [Header("Device")]
         [SerializeField] public bool IsMobile = true;
-        [SerializeField] public bool IsDesktop = true;
+        [SerializeField] public bool IsPortrait = true;
         [Header("Platform")]
         [SerializeField] public bool HasIntegratedAuth = true;
         [SerializeField] public bool IsExternalLinksAllowed = true;
