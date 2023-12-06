@@ -43,7 +43,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
-            bool isPortrait = !GP_Settings.instance.GetFromPlatformSettings().IsPortrait;
+            bool isPortrait = GP_Settings.instance.GetFromPlatformSettings().IsPortrait;
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
                 Console.Log("IS PORTRAIT: ", isPortrait.ToString());
             return isPortrait;
