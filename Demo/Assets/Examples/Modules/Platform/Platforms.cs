@@ -1,19 +1,30 @@
 using UnityEngine;
-
+using UnityEngine.UI;
+using Examples.Console;
 using GamePush;
 
 namespace Examples.Platforms
 {
     public class Platforms : MonoBehaviour
     {
-        public void Type() => GP_Platform.Type();
+        [SerializeField] private Button _definePlatform;
 
-        public void Define()
+        private void OnEnable()
         {
-            if (GP_Platform.Type() == Platform.YANDEX)
-            {
-                // YANDEX
-            }
+            _definePlatform.onClick.AddListener(DefinePlatform);
+        }
+        private void OnDisable()
+        {
+            _definePlatform.onClick.RemoveListener(DefinePlatform);
+        }
+
+        public string Type() => GP_Platform.Type().ToString();
+
+        public void DefinePlatform()
+        {
+            ConsoleUI.Instance.Log(Type());
+            ConsoleUI.Instance.Log("Has Integrated Auth: " + GP_Platform.HasIntegratedAuth().ToString());
+            ConsoleUI.Instance.Log("Is External Links Allowed: " + GP_Platform.IsExternalLinksAllowed().ToString());
         }
 
         public void HasIntegratedAuth() => GP_Platform.HasIntegratedAuth();
