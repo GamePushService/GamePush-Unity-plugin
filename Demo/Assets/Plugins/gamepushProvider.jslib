@@ -56,7 +56,6 @@ mergeInto(LibraryManager.library, {
     /* PLATFORM */
 
 
-
     /* APP */
     GP_App_Title: function () {
         var value = GamePush.AppTitle();
@@ -670,6 +669,10 @@ mergeInto(LibraryManager.library, {
 
     GP_GameReady: function(){
         GamePush.GameReady();
+    },
+
+    GP_HappyTime: function(){
+        GamePush.HappyTime();
     },
 
     /*GAME*/

@@ -1065,6 +1065,12 @@ export default class GamePushUnity {
         return this.gp.gameplayStop();
     }
 
+    
+    HappyTime(){
+        this.gp.platform.getNativeSDK().game.happytime();
+        //if(nativeSDK == "CRAZY_GAMES")    
+    }
+
 
     // GAME
 
