@@ -31,6 +31,7 @@ namespace GamePush
                 // DESC | ASC
                 string order = "DESC",
                 int limit = 10,
+                int showNearest = 5,
                 // none | first | last
                 string withMe = "none",
                 // level,exp,rank
