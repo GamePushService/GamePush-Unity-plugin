@@ -195,7 +195,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: ", "SHARE PLAYER ID");
-            return "GP_LINK";
+            return GP_Player.GetID();
 #endif
         }
 
