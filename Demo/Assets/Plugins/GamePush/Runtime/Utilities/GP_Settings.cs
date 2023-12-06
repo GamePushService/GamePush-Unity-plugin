@@ -20,6 +20,7 @@ namespace GamePush
                     _instance = new GP_Settings();
                 return _instance;
             }
+            set => _instance = value;
         }
 
         public PlatformSettings GetPlatformSettings(){
