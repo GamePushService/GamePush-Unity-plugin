@@ -16,8 +16,8 @@ namespace Plugins.GamePush.Editor
             var paymentsStub = settings.paymentsStub;
             EditorGUI.BeginChangeCheck();
             viewLogs = EditorGUILayout.Toggle("View logs", viewLogs);
-            platformSettings = (GP_PlatformSettings)EditorGUILayout.ObjectField("Platform settings", platformSettings, typeof(GP_PlatformSettings));
-            paymentsStub = (GP_PaymentsStub)EditorGUILayout.ObjectField("Payments stub", paymentsStub, typeof(GP_PaymentsStub));
+            platformSettings = (GP_PlatformSettings)EditorGUILayout.ObjectField("Platform settings", platformSettings, typeof(GP_PlatformSettings), false);
+            paymentsStub = (GP_PaymentsStub)EditorGUILayout.ObjectField("Payments stub", paymentsStub, typeof(GP_PaymentsStub), false);
             if (EditorGUI.EndChangeCheck())
             {
                 settings.viewLogs = viewLogs;
