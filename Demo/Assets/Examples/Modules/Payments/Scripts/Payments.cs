@@ -80,6 +80,7 @@ namespace Examples.Payments
         {
             for (int i = 0; i < purcahses.Count; i++)
             {
+                ConsoleUI.Instance.Log("PLAYER PURCHASES: PRODUCT TAG: " + purcahses[i].tag);
                 ConsoleUI.Instance.Log("PLAYER PURCHASES: PRODUCT ID: " + purcahses[i].productId);
                 ConsoleUI.Instance.Log("PLAYER PURCHASES: PAYLOAD: " + purcahses[i].payload);
                 ConsoleUI.Instance.Log("PLAYER PURCHASES: CREATED AT: " + purcahses[i].createdAt);

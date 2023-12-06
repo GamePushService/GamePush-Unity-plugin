@@ -227,6 +227,7 @@ namespace GamePush
     [System.Serializable]
     public class FetchPlayerPurchases
     {
+        public string tag;
         public int productId;
         public string payload;
         public string createdAt;
