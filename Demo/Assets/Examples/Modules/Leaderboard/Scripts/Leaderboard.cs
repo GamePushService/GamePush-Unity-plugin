@@ -52,7 +52,7 @@ namespace Examples.Leaderboard
         }
 
 
-        public void Open() => GP_Leaderboard.Open("level,gold", Order.DESC, 10, WithMe.first, "rank", "rank,level");
+        public void Open() => GP_Leaderboard.Open("level,gold", Order.DESC, 10, 0, WithMe.first, "rank", "rank,level");
         public void Fetch() => GP_Leaderboard.Fetch("Level - Gold", "level,gold", Order.DESC, 10);
         public void FetchPlayerRating() => GP_Leaderboard.FetchPlayerRating("Level - Gold", "level,gold", Order.DESC);
 
