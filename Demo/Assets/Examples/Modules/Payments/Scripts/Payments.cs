@@ -76,7 +76,7 @@ namespace Examples.Payments
 
         private void OnFetchProductsError() => ConsoleUI.Instance.Log("FETCH PRODUCTS: ERROR");
 
-        private void OnFetchPlayerPurchases(List<FetchPlayerPurcahses> purcahses)
+        private void OnFetchPlayerPurchases(List<FetchPlayerPurchases> purcahses)
         {
             for (int i = 0; i < purcahses.Count; i++)
             {
