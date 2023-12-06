@@ -23,7 +23,6 @@ namespace Plugins.GamePush.Editor
                 settings.viewLogs = viewLogs;
                 settings.platformSettings = platformSettings;
                 settings.paymentsStub = paymentsStub;
-                settings.Save();
             }
         }
 
