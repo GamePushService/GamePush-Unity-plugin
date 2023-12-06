@@ -1,3 +1,4 @@
+using System;
 using GamePush;
 using UnityEditor;
 
@@ -11,5 +12,10 @@ namespace Plugins.GamePush.Editor
         
         private void OnDisable() => Save();
         public void Save() => Save(true);
+
+        private void Awake()
+        {
+            GP_Settings.instance = settings;
+        }
     }
 }
