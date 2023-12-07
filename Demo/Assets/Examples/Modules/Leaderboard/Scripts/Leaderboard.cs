@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using GamePush;
 using Examples.Console;
@@ -24,6 +25,20 @@ namespace Examples.Leaderboard
         [SerializeField] private Button _openButton;
         [SerializeField] private Button _fetchButton;
         [SerializeField] private Button _fetchPlayerRatingButton;
+        [Space(40)]
+        [SerializeField] private TMP_InputField _tagInput;
+        [SerializeField] private TMP_InputField _orderByInput;
+        [Space]
+        [SerializeField] private TMP_Dropdown _orderDropdown;
+        [SerializeField] private TMP_Dropdown _withMeDropdown;
+        [Space]
+        [SerializeField] private TMP_InputField _limitInput;
+        [SerializeField] private TMP_InputField _nearestInput;
+        [Space]
+        [SerializeField] private TMP_InputField _includeInput;
+        [SerializeField] private TMP_InputField _displayInput;
+
+
 
         private void OnEnable()
         {
@@ -52,9 +67,35 @@ namespace Examples.Leaderboard
         }
 
 
-        public void Open() => GP_Leaderboard.Open("level,gold", Order.DESC, 10, 0, WithMe.first, "rank", "rank,level");
-        public void Fetch() => GP_Leaderboard.Fetch("Level - Gold", "level,gold", Order.DESC, 10);
-        public void FetchPlayerRating() => GP_Leaderboard.FetchPlayerRating("Level - Gold", "level,gold", Order.DESC);
+        public void Open() =>
+            GP_Leaderboard.Open(
+                _orderByInput.text,
+                (Order)_orderDropdown.value,
+                int.Parse(_limitInput.text),
+                int.Parse(_nearestInput.text),
+                (WithMe)_withMeDropdown.value,
+                _includeInput.text,
+                _displayInput.text
+            );
+        
+
+        public void Fetch() =>
+            GP_Leaderboard.Fetch(
+                _tagInput.text,
+                _orderByInput.text,
+                (Order)_orderDropdown.value,
+                int.Parse(_limitInput.text),
+                int.Parse(_nearestInput.text),
+                (WithMe)_withMeDropdown.value,
+                _includeInput.text
+                );
+
+        public void FetchPlayerRating() =>
+            GP_Leaderboard.FetchPlayerRating(
+                _tagInput.text,
+                _orderByInput.text,
+                (Order)_orderDropdown.value
+               );
 
 
         private void OnOpen() => ConsoleUI.Instance.Log("LEADERBOARD: ON OPEN");
