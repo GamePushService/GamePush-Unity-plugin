@@ -267,32 +267,16 @@ mergeInto(LibraryManager.library, {
     // Player stats 
 
     GP_Player_GetActiveDays: function () {
-        var value = GamePush.PlayerGetActiveDays();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetActiveDays();
     },
     GP_Player_GetActiveDaysConsecutive: function () {
-        var value = GamePush.PlayerGetActiveDaysConsecutive();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetActiveDaysConsecutive();
     },
     GP_Player_GetPlaytimeToday: function () {
-        var value = GamePush.PlayerGetPlaytimeToday();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetPlaytimeToday();
     },
     GP_Player_GetPlaytimeAll: function () {
-        var value = GamePush.PlayerGetPlaytimeAll();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetPlaytimeAll();
     },
 
     /* PLAYER */
