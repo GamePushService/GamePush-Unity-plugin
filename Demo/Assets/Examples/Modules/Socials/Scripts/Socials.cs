@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using GamePush;
 using Examples.Console;
@@ -19,6 +20,11 @@ namespace Examples.Socials
         [SerializeField] private Button _canJoinCommunityButton;
         [SerializeField] private Button _communityLinkButton;
         [SerializeField] private Button _isButton;
+        [SerializeField] private Button _makeLinkButton;
+        [SerializeField] private Button _shareParamsButton;
+        [Space]
+        [SerializeField] private TMP_InputField _shareLinkContent;
+
 
 
         private void OnEnable()
@@ -30,6 +36,8 @@ namespace Examples.Socials
             _canJoinCommunityButton.onClick.AddListener(CanJoinCommunity);
             _communityLinkButton.onClick.AddListener(CommunityLink);
             _isButton.onClick.AddListener(Is);
+            _makeLinkButton.onClick.AddListener(MakeShareLink);
+            _shareParamsButton.onClick.AddListener(GetShareParams);
 
             GP_Socials.OnShare += OnShare;
             GP_Socials.OnPost += OnPost;
@@ -46,6 +54,8 @@ namespace Examples.Socials
             _canJoinCommunityButton.onClick.RemoveListener(CanJoinCommunity);
             _communityLinkButton.onClick.RemoveListener(CommunityLink);
             _isButton.onClick.RemoveListener(Is);
+            _makeLinkButton.onClick.RemoveAllListeners();
+            _shareButton.onClick.RemoveAllListeners();
 
             GP_Socials.OnShare -= OnShare;
             GP_Socials.OnPost -= OnPost;
@@ -69,6 +79,18 @@ namespace Examples.Socials
             ConsoleUI.Instance.Log("IS SUPPORTS NATIVE SHARE: " + GP_Socials.IsSupportsNativeShare());
         }
 
+        public void MakeShareLink()
+        {
+            string content = _shareLinkContent.text;
+            ConsoleUI.Instance.Log("CREATE LINK WITH CONTENT: " + content);
+            string link = GP_Socials.MakeShareLink(content);
+            ConsoleUI.Instance.Log("SHARE LINK: " + link);
+        }
+        public void GetShareParams()
+        {
+            ConsoleUI.Instance.Log("From Player: " + GP_Socials.GetSharePlayerID());
+            ConsoleUI.Instance.Log("Content: " + GP_Socials.GetShareContent());
+        }
 
         private void OnShare(bool success) => ConsoleUI.Instance.Log("SOCIALS: SHARE: " + success);
         private void OnPost(bool success) => ConsoleUI.Instance.Log("SOCIALS: ON POST: " + success);
