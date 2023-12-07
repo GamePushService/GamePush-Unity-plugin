@@ -70,15 +70,25 @@ namespace Examples.Ads
         {
             ConsoleUI.Instance.Log("IS ADBLOCK ENABLED: " + GP_Ads.IsAdblockEnabled());
 
+            ConsoleUI.Instance.Log("-----");
+
             ConsoleUI.Instance.Log("IS FULLSCREEN AVAILABLE: " + GP_Ads.IsFullscreenAvailable());
             ConsoleUI.Instance.Log("IS PRELOADER AVAILABLE: " + GP_Ads.IsPreloaderAvailable());
             ConsoleUI.Instance.Log("IS REWARDED AVAILABLE: " + GP_Ads.IsRewardedAvailable());
             ConsoleUI.Instance.Log("IS STICKY AVAILABLE: " + GP_Ads.IsStickyAvailable());
 
+            ConsoleUI.Instance.Log("-----");
+
             ConsoleUI.Instance.Log("IS FULLSCREEN PLAYING: " + GP_Ads.IsFullscreenPlaying());
             ConsoleUI.Instance.Log("IS PRELOADER PLAYING: " + GP_Ads.IsPreloaderPlaying());
             ConsoleUI.Instance.Log("IS REWARDED PLAYING: " + GP_Ads.IsRewardPlaying());
             ConsoleUI.Instance.Log("IS STICKY PLAYING: " + GP_Ads.IsStickyPlaying());
+
+            ConsoleUI.Instance.Log("-----");
+
+            ConsoleUI.Instance.Log("Is Countdown Overlay Enabled: " + GP_Ads.IsCountdownOverlayEnabled());
+            ConsoleUI.Instance.Log("Is Rewarded Failed Overlay Enabled: " + GP_Ads.IsRewardedFailedOverlayEnabled());
+            ConsoleUI.Instance.Log("Can Show Fullscreen Before Gameplay: " + GP_Ads.CanShowFullscreenBeforeGamePlay());
         }
 
 
