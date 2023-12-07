@@ -25,6 +25,7 @@ namespace Examples.Player
         [SerializeField] private Button _loginButton;
         [SerializeField] private Button _resetButton;
         [SerializeField] private Button _removeButton;
+        [SerializeField] private Button _statsButton;
 
 
         private void OnEnable()
@@ -37,6 +38,7 @@ namespace Examples.Player
             _loginButton.onClick.AddListener(Login);
             _resetButton.onClick.AddListener(ResetPlayer);
             _removeButton.onClick.AddListener(Remove);
+            _statsButton.onClick.AddListener(PlayerStats);
         }
 
 
@@ -51,6 +53,7 @@ namespace Examples.Player
             _loginButton.onClick.RemoveListener(Login);
             _resetButton.onClick.RemoveListener(ResetPlayer);
             _removeButton.onClick.RemoveListener(Remove);
+            _statsButton.onClick.RemoveListener(PlayerStats);
         }
 
 
@@ -92,6 +95,15 @@ namespace Examples.Player
         public void ResetPlayer() => GP_Player.ResetPlayer();
         public void Remove() => GP_Player.Remove();
         public void Login() => GP_Player.Login();
+
+        public void PlayerStats()
+        {
+            ConsoleUI.Instance.Log("PLAYER STATS:");
+            ConsoleUI.Instance.Log("Active Days:" + GP_Player.GetActiveDays());
+            ConsoleUI.Instance.Log("Active Days Consecutive:" + GP_Player.GetActiveDaysConsecutive());
+            ConsoleUI.Instance.Log("Playtime Today:" + GP_Player.GetPlaytimeToday());
+            ConsoleUI.Instance.Log("Playtime All:" + GP_Player.GetPlaytimeAll());
+        }
         #endregion
 
 
