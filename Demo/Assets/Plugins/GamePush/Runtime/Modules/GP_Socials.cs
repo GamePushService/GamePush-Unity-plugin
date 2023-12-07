@@ -174,7 +174,7 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern string GP_Socials_MakeShareLink(string content = "");
+        private static extern string GP_Socials_MakeShareLink(string content);
         public static string MakeShareLink(string content = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
