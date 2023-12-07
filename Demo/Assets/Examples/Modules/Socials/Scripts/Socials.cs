@@ -24,6 +24,7 @@ namespace Examples.Socials
         [SerializeField] private Button _shareParamsButton;
         [Space]
         [SerializeField] private TMP_InputField _shareLinkContent;
+        [SerializeField] private TMP_InputField _shareLinkField;
 
 
 
@@ -84,7 +85,8 @@ namespace Examples.Socials
             string content = _shareLinkContent.text;
             ConsoleUI.Instance.Log("CREATE LINK WITH CONTENT: " + content);
             string link = GP_Socials.MakeShareLink(content);
-            ConsoleUI.Instance.Log("SHARE LINK: " + link);
+            _shareLinkField.text = link;
+            ConsoleUI.Instance.Log("SHARE LINK: \n" + link);
         }
         public void GetShareParams()
         {
