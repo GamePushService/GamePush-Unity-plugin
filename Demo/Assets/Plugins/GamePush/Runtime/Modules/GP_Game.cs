@@ -98,6 +98,18 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_HappyTime();
+        public static void HappyTime()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_HappyTime();
+#else
+            if (GP_ConsoleController.Instance.GameConsoleLogs)
+                Console.Log("GAME:", "HAPPY TIME!!!");
+#endif
+        }
+
 
         private void CallOnPause() => OnPause?.Invoke();
         private void CallOnResume() => OnResume?.Invoke();
