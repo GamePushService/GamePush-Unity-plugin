@@ -599,11 +599,7 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
     GP_Socials_GetSharePlayerID: function () {
-        var value = GamePush.SocialsGetSharePlayerID();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.SocialsGetSharePlayerID();
     },
     GP_Socials_GetShareContent: function () {
         var value = GamePush.SocialsGetShareContent();

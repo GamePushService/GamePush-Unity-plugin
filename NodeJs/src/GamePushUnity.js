@@ -823,8 +823,6 @@ export default class GamePushUnity {
                 this.trigger('CallPaymentsConsumeError');
             });
     }
-
-
     PaymentsIsAvailable() {
         return this.toUnity(this.gp.payments.isAvailable);
     }
@@ -1065,11 +1063,10 @@ export default class GamePushUnity {
     GameplayStop() {
         return this.gp.gameplayStop();
     }
-
     
     HappyTime(){
-        this.gp.platform.getNativeSDK().game.happytime();
-        //if(nativeSDK == "CRAZY_GAMES")    
+        if(this.gp.platform.type == "CRAZY_GAMES")
+            this.gp.platform.getNativeSDK().game.happytime();  
     }
 
 

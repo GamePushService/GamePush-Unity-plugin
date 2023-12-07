@@ -72,9 +72,9 @@ namespace Examples.Player
             //                 GP_Player.GetAvatar(_playerAvatar);
             // #endif
 
-            _gold.text = "COINS: " + GP_Player.GetInt("coins");
-            _level.text = "LEVEL: " + GP_Player.GetInt("level");
-            _vip.isOn = GP_Player.GetBool("vip");
+            _gold.text = "SCORE: " + GP_Player.GetScore();
+            //_level.text = "LEVEL: " + GP_Player.GetInt("level");
+            //_vip.isOn = GP_Player.GetBool("vip");
         }
 
 
@@ -108,7 +108,7 @@ namespace Examples.Player
 
 
         private int _goldCount;
-        private void UpdateGoldText() { _goldCount += 50; _gold.text = "GOLD: " + _goldCount; }
+        private void UpdateGoldText() { _goldCount += 50; _gold.text = "SCORE: " + _goldCount; }
         private void UpdateLevelText() => _level.text = "LEVEL: " + 10;
 
         private void OnConnect()
