@@ -40,7 +40,7 @@ namespace Examples.Player.JSON
 
         private void Awake()
         {
-            Get_Player_Data_JSON();
+            //Get_Player_Data_JSON();
         }
 
 

@@ -57,7 +57,7 @@ namespace Examples.Player
         }
 
 
-        private void Awake()
+        private void Start()
         {
             Get_Player_Data();
         }
@@ -81,7 +81,7 @@ namespace Examples.Player
         #region Button Methods
         public void Add()
         {
-            GP_Player.Add("coins", 50);
+            GP_Player.AddScore(50);
             UpdateGoldText();
         }
         public void Set()
