@@ -299,7 +299,7 @@ mergeInto(LibraryManager.library, {
 
     /* LEADER BOARD SCOPED */
     GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe) {
-        GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
+        GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
     },
     GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
         GamePush.LeaderboardScopedFetch(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(withMe));
@@ -592,12 +592,13 @@ mergeInto(LibraryManager.library, {
     },
 
     GP_Socials_MakeShareLink: function (content) {
-        var value = GamePush.SocialsMakeShareLink(content);
+        var value = GamePush.SocialsMakeShareLink(UTF8ToString(content));
         var bufferSize = lengthBytesUTF8(value) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
+
     GP_Socials_GetSharePlayerID: function () {
         return GamePush.SocialsGetSharePlayerID();
     },

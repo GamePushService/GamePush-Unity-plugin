@@ -991,6 +991,7 @@ export default class GamePushUnity {
     SocialsIsSupportsNativeCommunityJoin() {
         return this.toUnity(this.gp.socials.isSupportsNativeCommunityJoin);
     }
+    
     SocialsMakeShareLink(shareContent){
         return this.toUnity(this.gp.socials.makeShareUrl({
             fromId: this.gp.player.id,
