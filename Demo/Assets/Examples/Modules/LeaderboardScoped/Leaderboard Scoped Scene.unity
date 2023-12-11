@@ -5677,6 +5677,20 @@ MonoBehaviour:
   _publishRecordButton: {fileID: 1217079758}
   _fetchPlayerRatingButton: {fileID: 402497536}
   _fetchButton: {fileID: 1936366768}
+  _tagInput: {fileID: 4181934998654173858}
+  _variantInput: {fileID: 8151556283129469623}
+  _orderDropdown: {fileID: 6820754164863369133}
+  _withMeDropdown: {fileID: 8338680150814031178}
+  _limitInput: {fileID: 6799290798172769935}
+  _nearestInput: {fileID: 8862287615245191316}
+  _includeInput: {fileID: 393530592165111325}
+  _displayInput: {fileID: 8216060109946010652}
+  _key1: {fileID: 1965904646}
+  _value1: {fileID: 848857529}
+  _key2: {fileID: 501733206}
+  _value2: {fileID: 236048377}
+  _key3: {fileID: 489781578}
+  _value3: {fileID: 21232794}
 --- !u!1 &1936366766
 GameObject:
   m_ObjectHideFlags: 0
@@ -7105,7 +7119,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: rank
+  m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -7545,7 +7559,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "rank\u200B"
+  m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f3604a55b115e2e49b80db61cdd306a1, type: 2}
   m_sharedMaterial: {fileID: 3731700889022892183, guid: f3604a55b115e2e49b80db61cdd306a1, type: 2}
@@ -8273,7 +8287,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1649913542365317347}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -10183,7 +10197,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1288076141182567505}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -10467,7 +10481,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "rank,level\u200B"
+  m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f3604a55b115e2e49b80db61cdd306a1, type: 2}
   m_sharedMaterial: {fileID: 3731700889022892183, guid: f3604a55b115e2e49b80db61cdd306a1, type: 2}
@@ -13130,7 +13144,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: rank,level
+  m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
