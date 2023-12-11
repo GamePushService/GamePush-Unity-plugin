@@ -568,7 +568,7 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardFetchTop', JSON.stringify(leaderboardInfo.topPlayers));
                 this.trigger('CallLeaderboardFetchAbove', JSON.stringify(leaderboardInfo.abovePlayers));
                 this.trigger('CallLeaderboardFetchBelow', JSON.stringify(leaderboardInfo.belowPlayers));
-                this.trigger('CallLeaderboardFetchPlayer', JSON.stringify(leaderboardInfo.player));
+                this.trigger('CallLeaderboardFetchOnlyPlayer', JSON.stringify(leaderboardInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -588,7 +588,7 @@ export default class GamePushUnity {
             })
             .then((result) => {
                 this.trigger('CallLeaderboardFetchPlayerTag', tag);
-                this.trigger('CallLeaderboardFetchPlayer', result.player.position);
+                this.trigger('CallLeaderboardFetchPlayerRating', result.player.position);
             })
             .catch((err) => {
                 console.warn(err);
@@ -647,7 +647,7 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardScopedFetchTop', JSON.stringify(leaderboardScopedInfo.topPlayers));
                 this.trigger('CallLeaderboardScopedFetchAbove', JSON.stringify(leaderboardScopedInfo.abovePlayers));
                 this.trigger('CallLeaderboardScopedFetchBelow', JSON.stringify(leaderboardScopedInfo.belowPlayers));
-                this.trigger('CallLeaderboardScopedFetchPlayer', JSON.stringify(leaderboardScopedInfo.player));
+                this.trigger('CallLeaderboardScopedFetchOnlyPlayer', JSON.stringify(leaderboardScopedInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -693,7 +693,7 @@ export default class GamePushUnity {
             .then((result) => {
                 this.trigger('CallLeaderboardScopedFetchPlayerTag', idOrTag);
                 this.trigger('CallLeaderboardScopedFetchPlayerVariant', variant);
-                this.trigger('CallLeaderboardScopedFetchPlayer', result.player.position);
+                this.trigger('CallLeaderboardScopedFetchPlayerRating', result.player.position);
             })
             .catch((err) => {
                 console.warn(err);

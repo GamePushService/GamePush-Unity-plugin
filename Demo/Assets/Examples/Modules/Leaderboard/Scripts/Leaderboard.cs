@@ -92,10 +92,12 @@ namespace Examples.Leaderboard
 
         public void FetchPlayerRating() =>
             GP_Leaderboard.FetchPlayerRating(
-                _tagInput.text,
-                _orderByInput.text,
-                (Order)_orderDropdown.value
-               );
+                            _tagInput.text,
+                            _orderByInput.text,
+                            (Order)_orderDropdown.value
+                           );
+        
+            
 
 
         private void OnOpen() => ConsoleUI.Instance.Log("LEADERBOARD: ON OPEN");
@@ -117,9 +119,8 @@ namespace Examples.Leaderboard
             }
         }
 
-        private void OnFetchPlayerRatingSuccess(string fetchTag, int position)
-        {
+        private void OnFetchPlayerRatingSuccess(string fetchTag, int position) =>
             ConsoleUI.Instance.Log("LEADERBOARD: " + fetchTag + " PLAYER POSITION: " + position);
-        }
+        
     }
 }

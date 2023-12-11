@@ -138,8 +138,11 @@ namespace Examples.LeaderboardScoped
         private void OnPublishRecordComplete() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON PUBLISH RECORD: COMPLETE");
         private void OnPublishRecordError() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON PUBLISH RECORD: ERROR");
 
-        private void OnFetchPlayerRating(string fetchTag, int position) => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: " + fetchTag + ": PLAYER POSITION: " + position);
-        private void OnFetchPlayerRatingError() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON FETCH PLAYER RATING: ERROR");
+        private void OnFetchPlayerRating(string fetchTag, int position) =>
+            ConsoleUI.Instance.Log("LEADERBOARD SCOPED: " + fetchTag + ": PLAYER POSITION: " + position);
+
+        private void OnFetchPlayerRatingError() =>
+            ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON FETCH PLAYER RATING: ERROR");
 
         private void OnFetchSuccess(string fetchTag, GP_Data data)
         {

@@ -102,7 +102,7 @@ namespace GamePush
         private void CallLeaderboardFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
-        private void CallLeaderboardFetchPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchOnlyPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         
         
         private void CallLeaderboardFetchTag(string lastTag) => _leaderboardFetchTag = lastTag;
@@ -110,9 +110,9 @@ namespace GamePush
 
 
         private void CallLeaderboardFetchPlayerTag(string lastTag) => _leaderboardPlayerFetchTag = lastTag;
-
-        private void CallLeaderboardFetchPlayer(int playerPosition) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardPlayerFetchTag, playerPosition);
-
+        
+        private void CallLeaderboardFetchPlayerRating(int playerPosition) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardPlayerFetchTag, playerPosition);
+        
         private void CallLeaderboardFetchPlayerError() => OnFetchPlayerRatingError?.Invoke();
     }
 
