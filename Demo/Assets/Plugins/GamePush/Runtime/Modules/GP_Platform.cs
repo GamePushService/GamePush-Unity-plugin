@@ -25,9 +25,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Platform_Type());
 #else
+            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: TYPE: ", Platform.None.ToString());
-            return Platform.None;
+                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+            return platform;
 #endif
         }
 
@@ -39,12 +40,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
+            bool auth = GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
+                Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", auth.ToString());
+            return auth;
 #endif
         }
-
+        
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_IsExternalLinksAllowed();
@@ -53,9 +55,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsExternalLinksAllowed() == "true";
 #else
+            bool linkAllow = GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
+                Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", linkAllow.ToString());
+            return linkAllow;
 #endif
         }
 
