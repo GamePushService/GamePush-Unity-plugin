@@ -10,7 +10,7 @@ namespace Plugins.GamePush.Editor
 
         public override void OnGUI(string search)
         {
-            var settings = GP_SettingsWrap.instance.settings;
+            var settings = GP_Settings.instance;
             var viewLogs = settings.viewLogs;
             var platformSettings = settings.platformSettings;
             var paymentsStub = settings.paymentsStub;
