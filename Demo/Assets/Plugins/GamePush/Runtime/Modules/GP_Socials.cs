@@ -174,7 +174,7 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern string GP_Socials_MakeShareLink(string content = "");
+        private static extern string GP_Socials_MakeShareLink(string content);
         public static string MakeShareLink(string content = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -195,7 +195,7 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SocialsConsoleLogs)
                 Console.Log("SOCIALS: ", "SHARE PLAYER ID");
-            return "GP_LINK";
+            return GP_Player.GetID();
 #endif
         }
 

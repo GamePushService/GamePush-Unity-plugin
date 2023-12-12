@@ -45,6 +45,12 @@ namespace Examples.Game
             ConsoleUI.Instance.Log("GAME: GAMEPLAY STOP");
         }
 
+        public void HappyTime()
+        {
+            GP_Game.HappyTime();
+            ConsoleUI.Instance.Log("HAPPY TIME!!!");
+        }
+
 
         private void OnPause() => ConsoleUI.Instance.Log("GAME: ON PAUSE");
         private void OnResume() => ConsoleUI.Instance.Log("GAME: ON RESUME");

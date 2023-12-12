@@ -56,7 +56,6 @@ mergeInto(LibraryManager.library, {
     /* PLATFORM */
 
 
-
     /* APP */
     GP_App_Title: function () {
         var value = GamePush.AppTitle();
@@ -268,32 +267,16 @@ mergeInto(LibraryManager.library, {
     // Player stats 
 
     GP_Player_GetActiveDays: function () {
-        var value = GamePush.PlayerGetActiveDays();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetActiveDays();
     },
     GP_Player_GetActiveDaysConsecutive: function () {
-        var value = GamePush.PlayerGetActiveDaysConsecutive();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetActiveDaysConsecutive();
     },
     GP_Player_GetPlaytimeToday: function () {
-        var value = GamePush.PlayerGetPlaytimeToday();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetPlaytimeToday();
     },
     GP_Player_GetPlaytimeAll: function () {
-        var value = GamePush.PlayerGetPlaytimeAll();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.PlayerGetPlaytimeAll();
     },
 
     /* PLAYER */
@@ -301,10 +284,10 @@ mergeInto(LibraryManager.library, {
 
 
     /* LEADER BOARD */
-    GP_Leaderboard_Open: function (orderBy, order, limit, withMe, includeFields, displayFields) {
-        GamePush.LeaderboardOpen(UTF8ToString(orderBy), UTF8ToString(order), limit, UTF8ToString(withMe), UTF8ToString(includeFields), UTF8ToString(displayFields));
+    GP_Leaderboard_Open: function (orderBy, order, limit, showNearest, withMe, includeFields, displayFields) {
+        GamePush.LeaderboardOpen(UTF8ToString(orderBy), UTF8ToString(order), limit, showNearest, UTF8ToString(withMe), UTF8ToString(includeFields), UTF8ToString(displayFields));
     },
-    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, Nearesshowt, withMe, includeFields) {
+    GP_Leaderboard_Fetch: function (tag, orderBy, order, limit, showNearest, withMe, includeFields) {
         GamePush.LeaderboardFetch(UTF8ToString(tag), UTF8ToString(orderBy), UTF8ToString(order), limit, showNearest, UTF8ToString(withMe), UTF8ToString(includeFields));
     },
     GP_Leaderboard_FetchPlayerRating: function (tag, orderBy, order) {
@@ -315,8 +298,8 @@ mergeInto(LibraryManager.library, {
 
 
     /* LEADER BOARD SCOPED */
-    GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, includeFields, displayFields, withMe) {
-        GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
+    GP_Leaderboard_Scoped_Open: function (idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe) {
+        GamePush.LeaderboardScopedOpen(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(displayFields), UTF8ToString(withMe));
     },
     GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
         GamePush.LeaderboardScopedFetch(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(withMe));
@@ -609,18 +592,15 @@ mergeInto(LibraryManager.library, {
     },
 
     GP_Socials_MakeShareLink: function (content) {
-        var value = GamePush.SocialsMakeShareLink(content);
+        var value = GamePush.SocialsMakeShareLink(UTF8ToString(content));
         var bufferSize = lengthBytesUTF8(value) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
+
     GP_Socials_GetSharePlayerID: function () {
-        var value = GamePush.SocialsGetSharePlayerID();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return GamePush.SocialsGetSharePlayerID();
     },
     GP_Socials_GetShareContent: function () {
         var value = GamePush.SocialsGetShareContent();
@@ -670,6 +650,10 @@ mergeInto(LibraryManager.library, {
 
     GP_GameReady: function(){
         GamePush.GameReady();
+    },
+
+    GP_HappyTime: function(){
+        GamePush.HappyTime();
     },
 
     /*GAME*/

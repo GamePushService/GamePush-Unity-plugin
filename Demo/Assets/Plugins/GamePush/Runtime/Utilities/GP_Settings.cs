@@ -1,17 +1,27 @@
+using System;
 using System.Collections.Generic;
-using UnityEditor;
 
 namespace GamePush
 {
-    [FilePath("UserSettings/GP_Settings.asset",
-        FilePathAttribute.Location.ProjectFolder)]
-    public sealed class GP_Settings : ScriptableSingleton<GP_Settings>
+    [Serializable]
+    public sealed class GP_Settings
     {
         public bool viewLogs = true;
         public GP_PlatformSettings platformSettings;
         public GP_PaymentsStub paymentsStub;
-        private void OnDisable() => Save();
-        public void Save() => Save(true);
+        
+        private static GP_Settings _instance;
+
+        public static GP_Settings instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new GP_Settings();
+                return _instance;
+            }
+            set => _instance = value;
+        }
 
         public PlatformSettings GetPlatformSettings(){
             if (platformSettings != null)

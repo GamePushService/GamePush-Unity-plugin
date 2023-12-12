@@ -40,7 +40,7 @@ PlayerSettings:
     width: 1
     height: 1
   m_SplashScreenLogos:
-  - logo: {fileID: 21300000, guid: e21398f65213cbd42adbabaadc210d0f, type: 3}
+  - logo: {fileID: 21300000, guid: 4f50c24e0cf0e400f811fc2af70c978d, type: 3}
     duration: 2
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
@@ -50,6 +50,7 @@ PlayerSettings:
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
+  unsupportedMSAAFallback: 0
   m_SpriteBatchVertexThreshold: 300
   m_MTRendering: 1
   mipStripping: 0
@@ -137,7 +138,7 @@ PlayerSettings:
   vulkanEnableLateAcquireNextImage: 0
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
-  bundleVersion: 1
+  bundleVersion: 1.2.2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -149,6 +150,7 @@ PlayerSettings:
   isWsaHolographicRemotingEnabled: 0
   enableFrameTimingStats: 0
   enableOpenGLProfilerGPURecorders: 1
+  allowHDRDisplaySupport: 0
   useHDRDisplay: 0
   hdrBitDepth: 0
   m_ColorGamuts: 00000000
@@ -396,15 +398,15 @@ PlayerSettings:
   m_TemplateCustomTags:
     AUTOCALL_GAMEREADY: 
     CUSTOMIZATION: 
-    GAMEREADY_AUTOCALL_DELAY: 0
+    GAMEREADY_AUTOCALL_DELAY: 
     OVERLAY_BACKGROUND_COLOR: 
     PRODUCT_DESCRIPTION: 
     PROGRESS_BAR_BACKGROUND_COLOR: 
     PROGRESS_BAR_BORDER_COLOR: 
     PROGRESS_BAR_FILL_COLOR: 
-    PROJECT_ID: 5815
+    PROJECT_ID: 4
     SHOW_PRELOADER_AD: 
-    TOKEN: BL5y2Oqp3Wl622MDcOAWrd55hJJF08SD
+    TOKEN: xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT
     X_SHOW_PRELOADER_AD: 
   mobileMTRendering:
     Android: 1
@@ -446,7 +448,6 @@ PlayerSettings:
   switchScreenResolutionBehavior: 2
   switchUseCPUProfiler: 0
   switchEnableFileSystemTrace: 0
-  switchUseGOLDLinker: 0
   switchLTOSetting: 0
   switchApplicationID: 0x01004b9000490000
   switchNSODependencies: 
@@ -576,7 +577,6 @@ PlayerSettings:
   switchSocketBufferEfficiency: 4
   switchSocketInitializeEnabled: 1
   switchNetworkInterfaceManagerInitializeEnabled: 1
-  switchPlayerConnectionEnabled: 1
   switchUseNewStyleFilepaths: 0
   switchUseLegacyFmodPriorities: 1
   switchUseMicroSleepForYield: 1

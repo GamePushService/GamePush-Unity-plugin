@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using GamePush;
 using Examples.Console;
-using System;
 
 namespace Examples.LeaderboardScoped
 {
@@ -24,6 +24,27 @@ namespace Examples.LeaderboardScoped
         [SerializeField] private Button _publishRecordButton;
         [SerializeField] private Button _fetchPlayerRatingButton;
         [SerializeField] private Button _fetchButton;
+        [Space(40)]
+        [SerializeField] private TMP_InputField _tagInput;
+        [SerializeField] private TMP_InputField _variantInput;
+        [Space]
+        [SerializeField] private TMP_Dropdown _orderDropdown;
+        [SerializeField] private TMP_Dropdown _withMeDropdown;
+        [Space]
+        [SerializeField] private TMP_InputField _limitInput;
+        [SerializeField] private TMP_InputField _nearestInput;
+        [Space]
+        [SerializeField] private TMP_InputField _includeInput;
+        [SerializeField] private TMP_InputField _displayInput;
+        [Space]
+        [SerializeField] private TMP_InputField _key1;
+        [SerializeField] private TMP_InputField _value1;
+        [Space]
+        [SerializeField] private TMP_InputField _key2;
+        [SerializeField] private TMP_InputField _value2;
+        [Space]
+        [SerializeField] private TMP_InputField _key3;
+        [SerializeField] private TMP_InputField _value3;
 
         private void OnEnable()
         {
@@ -66,10 +87,48 @@ namespace Examples.LeaderboardScoped
         }
 
 
-        public void Open() => GP_LeaderboardScoped.Open("BEST_PLAYER", "LEVELS", Order.DESC, 15);
-        public void PublishRecord() => GP_LeaderboardScoped.PublishRecord("BEST_PLAYER", "LEVELS", true, "level", 5);
-        public void FetchPlayerRating() => GP_LeaderboardScoped.FetchPlayerRating("BEST_PLAYER", "LEVELS");
-        public void Fetch() => GP_LeaderboardScoped.Fetch("BEST_PLAYER", "LEVELS", Order.DESC, 15);
+        public void Open() =>
+            GP_LeaderboardScoped.Open(
+                _tagInput.text,
+                _variantInput.text,
+                (Order)_orderDropdown.value,
+                int.Parse(_limitInput.text),
+                int.Parse(_nearestInput.text),
+                _includeInput.text,
+                _displayInput.text,
+                (WithMe)_withMeDropdown.value
+            );
+
+        public void Fetch() =>
+            GP_LeaderboardScoped.Fetch(
+                _tagInput.text,
+                _variantInput.text,
+                (Order)_orderDropdown.value,
+                int.Parse(_limitInput.text),
+                int.Parse(_nearestInput.text),
+                _includeInput.text,
+                (WithMe)_withMeDropdown.value
+           );
+
+        public void FetchPlayerRating() =>
+            GP_LeaderboardScoped.FetchPlayerRating(
+                _tagInput.text,
+                _variantInput.text,
+                _includeInput.text
+            );
+
+        public void PublishRecord() =>
+            GP_LeaderboardScoped.PublishRecord(
+                _tagInput.text,
+                _variantInput.text,
+                true,
+                _key1.text,
+                float.Parse(_value1.text),
+                _key2.text,
+                float.Parse(_value2.text),
+                _key3.text,
+                float.Parse(_value3.text)
+            );
 
 
 
@@ -79,8 +138,11 @@ namespace Examples.LeaderboardScoped
         private void OnPublishRecordComplete() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON PUBLISH RECORD: COMPLETE");
         private void OnPublishRecordError() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON PUBLISH RECORD: ERROR");
 
-        private void OnFetchPlayerRating(string fetchTag, int position) => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: " + fetchTag + ": PLAYER POSITION: " + position);
-        private void OnFetchPlayerRatingError() => ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON FETCH PLAYER RATING: ERROR");
+        private void OnFetchPlayerRating(string fetchTag, int position) =>
+            ConsoleUI.Instance.Log("LEADERBOARD SCOPED: " + fetchTag + ": PLAYER POSITION: " + position);
+
+        private void OnFetchPlayerRatingError() =>
+            ConsoleUI.Instance.Log("LEADERBOARD SCOPED: ON FETCH PLAYER RATING: ERROR");
 
         private void OnFetchSuccess(string fetchTag, GP_Data data)
         {

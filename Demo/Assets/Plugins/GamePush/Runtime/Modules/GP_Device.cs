@@ -18,9 +18,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "true";
 #else
+            bool isMobile = GP_Settings.instance.GetFromPlatformSettings().IsMobile;
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS MOBILE: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsMobile;
+                Console.Log("IS MOBILE: ", isMobile.ToString());
+            return isMobile;
 #endif
         }
         public static bool IsDesktop()
@@ -28,9 +29,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "false";
 #else
+            bool isDesktop = !GP_Settings.instance.GetFromPlatformSettings().IsMobile;
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS DESKTOP: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsDesktop;
+                Console.Log("IS DESKTOP: ", isDesktop.ToString());
+            return isDesktop;
 #endif
         }
 
@@ -41,9 +43,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
+            bool isPortrait = GP_Settings.instance.GetFromPlatformSettings().IsPortrait;
             if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS PORTRAIT: ", "?");
-            return true;
+                Console.Log("IS PORTRAIT: ", isPortrait.ToString());
+            return isPortrait;
 #endif
         }
     }

@@ -40,7 +40,7 @@ namespace GamePush
         public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, includeFields, displayFields, withMe.ToString());
+            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
 #else
             if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
                 Console.Log("LEADERBOARD SCOPED: ", "OPEN");
@@ -120,7 +120,7 @@ namespace GamePush
         private void CallLeaderboardScopedFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardScopedFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardScopedFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
-        private void CallLeaderboardScopedFetchPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardScopedFetchOnlyPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
 
 
 
@@ -132,7 +132,7 @@ namespace GamePush
         private void CallLeaderboardScopedFetchPlayerVariant(string lastVariant) => _leaderboardPlayerRatingFetchVariant = lastVariant;
 
 
-        private void CallLeaderboardScopedFetchPlayer(int playerPosition)
+        private void CallLeaderboardScopedFetchPlayerRating(int playerPosition)
         {
             OnFetchPlayerRating?.Invoke(_leaderboardPlayerRatingFetchTag, playerPosition);
             OnFetchPlayerRatingTagVariant?.Invoke(_leaderboardPlayerRatingFetchTag, _leaderboardPlayerRatingFetchVariant, playerPosition);

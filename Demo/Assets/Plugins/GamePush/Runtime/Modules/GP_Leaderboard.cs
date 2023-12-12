@@ -31,6 +31,7 @@ namespace GamePush
                 // DESC | ASC
                 string order = "DESC",
                 int limit = 10,
+                int showNearest = 5,
                 // none | first | last
                 string withMe = "none",
                 // level,exp,rank
@@ -38,10 +39,10 @@ namespace GamePush
                 // level,rank
                 string displayFields = ""
               );
-        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
+        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Open(orderBy, order.ToString(), limit, withMe.ToString(), includeFields, displayFields);
+            GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
 #else
             if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
                 Console.Log("LEADERBOARD: ", "OPEN");
@@ -101,7 +102,7 @@ namespace GamePush
         private void CallLeaderboardFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
-        private void CallLeaderboardFetchPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
+        private void CallLeaderboardFetchOnlyPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         
         
         private void CallLeaderboardFetchTag(string lastTag) => _leaderboardFetchTag = lastTag;
@@ -109,9 +110,9 @@ namespace GamePush
 
 
         private void CallLeaderboardFetchPlayerTag(string lastTag) => _leaderboardPlayerFetchTag = lastTag;
-
-        private void CallLeaderboardFetchPlayer(int playerPosition) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardPlayerFetchTag, playerPosition);
-
+        
+        private void CallLeaderboardFetchPlayerRating(int playerPosition) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardPlayerFetchTag, playerPosition);
+        
         private void CallLeaderboardFetchPlayerError() => OnFetchPlayerRatingError?.Invoke();
     }
 

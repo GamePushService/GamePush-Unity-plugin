@@ -529,10 +529,8 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                order,
-                limit,
-                showNearest,
-                withMe,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -541,6 +539,8 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .catch(console.warn);
     }
@@ -553,14 +553,14 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                order,
-                limit,
-                showNearest,
-                withMe,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .then((leaderboardInfo) => {
                 this.trigger('CallLeaderboardFetchTag', tag);
@@ -568,7 +568,7 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardFetchTop', JSON.stringify(leaderboardInfo.topPlayers));
                 this.trigger('CallLeaderboardFetchAbove', JSON.stringify(leaderboardInfo.abovePlayers));
                 this.trigger('CallLeaderboardFetchBelow', JSON.stringify(leaderboardInfo.belowPlayers));
-                this.trigger('CallLeaderboardFetchPlayer', JSON.stringify(leaderboardInfo.player));
+                this.trigger('CallLeaderboardFetchOnlyPlayer', JSON.stringify(leaderboardInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -588,7 +588,7 @@ export default class GamePushUnity {
             })
             .then((result) => {
                 this.trigger('CallLeaderboardFetchPlayerTag', tag);
-                this.trigger('CallLeaderboardFetchPlayer', result.player.position);
+                this.trigger('CallLeaderboardFetchPlayerRating', result.player.position);
             })
             .catch((err) => {
                 console.warn(err);
@@ -609,8 +609,7 @@ export default class GamePushUnity {
                 ...query,
                 variant,
                 order,
-                limit,
-                showNearest,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
@@ -619,25 +618,27 @@ export default class GamePushUnity {
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
-                withMe,
+                withMe: withMe,
+                showNearest: showNearest,
             })
             .catch(console.warn);
     }
 
-    LeaderboardScopedFetch(idOrTag, variant, order, limit, includeFields, withMe) {
+    LeaderboardScopedFetch(idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
         return this.gp.leaderboard
             .fetchScoped({
                 ...query,
-                variant,
-                order,
-                limit,
+                variant: variant,
+                order: order,
+                limit: limit,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
                 withMe,
+                showNearest: showNearest,
             })
             .then((leaderboardScopedInfo) => {
                 this.trigger('CallLeaderboardScopedFetchTag', idOrTag);
@@ -646,7 +647,7 @@ export default class GamePushUnity {
                 this.trigger('CallLeaderboardScopedFetchTop', JSON.stringify(leaderboardScopedInfo.topPlayers));
                 this.trigger('CallLeaderboardScopedFetchAbove', JSON.stringify(leaderboardScopedInfo.abovePlayers));
                 this.trigger('CallLeaderboardScopedFetchBelow', JSON.stringify(leaderboardScopedInfo.belowPlayers));
-                this.trigger('CallLeaderboardScopedFetchPlayer', JSON.stringify(leaderboardScopedInfo.player));
+                this.trigger('CallLeaderboardScopedFetchOnlyPlayer', JSON.stringify(leaderboardScopedInfo.player));
             })
             .catch((err) => {
                 console.warn(err);
@@ -692,7 +693,7 @@ export default class GamePushUnity {
             .then((result) => {
                 this.trigger('CallLeaderboardScopedFetchPlayerTag', idOrTag);
                 this.trigger('CallLeaderboardScopedFetchPlayerVariant', variant);
-                this.trigger('CallLeaderboardScopedFetchPlayer', result.player.position);
+                this.trigger('CallLeaderboardScopedFetchPlayerRating', result.player.position);
             })
             .catch((err) => {
                 console.warn(err);
@@ -822,8 +823,6 @@ export default class GamePushUnity {
                 this.trigger('CallPaymentsConsumeError');
             });
     }
-
-
     PaymentsIsAvailable() {
         return this.toUnity(this.gp.payments.isAvailable);
     }
@@ -992,6 +991,7 @@ export default class GamePushUnity {
     SocialsIsSupportsNativeCommunityJoin() {
         return this.toUnity(this.gp.socials.isSupportsNativeCommunityJoin);
     }
+    
     SocialsMakeShareLink(shareContent){
         return this.toUnity(this.gp.socials.makeShareUrl({
             fromId: this.gp.player.id,
@@ -1063,6 +1063,11 @@ export default class GamePushUnity {
     }
     GameplayStop() {
         return this.gp.gameplayStop();
+    }
+    
+    HappyTime(){
+        if(this.gp.platform.type == "CRAZY_GAMES")
+            this.gp.platform.getNativeSDK().game.happytime();  
     }
 
 

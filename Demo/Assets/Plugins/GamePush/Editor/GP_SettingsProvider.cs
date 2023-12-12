@@ -10,20 +10,21 @@ namespace Plugins.GamePush.Editor
 
         public override void OnGUI(string search)
         {
-            var settings = GP_Settings.instance;
+            var settings = GP_SettingsWrap.instance.settings;
             var viewLogs = settings.viewLogs;
             var platformSettings = settings.platformSettings;
             var paymentsStub = settings.paymentsStub;
             EditorGUI.BeginChangeCheck();
             viewLogs = EditorGUILayout.Toggle("View logs", viewLogs);
-            platformSettings = (GP_PlatformSettings)EditorGUILayout.ObjectField("Platform settings", platformSettings, typeof(GP_PlatformSettings));
-            paymentsStub = (GP_PaymentsStub)EditorGUILayout.ObjectField("Payments stub", paymentsStub, typeof(GP_PaymentsStub));
+            platformSettings = (GP_PlatformSettings)EditorGUILayout.ObjectField("Platform settings", platformSettings, typeof(GP_PlatformSettings), false);
+            paymentsStub = (GP_PaymentsStub)EditorGUILayout.ObjectField("Payments stub", paymentsStub, typeof(GP_PaymentsStub), false);
             if (EditorGUI.EndChangeCheck())
             {
                 settings.viewLogs = viewLogs;
                 settings.platformSettings = platformSettings;
                 settings.paymentsStub = paymentsStub;
-                settings.Save();
+                GP_SettingsWrap.instance.settings = settings;
+                GP_SettingsWrap.instance.Save();
             }
         }
 
