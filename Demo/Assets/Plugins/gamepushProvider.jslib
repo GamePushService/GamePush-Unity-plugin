@@ -719,14 +719,14 @@ mergeInto(LibraryManager.library, {
         GamePush.CustomCall(custom);
     },
     GP_CustomCall3: function(custom){
-        var value = GamePush.CustomCall(custom);
+        var value = GamePush.CustomCall(UTF8ToString(custom));
         var bufferSize = lengthBytesUTF8(value) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
     GP_CustomCall4: function(custom){
-        return GamePush.CustomCall(custom);
+        return GamePush.CustomCall(UTF8ToString(custom));
     },
     /*CUSTOM*/
 

@@ -1109,7 +1109,8 @@ export default class GamePushUnity {
     }
 
     CustomReturn(custom) {
-        return this.toUnity(this.custom)
+        let call = "this." + custom
+        return this.toUnity(eval(call))
     }
     //Custom
 
