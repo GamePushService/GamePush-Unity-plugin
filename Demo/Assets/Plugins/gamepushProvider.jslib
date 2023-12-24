@@ -718,6 +718,16 @@ mergeInto(LibraryManager.library, {
     GP_CustomCall2: function(custom){
         GamePush.CustomCall(custom);
     },
+    GP_CustomCall3: function(custom){
+        var value = GamePush.CustomCall(custom);
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    GP_CustomCall4: function(custom){
+        return GamePush.CustomCall(custom);
+    },
     /*CUSTOM*/
 
     /*VARIABLES*/
@@ -818,7 +828,6 @@ mergeInto(LibraryManager.library, {
     /* FILES */
 
 
-
     /* CHANNELS */
     GP_Channels_Open: function (channel_ID) {
         GamePush.Channels_Open_Chat(channel_ID);
@@ -834,7 +843,6 @@ mergeInto(LibraryManager.library, {
     GP_Channels_MainChatId: function () {
         return GamePush.Channels_MainChatId();
     },
-
 
     GP_Channels_Join: function (channel_ID, password) {
         GamePush.Channels_Join(channel_ID, UTF8ToString(password));
