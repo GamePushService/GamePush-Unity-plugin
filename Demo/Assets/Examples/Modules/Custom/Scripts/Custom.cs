@@ -10,33 +10,29 @@ namespace Examples.Custom
 {
     public class Custom : MonoBehaviour
     {
-        public TMP_InputField inputField;
+        public TMP_InputField nameInputField;
+        public TMP_InputField argsInputField;
 
-        public void CustomCall1()
+        public void CustomCall()
         {
-            GP_Custom.CustomCall1(inputField.text);
-            ConsoleUI.Instance.Log("Custom call1");
+            Debug.Log(nameInputField.text + " , " + argsInputField.text);
+            GP_Custom.CustomCall(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
+            ConsoleUI.Instance.Log("Custom call");
         }
 
-        public void CustomCall2()
+        public void CustomReturn()
         {
-            GP_Custom.CustomCall2(inputField.text);
-            ConsoleUI.Instance.Log("Custom call2");
-        }
-
-        public void CustomCall3()
-        {
-            var result = GP_Custom.CustomCall3(inputField.text);
-            if(result != null)
-                ConsoleUI.Instance.Log("Custom call3 " + result.ToString());
-        }
-
-        public void CustomCall4()
-        {
-            var result = GP_Custom.CustomCall4(inputField.text);
+            Debug.Log(nameInputField.text + " , " + argsInputField.text);
+            var result = GP_Custom.CustomReturn(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
             if (result != null)
-                ConsoleUI.Instance.Log("Custom call4 " + result.ToString());
+                ConsoleUI.Instance.Log("Custom return " + result.ToString());
         }
+
+        public void CustomValue()
+        {
+
+        }
+
     }
 }
 

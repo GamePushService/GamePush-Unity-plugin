@@ -5,51 +5,31 @@ namespace GamePush
 {
     public class GP_Custom : MonoBehaviour
     {
+
         [DllImport("__Internal")]
-        private static extern void GP_CustomCall1(string call);
-        public static void CustomCall1(string call)
+        private static extern void GP_CustomCall(string call, string args);
+        public static void CustomCall(string call, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-             GP_CustomCall1(call);
+             GP_CustomCall(call, args);
 #else
-             Console.Log("CUSTOM CALL1: ", "Test");
+            Console.Log("CUSTOM Call: ", "Test");
 #endif
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_CustomCall2(string call);
-        public static void CustomCall2(string call)
+        private static extern string GP_CustomReturn(string call, string args);
+        public static string CustomReturn(string call, string args)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-             GP_CustomCall2(call);
+            return GP_CustomReturn(call, args);
 #else
-            Console.Log("CUSTOM CALL2: ", "Test");
-#endif
-        }
-
-        [DllImport("__Internal")]
-        private static extern string GP_CustomCall3(string call);
-        public static string CustomCall3(string call)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_CustomCall3(call);
-#else
-            Console.Log("CUSTOM CALL3: ", "Test");
+            Console.Log("CUSTOM Return: ", "Test");
             return null;
 #endif
         }
 
-        [DllImport("__Internal")]
-        private static extern string GP_CustomCall4(string call);
-        public static string CustomCall4(string call)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_CustomCall4(call);
-#else
-            Console.Log("CUSTOM CALL4: ", "Test");
-            return null;
-#endif
-        }
+
 
 
     }

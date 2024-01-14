@@ -1102,18 +1102,6 @@ export default class GamePushUnity {
     }
     // System
 
-    //Custom
-    CustomCall(custom) {
-        let call = "this." + custom
-        return eval(call);
-    }
-
-    CustomReturn(custom) {
-        let call = "this." + custom
-        return this.toUnity(eval(call))
-    }
-    //Custom
-
     // Variables
     VariablesFetch() {
         return this.gp.variables
@@ -1575,6 +1563,34 @@ export default class GamePushUnity {
     }
 
     // Channels
+
+    //Custom
+    CustomCall(name, args) {
+        console.log("args: " + args);
+        var args = Array.prototype.slice.call(arguments, 2);
+        let callFunc = "GamePush." + name;
+        window.executeFunctionByName(callFunc, window, args);
+    }
+
+    CustomReturn(name){
+        CustomReturn(name, null);
+    }
+
+    CustomReturn(name, args) {
+        console.log("args: " + args);
+        let callFunc = "GamePush." + name; 
+        if(args == null)
+            return window.executeFunctionByName(callFunc, window);
+        else
+            return window.executeFunctionByName(callFunc, window, args);
+    }
+
+    CustomCallAsync(name, args) {
+        get(window, name)(args)
+          .then((result) => unity.CallMethod('OnCallAsyncMethod', name, result))
+          .catch((err) => unity.CallMethod('OnErrorCallAsyncMethod', name, err));
+    }
+    //Custom
 }
 
 function mapChannel(channel = {}) {
@@ -1589,6 +1605,28 @@ function mapItemWithChannel(item = {}) {
         ...item,
         channel: mapChannel(item.channel)
     };
+}
+
+
+window.executeFunctionByName = function(functionName, context /*, args*/) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+
+    return context[func].apply(context, args);
+}
+
+window.returnValueByName = function(functionName, context) {
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+
+    return context[func];
 }
 
 window.GamePushUnity = GamePushUnity;
