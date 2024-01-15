@@ -1567,19 +1567,33 @@ export default class GamePushUnity {
     //Custom
     CustomCall(name, args) {
         //console.log("args: " + args);
-        var args = Array.prototype.slice.call(arguments, 2);
         let callFunc = "GamePush." + name;
-        window.executeFunctionByName(callFunc, window, args);
+
+        if(args == null)
+            window.executeFunctionByName(callFunc, window);
+        else{
+            let argArray = args.replace(/\s/g, '').split(',');
+            console.log(argArray);
+
+            window.executeFunctionByName(callFunc, window, ...argArray);
+        }
     }
 
     CustomReturn(name, args) {
         //console.log("args: " + args);
         let callFunc = "GamePush." + name;
+        
         let value; 
         if(args == null)
             value = this.toUnity(window.executeFunctionByName(callFunc, window));
-        else
-            value = this.toUnity(window.executeFunctionByName(callFunc, window, args));
+        else{
+            args = args.replace(/\s/g, '');
+            let argArray = args.split(',');
+            console.log(argArray);
+
+            value = this.toUnity(window.executeFunctionByName(callFunc, window, ...argArray));
+        }
+            
         
         //console.log("val: " + value);
         if(typeof (value) == "number")
