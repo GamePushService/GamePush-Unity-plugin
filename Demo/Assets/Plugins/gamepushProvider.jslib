@@ -716,8 +716,17 @@ mergeInto(LibraryManager.library, {
         GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));
     },
 
-    GP_CustomReturn: function(custom, args){
+    GP_CustomReturn: function(name, args){
         var value = GamePush.CustomReturn(UTF8ToString(name), UTF8ToString(args));
+        console.log("lib_val: " + value);
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_CustomGetValue: function(name){
+        var value = GamePush.CustomGetValue(UTF8ToString(name));
         var bufferSize = lengthBytesUTF8(value) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);
