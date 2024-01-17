@@ -1566,48 +1566,70 @@ export default class GamePushUnity {
 
     //Custom
     CustomCall(name, args) {
-        //console.log("args: " + args);
         let callFunc = "GamePush." + name;
 
         if(args == null)
             window.executeFunctionByName(callFunc, window);
         else{
             let argArray = args.replace(/\s/g, '').split(',');
-            console.log(argArray);
 
             window.executeFunctionByName(callFunc, window, ...argArray);
         }
     }
 
     CustomReturn(name, args) {
-        //console.log("args: " + args);
         let callFunc = "GamePush." + name;
-        
+
         let value; 
         if(args == null)
-            value = this.toUnity(window.executeFunctionByName(callFunc, window));
+            value = window.executeFunctionByName(callFunc, window);
         else{
             args = args.replace(/\s/g, '');
             let argArray = args.split(',');
-            console.log(argArray);
 
-            value = this.toUnity(window.executeFunctionByName(callFunc, window, ...argArray));
+            value = window.executeFunctionByName(callFunc, window, ...argArray);
         }
-            
         
-        //console.log("val: " + value);
-        if(typeof (value) == "number")
-            value = String(value);
+        switch (typeof (value)) {
+            case 'boolean':{
+                value = String(value);
+            }
+            case 'number': {
+                value = String(value);
+            }
+            case 'object': {
+                return JSON.stringify(value);
+            }
+            case 'undefined':{
+                value = "undefined";
+            }
+        }
 
         return value;
     }
 
-    CustomGetValue(name){
+    CustomGetValue(name){ 
         let valueName = "GamePush." + name;
-        let value =  this.toUnity(window.returnValueByName(valueName, window));
 
-        if(typeof (value) == "number")
-            value = String(value);
+        let value = window.returnValueByName(valueName, window);
+
+        switch (typeof (value)) {
+            case 'boolean':{
+                value = String(value);
+            }
+            case 'number': {
+                value = String(value);
+            }
+            case 'object': {
+                return JSON.stringify(value);
+            }
+            case 'undefined':{
+                value = "undefined";
+            }
+            case 'function':{
+                value = "value is a function";
+            }
+        }
 
         return value;
     }
@@ -1637,13 +1659,30 @@ function mapItemWithChannel(item = {}) {
 
 window.executeFunctionByName = function(functionName, context /*, args*/) {
     var args = Array.prototype.slice.call(arguments, 2);
+    args = args.map(element => {
+        try{
+            console.log("try parse " + element);
+            return JSON.parse(element);
+        }
+        catch(error){
+            console.log("catch " + error);
+            return element
+        }
+    });
+    console.log(args);
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
+
     for(var i = 0; i < namespaces.length; i++) {
       context = context[namespaces[i]];
     }
+    try {
+        var execute = context[func].apply(context, args);
+    } catch (error) {
+        return null;
+    }
 
-    return context[func].apply(context, args);
+    return execute;
 }
 
 window.returnValueByName = function(functionName, context) {
@@ -1653,7 +1692,13 @@ window.returnValueByName = function(functionName, context) {
       context = context[namespaces[i]];
     }
 
-    return context[func];
+    try {
+        var value = context[func];
+    } catch (error) {
+        return error;
+    }
+    
+    return value;
 }
 
 window.GamePushUnity = GamePushUnity;

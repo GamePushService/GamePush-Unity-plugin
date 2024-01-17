@@ -15,22 +15,22 @@ namespace Examples.Custom
 
         public void CustomCall()
         {
-            GP_Custom.SimpleCall(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
-            ConsoleUI.Instance.Log("Custom call");
+            GP_Custom.Call(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
+            ConsoleUI.Instance.Log("Custom call " + nameInputField.text);
         }
 
         public void CustomReturn()
         {
-            string result = GP_Custom.GetReturn(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
+            string result = GP_Custom.Return(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text);
             if (result != null)
-                ConsoleUI.Instance.Log("Custom return " + result.ToString());
+                ConsoleUI.Instance.Log("Custom return: " + result.ToString());
         }
 
         public void CustomValue()
         {
-            string result = GP_Custom.GetValue(nameInputField.text);
+            string result = GP_Custom.Value(nameInputField.text);
             if (result != null)
-                ConsoleUI.Instance.Log("Custom value " + result.ToString());
+                ConsoleUI.Instance.Log("Custom value: " + result.ToString());
         }
 
     }

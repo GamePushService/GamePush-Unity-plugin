@@ -8,7 +8,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_CustomCall(string name, string args);
-        public static void SimpleCall(string name, string args = null)
+        public static void Call(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_CustomCall(name, args);
@@ -19,11 +19,10 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_CustomReturn(string name, string args);
-        public static string GetReturn(string name, string args = null)
+        public static string Return(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string result = GP_CustomReturn(name, args);
-            //Debug.Log("res: " + result.ToString());
             return result;
 #else
             Console.Log("CUSTOM Return: ", "Test");
@@ -34,7 +33,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_CustomGetValue(string path);
-        public static string GetValue(string path)
+        public static string Value(string path)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_CustomGetValue(path);
