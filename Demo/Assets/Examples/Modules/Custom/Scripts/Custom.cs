@@ -33,6 +33,22 @@ namespace Examples.Custom
                 ConsoleUI.Instance.Log("Custom value: " + result.ToString());
         }
 
+        public void CustomAsyncReturn()
+        {
+            GP_Custom.AsyncReturn(nameInputField.text, argsInputField.text == "" ? null : argsInputField.text, OnAsyncReturn, OnAsyncError);
+            ConsoleUI.Instance.Log("Custom async send");
+        }
+
+        public void OnAsyncReturn(string result)
+        {
+            ConsoleUI.Instance.Log("Custom async return: " + result);
+        }
+
+        public void OnAsyncError(string result)
+        {
+            ConsoleUI.Instance.Log("Custom async error: " + result);
+        }
+
     }
 }
 

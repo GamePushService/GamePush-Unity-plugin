@@ -982,6 +982,10 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
+
+    GP_CustomAsyncReturn: function(name, args){
+        GamePush.CustomAsyncReturn(UTF8ToString(name), UTF8ToString(args));
+    },
     
     /*CUSTOM*/
 

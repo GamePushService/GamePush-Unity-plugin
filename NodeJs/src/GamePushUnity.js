@@ -1589,57 +1589,64 @@ export default class GamePushUnity {
 
             value = window.executeFunctionByName(callFunc, window, ...argArray);
         }
-        
-        switch (typeof (value)) {
-            case 'boolean':{
-                value = String(value);
-            }
-            case 'number': {
-                value = String(value);
-            }
-            case 'object': {
-                return JSON.stringify(value);
-            }
-            case 'undefined':{
-                value = "undefined";
-            }
-        }
-
-        return value;
+       
+        return formatCustomValue(value);
     }
 
     CustomGetValue(name){ 
         let valueName = "GamePush." + name;
-
         let value = window.returnValueByName(valueName, window);
 
-        switch (typeof (value)) {
-            case 'boolean':{
-                value = String(value);
-            }
-            case 'number': {
-                value = String(value);
-            }
-            case 'object': {
-                return JSON.stringify(value);
-            }
-            case 'undefined':{
-                value = "undefined";
-            }
-            case 'function':{
-                value = "value is a function";
-            }
-        }
-
-        return value;
+        return formatCustomValue(value);
     }
 
-    CustomCallAsync(name, args) {
-        get(window, name)(args)
-          .then((result) => unity.CallMethod('OnCallAsyncMethod', name, result))
-          .catch((err) => unity.CallMethod('OnErrorCallAsyncMethod', name, err));
+    CustomAsyncReturn(name, args) {
+        let callFunc = "GamePush." + name;
+
+        if(args == null){
+            window.executeFunctionByName(callFunc, window)
+            .then((result) => {
+                this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
+            })
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallCustomAsyncError', err);
+            });
+        }
+        else{
+            let argArray = args.replace(/\s/g, '').split(',');
+
+            window.executeFunctionByName(callFunc, window, ...argArray)
+            .then((result) => {
+                this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
+            })
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallCustomAsyncError', err);
+            });;
+        }
     }
     //Custom
+}
+
+function formatCustomValue(value){
+    switch (typeof (value)) {
+        case 'boolean':{
+            return String(value);
+        }
+        case 'number': {
+            return String(value);
+        }
+        case 'object': {
+            return JSON.stringify(value);
+        }
+        case 'undefined':{
+            return "undefined";
+        }
+        case 'function':{
+            return "value is a function";
+        }
+    }
 }
 
 function mapChannel(channel = {}) {
@@ -1661,15 +1668,15 @@ window.executeFunctionByName = function(functionName, context /*, args*/) {
     var args = Array.prototype.slice.call(arguments, 2);
     args = args.map(element => {
         try{
-            console.log("try parse " + element);
+            //console.log("try parse " + element);
             return JSON.parse(element);
         }
         catch(error){
-            console.log("catch " + error);
+            //console.log("catch " + error);
             return element
         }
     });
-    console.log(args);
+    //console.log(args);
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
 
