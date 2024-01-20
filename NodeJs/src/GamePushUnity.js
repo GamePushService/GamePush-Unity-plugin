@@ -1603,28 +1603,21 @@ export default class GamePushUnity {
     CustomAsyncReturn(name, args) {
         let callFunc = "GamePush." + name;
 
-        if(args == null){
-            window.executeFunctionByName(callFunc, window)
-            .then((result) => {
-                this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
-            })
-            .catch((err) => {
-                console.warn(err);
-                this.trigger('CallCustomAsyncError', err);
-            });
-        }
-        else{
-            let argArray = args.replace(/\s/g, '').split(',');
+        if(args != null) args = args.replace(/\s/g, '').split(',');
 
-            window.executeFunctionByName(callFunc, window, ...argArray)
-            .then((result) => {
-                this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
-            })
-            .catch((err) => {
-                console.warn(err);
-                this.trigger('CallCustomAsyncError', err);
-            });;
+        try {
+        window.executeFunctionByName(callFunc, window, ...args)
+        .then((result) => {
+            this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
+        })
+        .catch((err) => {
+            console.warn(err);
+            this.trigger('CallCustomAsyncError', err);
+        });
+        } catch (error) {
+            console.warn(error);
         }
+        
     }
     //Custom
 }
@@ -1647,6 +1640,7 @@ function formatCustomValue(value){
             return "value is a function";
         }
     }
+    return value;
 }
 
 function mapChannel(channel = {}) {
@@ -1686,6 +1680,7 @@ window.executeFunctionByName = function(functionName, context /*, args*/) {
     try {
         var execute = context[func].apply(context, args);
     } catch (error) {
+        console.warn(error);
         return null;
     }
 
@@ -1702,9 +1697,10 @@ window.returnValueByName = function(functionName, context) {
     try {
         var value = context[func];
     } catch (error) {
+        console.warn(error);
         return error;
     }
-    
+    console.log(value);
     return value;
 }
 
