@@ -36,7 +36,17 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Leaderboard_Scoped_Open(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", string withMe = "none");
+        private static extern void GP_Leaderboard_Scoped_Open(
+            string idOrTag = "",
+            string variant = "",
+            string order = "DESC",
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "",
+            string displayFields = "",
+            string withMe = "none"
+        );
+
         public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -50,7 +60,16 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Leaderboard_Scoped_Fetch(string idOrTag = "", string variant = "", string order = "DESC", int limit = 10, int showNearest = 5, string includeFields = "", string withMe = "none");
+        private static extern void GP_Leaderboard_Scoped_Fetch(
+            string idOrTag = "",
+            string variant = "",
+            string order = "DESC",
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "",
+            string withMe = "none"
+        );
+
         public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -64,7 +83,18 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Leaderboard_Scoped_PublishRecord(string idOrTag = "", string variant = "", bool Override = true, string key1 = "", float value1 = 0, string key2 = "", float value2 = 0, string key3 = "", float value3 = 0);
+        private static extern void GP_Leaderboard_Scoped_PublishRecord(
+            string idOrTag = "",
+            string variant = "",
+            bool Override = true,
+            string key1 = "",
+            float value1 = 0,
+            string key2 = "",
+            float value2 = 0,
+            string key3 = "",
+            float value3 = 0
+        );
+
         public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, string key1 = "", int record_value1 = 0, string key2 = "", int record_value2 = 0, string key3 = "", int record_value3 = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

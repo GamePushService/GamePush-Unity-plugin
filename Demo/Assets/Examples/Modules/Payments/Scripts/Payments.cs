@@ -48,7 +48,6 @@ namespace Examples.Payments
         public void Fetch() => GP_Payments.Fetch();
 
 
-
         private void OnPurchaseSuccess(string productIdOrTag) => ConsoleUI.Instance.Log("PURCHASE: SUCCESS: " + productIdOrTag);
         private void OnPurchaseError() => ConsoleUI.Instance.Log("PURCHASE: ERROR");
 

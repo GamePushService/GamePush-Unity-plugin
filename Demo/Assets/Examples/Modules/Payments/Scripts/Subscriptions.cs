@@ -31,7 +31,6 @@ namespace Examples.Payments.Subscriptions
         public void Subscribe() => GP_Payments.Subscribe("VIP", OnSubscribeSuccess, OnSubscribeError);
         public void Unsubscribe() => GP_Payments.Unsubscribe("VIP", OnUnsubscribeSuccess, OnUnsubscribeError);
 
-
         private void OnSubscribeSuccess(string idOrTag) => ConsoleUI.Instance.Log("SUBSCRIBE: SUCCESS: " + idOrTag);
         private void OnSubscribeError() => ConsoleUI.Instance.Log("SUBSCRIBE: ERROR");
 
