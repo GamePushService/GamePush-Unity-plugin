@@ -711,15 +711,6 @@ mergeInto(LibraryManager.library, {
     },
     /*SYSTEM*/
 
-    /*CUSTOM*/
-    GP_CustomCall1: function(custom){
-        GamePush.CustomCall(UTF8ToString(custom));
-    },
-    GP_CustomCall2: function(custom){
-        GamePush.CustomCall(custom);
-    },
-    /*CUSTOM*/
-
     /*VARIABLES*/
     GP_Variables_Fetch: function () {
         GamePush.VariablesFetch();
@@ -818,7 +809,6 @@ mergeInto(LibraryManager.library, {
     /* FILES */
 
 
-
     /* CHANNELS */
     GP_Channels_Open: function (channel_ID) {
         GamePush.Channels_Open_Chat(channel_ID);
@@ -834,7 +824,6 @@ mergeInto(LibraryManager.library, {
     GP_Channels_MainChatId: function () {
         return GamePush.Channels_MainChatId();
     },
-
 
     GP_Channels_Join: function (channel_ID, password) {
         GamePush.Channels_Join(channel_ID, UTF8ToString(password));
@@ -972,5 +961,32 @@ mergeInto(LibraryManager.library, {
     },
 
     /* CHANNELS */
+
+    /*CUSTOM*/
+    GP_CustomCall: function(name, args){
+        GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));
+    },
+
+    GP_CustomReturn: function(name, args){
+        var value = GamePush.CustomReturn(UTF8ToString(name), UTF8ToString(args));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_CustomGetValue: function(name){
+        var value = GamePush.CustomGetValue(UTF8ToString(name));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_CustomAsyncReturn: function(name, args){
+        GamePush.CustomAsyncReturn(UTF8ToString(name), UTF8ToString(args));
+    },
+    
+    /*CUSTOM*/
 
 });

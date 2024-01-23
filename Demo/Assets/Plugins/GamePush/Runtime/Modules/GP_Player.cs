@@ -474,7 +474,7 @@ namespace GamePush
             return GP_Player_Has(key) == "true";
 #else
             if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: HAS: ", "KEY: " + key + " -> TRUE");
+                Console.Log("PLAYER: ", "KEY: " + key + " -> EMPTY");
             return true;
 #endif
         }

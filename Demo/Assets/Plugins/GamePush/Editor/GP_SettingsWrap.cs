@@ -16,5 +16,10 @@ namespace Plugins.GamePush.Editor
         {
             GP_Settings.instance = settings;
         }
+
+        private void OnValidate()
+        {
+            GP_Settings.instance = settings;
+        }
     }
 }

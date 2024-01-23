@@ -6,7 +6,12 @@ namespace Examples.Languages
 {
     public class Languages : MonoBehaviour
     {
-        public void Current() => GP_Language.Current();
+        private void Start()
+        {
+            Debug.Log("Language: " + Current());
+        }
+
+        public string Current() => GP_Language.Current().ToString();
 
         public void Change() => GP_Language.Change(Language.English, OnChange);
 

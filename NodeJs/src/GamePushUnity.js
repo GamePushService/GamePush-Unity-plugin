@@ -1102,17 +1102,6 @@ export default class GamePushUnity {
     }
     // System
 
-    //Custom
-    CustomCall(custom) {
-        return this.custom;
-    }
-
-    CustomReturn(custom) {
-        return this.toUnity(this.custom)
-    }
-
-    //Custom
-
     // Variables
     VariablesFetch() {
         return this.gp.variables
@@ -1574,6 +1563,84 @@ export default class GamePushUnity {
     }
 
     // Channels
+
+    //Custom
+    CustomCall(name, args) {
+        let callFunc = "GamePush." + name;
+
+        if(args == null)
+            window.executeFunctionByName(callFunc, window);
+        else{
+            let argArray = args.replace(/\s/g, '').split(',');
+
+            window.executeFunctionByName(callFunc, window, ...argArray);
+        }
+    }
+
+    CustomReturn(name, args) {
+        let callFunc = "GamePush." + name;
+
+        let value; 
+        if(args == null)
+            value = window.executeFunctionByName(callFunc, window);
+        else{
+            args = args.replace(/\s/g, '');
+            let argArray = args.split(',');
+
+            value = window.executeFunctionByName(callFunc, window, ...argArray);
+        }
+       
+        return formatCustomValue(value);
+    }
+
+    CustomGetValue(name){ 
+        let valueName = "GamePush." + name;
+        let value = window.returnValueByName(valueName, window);
+
+        return formatCustomValue(value);
+    }
+
+    CustomAsyncReturn(name, args) {
+        let callFunc = "GamePush." + name;
+
+        if(args != null) args = args.replace(/\s/g, '').split(',');
+
+        try {
+        window.executeFunctionByName(callFunc, window, ...args)
+        .then((result) => {
+            this.trigger('CallCustomAsyncReturn', formatCustomValue(result));
+        })
+        .catch((err) => {
+            console.warn(err);
+            this.trigger('CallCustomAsyncError', err);
+        });
+        } catch (error) {
+            console.warn(error);
+        }
+        
+    }
+    //Custom
+}
+
+function formatCustomValue(value){
+    switch (typeof (value)) {
+        case 'boolean':{
+            return String(value);
+        }
+        case 'number': {
+            return String(value);
+        }
+        case 'object': {
+            return JSON.stringify(value);
+        }
+        case 'undefined':{
+            return "undefined";
+        }
+        case 'function':{
+            return "value is a function";
+        }
+    }
+    return value;
 }
 
 function mapChannel(channel = {}) {
@@ -1588,6 +1655,53 @@ function mapItemWithChannel(item = {}) {
         ...item,
         channel: mapChannel(item.channel)
     };
+}
+
+
+window.executeFunctionByName = function(functionName, context /*, args*/) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    args = args.map(element => {
+        try{
+            //console.log("try parse " + element);
+            return JSON.parse(element);
+        }
+        catch(error){
+            //console.log("catch " + error);
+            return element
+        }
+    });
+    //console.log(args);
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+    try {
+        var execute = context[func].apply(context, args);
+    } catch (error) {
+        console.warn(error);
+        return null;
+    }
+
+    return execute;
+}
+
+window.returnValueByName = function(functionName, context) {
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+
+    try {
+        var value = context[func];
+    } catch (error) {
+        console.warn(error);
+        return error;
+    }
+    console.log(value);
+    return value;
 }
 
 window.GamePushUnity = GamePushUnity;

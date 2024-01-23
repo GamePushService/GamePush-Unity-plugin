@@ -39,6 +39,7 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Socials>();
             SDK.AddComponent<GP_System>();
             SDK.AddComponent<GP_Variables>();
+            SDK.AddComponent<GP_Custom>();
         }
     }
 }

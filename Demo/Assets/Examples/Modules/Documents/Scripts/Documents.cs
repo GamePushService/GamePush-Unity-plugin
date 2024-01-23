@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using GamePush;
 using Examples.Console;
 
-namespace Documents
+namespace Examples.Documents
 {
     public class Documents : MonoBehaviour
     {
