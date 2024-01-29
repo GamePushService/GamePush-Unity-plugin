@@ -39,12 +39,12 @@ namespace Examples.Custom
             ConsoleUI.Instance.Log("Custom async send");
         }
 
-        public void OnAsyncReturn(string result)
+        private void OnAsyncReturn(string result)
         {
             ConsoleUI.Instance.Log("Custom async return: " + result);
         }
 
-        public void OnAsyncError(string result)
+        private void OnAsyncError(string result)
         {
             ConsoleUI.Instance.Log("Custom async error: " + result);
         }
