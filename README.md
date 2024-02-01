@@ -6,7 +6,7 @@ Original creator of Unity plugin - [Dinar Shagidullin](https://gitlab.com/shagid
 
 ## Download
 Latest version of GamePush plugin:  
-[GamePush v1.2.3](https://github.com/GamePushService/GamePush-Unity-plugin/blob/gp-1.2.3/Releases/GamePush/GamePush%20v1.2.3.unitypackage)
+[GamePush v1.2.4](https://github.com/GamePushService/GamePush-Unity-plugin/tree/main/Releases/GamePush)
 
 
 Examples for GamePush plugin modules:  
