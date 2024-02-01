@@ -98,18 +98,36 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
+        private static extern string GP_App_IsAlreadyReviewed();
+        public static bool IsAlreadyReviewed()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_App_IsAlreadyReviewed() == "true";
+#else
+            bool result = GP_Settings.instance.GetPlatformSettings().IsAlreadyReviewed;
+            if (GP_ConsoleController.Instance.AppConsoleLogs)
+                Console.Log("APP: IsAlreadyReviewed: ", result.ToString());
+            
+            return result;
+#endif
+        }
+
+        [DllImport("__Internal")]
         private static extern string GP_App_CanReview();
         public static bool CanReview()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanReview() == "true";
 #else
+            bool result = GP_Settings.instance.GetPlatformSettings().CanReview;
             if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: CanReview: ", "TRUE");
-            
-            return GP_Settings.instance.GetPlatformSettings().CanReview;
+                Console.Log("APP: CanReview: ", result.ToString());
+
+            return result;
 #endif
         }
+
+
 
         [DllImport("__Internal")]
         private static extern string GP_App_AddShortcut();
