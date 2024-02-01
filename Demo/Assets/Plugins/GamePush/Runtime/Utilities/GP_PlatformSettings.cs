@@ -26,6 +26,7 @@ namespace GamePush
         public bool IsAdblockEnabled;
         [Header("Review")]
         public bool CanReview;
+        public bool IsAlreadyReviewed;
     }
     
     [CreateAssetMenu(fileName = "GP_PlatformSettings", menuName = "GP_Settings/GP_PlatformSettings")]

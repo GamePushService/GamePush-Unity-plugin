@@ -17,6 +17,8 @@ namespace GamePush
         private static string GAMEPIX = "GAMEPIX";
         private static string POKI = "POKI";
         private static string VK_PLAY = "VK_PLAY";
+        private static string WG_PLAYGROUND = "WG_PLAYGROUND";
+        private static string KONGREGATE = "KONGREGATE";
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_Type();
@@ -29,6 +31,18 @@ namespace GamePush
             if (GP_ConsoleController.Instance.PlatformConsoleLogs)
                 Console.Log("PLATFORM: TYPE: ", platform.ToString());
             return platform;
+#endif
+        }
+
+        public static string TypeAsString()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_Type();
+#else
+            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
+            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
+                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+            return platform.ToString();
 #endif
         }
 
@@ -94,6 +108,12 @@ namespace GamePush
             if (platform == VK_PLAY)
                 return Platform.VK_PLAY;
 
+            if (platform == WG_PLAYGROUND)
+                return Platform.WG_PLAYGROUND;
+
+            if (platform == KONGREGATE)
+                return Platform.KONGREGATE;
+
             return Platform.None;
         }
 
@@ -101,17 +121,19 @@ namespace GamePush
 
     public enum Platform : byte
     {
-        YANDEX = 0,
-        VK = 1,
-        CRAZY_GAMES = 2,
-        GAME_DISTRIBUTION = 3,
-        GAME_MONETIZE = 4,
-        OK = 5,
-        SMARTMARKET = 6,
-        GAMEPIX = 7,
-        POKI = 8,
-        VK_PLAY = 9,
-        None = 10,
+        None = 0,
+        YANDEX = 1,
+        VK = 2,
+        CRAZY_GAMES = 3,
+        GAME_DISTRIBUTION = 4,
+        GAME_MONETIZE = 5,
+        OK = 6,
+        SMARTMARKET = 7,
+        GAMEPIX = 8,
+        POKI = 9,
+        VK_PLAY = 10,
+        WG_PLAYGROUND = 11,
+        KONGREGATE = 12
     }
 }
 
