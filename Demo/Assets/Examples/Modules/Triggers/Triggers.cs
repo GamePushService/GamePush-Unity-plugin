@@ -14,7 +14,9 @@ namespace Examples.Triggers
 
         public void Claim()
         {
-            GP_Triggers.Claim(_triggerTagOrId.text);
+            TriggerData trigger = GP_Triggers.Claim(_triggerTagOrId.text);
+
+            ConsoleUI.Instance.Log(trigger.ToString());
         }
     }
 }
