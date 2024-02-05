@@ -297,16 +297,25 @@ export default class GamePushUnity {
         this.gp.channels.on('event:editMessage', (message) => { this.trigger('CallOnEditMessageEvent', JSON.stringify(message)); });
         this.gp.channels.on('error:editMessage', (err) => this.trigger('CallOnEditMessageError'));
 
-
         this.gp.channels.on('deleteMessage', () => this.trigger('CallOnDeleteMessageSuccess'));
         this.gp.channels.on('event:deleteMessage', (message) => { this.trigger('CallOnDeleteMessageEvent', JSON.stringify(message)); });
         this.gp.channels.on('error:deleteMessage', (err) => this.trigger('CallOnDeleteMessageError'));
+
+        //triggers
+        this.gp.triggers.on('activate', ({ trigger }) => {this.trigger('CallOnTriggerActivate', JSON.stringify(trigger)); });
+        this.gp.triggers.on('claim', ({ trigger }) => {this.trigger('CallOnTriggerClaim', JSON.stringify(trigger)); });
+        this.gp.triggers.on('error:claim', (err) => {this.trigger('CallOnTriggerClaimError', JSON.stringify(err)); });
     }
 
     trigger(eventName, value) {
         if (window.unityInstance !== null) {
             window.unityInstance.SendMessage('GamePushSDK', eventName, this.toUnity(value));
         }
+    }
+
+    getQuery(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        return query = id > 0 ? { id } : { tag: idOrTag };
     }
 
     toUnity(value) {
@@ -1162,9 +1171,6 @@ export default class GamePushUnity {
     // Documents
 
 
-
-
-
     // Files
     FilesUpload(tags) {
         this.gp.files
@@ -1263,12 +1269,10 @@ export default class GamePushUnity {
                 this.trigger('CallFilesFetchMoreError');
             });
     }
-
     // Files
 
 
     // Channels
-
     Channels_Open_Chat(channel_ID) {
         if (channel_ID == -10) {
             this.gp.channels.openChat();
@@ -1561,10 +1565,41 @@ export default class GamePushUnity {
         const query = JSON.parse(filter);
         this.gp.channels.fetchMoreMembers(query);
     }
-
     // Channels
 
-    //Custom
+
+    // Triggers
+    Triggers_Claim(idOrTag){
+        const query = this.getQuery(idOrTag);
+        return this.toUnity(this.gp.triggers.claim(query).trigger);
+    }
+
+    Triggers_List(){
+        return this.toUnity(this.gp.triggers.list);
+    }
+
+    Triggers_ActivatedList(){
+        return this.toUnity(this.gp.triggers.activatedList);
+    }
+
+    Triggers_GetTrigger(idOrTag){
+        const query = this.getQuery(idOrTag);
+        return this.toUnity(this.gp.triggers.getTrigger(query));
+    }
+
+    Triggers_IsActivated(idOrTag){
+        const query = this.getQuery(idOrTag);
+        return this.toUnity(this.gp.triggers.isActivated(query));
+    }
+
+    Triggers_IsClaimed(idOrTag){
+        const query = this.getQuery(idOrTag);
+        return this.toUnity(this.gp.triggers.isClaimed(query));
+    }
+
+    // Triggers
+
+    // Custom
     CustomCall(name, args) {
         let callFunc = "GamePush." + name;
 

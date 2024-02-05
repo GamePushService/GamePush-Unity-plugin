@@ -962,7 +962,58 @@ mergeInto(LibraryManager.library, {
 
     /* CHANNELS */
 
-    /*CUSTOM*/
+    /* TRIGGERS */
+    GP_Triggers_Claim: function (idOrTag) {
+        var value = GamePush.Triggers_Claim(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Triggers_List: function () {
+        var value = GamePush.Triggers_List();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Triggers_ActivatedList: function () {
+        var value = GamePush.Triggers_ActivatedList();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Triggers_GetTrigger: function (idOrTag) {
+        var value = GamePush.Triggers_GetTrigger(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Triggers_IsActivated: function (idOrTag) {
+        var value = GamePush.Triggers_IsActivated(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Triggers_IsClaimed: function (idOrTag) {
+        var value = GamePush.Triggers_IsClaimed(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    /* TRIGGERS */
+
+    /* CUSTOM */
     GP_CustomCall: function(name, args){
         GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));
     },
@@ -987,6 +1038,6 @@ mergeInto(LibraryManager.library, {
         GamePush.CustomAsyncReturn(UTF8ToString(name), UTF8ToString(args));
     },
     
-    /*CUSTOM*/
+    /* CUSTOM */
 
 });
