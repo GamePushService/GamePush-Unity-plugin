@@ -100,6 +100,7 @@ namespace GamePush
     public class GP_Data
     {
         private string _data;
+        public string Data => _data;
 
         public GP_Data(string data) => _data = data;
 

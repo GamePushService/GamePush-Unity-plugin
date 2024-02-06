@@ -34,7 +34,7 @@ export default class GamePushUnity {
             window.focus();
         });
 
-        this.gp.achievements.on('unlock', () => this.trigger('CallAchievementsUnlock'));
+        this.gp.achievements.on('unlock', (achievement) => this.trigger('CallAchievementsUnlock', achievement.id));
         this.gp.achievements.on('error:unlock', () => this.trigger('CallAchievementsUnlockError'));
 
         // games collections
@@ -1570,8 +1570,7 @@ export default class GamePushUnity {
 
     // Triggers
     Triggers_Claim(idOrTag){
-        const query = this.getQuery(idOrTag);
-        return this.toUnity(this.gp.triggers.claim(query).trigger);
+        this.gp.triggers.claim(idOrTag);
     }
 
     Triggers_List(){
@@ -1583,18 +1582,15 @@ export default class GamePushUnity {
     }
 
     Triggers_GetTrigger(idOrTag){
-        const query = this.getQuery(idOrTag);
-        return this.toUnity(this.gp.triggers.getTrigger(query));
+        return this.toUnity(this.gp.triggers.getTrigger(idOrTag));
     }
 
     Triggers_IsActivated(idOrTag){
-        const query = this.getQuery(idOrTag);
-        return this.toUnity(this.gp.triggers.isActivated(query));
+        return this.toUnity(this.gp.triggers.isActivated(idOrTag));
     }
 
     Triggers_IsClaimed(idOrTag){
-        const query = this.getQuery(idOrTag);
-        return this.toUnity(this.gp.triggers.isClaimed(query));
+        return this.toUnity(this.gp.triggers.isClaimed(idOrTag));
     }
 
     // Triggers

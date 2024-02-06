@@ -964,11 +964,7 @@ mergeInto(LibraryManager.library, {
 
     /* TRIGGERS */
     GP_Triggers_Claim: function (idOrTag) {
-        var value = GamePush.Triggers_Claim(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        GamePush.Triggers_Claim(UTF8ToString(idOrTag));
     },
 
     GP_Triggers_List: function () {
