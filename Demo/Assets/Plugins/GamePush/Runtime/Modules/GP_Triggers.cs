@@ -10,11 +10,11 @@ namespace GamePush
 {
     public class GP_Triggers : MonoBehaviour
     {
-        public static event UnityAction<TriggerData> OnTriggerActive;
+        public static event UnityAction<TriggerData> OnTriggerActivate;
         public static event UnityAction<TriggerData> OnTriggerClaim;
         public static event UnityAction<string> OnTriggerClaimError;
 
-        private void CallOnTriggerActive(string trigger) { OnTriggerActive?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
+        private void CallOnTriggerActive(string trigger) { OnTriggerActivate?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaim(string trigger) { OnTriggerClaim?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaimError(string error) { OnTriggerClaimError?.Invoke(error); }
 
@@ -105,6 +105,8 @@ namespace GamePush
         }
 
     }
+
+
 
     [System.Serializable]
     public class TriggerAllData

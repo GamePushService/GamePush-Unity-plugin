@@ -30,7 +30,7 @@ namespace Examples.Triggers
             _buttonList.onClick.AddListener(List);
             _buttonActivatedList.onClick.AddListener(ActivatedList);
 
-            GP_Triggers.OnTriggerActive += OnActive;
+            GP_Triggers.OnTriggerActivate += OnActivate;
             GP_Triggers.OnTriggerClaim += OnClaim;
             GP_Triggers.OnTriggerClaimError += OnClaimError;
         }
@@ -46,13 +46,14 @@ namespace Examples.Triggers
             _buttonList.onClick.RemoveListener(List);
             _buttonActivatedList.onClick.RemoveListener(ActivatedList);
 
-            GP_Triggers.OnTriggerActive -= OnActive;
+            GP_Triggers.OnTriggerActivate -= OnActivate;
             GP_Triggers.OnTriggerClaim -= OnClaim;
             GP_Triggers.OnTriggerClaimError -= OnClaimError;
         }
 
         public void Claim()
         {
+            Debug.Log("Claim: " + _triggerTag.text);
             GP_Triggers.Claim(_triggerTag.text);
         }
 
@@ -64,7 +65,7 @@ namespace Examples.Triggers
                 ConsoleUI.Instance.Log("ID: " + trigger.id);
                 ConsoleUI.Instance.Log("Tag: " + trigger.tag);
                 ConsoleUI.Instance.Log("AutoClaim: " + trigger.isAutoClaim);
-                ConsoleUI.Instance.Log("Descroption: " + trigger.description);
+                ConsoleUI.Instance.Log("Description: " + trigger.description);
 
                 foreach (TriggerCondition condition in trigger.conditions)
                 {
@@ -126,21 +127,18 @@ namespace Examples.Triggers
         }
 
 
-        public void OnActive(TriggerData trigger)
+        public void OnActivate(TriggerData trigger)
         {
-            Debug.Log(trigger.ToString());
-            ConsoleUI.Instance.Log(trigger.ToString());
+            ConsoleUI.Instance.Log("Activate: " + JsonUtility.ToJson(trigger));
         }
 
         public void OnClaim(TriggerData trigger)
         {
-            Debug.Log(trigger.ToString());
-            ConsoleUI.Instance.Log(trigger.ToString());
+            ConsoleUI.Instance.Log("Activate: " + JsonUtility.ToJson(trigger));
         }
 
         public void OnClaimError(string error)
         {
-            Debug.LogError(error);
             ConsoleUI.Instance.Log(error);
         }
     }

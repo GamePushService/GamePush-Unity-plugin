@@ -1006,8 +1006,54 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
-
     /* TRIGGERS */
+
+    /* EVENTS */
+    GP_Events_Join: function (idOrTag) {
+        GamePush.Events_Join(UTF8ToString(idOrTag));
+    },
+
+    GP_Events_List: function () {
+        var value = GamePush.Events_List();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Events_ActiveList: function () {
+        var value = GamePush.Events_ActiveList();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Events_GetEvent: function (idOrTag) {
+        var value = GamePush.Events_GetEvent(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Events_IsActive: function (idOrTag) {
+        var value = GamePush.Events_IsActive(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Events_IsJoined: function (idOrTag) {
+        var value = GamePush.Events_IsJoined(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    /* EVENTS */
 
     /* CUSTOM */
     GP_CustomCall: function(name, args){

@@ -6,6 +6,8 @@ namespace GP_Utilities.Initialization
 {
     public class GP_Initialization
     {
+        static string VERSION = "v1.3.0";
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
@@ -40,7 +42,10 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_System>();
             SDK.AddComponent<GP_Variables>();
             SDK.AddComponent<GP_Triggers>();
+            SDK.AddComponent<GP_Events>();
             SDK.AddComponent<GP_Custom>();
+
+            Debug.Log($"GamePush plugin {VERSION} ready");
         }
     }
 }

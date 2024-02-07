@@ -21,7 +21,7 @@ namespace GamePush
         public static event UnityAction<List<AchievementsFetchPlayer>> OnAchievementsFetchPlayer;
 
         public static event UnityAction<string> OnAchievementsUnlock;
-        public static event UnityAction OnAchievementsUnlockError;
+        public static event UnityAction<string> OnAchievementsUnlockError;
 
         public static event UnityAction<string> OnAchievementsProgress;
         public static event UnityAction OnAchievementsProgressError;
@@ -31,7 +31,7 @@ namespace GamePush
         private static event Action _onAchievementsClose;
 
         private static event Action<string> _onAchievementsUnlock;
-        private static event Action _onAchievementsUnlockError;
+        private static event Action<string> _onAchievementsUnlockError;
 
         private static event Action<string> _onAchievementsProgress;
         private static event Action _onAchievementsProgressError;
@@ -70,7 +70,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Achievements_Unlock(string idOrTag);
-        public static void Unlock(string idOrTag, Action<string> onUnlock = null, Action onUnlockError = null)
+        public static void Unlock(string idOrTag, Action<string> onUnlock = null, Action<string> onUnlockError = null)
         {
             _onAchievementsUnlock = onUnlock;
             _onAchievementsUnlockError = onUnlockError;
@@ -142,8 +142,8 @@ namespace GamePush
         private void CallAchievementsOpen() { _onAchievementsOpen?.Invoke(); OnAchievementsOpen?.Invoke(); }
         private void CallAchievementsClose() { _onAchievementsClose?.Invoke(); OnAchievementsClose?.Invoke(); }
 
-        private void CallAchievementsUnlock(string idOrTag) { _onAchievementsUnlock?.Invoke(idOrTag); OnAchievementsUnlock?.Invoke(idOrTag); }
-        private void CallAchievementsUnlockError() { _onAchievementsUnlockError?.Invoke(); OnAchievementsUnlockError?.Invoke(); }
+        private void CallAchievementsUnlock(string achievement) { _onAchievementsUnlock?.Invoke(achievement); OnAchievementsUnlock?.Invoke(achievement); }
+        private void CallAchievementsUnlockError(string error) { _onAchievementsUnlockError?.Invoke(error); OnAchievementsUnlockError?.Invoke(error); }
 
         private void CallAchievementsProgress(string idOrTag) { OnAchievementsProgress?.Invoke(idOrTag); _onAchievementsProgress?.Invoke(idOrTag); }
         private void CallAchievementsProgressError() { OnAchievementsProgressError?.Invoke(); _onAchievementsProgressError?.Invoke(); }

@@ -34,8 +34,8 @@ export default class GamePushUnity {
             window.focus();
         });
 
-        this.gp.achievements.on('unlock', (achievement) => this.trigger('CallAchievementsUnlock', achievement.id));
-        this.gp.achievements.on('error:unlock', () => this.trigger('CallAchievementsUnlockError'));
+        this.gp.achievements.on('unlock', (achievement) => this.trigger('CallAchievementsUnlock', achievement));
+        this.gp.achievements.on('error:unlock', (error) => this.trigger('CallAchievementsUnlockError', error));
 
         // games collections
         this.gp.gamesCollections.on('open', () => this.trigger('CallGamesCollectionsOpen'));
@@ -305,6 +305,10 @@ export default class GamePushUnity {
         this.gp.triggers.on('activate', ({ trigger }) => {this.trigger('CallOnTriggerActivate', JSON.stringify(trigger)); });
         this.gp.triggers.on('claim', ({ trigger }) => {this.trigger('CallOnTriggerClaim', JSON.stringify(trigger)); });
         this.gp.triggers.on('error:claim', (err) => {this.trigger('CallOnTriggerClaimError', JSON.stringify(err)); });
+
+        //events
+        this.gp.events.on('join', ({ event, playerEvent }) => {this.trigger('CallOnEventJoin', JSON.stringify(playerEvent)); });
+        this.gp.events.on('error:join', (err) => {this.trigger('CallOnEventJoinError', err); });
     }
 
     trigger(eventName, value) {
@@ -735,7 +739,7 @@ export default class GamePushUnity {
             .unlock(query)
             .then((result) => {
                 if (result.success) {
-                    this.trigger('CallAchievementsUnlock', idOrTag);
+                    this.trigger('CallAchievementsUnlock', result.achievement);
                     return;
                 }
 
@@ -1570,7 +1574,16 @@ export default class GamePushUnity {
 
     // Triggers
     Triggers_Claim(idOrTag){
-        this.gp.triggers.claim(idOrTag);
+        try {
+            this.gp.triggers.claim({id : idOrTag}); 
+        } catch (error) {
+            console.warn(error);
+            try {
+                this.gp.triggers.claim({tag : idOrTag}); 
+            } catch (error) {
+                console.warn(error);
+            }
+        }
     }
 
     Triggers_List(){
@@ -1592,8 +1605,37 @@ export default class GamePushUnity {
     Triggers_IsClaimed(idOrTag){
         return this.toUnity(this.gp.triggers.isClaimed(idOrTag));
     }
-
     // Triggers
+
+    // Events
+
+    Events_Join(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ? { id } : { tag: idOrTag };
+        this.gp.events.join(query); 
+    }
+
+    Events_List(){
+        return this.toUnity(this.gp.events.list);
+    }
+
+    Events_ActiveList(){
+        return this.toUnity(this.gp.events.activeList);
+    }
+
+    Events_GetEvent(idOrTag){
+        return this.toUnity(this.gp.events.getEvent(idOrTag).event);
+    }
+
+    Events_IsActive(idOrTag){
+        return this.toUnity(this.gp.events.has(idOrTag));
+    }
+
+    Events_IsJoined(idOrTag){
+        return this.toUnity(this.gp.events.isJoined(idOrTag));
+    }
+
+    // Events
 
     // Custom
     CustomCall(name, args) {

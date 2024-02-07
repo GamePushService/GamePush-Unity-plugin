@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 using GamePush;
 using Examples.Console;
@@ -9,6 +10,8 @@ namespace Examples.Achievements
 {
     public class Achievements : MonoBehaviour
     {
+        [SerializeField] private TMP_InputField _idOrTag;
+        [Space]
         [SerializeField] private Button _openButton;
         [SerializeField] private Button _unlockButton;
         [SerializeField] private Button _fetchButton;
@@ -61,8 +64,8 @@ namespace Examples.Achievements
         private void OnOpen() => ConsoleUI.Instance.Log("ON OPEN");
         private void OnClose() => ConsoleUI.Instance.Log("ON CLOSE");
 
-        private void OnUnlock(string idOrTag) => ConsoleUI.Instance.Log("ON UNLCOK: SUCCESS: " + idOrTag);
-        private void OnUnlockError() => ConsoleUI.Instance.Log("ON UNLOCK: ERROR");
+        private void OnUnlock(string achievement) => ConsoleUI.Instance.Log("UNLCOK SUCCESS: " + achievement);
+        private void OnUnlockError(string error) => ConsoleUI.Instance.Log("UNLOCK ERROR: " + error);
 
         private void OnPogress(string idOrTag) => ConsoleUI.Instance.Log("ON PROGRESS: SUCCESS: " + idOrTag);
         private void OnProgressError() => ConsoleUI.Instance.Log("PROGRESS: ERROR");
