@@ -63,8 +63,19 @@ namespace Examples.Events
                 ConsoleUI.Instance.Log("ID: " + data.id);
                 ConsoleUI.Instance.Log("Tag: " + data.tag);
                 ConsoleUI.Instance.Log("Name: " + data.name);
+                ConsoleUI.Instance.Log("Description: " + data.description);
+                ConsoleUI.Instance.Log("Icon: " + data.icon);
+                ConsoleUI.Instance.Log("Icon small: " + data.iconSmall);
+                ConsoleUI.Instance.Log("Date Start: " + data.dateStart);
+                ConsoleUI.Instance.Log("Date End: " + data.dateEnd);
                 ConsoleUI.Instance.Log("Is Active: " + data.isActive);
                 ConsoleUI.Instance.Log("Time left: " + data.timeLeft);
+                ConsoleUI.Instance.Log("Is Auto join: " + data.isAutoJoin);
+
+                foreach (TriggerData trigger in data.triggers)
+                {
+                    ConsoleUI.Instance.Log("Trigger: " + JsonUtility.ToJson(trigger));
+                }
 
                 ConsoleUI.Instance.Log(" ");
             }
@@ -87,10 +98,15 @@ namespace Examples.Events
         {
             EventData data= GP_Events.GetEvent(_eventTag.text);
 
+            ConsoleUI.Instance.Log("ID: " + data.id);
+            ConsoleUI.Instance.Log("Tag: " + data.tag);
             ConsoleUI.Instance.Log("Name: " + data.name);
-            ConsoleUI.Instance.Log("Is Active: " + data.isActive);
+            ConsoleUI.Instance.Log("Description: " + data.description);
+            ConsoleUI.Instance.Log("Icon: " + data.icon);
+            ConsoleUI.Instance.Log("Icon small: " + data.iconSmall);
             ConsoleUI.Instance.Log("Date Start: " + data.dateStart);
             ConsoleUI.Instance.Log("Date End: " + data.dateEnd);
+            ConsoleUI.Instance.Log("Is Active: " + data.isActive);
             ConsoleUI.Instance.Log("Time left: " + data.timeLeft);
             ConsoleUI.Instance.Log("Is Auto join: " + data.isAutoJoin);
 
