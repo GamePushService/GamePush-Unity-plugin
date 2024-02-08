@@ -34,7 +34,6 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string eventsData = GP_Events_List();
-            Debug.Log(eventsData);
             return GP_JSON.GetArray<EventData>(eventsData );
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
@@ -50,7 +49,6 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string activeEvents = GP_Events_ActiveList();
-            Debug.Log(activeEvents);
             return GP_JSON.GetArray<PlayerEvents>(activeEvents);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
@@ -66,7 +64,6 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Events_GetEvent(idOrTag);
-            Debug.Log("Event: " + data);
             return GP_JSON.Get<EventData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
