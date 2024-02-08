@@ -43,6 +43,8 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Variables>();
             SDK.AddComponent<GP_Triggers>();
             SDK.AddComponent<GP_Events>();
+            SDK.AddComponent<GP_Experiments>();
+            SDK.AddComponent<GP_Segments>();
             SDK.AddComponent<GP_Custom>();
 
             Debug.Log($"GamePush plugin {VERSION} ready");
