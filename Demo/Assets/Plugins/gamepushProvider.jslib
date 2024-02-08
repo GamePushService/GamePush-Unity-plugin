@@ -1052,8 +1052,43 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
     },
-
     /* EVENTS */
+
+    /* SEGMENTS */
+    GP_Segments_List: function () {
+        var value = GamePush.Segments_List();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Segments_Has: function (idOrTag) {
+        var value = GamePush.Segments_Has(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    /* SEGMENTS */
+
+    /* EXPERIMENTS */
+    GP_Experiments_Map: function () {
+        var value = GamePush.Experiments_Map();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Experiments_Has: function (tag, cohort) {
+        var value = GamePush.Experiments_Has(UTF8ToString(tag), UTF8ToString(cohort));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    /* EXPERIMENTS */
 
     /* CUSTOM */
     GP_CustomCall: function(name, args){

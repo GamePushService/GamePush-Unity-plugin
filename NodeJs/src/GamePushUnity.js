@@ -309,6 +309,10 @@ export default class GamePushUnity {
         //events
         this.gp.events.on('join', ({ event, playerEvent }) => {this.trigger('CallOnEventJoin', JSON.stringify(playerEvent)); });
         this.gp.events.on('error:join', (err) => {this.trigger('CallOnEventJoinError', err); });
+
+        //segments
+        this.gp.segments.on('enter', (segmentTag) => {this.trigger('CallOnSegmentEnter', segmentTag);});
+        this.gp.segments.on('leave', (segmentTag) => {this.trigger('CallOnSegmentLeave', segmentTag);});
     }
 
     trigger(eventName, value) {
@@ -1624,18 +1628,44 @@ export default class GamePushUnity {
     }
 
     Events_GetEvent(idOrTag){
-        return this.toUnity(this.gp.events.getEvent(idOrTag).event);
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        const result = this.toUnity(this.gp.events.getEvent(query).event);
+        return result;
     }
 
     Events_IsActive(idOrTag){
-        return this.toUnity(this.gp.events.has(idOrTag));
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        const result = this.gp.events.has(query);
+        return this.toUnity(result);
     }
 
     Events_IsJoined(idOrTag){
-        return this.toUnity(this.gp.events.isJoined(idOrTag));
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        const result = this.toUnity(this.gp.events.isJoined(query));
+        return result;
     }
-
     // Events
+
+    // Segments
+    Segments_List(){
+        return this.toUnity(this.gp.segments.list);
+    }
+    Segments_Has(tag){
+        return this.toUnity(this.gp.segments.has(tag));
+    }
+    // Segments
+
+    // Experiments
+    Experiments_Map(){
+        return this.toUnity(this.gp.experiments.map);
+    }
+    Experiments_Has(tag, cohort){
+        return this.toUnity(this.gp.experiments.has(tag, cohort));
+    }
+    // Experiments
 
     // Custom
     CustomCall(name, args) {
