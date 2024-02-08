@@ -2064,6 +2064,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee0aea736d6940a99a5b4c8319fafc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _experimentTag: {fileID: 8260286685018188160}
+  _experimentCohort: {fileID: 709556739}
+  _buttonMap: {fileID: 1770730927}
+  _buttonHas: {fileID: 505321405}
 --- !u!1 &1908509635
 GameObject:
   m_ObjectHideFlags: 0
