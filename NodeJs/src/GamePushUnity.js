@@ -313,6 +313,12 @@ export default class GamePushUnity {
         //segments
         this.gp.segments.on('enter', (segmentTag) => {this.trigger('CallOnSegmentEnter', segmentTag);});
         this.gp.segments.on('leave', (segmentTag) => {this.trigger('CallOnSegmentLeave', segmentTag);});
+
+        //rewards
+        //this.gp.rewards.on('give', ({ reward, playerReward }) => {this.trigger('CallOnRewardsGive', JSON.stringify({ reward, playerReward })); });
+        //this.gp.rewards.on('error:give', (err) => {this.trigger('CallOnRewardsGiveError', err); });
+        //this.gp.rewards.on('accept', ({ reward, playerReward }) => {this.trigger('CallOnRewardsAccept', JSON.stringify({ reward, playerReward })); });
+       // this.gp.rewards.on('error:accept', (err) => {this.trigger('CallOnRewardsAcceptError', err);  });
     }
 
     trigger(eventName, value) {
@@ -1666,6 +1672,67 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.experiments.has(tag, cohort));
     }
     // Experiments
+
+    //Rewards
+    Rewards_Give(idOrTag, lazy){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  { id: id } : { tag: idOrTag };
+        console.log(query);
+        this.gp.rewards.give({...query, lazy : lazy})
+        .then((result) => {
+            this.trigger('CallOnRewardsGive', JSON.stringify(result));
+        })
+        .catch((err) => {
+            this.trigger('CallOnRewardsGiveError', err);
+        });
+    }
+
+    Rewards_Accept(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  { id: id } : { tag: idOrTag };
+        this.gp.rewards.accept({...query})
+        .then((result) => {
+            this.trigger('CallOnRewardsAccept', JSON.stringify(result));
+        })
+        .catch((err) => {
+            this.trigger('CallOnRewardsAcceptError', err);
+        });
+    }
+
+    Rewards_List(){
+        return this.toUnity(this.gp.rewards.list);
+    }
+
+    Rewards_GivenList(){
+        return this.toUnity(this.gp.rewards.givenList);
+    }
+
+    Rewards_GetReward(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        const result = this.toUnity(this.gp.rewards.getReward(query));
+        return result;
+    }
+
+    Rewards_Has(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        return this.toUnity(this.gp.rewards.has(query));
+    }
+
+    Rewards_HasAccepted(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        return this.toUnity(this.gp.rewards.hasAccepted(query));
+    }
+
+    Rewards_HasUnaccepted(idOrTag){
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ?  id  : idOrTag;
+        return this.toUnity(this.gp.rewards.hasUnaccepted(query));
+    }
+
+    //Rewards
 
     // Custom
     CustomCall(name, args) {

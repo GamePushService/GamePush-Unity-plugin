@@ -1090,6 +1090,64 @@ mergeInto(LibraryManager.library, {
     },
     /* EXPERIMENTS */
 
+    /* REWARDS */
+    GP_Rewards_Give: function (idOrTag, lazy) {
+        GamePush.Rewards_Give(UTF8ToString(idOrTag), UTF8ToString(lazy));
+    },
+
+    GP_Rewards_Accept: function (idOrTag) {
+        GamePush.Rewards_Accept(UTF8ToString(idOrTag));
+    },
+
+    GP_Rewards_List: function () {
+        var value = GamePush.Rewards_List();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Rewards_GivenList: function () {
+        var value = GamePush.Rewards_GivenList();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Rewards_GetReward: function (idOrTag) {
+        var value = GamePush.Rewards_GetReward(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Rewards_Has: function (idOrTag) {
+        var value = GamePush.Rewards_Has(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Rewards_HasAccepted: function (idOrTag) {
+        var value = GamePush.Rewards_HasAccepted(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Rewards_HasUnaccepted: function (idOrTag) {
+        var value = GamePush.Rewards_HasUnaccepted(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    /* REWARDS */
+
     /* CUSTOM */
     GP_CustomCall: function(name, args){
         GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));
