@@ -10,14 +10,14 @@ namespace GamePush
 {
     public class GP_Rewards : MonoBehaviour
     {
-        public static event UnityAction<string> OnRewardsGive;
+        public static event UnityAction<AllRewardData> OnRewardsGive;
         public static event UnityAction<string> OnRewardsGiveError;
-        public static event UnityAction<string> OnRewardsAccept;
+        public static event UnityAction<AllRewardData> OnRewardsAccept;
         public static event UnityAction<string> OnRewardsAcceptError;
 
-        private void CallOnRewardsGive(string data) { OnRewardsGive?.Invoke(data); }
+        private void CallOnRewardsGive(string data) { OnRewardsGive?.Invoke(JsonUtility.FromJson<AllRewardData>(data)); }
         private void CallOnRewardsGiveError(string error) { OnRewardsGiveError?.Invoke(error); }
-        private void CallOnRewardsAccept(string data) { OnRewardsAccept?.Invoke(data); }
+        private void CallOnRewardsAccept(string data) { OnRewardsAccept?.Invoke(JsonUtility.FromJson<AllRewardData>(data)); }
         private void CallOnRewardsAcceptError(string error) { OnRewardsAcceptError?.Invoke(error); }
 
 

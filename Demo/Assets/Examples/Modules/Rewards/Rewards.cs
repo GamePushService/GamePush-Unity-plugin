@@ -60,14 +60,12 @@ namespace Examples.Rewards
         {
             ConsoleUI.Instance.Log("Try Give: " + _rewardTag.text);
             GP_Rewards.Give(_rewardTag.text);
-            ConsoleUI.Instance.Log(" ");
         }
 
         public void Accept()
         {
             ConsoleUI.Instance.Log("Try Accept: " + _rewardTag.text);
             GP_Rewards.Accept(_rewardTag.text);
-            ConsoleUI.Instance.Log(" ");
         }
 
         public void List()
@@ -142,9 +140,9 @@ namespace Examples.Rewards
         }
 
 
-        public void OnGive(string result)
+        public void OnGive(AllRewardData result)
         {
-            ConsoleUI.Instance.Log("Give reward: " + result);
+            ConsoleUI.Instance.Log("Give reward: " + result.reward.name);
             ConsoleUI.Instance.Log(" ");
         }
 
@@ -154,9 +152,9 @@ namespace Examples.Rewards
             ConsoleUI.Instance.Log(" ");
         }
 
-        public void OnAccept(string result)
+        public void OnAccept(AllRewardData result)
         {
-            ConsoleUI.Instance.Log("Accept reward: " + result);
+            ConsoleUI.Instance.Log("Accept reward: " + result.reward.name);
             ConsoleUI.Instance.Log(" ");
         }
 
