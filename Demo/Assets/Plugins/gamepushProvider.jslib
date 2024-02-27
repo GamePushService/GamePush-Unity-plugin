@@ -1148,6 +1148,105 @@ mergeInto(LibraryManager.library, {
     },
     /* REWARDS */
 
+    /* SHEDULERS */
+    GP_Shedulers_Register: function (idOrTag) {
+        GamePush.Shedulers_Register(UTF8ToString(idOrTag));
+    },
+
+    GP_Shedulers_ClaimDay: function (idOrTag, day) {
+        GamePush.Shedulers_ClaimDay(UTF8ToString(idOrTag), UTF8ToString(day));
+    },
+
+    GP_Shedulers_ClaimDayAdditional: function (idOrTag, day, triggerIdOrTag) {
+        GamePush.Shedulers_ClaimDayAdditional(UTF8ToString(idOrTag), UTF8ToString(day), UTF8ToString(triggerIdOrTag));
+    },
+
+    GP_Shedulers_ClaimAllDays: function (idOrTag) {
+        GamePush.Shedulers_ClaimAllDays(UTF8ToString(idOrTag));
+    },
+
+    GP_Shedulers_List: function () {
+        var value = GamePush.Shedulers_List();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_ActiveList: function () {
+        var value = GamePush.Shedulers_ActiveList();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_GetSheduler: function (idOrTag) {
+        var value = GamePush.Shedulers_GetSheduler(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_GetShedulerDay: function (idOrTag, day) {
+        var value = GamePush.Shedulers_GetShedulerDay(UTF8ToString(idOrTag), UTF8ToString(day));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_GetShedulerCurrentDay: function (idOrTag) {
+        var value = GamePush.Shedulers_GetShedulerCurrentDay(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_IsRegistered: function (idOrTag) {
+        var value = GamePush.Shedulers_IsRegistered(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_IsTodayRewardClaimed: function (idOrTag) {
+        var value = GamePush.Shedulers_IsTodayRewardClaimed(UTF8ToString(idOrTag));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_CanClaimDay: function (idOrTag, day) {
+        var value = GamePush.Shedulers_IsRegistered(UTF8ToString(idOrTag), UTF8ToString(day));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_CanClaimDayAdditional: function (idOrTag, day, trigger) {
+        var value = GamePush.Shedulers_CanClaimDayAdditional(UTF8ToString(idOrTag), UTF8ToString(day),  UTF8ToString(trigger));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    GP_Shedulers_CanClaimAllDay: function (idOrTag, day) {
+        var value = GamePush.Shedulers_CanClaimAllDay(UTF8ToString(idOrTag), UTF8ToString(day));
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+
+    /* SHEDULERS */
+
     /* CUSTOM */
     GP_CustomCall: function(name, args){
         GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));
