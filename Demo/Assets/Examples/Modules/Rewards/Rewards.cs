@@ -71,6 +71,9 @@ namespace Examples.Rewards
         public void List()
         {
             RewardData[] rewardsData = GP_Rewards.List();
+            if (rewardsData.Length == 0)
+                ConsoleUI.Instance.Log("No rewards");
+
             foreach (RewardData data in rewardsData)
             {
                 ConsoleUI.Instance.Log("ID: " + data.id);
@@ -84,6 +87,9 @@ namespace Examples.Rewards
         public void GivenList()
         {
             PlayerReward[] playerRewards = GP_Rewards.GivenList();
+            if(playerRewards.Length == 0)
+                ConsoleUI.Instance.Log("No player rewards");
+
             foreach (PlayerReward data in playerRewards)
             {
                 ConsoleUI.Instance.Log("Reward ID: " + data.rewardId);
@@ -97,8 +103,13 @@ namespace Examples.Rewards
         public void GetReward()
         {
             RewardData data = GP_Rewards.GetReward(_rewardTag.text).reward;
+            if(data.tag == null)
+            {
+                ConsoleUI.Instance.Log("No such reward");
+                return;
+            }
 
-            ConsoleUI.Instance.Log("ID: " + data.id);
+            
             ConsoleUI.Instance.Log("Tag: " + data.tag);
             ConsoleUI.Instance.Log("Name: " + data.name);
             ConsoleUI.Instance.Log("Description: " + data.description);
