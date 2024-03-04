@@ -320,18 +320,22 @@ export default class GamePushUnity {
         //this.gp.rewards.on('error:accept', (err) => {this.trigger('CallOnRewardsAcceptError', err);  });
 
         //Schedulers
-        this.gp.schedulers.on('register', (schedulerInfo) => {this.trigger('CallOnSchedulerRegister', schedulerInfo); });
+        this.gp.schedulers.on('register', (schedulerInfo) => {this.trigger('CallOnSchedulerRegister', JSON.stringify(schedulerInfo)); });
         this.gp.schedulers.on('error:register', (err) => {this.trigger('CallOnSchedulerRegisterError', err); });
-        this.gp.schedulers.on('claimDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDay', schedulerDayInfo); });
+        this.gp.schedulers.on('claimDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDay', JSON.stringify(schedulerDayInfo)); });
         this.gp.schedulers.on('error:claimDay', (err) => {this.trigger('CallOnSchedulerClaimDayError', err); });
-        this.gp.schedulers.on('claimDayAdditional', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDayAdditional', schedulerDayInfo); });
+        this.gp.schedulers.on('claimDayAdditional', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDayAdditional', JSON.stringify(schedulerDayInfo)); });
         this.gp.schedulers.on('error:claimDayAdditional', (err) => {this.trigger('CallOnSchedulerClaimDayAdditionalError', err); });
-        this.gp.schedulers.on('claimAllDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimAllDay', schedulerDayInfo); });
+        this.gp.schedulers.on('claimAllDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimAllDay', JSON.stringify(schedulerDayInfo)); });
         this.gp.schedulers.on('error:claimAllDay', (err) => {this.trigger('CallOnSchedulerClaimAllDayError', err); });
-        this.gp.schedulers.on('claimAllDays', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimAllDays', schedulerDayInfo); });
+        this.gp.schedulers.on('claimAllDays', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimAllDays', JSON.stringify(schedulerDayInfo)); });
         this.gp.schedulers.on('error:claimAllDays', (err) => {this.trigger('CallOnSchedulerClaimAllDaysError', err); });
-        this.gp.schedulers.on('join', ({ scheduler, playerScheduler }) => {this.trigger('CallOnSchedulerJoin', playerScheduler); });
+        this.gp.schedulers.on('join', ({ scheduler, playerScheduler }) => {this.trigger('CallOnSchedulerJoin', JSON.stringify(playerScheduler)); });
         this.gp.schedulers.on('error:join', (err) => {this.trigger('CallOnSchedulerJoinError', err);});
+
+        //Variables
+        this.gp.variables.on('fetchPlatformVariables', (variables) => {this.trigger('CallOnFetchPlatformVariables', JSON.stringify(variables));});
+        this.gp.variables.on('error:fetchPlatformVariables', (error) => {this.trigger('CallOnFetchPlatformVariablesError', error);});
     }
 
     trigger(eventName, value) {
@@ -1158,8 +1162,15 @@ export default class GamePushUnity {
     VariablesGet(key) {
         return this.toUnity(this.gp.variables.get(key));
     }
-    // Variables
 
+    VariablesIsPlatformVariablesAvailable(){
+        return this.toUnity(this.gp.variables.isPlatformVariablesAvailable);
+    }
+
+    VariablesFetchPlatformVariables(params){
+        this.gp.variables.fetchPlatformVariables(params);
+    }
+    // Variables
 
 
     // Players

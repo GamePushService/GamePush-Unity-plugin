@@ -17,6 +17,12 @@ namespace GamePush
         private static event Action<List<VariablesData>> _onSuccess;
         private static event Action _onError;
 
+        public static event UnityAction<string> OnPlatformFetchSuccess;
+        public static event UnityAction<string> OnPlatformFetchError;
+
+        private static event Action<string> _onPlatformSuccess;
+        private static event Action<string> _onPlatformError;
+
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
         public static void Fetch(Action<List<VariablesData>> onFetchSuccess = null, Action onFetchError = null)
@@ -44,7 +50,6 @@ namespace GamePush
             return true;
 #endif
         }
-
 
         [DllImport("__Internal")]
         private static extern int GP_Variables_GetNumberInt(string key);
@@ -125,13 +130,59 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_Variables_IsPlatformVariablesAvailable();
+        public static bool IsPlatformVariablesAvailable()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Variables_IsPlatformVariablesAvailable() == "true";
+#else
+            if (GP_ConsoleController.Instance.VariablesConsoleLogs)
+                Console.Log("Platform Variables Available: ", "TRUE");
+            return true;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern void GP_Variables_FetchPlatformVariables();
+        public static void FetchPlatformVariables(Action<string> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        {
+            _onPlatformSuccess = onPlatformFetchSuccess;
+            _onPlatformError = onPlatformFetchError;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Variables_FetchPlatformVariables();
+#else
+            if (GP_ConsoleController.Instance.SystemConsoleLogs)
+                Console.Log("VARIABLES: ", "FETCH");
+#endif
+        }
+
         private void CallVariablesFetchSuccess(string data)
         {
             var variablesData = GP_JSON.GetList<VariablesData>(data);
             _onSuccess?.Invoke(variablesData);
             OnFetchSuccess?.Invoke(variablesData);
         }
-        private void CallVariablesFetchError() { _onError?.Invoke(); OnFetchError?.Invoke(); }
+        private void CallVariablesFetchError()
+        {
+            _onError?.Invoke();
+            OnFetchError?.Invoke();
+        }
+
+        private void CallOnFetchPlatformVariables(string variables)
+        {
+            _onPlatformSuccess?.Invoke(variables);
+            OnPlatformFetchSuccess?.Invoke(variables);
+        }
+
+        private void CallVariablesFetchError(string error)
+        {
+            _onPlatformError?.Invoke(error);
+            OnPlatformFetchError?.Invoke(error);
+        }
+
+
 
     }
 

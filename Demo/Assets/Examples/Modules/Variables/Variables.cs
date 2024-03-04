@@ -36,6 +36,10 @@ namespace Examples.Variables
             ConsoleUI.Instance.Log("VARIABLES: GET FILE " + GP_Variables.GetFile("file"));
         }
 
+        public void IsPlatformFetchAvailable()
+        {
+            ConsoleUI.Instance.Log("Platform Fetch Available: " + GP_Variables.IsPlatformVariablesAvailable());
+        }
 
         private void OnFetchSuccess(List<VariablesData> variables)
         {

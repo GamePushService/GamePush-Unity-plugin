@@ -727,9 +727,11 @@ mergeInto(LibraryManager.library, {
     GP_Variables_GetNumberInt: function (key) {
         return GamePush.VariablesGet(UTF8ToString(key));
     },
+
     GP_Variables_GetFloat: function (key) {
         return GamePush.VariablesGet(UTF8ToString(key));
     },
+
     GP_Variables_GetString: function (key) {
         var value = GamePush.VariablesGet(UTF8ToString(key));
         var bufferSize = lengthBytesUTF8(value) + 1;
@@ -759,6 +761,18 @@ mergeInto(LibraryManager.library, {
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);
         return buffer;
+    },
+
+    GP_Variables_IsPlatformVariablesAvailable: function(){
+        var value = GamePush.VariablesIsPlatformVariablesAvailable();
+        var bufferSize = lengthBytesUTF8(value) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(value, buffer, bufferSize);
+        return buffer;
+    },
+    
+    GP_Variables_FetchPlatformVariables: function (params) {
+        GamePush.VariablesFetchPlatformVariables(UTF8ToString(params));
     },
 
     /*VARIABLES*/
