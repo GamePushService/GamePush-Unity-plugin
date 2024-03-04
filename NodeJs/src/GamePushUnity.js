@@ -319,7 +319,7 @@ export default class GamePushUnity {
         //this.gp.rewards.on('accept', ({ reward, playerReward }) => {this.trigger('CallOnRewardsAccept', JSON.stringify({ reward, playerReward })); });
         //this.gp.rewards.on('error:accept', (err) => {this.trigger('CallOnRewardsAcceptError', err);  });
 
-        //shedulers
+        //Schedulers
         this.gp.schedulers.on('register', (schedulerInfo) => {this.trigger('CallOnSchedulerRegister', schedulerInfo); });
         this.gp.schedulers.on('error:register', (err) => {this.trigger('CallOnSchedulerRegisterError', err); });
         this.gp.schedulers.on('claimDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDay', schedulerDayInfo); });
@@ -331,7 +331,7 @@ export default class GamePushUnity {
         this.gp.schedulers.on('claimAllDays', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimAllDays', schedulerDayInfo); });
         this.gp.schedulers.on('error:claimAllDays', (err) => {this.trigger('CallOnSchedulerClaimAllDaysError', err); });
         this.gp.schedulers.on('join', ({ scheduler, playerScheduler }) => {this.trigger('CallOnSchedulerJoin', playerScheduler); });
-        this.gp.schedulers.on('error:join', (err) => {});
+        this.gp.schedulers.on('error:join', (err) => {this.trigger('CallOnSchedulerJoinError', err);});
     }
 
     trigger(eventName, value) {
@@ -1746,106 +1746,136 @@ export default class GamePushUnity {
     }
     //Rewards
 
-    //Shedulers
-    Shedulers_Register(idOrTag){
+    //Schedulers
+    Schedulers_Register(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id: id } : { tag: idOrTag };
         this.gp.schedulers.register(query); 
     }
 
-    Shedulers_ClaimDay(idOrTag, day){
+    Schedulers_ClaimDay(idOrTag, day){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
+
         console.log(query);
+        console.log(day);
+
         this.gp.schedulers.claimDay(query, day);
     }
 
-    Shedulers_ClaimDayAdditional(idOrTag, day, triggerIdOrTag){
+    Schedulers_ClaimDayAdditional(idOrTag, day, triggerIdOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
+
+        const triggerId = parseInt(triggerIdOrTag, 10) || 0;
+        const triggerQuery = triggerId > 0 ?  triggerId  : triggerIdOrTag;
+
         console.log(query);
-        this.gp.schedulers.claimDayAdditional(query, day, triggerIdOrTag);
+        console.log(day);
+        console.log(triggerQuery);
+
+        this.gp.schedulers.claimDayAdditional(query, day, triggerQuery);
     }
 
-    Shedulers_ClaimAllDay(idOrTag, day){
+    Schedulers_ClaimAllDay(idOrTag, day){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         console.log(query);
+        console.log(day);
         this.gp.schedulers.claimAllDay(query, day);
     }
 
-    Shedulers_ClaimAllDays(idOrTag){
+    Schedulers_ClaimAllDays(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         console.log(query);
         this.gp.schedulers.claimAllDay(query);
     }
 
-    Shedulers_List(){
-        return this.toUnity(this.gp.schedulers.list);
+    Schedulers_List(){
+        const list = this.gp.schedulers.list;
+        console.log(list);
+        return this.toUnity(list);
     }
 
-    Shedulers_ActiveList(){
-        return this.toUnity(this.gp.schedulers.activeList);
+    Schedulers_ActiveList(){
+        const list = this.gp.schedulers.activeList;
+        console.log(list);
+        return this.toUnity(list);
     }
 
-    Shedulers_GetSheduler(idOrTag){
+    Schedulers_GetScheduler(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
+        console.log(query);
         const result = this.toUnity(this.gp.schedulers.getScheduler(query));
+        console.log(result);
         return result;
     }
 
-    Shedulers_GetShedulerDay(idOrTag, day){
+    Schedulers_GetSchedulerDay(idOrTag, day){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
-        const result = this.toUnity(this.gp.schedulers.getScheduler(query, day));
+        console.log(query);
+        console.log(day);
+        const result = this.toUnity(this.gp.schedulers.getSchedulerDay(query, day));
+        console.log(result);
         return result;
     }
 
-    Shedulers_GetShedulerCurrentDay(idOrTag){
+    Schedulers_GetSchedulerCurrentDay(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
+        console.log(query);
         const result = this.toUnity(this.gp.schedulers.getSchedulerCurrentDay(query));
+        console.log(result);
         return result;
     }
 
-    Shedulers_IsRegistered(idOrTag){
+    Schedulers_IsRegistered(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         const result = this.gp.schedulers.isRegistered(query);
+        console.log(result);
         return this.toUnity(result);
     }
 
-    Shedulers_IsTodayRewardClaimed(idOrTag){
+    Schedulers_IsTodayRewardClaimed(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         const result = this.gp.schedulers.isTodayRewardClaimed(query);
+        console.log(result);
         return this.toUnity(result);
     }
 
-    Shedulers_CanClaimDay(idOrTag, day){
+    Schedulers_CanClaimDay(idOrTag, day){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         const result = this.gp.schedulers.canClaimDay(query, day);
+        console.log(result);
         return this.toUnity(result);
     }
 
-    Shedulers_CanClaimDayAdditional(idOrTag, day, triggerIdOrTag){
+    Schedulers_CanClaimDayAdditional(idOrTag, day, triggerIdOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
-        const result = this.gp.schedulers.canClaimDay(query, day, triggerIdOrTag);
+        const triggerId = parseInt(triggerIdOrTag, 10) || 0;
+        const triggerQuery = triggerId > 0 ?  triggerId  : triggerIdOrTag;
+
+        const result = this.gp.schedulers.canClaimDay(query, day, triggerQuery);
+        console.log(result);
         return this.toUnity(result);
     }
 
-    Shedulers_CanClaimAllDay(idOrTag, day){
+    Schedulers_CanClaimAllDay(idOrTag, day){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         const result = this.gp.schedulers.canClaimAllDay(query, day);
+        console.log(result);
         return this.toUnity(result);
     }
 
-    //Shedulers
+    //Schedulers
 
     // Custom
     CustomCall(name, args) {
