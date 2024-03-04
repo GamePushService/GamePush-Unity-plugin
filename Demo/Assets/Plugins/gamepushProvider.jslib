@@ -1240,7 +1240,7 @@ mergeInto(LibraryManager.library, {
     },
 
     GP_Schedulers_CanClaimDay: function (idOrTag, day) {
-        var value = GamePush.Schedulers_IsRegistered(UTF8ToString(idOrTag), day);
+        var value = GamePush.Schedulers_CanClaimDay(UTF8ToString(idOrTag), day);
         var bufferSize = lengthBytesUTF8(value) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(value, buffer, bufferSize);

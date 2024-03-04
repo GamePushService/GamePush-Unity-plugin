@@ -320,7 +320,9 @@ export default class GamePushUnity {
         //this.gp.rewards.on('error:accept', (err) => {this.trigger('CallOnRewardsAcceptError', err);  });
 
         //Schedulers
-        this.gp.schedulers.on('register', (schedulerInfo) => {this.trigger('CallOnSchedulerRegister', JSON.stringify(schedulerInfo)); });
+        this.gp.schedulers.on('register', (schedulerInfo) => {
+            this.trigger('CallOnSchedulerRegister', JSON.stringify(schedulerInfo)); 
+        });
         this.gp.schedulers.on('error:register', (err) => {this.trigger('CallOnSchedulerRegisterError', err); });
         this.gp.schedulers.on('claimDay', (schedulerDayInfo) => {this.trigger('CallOnSchedulerClaimDay', JSON.stringify(schedulerDayInfo)); });
         this.gp.schedulers.on('error:claimDay', (err) => {this.trigger('CallOnSchedulerClaimDayError', err); });
@@ -1800,7 +1802,7 @@ export default class GamePushUnity {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ?  id  : idOrTag;
         console.log(query);
-        this.gp.schedulers.claimAllDay(query);
+        this.gp.schedulers.claimAllDays(query);
     }
 
     Schedulers_List(){
@@ -1873,7 +1875,7 @@ export default class GamePushUnity {
         const triggerId = parseInt(triggerIdOrTag, 10) || 0;
         const triggerQuery = triggerId > 0 ?  triggerId  : triggerIdOrTag;
 
-        const result = this.gp.schedulers.canClaimDay(query, day, triggerQuery);
+        const result = this.gp.schedulers.canClaimDayAdditional(query, day, triggerQuery);
         console.log(result);
         return this.toUnity(result);
     }

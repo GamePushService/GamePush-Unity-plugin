@@ -238,7 +238,8 @@ namespace Examples.Schedulers
         void OnSchedulerRegister(SchedulerInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Register");
-            ConsoleUI.Instance.Log("ID: " + data.scheduler.id);
+            ConsoleUI.Instance.Log("Day: " + data.currentDay);
+            ConsoleUI.Instance.Log("Is Registered: " + data.isRegistered);
             ConsoleUI.Instance.Log(" ");
         }
 
@@ -256,24 +257,28 @@ namespace Examples.Schedulers
         void OnSchedulerClaimDayAdditional(SchedulerDayInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim Additional");
+            ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
         void OnSchedulerClaimAllDay(SchedulerDayInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim All Day");
+            ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
         void OnSchedulerClaimAllDays(SchedulerInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim All Days");
+            ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
         void OnSchedulerJoin(PlayerScheduler data)
         {
             ConsoleUI.Instance.Log("Scheduler Join");
+            ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
     }
