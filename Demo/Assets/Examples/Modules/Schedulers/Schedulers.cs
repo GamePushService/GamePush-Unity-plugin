@@ -94,6 +94,8 @@ namespace Examples.Schedulers
             GP_Schedulers.OnSchedulerJoinError -= OnSchedulerError;
         }
 
+        #region Get Values
+
         string SchedulerTag() => _schedulerTag.text;
 
         int DayNumber()
@@ -105,6 +107,10 @@ namespace Examples.Schedulers
         }
 
         string TriggerTag() => _triggerTag.text;
+
+        #endregion
+
+        #region Module methods
 
         public void Register()
         {
@@ -150,7 +156,7 @@ namespace Examples.Schedulers
 
         public void ClaimAllDay() => GP_Schedulers.ClaimAllDay(SchedulerTag(), DayNumber());
 
-        public void ClaimAllDays() => GP_Schedulers.ClaimAllDays(SchedulerTag(), DayNumber());
+        public void ClaimAllDays() => GP_Schedulers.ClaimAllDays(SchedulerTag());
 
         public void GetScheduler()
         {
@@ -226,16 +232,17 @@ namespace Examples.Schedulers
             ConsoleUI.Instance.Log("Is Today Reward Claimed: " + isTodayRewardClaimed);
             ConsoleUI.Instance.Log(" ");
         }
+        #endregion
 
-        
+        #region Module callbacks
 
-        void OnSchedulerError(string error)
+        private void OnSchedulerError(string error)
         {
             ConsoleUI.Instance.Log("Error: " + error);
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerRegister(SchedulerInfo data)
+        private void OnSchedulerRegister(SchedulerInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Register");
             ConsoleUI.Instance.Log("Day: " + data.currentDay);
@@ -243,7 +250,7 @@ namespace Examples.Schedulers
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerClaimDay(SchedulerDayInfo data)
+        private void OnSchedulerClaimDay(SchedulerDayInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim");
             ConsoleUI.Instance.Log("ID: " + data.scheduler.id);
@@ -254,32 +261,33 @@ namespace Examples.Schedulers
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerClaimDayAdditional(SchedulerDayInfo data)
+        private void OnSchedulerClaimDayAdditional(SchedulerDayInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim Additional");
             ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerClaimAllDay(SchedulerDayInfo data)
+        private void OnSchedulerClaimAllDay(SchedulerDayInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim All Day");
             ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerClaimAllDays(SchedulerInfo data)
+        private void OnSchedulerClaimAllDays(SchedulerInfo data)
         {
             ConsoleUI.Instance.Log("Scheduler Claim All Days");
             ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
 
-        void OnSchedulerJoin(PlayerScheduler data)
+        private void OnSchedulerJoin(PlayerScheduler data)
         {
             ConsoleUI.Instance.Log("Scheduler Join");
             ConsoleUI.Instance.Log(JsonUtility.ToJson(data));
             ConsoleUI.Instance.Log(" ");
         }
+        #endregion
     }
 }

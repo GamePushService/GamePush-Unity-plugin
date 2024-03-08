@@ -97,11 +97,11 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Schedulers_ClaimAllDays(string idOrTag, int day);
-        public static void ClaimAllDays(string idOrTag, int day)
+        private static extern void GP_Schedulers_ClaimAllDays(string idOrTag);
+        public static void ClaimAllDays(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Schedulers_ClaimAllDays(idOrTag, day);
+            GP_Schedulers_ClaimAllDays(idOrTag);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers:", "ClaimDay");
