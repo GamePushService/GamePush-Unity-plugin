@@ -787,7 +787,6 @@ export default class GamePushUnity {
 
         return this.gp.achievements
             .setProgress({ ...query, progress })
-
             .then((result) => {
                 if (result.success) {
                     this.trigger('CallAchievementsProgress', idOrTag);
@@ -1169,8 +1168,22 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.variables.isPlatformVariablesAvailable);
     }
 
-    VariablesFetchPlatformVariables(params){
-        this.gp.variables.fetchPlatformVariables(params);
+    VariablesFetchPlatformVariables(values){
+        console.log(values);
+        if(values !== ""){
+            var params = values.split(',').map((o) => o.trim());
+            var map = {};
+            for (var i = 0; i < params.length; i++) {
+                var parts = params[i].split(':');
+                map[parts[0]] = parts[1].substr(1, parts[1].length - 2);
+            }
+            var options = {clientParams: map};
+            console.log(options);
+            this.gp.variables.fetchPlatformVariables(options);
+        }
+        else{
+            this.gp.variables.fetchPlatformVariables();
+        }
     }
     // Variables
 

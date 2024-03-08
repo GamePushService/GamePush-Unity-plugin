@@ -80,6 +80,65 @@ namespace GP_Utilities
         {
             public List<T> data;
         }
+
+        public static string DictionaryToJson(Dictionary<string, object> dict)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("{");
+
+            bool first = true;
+            foreach (var kvp in dict)
+            {
+                if (!first)
+                    sb.Append(",");
+                else
+                    first = false;
+
+                sb.Append($"\"{EscapeString(kvp.Key)}\":{ToJsonValue(kvp.Value)}");
+            }
+
+            sb.Append("}");
+            return sb.ToString();
+        }
+
+        static string ToJsonValue(object value)
+        {
+            if (value == null)
+                return "null";
+            if (value is int || value is long || value is float || value is double || value is decimal)
+                return value.ToString();
+            if (value is string)
+                return $"\"{EscapeString((string)value)}\"";
+            if (value is bool)
+                return (bool)value ? "true" : "false";
+            if (value is Dictionary<string, object>)
+                return DictionaryToJson((Dictionary<string, object>)value);
+            if (value is IEnumerable<object>)
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append("[");
+                bool first = true;
+                foreach (var item in (IEnumerable<object>)value)
+                {
+                    if (!first)
+                        sb.Append(",");
+                    else
+                        first = false;
+
+                    sb.Append(ToJsonValue(item));
+                }
+                sb.Append("]");
+                return sb.ToString();
+            }
+
+            Debug.LogError("Unsupported type");
+            return null;
+        }
+
+        static string EscapeString(string str)
+        {
+            return str.Replace("\"", "\\\"");
+        }
     }
 
     [System.Serializable]

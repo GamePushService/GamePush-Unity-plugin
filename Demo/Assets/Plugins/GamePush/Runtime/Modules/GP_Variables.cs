@@ -17,10 +17,10 @@ namespace GamePush
         private static event Action<List<VariablesData>> _onSuccess;
         private static event Action _onError;
 
-        public static event UnityAction<string> OnPlatformFetchSuccess;
+        public static event UnityAction<Dictionary<string, string>> OnPlatformFetchSuccess;
         public static event UnityAction<string> OnPlatformFetchError;
 
-        private static event Action<string> _onPlatformSuccess;
+        private static event Action<Dictionary<string, string>> _onPlatformSuccess;
         private static event Action<string> _onPlatformError;
 
         [DllImport("__Internal")]
@@ -138,14 +138,34 @@ namespace GamePush
             return GP_Variables_IsPlatformVariablesAvailable() == "true";
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
-                Console.Log("Platform Variables Available: ", "TRUE");
+                Console.Log("Platform Variables: ", "Is Available");
             return true;
 #endif
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Variables_FetchPlatformVariables();
-        public static void FetchPlatformVariables(Action<string> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        private static extern void GP_Variables_FetchPlatformVariables(string options = null);
+
+        public static void FetchPlatformVariables(string options, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        {
+            _onPlatformSuccess = onPlatformFetchSuccess;
+            _onPlatformError = onPlatformFetchError;
+
+            //PlatformFetchVariables platformFetch = new PlatformFetchVariables();
+            //platformFetch.clientParams = CreateClientParams(options);
+            //string clientParams = JsonUtility.ToJson(platformFetch);
+            //Debug.Log("fetchOptions: \n" + clientParams);
+            options = options + "}";
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Variables_FetchPlatformVariables(options);
+#else
+            if (GP_ConsoleController.Instance.SystemConsoleLogs)
+                Console.Log("Platform Variables: ", "Fetch" );
+#endif
+        }
+
+        public static void FetchPlatformVariables(Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
         {
             _onPlatformSuccess = onPlatformFetchSuccess;
             _onPlatformError = onPlatformFetchError;
@@ -154,9 +174,37 @@ namespace GamePush
             GP_Variables_FetchPlatformVariables();
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("VARIABLES: ", "FETCH");
+                Console.Log("Platform Variables: ", "FETCH");
 #endif
         }
+
+
+
+        private static string CreateClientParams(string options)
+        {
+            string[] pairs = options.Split(",");
+
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+
+            foreach (string pair in pairs)
+            {
+                Debug.Log(pair);
+                string[] keyValue = pair.Split(':');
+
+                string key = keyValue[0].Trim().Trim('"');
+                Debug.Log(key);
+                object value = keyValue[1].Trim().Trim('"');
+                Debug.Log(value);
+
+                dict.Add(key, value);
+            }
+
+            string clientParams = GP_JSON.DictionaryToJson(dict);
+
+            return clientParams;
+        }
+
+        
 
         private void CallVariablesFetchSuccess(string data)
         {
@@ -172,19 +220,46 @@ namespace GamePush
 
         private void CallOnFetchPlatformVariables(string variables)
         {
-            _onPlatformSuccess?.Invoke(variables);
-            OnPlatformFetchSuccess?.Invoke(variables);
+            Dictionary<string, string> dictionary = MapToDictionary(variables);
+
+            _onPlatformSuccess?.Invoke(dictionary);
+            OnPlatformFetchSuccess?.Invoke(dictionary);
         }
 
-        private void CallVariablesFetchError(string error)
+        private void CallOnFetchPlatformVariablesError(string error)
         {
             _onPlatformError?.Invoke(error);
             OnPlatformFetchError?.Invoke(error);
         }
 
+        public static Dictionary<string, string> MapToDictionary(string map)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
+            string trimmedString = map.TrimStart('{').TrimEnd('}');
+            string[] pairs = trimmedString.Split(",");
+
+
+            foreach (string pair in pairs)
+            {
+                string[] keyValue = pair.Split(':');
+
+                string key = keyValue[0].Trim().Trim('"');
+                string value = keyValue[1].Trim().Trim('"');
+
+                dictionary.Add(key, value);
+            }
+
+            return dictionary;
+        }
 
     }
+    [System.Serializable]
+    public class PlatformFetchVariables
+    {
+        public string clientParams;
+    }
+
 
     [System.Serializable]
     public class VariablesData
