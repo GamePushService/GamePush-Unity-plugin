@@ -1169,7 +1169,6 @@ export default class GamePushUnity {
     }
 
     VariablesFetchPlatformVariables(values){
-        console.log(values);
         if(values !== ""){
             var params = values.split(',').map((o) => o.trim());
             var map = {};
