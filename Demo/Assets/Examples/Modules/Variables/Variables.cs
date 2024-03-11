@@ -14,7 +14,10 @@ namespace Examples.Variables
         [SerializeField] private Button _checkButton;
         [SerializeField] private Button _fetchPlatformButton;
         [SerializeField] private Button _checkPlatformButton;
-        [SerializeField] private TMP_InputField _optionsInput;
+        [SerializeField] private TMP_InputField _key1;
+        [SerializeField] private TMP_InputField _value1;
+        [SerializeField] private TMP_InputField _key2;
+        [SerializeField] private TMP_InputField _value2;
 
         private void OnEnable()
         {
@@ -53,18 +56,29 @@ namespace Examples.Variables
         {
             ConsoleUI.Instance.Log("Fetch Platform Variables");
 
-            if (_optionsInput.text != "")
+            Dictionary<string, string> dict = GetDictionary();
+            
+            if (dict.Count > 0)
             {
-                ConsoleUI.Instance.Log("options: " + _optionsInput.text);
-                GP_Variables.FetchPlatformVariables(_optionsInput.text, OnPlatformVariablesFetchSuccess, OnPlatformVariablesFetchError);
+                GP_Variables.FetchPlatformVariables(dict, OnPlatformVariablesFetchSuccess, OnPlatformVariablesFetchError);
                 
             }
             else
             {
-                ConsoleUI.Instance.Log("no options");
                 GP_Variables.FetchPlatformVariables(OnPlatformVariablesFetchSuccess, OnPlatformVariablesFetchError);
             }
                 
+        }
+
+        private Dictionary<string, string> GetDictionary()
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            if (_key1.text != "") dict.TryAdd(_key1.text, _value1.text);
+            if (_key2.text != "") dict.TryAdd(_key2.text, _value2.text);
+
+            Debug.Log(dict.Count + " pairs");
+
+            return dict;
         }
 
         private void OnFetchSuccess(List<VariablesData> variables)

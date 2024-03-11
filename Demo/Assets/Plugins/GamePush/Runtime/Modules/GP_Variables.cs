@@ -146,7 +146,7 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_Variables_FetchPlatformVariables(string options = null);
 
-        public static void FetchPlatformVariables(string options, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        public static void FetchPlatformVariables(Dictionary<string, string> optionsDict, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
         {
             _onPlatformSuccess = onPlatformFetchSuccess;
             _onPlatformError = onPlatformFetchError;
@@ -155,7 +155,9 @@ namespace GamePush
             //platformFetch.clientParams = CreateClientParams(options);
             //string clientParams = JsonUtility.ToJson(platformFetch);
             //Debug.Log("fetchOptions: \n" + clientParams);
-            options = options + "}";
+
+            string options = CreateFetchOption(optionsDict);
+            Debug.Log(options);
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables(options);
@@ -178,7 +180,21 @@ namespace GamePush
 #endif
         }
 
+        private static string CreateFetchOption(Dictionary<string, string> dict)
+        {
+            string options = "";
 
+            foreach(string key in dict.Keys)
+            {
+                string value = dict[key];
+
+                options += key + ": " + value + ",";
+            }
+
+            options = options.Remove(options.Length - 1);
+
+            return options;
+        }
 
         private static string CreateClientParams(string options)
         {

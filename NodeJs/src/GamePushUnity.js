@@ -1169,14 +1169,19 @@ export default class GamePushUnity {
     }
 
     VariablesFetchPlatformVariables(values){
+        console.log(values);
         if(values !== ""){
             var params = values.split(',').map((o) => o.trim());
             var map = {};
             for (var i = 0; i < params.length; i++) {
                 var parts = params[i].split(':');
-                map[parts[0]] = parts[1].substr(1, parts[1].length - 2);
+                map[parts[0]] = parts[1].trim();
+                console.log(map[parts[0]]);
             }
-            var options = {clientParams: map};
+            var options = 
+            {
+                clientParams: map
+            };
             console.log(options);
             this.gp.variables.fetchPlatformVariables(options);
         }

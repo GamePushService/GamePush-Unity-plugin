@@ -49,7 +49,7 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Schedulers>();
             SDK.AddComponent<GP_Custom>();
 
-            Debug.Log($"GamePush plugin {VERSION} ready");
+            Debug.Log($"GamePush plugin ready ({VERSION})");
         }
     }
 }
