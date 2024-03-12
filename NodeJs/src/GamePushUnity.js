@@ -1169,7 +1169,7 @@ export default class GamePushUnity {
     }
 
     VariablesFetchPlatformVariables(values){
-        console.log(values);
+        //console.log(values);
         if(values !== ""){
             var params = values.split(',').map((o) => o.trim());
             var map = {};
@@ -1182,7 +1182,7 @@ export default class GamePushUnity {
             {
                 clientParams: map
             };
-            console.log(options);
+            //console.log(options);
             this.gp.variables.fetchPlatformVariables(options);
         }
         else{

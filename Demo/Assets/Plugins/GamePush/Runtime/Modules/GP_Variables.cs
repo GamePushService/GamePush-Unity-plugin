@@ -151,13 +151,7 @@ namespace GamePush
             _onPlatformSuccess = onPlatformFetchSuccess;
             _onPlatformError = onPlatformFetchError;
 
-            //PlatformFetchVariables platformFetch = new PlatformFetchVariables();
-            //platformFetch.clientParams = CreateClientParams(options);
-            //string clientParams = JsonUtility.ToJson(platformFetch);
-            //Debug.Log("fetchOptions: \n" + clientParams);
-
             string options = CreateFetchOption(optionsDict);
-            Debug.Log(options);
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables(options);

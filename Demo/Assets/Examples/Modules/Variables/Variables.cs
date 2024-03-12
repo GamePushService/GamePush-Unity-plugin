@@ -95,8 +95,10 @@ namespace Examples.Variables
 
         private void OnPlatformVariablesFetchSuccess(Dictionary<string, string> variables)
         {
-            ConsoleUI.Instance.Log("TEST1: " + variables["TEST1"]);
-            ConsoleUI.Instance.Log("TEST2: " + variables["TEST2"]);
+            foreach(string key in variables.Keys)
+            {
+                ConsoleUI.Instance.Log(key + " : " + variables[key]);
+            }
         }
 
         private void OnPlatformVariablesFetchError(string err) => ConsoleUI.Instance.Log("FETCH ERROR: " + err);
