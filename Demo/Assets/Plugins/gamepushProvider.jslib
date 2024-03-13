@@ -1265,6 +1265,26 @@ mergeInto(LibraryManager.library, {
 
     /* SCHEDULERS */
 
+    /* IMAGES */
+
+    GP_Images_Upload: function (tags) {
+        GamePush.ImagesUpload(UTF8ToString(tags));
+    },
+    GP_Images_UploadUrl: function (url, filename, tags) {
+        GamePush.ImagesUploadUrl(UTF8ToString(url), UTF8ToString(filename), UTF8ToString(tags));
+    },
+    GP_Images_ChooseFile: function (type) {
+        GamePush.ImagesChooseFile(UTF8ToString(type));
+    },
+    GP_Images_Fetch: function (filter) {
+        GamePush.ImagesFetch(UTF8ToString(filter));
+    },
+    GP_Images_FetchMore: function (filter) {
+        GamePush.ImagesFetchMore(UTF8ToString(filter));
+    },
+
+    /* IMAGES */
+
     /* CUSTOM */
     GP_CustomCall: function(name, args){
         GamePush.CustomCall(UTF8ToString(name), UTF8ToString(args));

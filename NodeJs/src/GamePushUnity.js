@@ -1661,7 +1661,6 @@ export default class GamePushUnity {
     // Triggers
 
     // Events
-
     Events_Join(idOrTag){
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
@@ -1904,8 +1903,80 @@ export default class GamePushUnity {
         console.log(result);
         return this.toUnity(result);
     }
+    // Schedulers
 
-    //Schedulers
+    // Images
+    ImagesUpload(tags) {
+        this.gp.files
+            .upload({
+                tags: tags
+                    .split(',')
+                    .map((o) => o.trim())
+                    .filter((f) => f),
+            })
+            .then((result) => {
+                this.trigger('CallFilesUploadSuccess', JSON.stringify(result));
+            })
+            .catch((err) => {
+                this.trigger('CallFilesUploadError');
+            });
+    }
+
+    ImagesUploadUrl(url, filename, tags) {
+        this.gp.files
+            .uploadUrl({
+                url,
+                filename,
+                tags: tags
+                    .split(',')
+                    .map((o) => o.trim())
+                    .filter((f) => f),
+            })
+            .then((result) => {
+                this.trigger('CallFilesUploadUrlSuccess', JSON.stringify(result));
+            })
+            .catch((err) => {
+                this.trigger('CallFilesUploadUrlError');
+            });
+    }
+
+    ImagesChooseFile(type) {
+        this.gp.files
+            .chooseFile(type)
+            .then((result) => {
+                this.trigger('CallFilesChooseFile', result.tempUrl);
+            })
+            .catch((err) => {
+                this.trigger('CallFilesChooseFileError');
+            });
+    }
+
+    ImagesFetch(filter) {
+        const query = JSON.parse(filter);
+        this.gp.images.fetch(query)
+            .then((result) => {
+                console.log(result);
+                //this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
+                this.trigger('CallImagesFetchSuccess', JSON.stringify(result));
+            })
+            .catch((err) => {
+                this.trigger('CallImagesFetchError');
+            });
+    }
+
+    ImagesFetchMore(filter) {
+        const query = JSON.parse(filter);
+        this.gp.files.fetchMore(query)
+            .then((result) => {
+                this.trigger('CallFilesFetchMoreCanLoadMore', result.canLoadMore);
+                this.trigger('CallFilesFetchMoreSuccess', JSON.stringify(result.items));
+            })
+            .catch((err) => {
+                this.trigger('CallFilesFetchMoreError');
+            });
+    }
+
+    // Images
 
     // Custom
     CustomCall(name, args) {
