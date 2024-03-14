@@ -64,7 +64,7 @@ namespace GamePush
             // level,exp,rank
             string includeFields = ""
         );
-        public static void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "")
+        public static void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields);

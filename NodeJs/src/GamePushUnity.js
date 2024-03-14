@@ -1907,7 +1907,7 @@ export default class GamePushUnity {
 
     // Images
     ImagesUpload(tags) {
-        this.gp.files
+        this.gp.images
             .upload({
                 tags: tags
                     .split(',')
@@ -1915,10 +1915,10 @@ export default class GamePushUnity {
                     .filter((f) => f),
             })
             .then((result) => {
-                this.trigger('CallFilesUploadSuccess', JSON.stringify(result));
+                this.trigger('CallImagesUploadSuccess', JSON.stringify(result));
             })
             .catch((err) => {
-                this.trigger('CallFilesUploadError');
+                this.trigger('CallImagesUploadError', err);
             });
     }
 
@@ -1940,14 +1940,14 @@ export default class GamePushUnity {
             });
     }
 
-    ImagesChooseFile(type) {
-        this.gp.files
-            .chooseFile(type)
+    ImagesChooseFile() {
+        this.gp.images
+            .chooseFile()
             .then((result) => {
-                this.trigger('CallFilesChooseFile', result.tempUrl);
+                this.trigger('CallImagesChooseFile', result);
             })
             .catch((err) => {
-                this.trigger('CallFilesChooseFileError');
+                this.trigger('CallImagesChooseFileError', err);
             });
     }
 
@@ -1960,7 +1960,7 @@ export default class GamePushUnity {
                 this.trigger('CallImagesFetchSuccess', JSON.stringify(result));
             })
             .catch((err) => {
-                this.trigger('CallImagesFetchError');
+                this.trigger('CallImagesFetchError', err);
             });
     }
 

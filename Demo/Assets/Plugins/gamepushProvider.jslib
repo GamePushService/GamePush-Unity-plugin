@@ -1273,8 +1273,8 @@ mergeInto(LibraryManager.library, {
     GP_Images_UploadUrl: function (url, filename, tags) {
         GamePush.ImagesUploadUrl(UTF8ToString(url), UTF8ToString(filename), UTF8ToString(tags));
     },
-    GP_Images_ChooseFile: function (type) {
-        GamePush.ImagesChooseFile(UTF8ToString(type));
+    GP_Images_Choose: function () {
+        GamePush.ImagesChooseFile();
     },
     GP_Images_Fetch: function (filter) {
         GamePush.ImagesFetch(UTF8ToString(filter));
