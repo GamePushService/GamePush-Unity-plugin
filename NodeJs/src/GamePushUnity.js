@@ -1923,20 +1923,19 @@ export default class GamePushUnity {
     }
 
     ImagesUploadUrl(url, filename, tags) {
-        this.gp.files
+        this.gp.images
             .uploadUrl({
                 url,
-                filename,
                 tags: tags
                     .split(',')
                     .map((o) => o.trim())
                     .filter((f) => f),
             })
             .then((result) => {
-                this.trigger('CallFilesUploadUrlSuccess', JSON.stringify(result));
+                this.trigger('CallImagesUploadUrlSuccess', JSON.stringify(result));
             })
             .catch((err) => {
-                this.trigger('CallFilesUploadUrlError');
+                this.trigger('CallImagesUploadUrlError');
             });
     }
 
@@ -1944,7 +1943,7 @@ export default class GamePushUnity {
         this.gp.images
             .chooseFile()
             .then((result) => {
-                this.trigger('CallImagesChooseFile', result);
+                this.trigger('CallImagesChooseFile', JSON.stringify(result));
             })
             .catch((err) => {
                 this.trigger('CallImagesChooseFileError', err);
@@ -1956,8 +1955,8 @@ export default class GamePushUnity {
         this.gp.images.fetch(query)
             .then((result) => {
                 console.log(result);
-                //this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
-                this.trigger('CallImagesFetchSuccess', JSON.stringify(result));
+                this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
+                this.trigger('CallImagesFetchSuccess', JSON.stringify(result.items));
             })
             .catch((err) => {
                 this.trigger('CallImagesFetchError', err);
@@ -1966,14 +1965,26 @@ export default class GamePushUnity {
 
     ImagesFetchMore(filter) {
         const query = JSON.parse(filter);
-        this.gp.files.fetchMore(query)
+        this.gp.images.fetchMore(query)
             .then((result) => {
-                this.trigger('CallFilesFetchMoreCanLoadMore', result.canLoadMore);
-                this.trigger('CallFilesFetchMoreSuccess', JSON.stringify(result.items));
+                this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
+                this.trigger('CallImagesFetchSuccess', JSON.stringify(result.items));
             })
             .catch((err) => {
-                this.trigger('CallFilesFetchMoreError');
+                this.trigger('CallImagesFetchError', err);
             });
+    }
+
+    ImagesResize(params){
+        const query = JSON.parse(params);
+        this.gp.images.resize(query.url, query.width, query.height, query.cutBySize)
+            .then((result) => {
+                this.trigger('CallImagesResize', JSON.stringify(result));
+        })
+        .catch((err) => {
+            this.trigger('CallImagesResizeError', err);
+        });
+
     }
 
     // Images

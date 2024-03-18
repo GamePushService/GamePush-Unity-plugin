@@ -22,8 +22,8 @@ namespace Examples.GamesCollections
         }
 
 
-        public void Open() => GP_GamesCollections.Open("PUZZLES", OnOpen, OnClose);
-        public void Fetch() => GP_GamesCollections.Fetch("PUZZLES", OnFetchSuccess, OnFetchError);
+        public void Open() => GP_GamesCollections.Open("ALL", OnOpen, OnClose);
+        public void Fetch() => GP_GamesCollections.Fetch("ALL", OnFetchSuccess, OnFetchError);
 
 
         private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");

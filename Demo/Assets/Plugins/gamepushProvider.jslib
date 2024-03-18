@@ -1270,8 +1270,8 @@ mergeInto(LibraryManager.library, {
     GP_Images_Upload: function (tags) {
         GamePush.ImagesUpload(UTF8ToString(tags));
     },
-    GP_Images_UploadUrl: function (url, filename, tags) {
-        GamePush.ImagesUploadUrl(UTF8ToString(url), UTF8ToString(filename), UTF8ToString(tags));
+    GP_Images_UploadUrl: function (url, tags) {
+        GamePush.ImagesUploadUrl(UTF8ToString(url), UTF8ToString(tags));
     },
     GP_Images_Choose: function () {
         GamePush.ImagesChooseFile();
@@ -1281,6 +1281,9 @@ mergeInto(LibraryManager.library, {
     },
     GP_Images_FetchMore: function (filter) {
         GamePush.ImagesFetchMore(UTF8ToString(filter));
+    },
+    GP_Images_Resize: function (params) {
+        GamePush.ImagesResize(UTF8ToString(params));
     },
 
     /* IMAGES */
