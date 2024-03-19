@@ -13,18 +13,36 @@ namespace GamePush
     {
         public static event UnityAction<List<ImageData>> OnImagesFetchSuccess;
         public static event UnityAction<string> OnImagesFetchError;
-
         public static event UnityAction<bool> OnImagesCanLoadMore;
+
+        public static event UnityAction<string> OnImagesUploadSuccess;
+        public static event UnityAction<string> OnImagesUploadError;
+
+        public static event UnityAction<string> OnImagesChooseFile;
+        public static event UnityAction<string> OnImagesChooseError;
+
+        public static event UnityAction<string> OnImagesResize;
+        public static event UnityAction<string> OnImagesResizeError;
 
         private static event Action<List<ImageData>> _onImagesFetchSuccess;
         private static event Action<string> _onImagesFetchError;
+        private static event Action<bool> _onImagesCanLoadMore;
 
+        public static event Action<string> _onImagesUploadSuccess;
+        public static event Action<string> _onImagesUploadError;
 
+        public static event Action<string> _onImagesChooseFile;
+        public static event Action<string> _onImagesChooseError;
+
+        public static event Action<string> _onImagesResize;
+        public static event Action<string> _onImagesResizeError;
 
         [DllImport("__Internal")]
         private static extern void GP_Images_Choose();
-        public static void Choose()
+        public static void Choose(Action<string> onImagesChooseFile = null, Action<string> onImagesChooseError = null)
         {
+            _onImagesChooseFile = onImagesChooseFile;
+            _onImagesChooseError = onImagesChooseError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_Choose();
@@ -36,8 +54,10 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_Upload(string tags);
-        public static void Upload(string[] tags = null)
+        public static void Upload(string[] tags = null, Action<string> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
+            _onImagesUploadSuccess = onImagesUploadSuccess;
+            _onImagesUploadError = onImagesUploadError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_Upload(JsonUtility.ToJson(tags));
@@ -49,8 +69,10 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_UploadUrl(string url, string tags);
-        public static void UploadUrl(string url, string[] tags = null)
+        public static void UploadUrl(string url, string[] tags = null, Action<string> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
+            _onImagesUploadSuccess = onImagesUploadSuccess;
+            _onImagesUploadError = onImagesUploadError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_Upload(url, JsonUtility.ToJson(tags));
@@ -81,8 +103,10 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_FetchMore(string filter);
-        public static void FetchMore(ImagesFetchFilter filter = null)
+        public static void FetchMore(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
+            _onImagesFetchSuccess = onImagesFetchSuccess;
+            _onImagesFetchError = onImagesFetchError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             if (filter == null)
@@ -91,10 +115,35 @@ namespace GamePush
                 GP_Images_FetchMore(JsonUtility.ToJson(filter));
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "FETCH");
+                Console.Log("Images: ", "FETCH MORE");
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Images_Resize(string filter);
+        public static void Resize(ImageResizeData resizeData = null, Action<string> onImagesResize = null, Action<string> onImagesResizeError = null)
+        {
+            _onImagesResize = onImagesResize;
+            _onImagesResizeError = onImagesResize;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            if (resizeData == null)
+                GP_Images_Resize(JsonUtility.ToJson(new ImageResizeData()));
+            else
+                GP_Images_Resize(JsonUtility.ToJson(resizeData));
+#else
+            if (GP_ConsoleController.Instance.SystemConsoleLogs)
+                Console.Log("Images: ", "RESIZE");
+#endif
+        }
+
+        public static string FormatToPng(string url) => FormatUrl(url, ".png");
+
+        public static string FormatUrl(string url, string format)
+        {
+            url.Replace(".webp", format);
+            return url;
+        }
 
 
         private void CallImagesFetchSuccess(string result)
@@ -119,32 +168,38 @@ namespace GamePush
 
         private void CallImagesUploadSuccess(string result)
         {
-            Console.Log("Result: " + result);
+            _onImagesUploadSuccess?.Invoke(result);
+            OnImagesUploadSuccess?.Invoke(result);
         }
 
         private void CallImagesUploadError(string error)
         {
-            Console.Log("Error: " + error);
+            _onImagesUploadError?.Invoke(error);
+            OnImagesUploadError?.Invoke(error);
         }
 
         private void CallImagesChooseFile(string result)
         {
-            Console.Log("Result: " + result);
+            _onImagesChooseFile?.Invoke(result);
+            OnImagesChooseFile?.Invoke(result);
         }
 
         private void CallImagesChooseFileError(string error)
         {
-            Console.Log("Error: " + error);
+            _onImagesChooseError?.Invoke(error);
+            OnImagesChooseError?.Invoke(error);
         }
 
         private void CallImagesResize(string result)
         {
-
+            _onImagesResize?.Invoke(result);
+            OnImagesResize?.Invoke(result);
         }
 
         private void CallImagesResizeError(string error)
         {
-
+            _onImagesResizeError?.Invoke(error);
+            OnImagesResizeError?.Invoke(error);
         }
 
     }
@@ -164,9 +219,9 @@ namespace GamePush
     public class ImageResizeData
     {
         public string url;
-        public int width;
-        public int height;
-        public bool cutBySize;
+        public int width = 256;
+        public int height = 256;
+        public bool cutBySize = true;
     }
 
     [System.Serializable]

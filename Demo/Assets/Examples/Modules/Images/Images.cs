@@ -18,28 +18,40 @@ namespace Examples.Images
         [SerializeField] private Button _fetchMoreButton;
         [SerializeField] private Button _resizeButton;
         [Space]
+        [SerializeField] private TMP_InputField _inputTags;
+        [SerializeField] private TMP_InputField _inputUrl;
+        [SerializeField] private TMP_InputField _inputW;
+        [SerializeField] private TMP_InputField _inputH;
+        [Space]
         [SerializeField] private Button _setImageButton;
         [SerializeField] private Image _image;
-        [SerializeField] private TMP_InputField _inputUrl;
-        [SerializeField] private TMP_InputField _inputTags;
 
         private void OnEnable()
         {
             _fetchButton.onClick.AddListener(Fetch);
+            _fetchMoreButton.onClick.AddListener(FetchMore);
             _uploadButton.onClick.AddListener(Upload);
             _uploadUrlButton.onClick.AddListener(Upload);
             _chooseButton.onClick.AddListener(Choose);
+            _resizeButton.onClick.AddListener(Resize);
 
             _setImageButton.onClick.AddListener(SetImage);
+
+            GP_Images.OnImagesCanLoadMore += CanLoadMore;
         }
 
         private void OnDisable()
         {
             _fetchButton.onClick.RemoveListener(Fetch);
+            _fetchMoreButton.onClick.RemoveListener(FetchMore);
             _uploadButton.onClick.RemoveListener(Upload);
+            _uploadUrlButton.onClick.RemoveListener(UploadUrl);
             _chooseButton.onClick.RemoveListener(Choose);
+            _resizeButton.onClick.RemoveListener(Resize);
 
             _setImageButton.onClick.RemoveListener(SetImage);
+
+            GP_Images.OnImagesCanLoadMore -= CanLoadMore;
         }
 
         private string[] GetTags()
@@ -47,16 +59,71 @@ namespace Examples.Images
             return _inputTags.text.Split(",");
         }
 
-        public void Fetch() => GP_Images.Fetch();
-        public void Upload() => GP_Images.Upload(GetTags());
-        public void UploadUrl() => GP_Images.UploadUrl(_inputUrl.text, GetTags());
-        public void Choose() => GP_Images.Choose();
-
-        public async void SetImage()
+        public void Fetch()
         {
-            await GP_Utility.DownloadImageAsync(_inputUrl.text, _image);
+            GP_Images.Fetch(null, OnImagesFetch, OnImagesError);
         }
 
+        public void FetchMore()
+        {
+            GP_Images.FetchMore(null, OnImagesFetch, OnImagesError);
+        }
 
+        public void Upload() => GP_Images.Upload(GetTags(), OnImagesUpload, OnImagesError);
+        public void UploadUrl() => GP_Images.UploadUrl(_inputUrl.text, GetTags(), OnImagesUpload, OnImagesError);
+
+        public void Choose() => GP_Images.Choose(OnImagesChoose, OnImagesError);
+        public void Resize()
+        {
+            ImageResizeData resizeData = new ImageResizeData();
+            resizeData.url = _inputUrl.text;
+            resizeData.width = int.Parse(_inputW.text);
+            resizeData.height = int.Parse(_inputH.text);
+
+            GP_Images.Resize(resizeData, OnImagesResize, OnImagesError);
+        }
+          
+        public async void SetImage()
+        {
+            string url = GP_Images.FormatToPng(_inputUrl.text);
+
+            await GP_Utility.DownloadImageAsync(url, _image);
+        }
+
+        private void OnImagesFetch(List<ImageData> images)
+        {
+            foreach(ImageData image in images)
+            {
+                ConsoleUI.Instance.Log("ID: " + image.id);
+                ConsoleUI.Instance.Log("PlayerID: " + image.playerId);
+                ConsoleUI.Instance.Log("URL: " + image.src);
+                ConsoleUI.Instance.Log(" ");
+            }
+        }
+
+        private void OnImagesUpload(string result)
+        {
+            ConsoleUI.Instance.Log("result: " + result);
+        }
+
+        private void OnImagesChoose(string result)
+        {
+            ConsoleUI.Instance.Log("result: " + result);
+        }
+
+        private void OnImagesResize(string result)
+        {
+            ConsoleUI.Instance.Log("result: " + result);
+        }
+
+        private void OnImagesError(string error)
+        {
+            ConsoleUI.Instance.Log("ERROR: " + error);
+        }
+
+        public void CanLoadMore(bool can)
+        {
+            ConsoleUI.Instance.Log("Can load more: " + can);
+        }
     }
 }
