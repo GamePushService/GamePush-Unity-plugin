@@ -31,7 +31,7 @@ namespace Examples.Images
             _fetchButton.onClick.AddListener(Fetch);
             _fetchMoreButton.onClick.AddListener(FetchMore);
             _uploadButton.onClick.AddListener(Upload);
-            _uploadUrlButton.onClick.AddListener(Upload);
+            _uploadUrlButton.onClick.AddListener(UploadUrl);
             _chooseButton.onClick.AddListener(Choose);
             _resizeButton.onClick.AddListener(Resize);
 
@@ -101,9 +101,12 @@ namespace Examples.Images
             }
         }
 
-        private void OnImagesUpload(string result)
+        private void OnImagesUpload(ImageData image)
         {
-            ConsoleUI.Instance.Log("result: " + result);
+            ConsoleUI.Instance.Log("ID: " + image.id);
+            ConsoleUI.Instance.Log("PlayerID: " + image.playerId);
+            ConsoleUI.Instance.Log("URL: " + image.src);
+            ConsoleUI.Instance.Log(" ");
         }
 
         private void OnImagesChoose(string result)
@@ -124,6 +127,7 @@ namespace Examples.Images
         public void CanLoadMore(bool can)
         {
             ConsoleUI.Instance.Log("Can load more: " + can);
+            ConsoleUI.Instance.Log(" ");
         }
     }
 }

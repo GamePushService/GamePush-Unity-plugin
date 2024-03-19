@@ -15,7 +15,7 @@ namespace GamePush
         public static event UnityAction<string> OnImagesFetchError;
         public static event UnityAction<bool> OnImagesCanLoadMore;
 
-        public static event UnityAction<string> OnImagesUploadSuccess;
+        public static event UnityAction<ImageData> OnImagesUploadSuccess;
         public static event UnityAction<string> OnImagesUploadError;
 
         public static event UnityAction<string> OnImagesChooseFile;
@@ -26,9 +26,8 @@ namespace GamePush
 
         private static event Action<List<ImageData>> _onImagesFetchSuccess;
         private static event Action<string> _onImagesFetchError;
-        private static event Action<bool> _onImagesCanLoadMore;
 
-        public static event Action<string> _onImagesUploadSuccess;
+        public static event Action<ImageData> _onImagesUploadSuccess;
         public static event Action<string> _onImagesUploadError;
 
         public static event Action<string> _onImagesChooseFile;
@@ -54,7 +53,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_Upload(string tags);
-        public static void Upload(string[] tags = null, Action<string> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
+        public static void Upload(string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
             _onImagesUploadSuccess = onImagesUploadSuccess;
             _onImagesUploadError = onImagesUploadError;
@@ -69,13 +68,13 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_UploadUrl(string url, string tags);
-        public static void UploadUrl(string url, string[] tags = null, Action<string> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
+        public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
             _onImagesUploadSuccess = onImagesUploadSuccess;
             _onImagesUploadError = onImagesUploadError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Images_Upload(url, JsonUtility.ToJson(tags));
+            GP_Images_UploadUrl(url, JsonUtility.ToJson(tags));
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("Images: ", "Upload");
@@ -168,8 +167,9 @@ namespace GamePush
 
         private void CallImagesUploadSuccess(string result)
         {
-            _onImagesUploadSuccess?.Invoke(result);
-            OnImagesUploadSuccess?.Invoke(result);
+            ImageData imageData = GP_JSON.Get<ImageData>(result);
+            _onImagesUploadSuccess?.Invoke(imageData);
+            OnImagesUploadSuccess?.Invoke(imageData);
         }
 
         private void CallImagesUploadError(string error)

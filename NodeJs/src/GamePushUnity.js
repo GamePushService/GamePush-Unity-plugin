@@ -1922,7 +1922,7 @@ export default class GamePushUnity {
             });
     }
 
-    ImagesUploadUrl(url, filename, tags) {
+    ImagesUploadUrl(url, tags) {
         this.gp.images
             .uploadUrl({
                 url,
@@ -1977,13 +1977,8 @@ export default class GamePushUnity {
 
     ImagesResize(params){
         const query = JSON.parse(params);
-        this.gp.images.resize(query.url, query.width, query.height, query.cutBySize)
-            .then((result) => {
-                this.trigger('CallImagesResize', JSON.stringify(result));
-        })
-        .catch((err) => {
-            this.trigger('CallImagesResizeError', err);
-        });
+        const url = this.gp.images.resize(query.url, query.width, query.height, query.cutBySize)
+        this.trigger('CallImagesResize', url);
 
     }
 
