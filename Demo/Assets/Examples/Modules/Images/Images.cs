@@ -54,10 +54,8 @@ namespace Examples.Images
             GP_Images.OnImagesCanLoadMore -= CanLoadMore;
         }
 
-        private string[] GetTags()
-        {
-            return _inputTags.text.Split(",");
-        }
+        private string[] GetTags() => _inputTags.text.Split(",");
+        
 
         public void Fetch()
         {
@@ -86,7 +84,7 @@ namespace Examples.Images
         public async void SetImage()
         {
             string url = GP_Images.FormatToPng(_inputUrl.text);
-
+            ConsoleUI.Instance.Log(url);
             await GP_Utility.DownloadImageAsync(url, _image);
         }
 
@@ -103,20 +101,23 @@ namespace Examples.Images
 
         private void OnImagesUpload(ImageData image)
         {
+            _inputUrl.text = image.src;
+            ConsoleUI.Instance.Log("Upload image");
             ConsoleUI.Instance.Log("ID: " + image.id);
             ConsoleUI.Instance.Log("PlayerID: " + image.playerId);
-            ConsoleUI.Instance.Log("URL: " + image.src);
             ConsoleUI.Instance.Log(" ");
         }
 
         private void OnImagesChoose(string result)
         {
+            _inputUrl.text = result;
             ConsoleUI.Instance.Log("result: " + result);
         }
 
         private void OnImagesResize(string result)
         {
-            ConsoleUI.Instance.Log("result: " + result);
+            _inputUrl.text = result;
+            ConsoleUI.Instance.Log("Resize image: " + result);
         }
 
         private void OnImagesError(string error)

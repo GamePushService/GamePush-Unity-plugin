@@ -1935,7 +1935,7 @@ export default class GamePushUnity {
                 this.trigger('CallImagesUploadUrlSuccess', JSON.stringify(result));
             })
             .catch((err) => {
-                this.trigger('CallImagesUploadUrlError');
+                this.trigger('CallImagesUploadUrlError', err);
             });
     }
 
@@ -1943,7 +1943,7 @@ export default class GamePushUnity {
         this.gp.images
             .chooseFile()
             .then((result) => {
-                this.trigger('CallImagesChooseFile', JSON.stringify(result));
+                this.trigger('CallImagesChooseFile', result.tempUrl);
             })
             .catch((err) => {
                 this.trigger('CallImagesChooseFileError', err);
@@ -1977,6 +1977,7 @@ export default class GamePushUnity {
 
     ImagesResize(params){
         const query = JSON.parse(params);
+        console.log(query);
         const url = this.gp.images.resize(query.url, query.width, query.height, query.cutBySize)
         this.trigger('CallImagesResize', url);
 

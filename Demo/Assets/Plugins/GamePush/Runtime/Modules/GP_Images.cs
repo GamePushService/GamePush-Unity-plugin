@@ -18,6 +18,9 @@ namespace GamePush
         public static event UnityAction<ImageData> OnImagesUploadSuccess;
         public static event UnityAction<string> OnImagesUploadError;
 
+        public static event UnityAction<ImageData> OnImagesUploadUrlSuccess;
+        public static event UnityAction<string> OnImagesUploadUrlError;
+
         public static event UnityAction<string> OnImagesChooseFile;
         public static event UnityAction<string> OnImagesChooseError;
 
@@ -29,6 +32,9 @@ namespace GamePush
 
         public static event Action<ImageData> _onImagesUploadSuccess;
         public static event Action<string> _onImagesUploadError;
+
+        public static event Action<ImageData> _onImagesUploadUrlSuccess;
+        public static event Action<string> _onImagesUploadUrlError;
 
         public static event Action<string> _onImagesChooseFile;
         public static event Action<string> _onImagesChooseError;
@@ -68,10 +74,10 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Images_UploadUrl(string url, string tags);
-        public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
+        public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadUrlSuccess = null, Action<string> onImagesUploadUrlError = null)
         {
-            _onImagesUploadSuccess = onImagesUploadSuccess;
-            _onImagesUploadError = onImagesUploadError;
+            _onImagesUploadUrlSuccess = onImagesUploadUrlSuccess;
+            _onImagesUploadUrlError = onImagesUploadUrlError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_UploadUrl(url, JsonUtility.ToJson(tags));
@@ -140,8 +146,8 @@ namespace GamePush
 
         public static string FormatUrl(string url, string format)
         {
-            url.Replace(".webp", format);
-            return url;
+            string formatUrl = url.Replace(".webp", format);
+            return formatUrl;
         }
 
 
@@ -178,8 +184,22 @@ namespace GamePush
             OnImagesUploadError?.Invoke(error);
         }
 
+        private void CallImagesUploadUrlSuccess(string result)
+        {
+            ImageData imageData = GP_JSON.Get<ImageData>(result);
+            _onImagesUploadUrlSuccess?.Invoke(imageData);
+            OnImagesUploadUrlSuccess?.Invoke(imageData);
+        }
+
+        private void CallImagesUploadUrlError(string error)
+        {
+            _onImagesUploadUrlError?.Invoke(error);
+            OnImagesUploadUrlError?.Invoke(error);
+        }
+
         private void CallImagesChooseFile(string result)
         {
+            //result = result.Replace("blob:", "");
             _onImagesChooseFile?.Invoke(result);
             OnImagesChooseFile?.Invoke(result);
         }
