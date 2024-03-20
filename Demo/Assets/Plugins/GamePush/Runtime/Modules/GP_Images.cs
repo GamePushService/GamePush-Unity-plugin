@@ -65,7 +65,7 @@ namespace GamePush
             _onImagesUploadError = onImagesUploadError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Images_Upload(JsonUtility.ToJson(tags));
+            GP_Images_Upload(string.Join(",", tags));
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("Images: ", "Upload");
@@ -80,7 +80,7 @@ namespace GamePush
             _onImagesUploadUrlError = onImagesUploadUrlError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Images_UploadUrl(url, JsonUtility.ToJson(tags));
+            GP_Images_UploadUrl(url, string.Join(",", tags));
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("Images: ", "Upload");
@@ -199,7 +199,6 @@ namespace GamePush
 
         private void CallImagesChooseFile(string result)
         {
-            //result = result.Replace("blob:", "");
             _onImagesChooseFile?.Invoke(result);
             OnImagesChooseFile?.Invoke(result);
         }

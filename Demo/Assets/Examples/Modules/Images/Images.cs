@@ -54,23 +54,35 @@ namespace Examples.Images
             GP_Images.OnImagesCanLoadMore -= CanLoadMore;
         }
 
-        private string[] GetTags() => _inputTags.text.Split(",");
+        private string[] GetTags()
+        {
+            string[] tagsText = _inputTags.text.Split(",");
+            List<string> tags = new List<string>();
+
+            foreach(string tag in tagsText)
+            {
+                tags.Add(tag.Trim());
+            }
+
+            return tags.ToArray();
+        }
+
+        private ImagesFetchFilter GetFilter()
+        {
+            ImagesFetchFilter filter = new ImagesFetchFilter();
+            filter.tags = GetTags();
+            return filter;
+        }
         
 
-        public void Fetch()
-        {
-            GP_Images.Fetch(null, OnImagesFetch, OnImagesError);
-        }
-
-        public void FetchMore()
-        {
-            GP_Images.FetchMore(null, OnImagesFetch, OnImagesError);
-        }
-
+        public void Fetch() => GP_Images.Fetch(GetFilter(), OnImagesFetch, OnImagesError);
+        public void FetchMore() => GP_Images.FetchMore(GetFilter(), OnImagesFetch, OnImagesError);
+        
         public void Upload() => GP_Images.Upload(GetTags(), OnImagesUpload, OnImagesError);
-        public void UploadUrl() => GP_Images.UploadUrl(_inputUrl.text, GetTags(), OnImagesUpload, OnImagesError);
+        public void UploadUrl()=>  GP_Images.UploadUrl(_inputUrl.text, GetTags(), OnImagesUpload, OnImagesError);
 
         public void Choose() => GP_Images.Choose(OnImagesChoose, OnImagesError);
+
         public void Resize()
         {
             ImageResizeData resizeData = new ImageResizeData();
@@ -93,7 +105,7 @@ namespace Examples.Images
             foreach(ImageData image in images)
             {
                 ConsoleUI.Instance.Log("ID: " + image.id);
-                ConsoleUI.Instance.Log("PlayerID: " + image.playerId);
+                ConsoleUI.Instance.Log("Tags: " + string.Join(",", image.tags));
                 ConsoleUI.Instance.Log("URL: " + image.src);
                 ConsoleUI.Instance.Log(" ");
             }
