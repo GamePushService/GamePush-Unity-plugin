@@ -31,6 +31,7 @@ namespace Examples.Player
         private void OnEnable()
         {
             GP_Player.OnConnect += OnConnect;
+            GP_Player.OnLoadComplete += OnLogin;
 
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
@@ -46,6 +47,7 @@ namespace Examples.Player
         private void OnDisable()
         {
             GP_Player.OnConnect -= OnConnect;
+            GP_Player.OnLoadComplete -= OnLogin;
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
@@ -114,6 +116,11 @@ namespace Examples.Player
         private void OnConnect()
         {
             ConsoleUI.Instance.Log("Connect");
+        }
+
+        private void OnLogin()
+        {
+            ConsoleUI.Instance.Log("Login");
         }
     }
 }
