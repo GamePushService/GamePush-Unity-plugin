@@ -1,12 +1,15 @@
 # GamePush - Unity Plugin 
 Plugin for using [GamePush](https://gamepush.com/?r=NzQ4) in Unity games
 
+Development and support of GamePush Unity plugin - [Aristrkh Abramovsky](https://gitlab.com/kerioth)
 
-Original creator of Unity plugin - [Dinar Shagidullin](https://gitlab.com/shagidullin)
+Creator of early version GamePush Unity plugin - [Dinar Shagidullin](https://gitlab.com/shagidullin)
+
+
 
 ## Download
 Latest version of GamePush plugin:  
-[GamePush v1.2.4](https://github.com/GamePushService/GamePush-Unity-plugin/tree/main/Releases/GamePush)
+[GamePush v1.3.1](https://github.com/GamePushService/GamePush-Unity-plugin/tree/main/Releases/GamePush)
 
 
 Examples for GamePush plugin modules:  
