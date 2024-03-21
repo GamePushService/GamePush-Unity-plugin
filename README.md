@@ -1,7 +1,7 @@
 # GamePush - Unity Plugin 
 Plugin for using [GamePush](https://gamepush.com/?r=NzQ4) in Unity games
 
-Development and support of GamePush Unity plugin - [Aristrkh Abramovsky](https://gitlab.com/kerioth)
+Development and support of GamePush Unity plugin - [Aristarkh Abramovsky](https://gitlab.com/kerioth)
 
 Creator of early version GamePush Unity plugin - [Dinar Shagidullin](https://gitlab.com/shagidullin)
 
