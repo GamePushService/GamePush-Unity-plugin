@@ -2083,15 +2083,12 @@ window.executeFunctionByName = function(functionName, context /*, args*/) {
     var args = Array.prototype.slice.call(arguments, 2);
     args = args.map(element => {
         try{
-            //console.log("try parse " + element);
             return JSON.parse(element);
         }
         catch(error){
-            //console.log("catch " + error);
             return element
         }
     });
-    //console.log(args);
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
 
