@@ -6,7 +6,7 @@ namespace GP_Utilities.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.3.0";
+        static string VERSION = "v1.3.1";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
