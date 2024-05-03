@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GamePush;
+using GamePush.Data;
 using Examples.Console;
 using UnityEngine.UI;
 using TMPro;
@@ -81,7 +82,7 @@ namespace Examples.Variables
             return dict;
         }
 
-        private void OnFetchSuccess(List<VariablesData> variables)
+        private void OnFetchSuccess(List<GameVariable> variables)
         {
             for (int i = 0; i < variables.Count; i++)
             {

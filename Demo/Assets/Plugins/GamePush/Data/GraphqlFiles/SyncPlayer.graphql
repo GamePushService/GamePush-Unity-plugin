@@ -1,0 +1,91 @@
+mutation result($input: SyncPlayerInput!, $lang: Lang, $withToken: Boolean!) {
+    result: SyncPlayer(input: $input) {
+        __typename
+
+        ... on Player {
+            state
+            stats {
+                playtimeAll
+                playtimeToday
+                activeDays
+                activeDaysConsecutive
+            }
+            achievementsList {
+                achievementId
+                createdAt
+                progress
+                unlocked
+            }
+            purchasesListV2 {
+                productId
+                payload
+                gift
+                subscribed
+                createdAt
+                expiredAt
+            }
+            rewards {
+                rewardId
+                countTotal
+                countAccepted
+            }
+            triggers {
+                triggerId
+                claimed
+            }
+            segments
+            leftSegments
+            newSegments
+            playerSchedulers {
+                schedulerId
+                daysClaimed
+                stats {
+                    activeDays
+                    activeDaysConsecutive
+                }
+            }
+            playerEvents {
+                eventId
+                stats {
+                    activeDays
+                    activeDaysConsecutive
+                }
+            }
+            experiments {
+                experiment
+                cohort
+            }
+            rewardsData {
+                activatedTriggersNow
+                claimedTriggersNow
+                claimedSchedulersDaysNow {
+                    schedulerId
+                    day
+                }
+                givenAchievements
+                givenRewards
+                givenProducts
+            }
+            sessionStart
+            token @include(if: $withToken)
+        }
+        ... on Problem {
+            message
+        }
+
+        ... on PlayerSyncConflict {
+            players
+            fields {
+                name(lang: $lang)
+                key
+                type
+                default
+                important
+                variants {
+                    value
+                    name(lang: $lang)
+                }
+            }
+        }
+    }
+}

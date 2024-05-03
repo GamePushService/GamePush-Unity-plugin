@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
-
+using GamePush.Data;
 using GP_Utilities;
 using GP_Utilities.Console;
 
@@ -11,10 +11,10 @@ namespace GamePush
 {
     public class GP_Variables : MonoBehaviour
     {
-        public static event UnityAction<List<VariablesData>> OnFetchSuccess;
+        public static event UnityAction<List<GameVariable>> OnFetchSuccess;
         public static event UnityAction OnFetchError;
 
-        private static event Action<List<VariablesData>> _onSuccess;
+        private static event Action<List<GameVariable>> _onSuccess;
         private static event Action _onError;
 
         public static event UnityAction<Dictionary<string, string>> OnPlatformFetchSuccess;
@@ -25,7 +25,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
-        public static void Fetch(Action<List<VariablesData>> onFetchSuccess = null, Action onFetchError = null)
+        public static void Fetch(Action<List<GameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
             _onSuccess = onFetchSuccess;
             _onError = onFetchError;
@@ -35,6 +35,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.SystemConsoleLogs)
                 Console.Log("VARIABLES: ", "FETCH");
+
+            CoreSDK.variables.Fetch(onFetchSuccess, onFetchError);
 #endif
         }
 
@@ -47,7 +49,9 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: HAS: ", key + " -> TRUE");
-            return true;
+
+
+            return CoreSDK.variables.Has(key);
 #endif
         }
 
@@ -60,7 +64,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET INT: ", key + " -> 0");
-            return 0;
+
+            return CoreSDK.variables.Get<int>(key);
 #endif
         }
 
@@ -73,7 +78,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET FLOAT: ", key + " -> 0f");
-            return 0f;
+
+            return CoreSDK.variables.Get<float>(key);
 #endif
         }
 
@@ -86,7 +92,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET STRING: ", key + " -> NULL");
-            return null;
+
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -99,7 +106,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET BOOL: ", key + " -> TRUE");
-            return true;
+
+            return CoreSDK.variables.Get<bool>(key);
 #endif
         }
 
@@ -113,7 +121,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET IMAGE: ", key + " -> URL");
-            return "URL";
+
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -126,7 +135,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("VARIABLES: GET FILE: ", key + " -> URL");
-            return "URL";
+
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -139,7 +149,8 @@ namespace GamePush
 #else
             if (GP_ConsoleController.Instance.VariablesConsoleLogs)
                 Console.Log("Platform Variables: ", "Is Available");
-            return true;
+
+            return CoreSDK.variables.IsPlatformVariablesAvailable();
 #endif
         }
 
@@ -214,13 +225,11 @@ namespace GamePush
             return clientParams;
         }
 
-        
-
         private void CallVariablesFetchSuccess(string data)
         {
-            var variablesData = GP_JSON.GetList<VariablesData>(data);
-            _onSuccess?.Invoke(variablesData);
-            OnFetchSuccess?.Invoke(variablesData);
+            var gameVariable = GP_JSON.GetList<GameVariable>(data);
+            _onSuccess?.Invoke(gameVariable);
+            OnFetchSuccess?.Invoke(gameVariable);
         }
         private void CallVariablesFetchError()
         {
@@ -268,14 +277,5 @@ namespace GamePush
     public class PlatformFetchVariables
     {
         public string clientParams;
-    }
-
-
-    [System.Serializable]
-    public class VariablesData
-    {
-        public string key;
-        public string type;
-        public string value;
     }
 }

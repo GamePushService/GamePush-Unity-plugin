@@ -23,9 +23,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_IsPaused() == "true";
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: IS PAUSED: ", "FALSE");
-            return false;
+            Console.Log("GAME: IS PAUSED: ", CoreSDK.game.isPaused.ToString());
+            return CoreSDK.game.isPaused;
 #endif
         }
 
@@ -38,8 +37,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Pause();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: ", "PAUSE");
+            CoreSDK.game.isPaused = true;
+            Console.Log("GAME: ", "PAUSE");
             OnPause?.Invoke();
             _onPause?.Invoke();
 #endif
@@ -54,8 +53,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Resume();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: ", "RESUME");
+            CoreSDK.game.isPaused = false;
+            Console.Log("GAME: ", "RESUME");
             OnResume?.Invoke();
             _onResume?.Invoke();
 #endif
@@ -69,8 +68,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStart();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAMEPLAY: ", "START");
+            CoreSDK.game.isGameplay = true;
+            Console.Log("GAMEPLAY: ", "START");
 #endif
         }
 
@@ -81,8 +80,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStop();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAMEPLAY: ", "STOP");
+            CoreSDK.game.isGameplay = false;
+            Console.Log("GAMEPLAY: ", "STOP");
 #endif
         }
 
@@ -93,8 +92,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameReady();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME:", "READY");
+            CoreSDK.game.GameReady();
+            Console.Log("GAME:", "READY");
 #endif
         }
 
@@ -105,8 +104,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_HappyTime();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME:", "HAPPY TIME!!!");
+            CoreSDK.game.HappyTime();
+            Console.Log("GAME:", "HAPPY TIME!!!");
 #endif
         }
 
