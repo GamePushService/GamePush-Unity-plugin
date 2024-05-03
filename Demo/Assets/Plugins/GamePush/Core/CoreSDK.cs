@@ -41,6 +41,9 @@ namespace GamePush
             gameReady = true;
         }
 
+        public void SetGameplay(bool gameplay) => isGameplay = gameplay;
+        public void SetPause(bool pause) => isPaused = pause;
+
         public void HappyTime() { }
     }
 
