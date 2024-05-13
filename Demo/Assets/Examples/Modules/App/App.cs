@@ -8,6 +8,29 @@ namespace Examples.App
 {
     public class App : MonoBehaviour
     {
+        [SerializeField] private Button _appInfoButton;
+        [SerializeField] private Button _reviewRequestButton;
+        [SerializeField] private Button _canReviewButton;
+        [SerializeField] private Button _appShortcutButton;
+        [SerializeField] private Button _canAppShortcutButton;
+
+        private void OnEnable()
+        {
+            _appInfoButton.onClick.AddListener(GameInfo);
+            _reviewRequestButton.onClick.AddListener(ReviewRequest);
+            _canReviewButton.onClick.AddListener(CanReview);
+            _appShortcutButton.onClick.AddListener(AppShortcut);
+            _canAppShortcutButton.onClick.AddListener(CanAppShortcut);
+        }
+
+        private void OnDisable()
+        {
+            _appInfoButton.onClick.RemoveListener(GameInfo);
+            _reviewRequestButton.onClick.RemoveListener(ReviewRequest);
+            _canReviewButton.onClick.RemoveListener(CanReview);
+            _appShortcutButton.onClick.RemoveListener(AppShortcut);
+            _canAppShortcutButton.onClick.RemoveListener(CanAppShortcut);
+        }
 
         public void GameInfo()
         {
