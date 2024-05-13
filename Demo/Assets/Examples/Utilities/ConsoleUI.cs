@@ -7,7 +7,8 @@ namespace Examples.Console
     {
         #region Singleton
         public static ConsoleUI Instance;
-        private void Awake() => Instance = this;
+        private void OnEnable() => Instance = this;
+        private void OnDisable() => Instance = null;
         #endregion
 
         [SerializeField] private TMP_Text _console;
