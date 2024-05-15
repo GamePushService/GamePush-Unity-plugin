@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using GP_Utilities.Console;
-using GP_Utilities;
+using GamePush.Utilities;
 
 namespace GamePush
 {
@@ -201,7 +201,7 @@ namespace GamePush
         private void CallFilesFetchError() { OnFetchError?.Invoke(); _onFetchError?.Invoke(); }
         private void CallFilesFetchSuccess(string data)
         {
-            var fetchData = GP_JSON.GetList<FileData>(data);
+            var fetchData = UtilityJSON.GetList<FileData>(data);
             OnFetchSuccess?.Invoke(fetchData, _canLoadMoreFetch);
             _onFetch?.Invoke(fetchData, _canLoadMoreFetch);
         }
@@ -211,7 +211,7 @@ namespace GamePush
         private void CallFilesFetchMoreError() { OnFetchMoreError?.Invoke(); _onFetchMoreError?.Invoke(); }
         private void CallFilesFetchMoreSuccess(string data)
         {
-            var fetchData = GP_JSON.GetList<FileData>(data);
+            var fetchData = UtilityJSON.GetList<FileData>(data);
             OnFetchMoreSuccess?.Invoke(fetchData, _canLoadMoreFetchMore);
             _onFetchMore?.Invoke(fetchData, _canLoadMoreFetchMore);
         }

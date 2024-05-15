@@ -5,11 +5,11 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 
 using GamePush;
-using GP_Utilities;
+using GamePush.Utilities;
 
-namespace GP_Utilities
+namespace GamePush.Utilities
 {
-    public class GP_Utility
+    public class UtilityImage
     {
         public async static Task DownloadImageAsync(string url, Image image)
         {
@@ -39,8 +39,7 @@ namespace GP_Utilities
 
     }
 
-
-    public class GP_JSON
+    public class UtilityJSON
     {
         public static T[] GetArray<T>(string json)
         {
@@ -163,9 +162,9 @@ namespace GamePush
 
         public GP_Data(string data) => _data = data;
 
-        public T Get<T>() => GP_JSON.Get<T>(_data);
-        public List<T> GetList<T>() => GP_JSON.GetList<T>(_data);
-        public T[] GetArray<T>() => GP_JSON.GetArray<T>(_data);
+        public T Get<T>() => UtilityJSON.Get<T>(_data);
+        public List<T> GetList<T>() => UtilityJSON.GetList<T>(_data);
+        public T[] GetArray<T>() => UtilityJSON.GetArray<T>(_data);
     }
 
     public class Console

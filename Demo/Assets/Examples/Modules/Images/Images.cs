@@ -5,7 +5,7 @@ using Examples.Console;
 using UnityEngine.UI;
 using TMPro;
 using GamePush;
-using GP_Utilities;
+using GamePush.Utilities;
 
 namespace Examples.Images
 {
@@ -97,7 +97,7 @@ namespace Examples.Images
         {
             string url = GP_Images.FormatToPng(_inputUrl.text);
             ConsoleUI.Instance.Log(url);
-            await GP_Utility.DownloadImageAsync(url, _image);
+            await UtilityImage.DownloadImageAsync(url, _image);
         }
 
         private void OnImagesFetch(List<ImageData> images)

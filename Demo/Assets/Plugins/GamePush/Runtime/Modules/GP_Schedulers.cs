@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -114,7 +114,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Schedulers_List();
-            return GP_JSON.GetArray<SchedulerData>(data);
+            return UtilityJSON.GetArray<SchedulerData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers: ", "List");
@@ -129,7 +129,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Schedulers_ActiveList();
-            return GP_JSON.GetArray<PlayerScheduler>(data);
+            return UtilityJSON.GetArray<PlayerScheduler>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers: ", "List");
@@ -144,7 +144,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Schedulers_GetScheduler(idOrTag);
-            return GP_JSON.Get<SchedulerInfo>(data);
+            return UtilityJSON.Get<SchedulerInfo>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers: ", "Get Scheduler");
@@ -159,7 +159,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Schedulers_GetSchedulerDay(idOrTag, day);
-            return GP_JSON.Get<SchedulerDayInfo>(data);
+            return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers: ", "Get Scheduler Day");
@@ -174,7 +174,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Schedulers_GetSchedulerCurrentDay(idOrTag);
-            return GP_JSON.Get<SchedulerDayInfo>(data);
+            return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("Schedulers: ", "Get Scheduler");

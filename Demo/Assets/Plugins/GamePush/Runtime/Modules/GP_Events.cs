@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -34,7 +34,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string eventsData = GP_Events_List();
-            return GP_JSON.GetArray<EventData>(eventsData );
+            return UtilityJSON.GetArray<EventData>(eventsData );
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("EVENTS: ", "LIST");
@@ -49,7 +49,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string activeEvents = GP_Events_ActiveList();
-            return GP_JSON.GetArray<PlayerEvents>(activeEvents);
+            return UtilityJSON.GetArray<PlayerEvents>(activeEvents);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("EVENTS: ", "Active List");
@@ -64,7 +64,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Events_GetEvent(idOrTag);
-            return GP_JSON.Get<EventData>(data);
+            return UtilityJSON.Get<EventData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("EVENTS: ", "Get Event");

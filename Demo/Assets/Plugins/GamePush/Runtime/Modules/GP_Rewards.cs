@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -51,7 +51,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Rewards_List();
-            return GP_JSON.GetArray<RewardData>(data);
+            return UtilityJSON.GetArray<RewardData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("REWARDS: ", "LIST");
@@ -66,7 +66,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Rewards_GivenList();
-            return GP_JSON.GetArray<PlayerReward>(data);
+            return UtilityJSON.GetArray<PlayerReward>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("REWARDS: ", "Given List");
@@ -81,7 +81,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Rewards_GetReward(idOrTag);
-            return GP_JSON.Get<AllRewardData>(data);
+            return UtilityJSON.Get<AllRewardData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("REWARDS: ", "Get Reward");
