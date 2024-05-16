@@ -16,18 +16,19 @@ namespace GamePush.Services
 
         void CheckGameFocus()
         {
-            if(!Application.isFocused)
+            if (!CoreSDK.isInit) return;
+
+            if (!Application.isFocused)
             {
                 isFocus = false;
-                CoreSDK.game.SetPause(isFocus);
+                CoreSDK.game.SetAutoPause(isFocus);
+                gameObject.SendMessage("CallOnResume");
             }
-            else
+            else if (!isFocus)
             {
-                if (!isFocus)
-                {
-                    isFocus = true;
-                    CoreSDK.game.SetPause(isFocus);
-                }
+                isFocus = true;
+                CoreSDK.game.SetAutoPause(isFocus);
+                gameObject.SendMessage("CallOnPause");
             }
         }
     }

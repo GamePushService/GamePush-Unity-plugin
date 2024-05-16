@@ -21,10 +21,9 @@ namespace GamePush
         public static bool IsPaused()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-           return GP_IsPaused() == "true";
+            return GP_IsPaused() == "true";
 #else
-            Console.Log("GAME: IS PAUSED: ", CoreSDK.game.isPaused.ToString());
-            return CoreSDK.game.isPaused;
+            return CoreSDK.game.IsPaused();
 #endif
         }
 
@@ -37,10 +36,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Pause();
 #else
-            CoreSDK.game.isPaused = true;
-            Console.Log("GAME: ", "PAUSE");
+            CoreSDK.game.GamePause(onPause);
+
             OnPause?.Invoke();
-            _onPause?.Invoke();
 #endif
         }
 
@@ -53,10 +51,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Resume();
 #else
-            CoreSDK.game.isPaused = false;
-            Console.Log("GAME: ", "RESUME");
+            CoreSDK.game.GameResume(onResume);
+
             OnResume?.Invoke();
-            _onResume?.Invoke();
 #endif
         }
 
@@ -68,8 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStart();
 #else
-            CoreSDK.game.isGameplay = true;
-            Console.Log("GAMEPLAY: ", "START");
+            CoreSDK.game.GameplayStart();
 #endif
         }
 
@@ -80,8 +76,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStop();
 #else
-            CoreSDK.game.isGameplay = false;
-            Console.Log("GAMEPLAY: ", "STOP");
+            CoreSDK.game.GameplayStop();
 #endif
         }
 
@@ -93,7 +88,6 @@ namespace GamePush
             GP_GameReady();
 #else
             CoreSDK.game.GameReady();
-            Console.Log("GAME:", "READY");
 #endif
         }
 
@@ -105,10 +99,8 @@ namespace GamePush
             GP_HappyTime();
 #else
             CoreSDK.game.HappyTime();
-            Console.Log("GAME:", "HAPPY TIME!!!");
 #endif
         }
-
 
         private void CallOnPause() => OnPause?.Invoke();
         private void CallOnResume() => OnResume?.Invoke();

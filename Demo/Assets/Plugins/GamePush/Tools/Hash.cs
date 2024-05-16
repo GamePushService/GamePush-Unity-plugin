@@ -22,7 +22,7 @@ namespace GamePush
     {
         public static string GetNullHash() => GetQueryHash(null);
 
-        public static string GetQueryHash(object query) => GetProjectHash(CoreSDK.projectId, query, CoreSDK.token);
+        public static string GetQueryHash(object query) => GetProjectHash(CoreSDK.projectId, query, CoreSDK.projectToken);
 
         public static string GetProjectHash(int id, object query, string token)
         {
@@ -32,13 +32,9 @@ namespace GamePush
             data.Add("token", token);
 
             string json = JsonConvert.SerializeObject(data);
-            //string json = GP_JSON.DictionaryToJson(data);
-            Debug.Log(json);
 
-            // Сортируем ключи перед сериализацией
             var sortedJson = SortKeys(json);
-            //var sortedJson = JsonSorter.SortKeys(json); 
-            // Создаем хеш
+
             var hash = CalculateSHA256(sortedJson);
 
             return hash;
@@ -62,20 +58,6 @@ namespace GamePush
             }
         }
 
-
-        public static string GetHashSha256(string text)
-        {
-            byte[] bytes = Encoding.Unicode.GetBytes(text);
-            SHA256Managed hashstring = new SHA256Managed();
-            byte[] hash = hashstring.ComputeHash(bytes);
-            string hashString = string.Empty;
-            foreach (byte x in hash)
-            {
-                hashString += String.Format("{0:x2}", x);
-            }
-
-            return hashString;
-        }
 
         public static Dictionary<string, object> Sort(object src)
         {
