@@ -30,7 +30,7 @@ namespace GamePushEditor
         private static void ShowWindow()
         {
             var window = GetWindow<GP_LoginWindow>();
-            window.minSize = new Vector2(400, 475);
+            window.minSize = new Vector2(300, 450);
             window.titleContent = new GUIContent("GamePush Settings");
             window.Show();
 
@@ -119,6 +119,7 @@ namespace GamePushEditor
             GUILayout.Space(10);
 
             _id = EditorGUILayout.TextField("ID", _projectData.id);
+            GUILayout.Space(5);
             _token = EditorGUILayout.TextField("Token", _projectData.token);
 
             GUILayout.Space(20);
@@ -147,6 +148,7 @@ namespace GamePushEditor
             int.TryParse(_id, out _projectId);
 
             CoreSDK.SetProjectData(_projectId, _token);
+            SetProjectDataToWebTemplate();
             SaveProjectData();
 
             CoreSDK.FetchConfig();
@@ -182,6 +184,12 @@ namespace GamePushEditor
                 return false;
             }
             return true;
+        }
+
+        private static void SetProjectDataToWebTemplate()
+        {
+            PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _id);
+            PlayerSettings.SetTemplateCustomValue("TOKEN", _token);
         }
     }
 }
