@@ -25,7 +25,7 @@ namespace GamePush.Config
             ConfigData configData = JsonUtility.FromJson<ConfigData>(results);
             CoreSDK.SetConfig(configData.data.result);
 
-            //Debug.Log(JsonUtility.ToJson(configData.data.result));
+            Debug.Log(JsonUtility.ToJson(configData.data.result));
             //string vars = JsonUtility.ToJson(CoreSDK.variables.GetData());
             //Debug.Log(vars);
         }

@@ -56,5 +56,12 @@ namespace GamePush.Core
             else
                 onFetchError();
         }
+
+        public void FetchPlatformVariables(string optionsDict = null, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        {
+            Console.Error("Can't fetch platform variables");
+            onPlatformFetchError?.Invoke("Platform doesn't have variables");
+        }
+
     }
 }

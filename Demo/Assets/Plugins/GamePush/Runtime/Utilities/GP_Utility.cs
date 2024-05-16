@@ -185,5 +185,21 @@ namespace GamePush
                 Debug.Log("<color=#04bc04> Game Push: </color> " + message + $"<color=#04bc04> {colorMessage} </color>");
             }
         }
+
+        public static void Warn(string message)
+        {
+            if (GP_Settings.instance.viewLogs)
+            {
+                Debug.Log("<color=#04bc04> Game Push: </color> " + $"<color=#E3F137> {message} </color>");
+            }
+        }
+
+        public static void Error(string message)
+        {
+            if (GP_Settings.instance.viewLogs)
+            {
+                Debug.Log("<color=#04bc04> Game Push: </color> " + $"<color=#FF5733> {message} </color>");
+            }
+        }
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace GamePush.Core
 {
@@ -9,31 +7,38 @@ namespace GamePush.Core
         private bool isPaused;
         private bool isAutoPaused;
         private bool isGameplay;
-        //private bool isGameStarted;
 
         public bool gameReady = false;
 
         //private bool showLogs = true;
 
+        public Action OnPause;
+        public Action OnResume;
+
         public bool IsPaused()
         {
-            Console.Log("GAME: IS PAUSED: ", isPaused.ToString());
-            return isPaused;
+            bool gamePaused = isAutoPaused || isPaused;
+            Console.Log("GAME: IS PAUSED: ", gamePaused.ToString());
+            return gamePaused;
         }
 
-        public void GamePause(Action onPause = null)
+        public void GamePause(Action onPauseCallback = null)
         {
             isPaused = true;
-            onPause?.Invoke();
+            if (isAutoPaused) return;
+
+            onPauseCallback?.Invoke();
+            OnPause?.Invoke();
             Console.Log("GAME: ", "PAUSE");
         }
 
-        public void GameResume(Action onResume = null)
+        public void GameResume(Action onResumeCallback = null)
         {
+            isPaused = false;
             if (isAutoPaused) return;
 
-            isPaused = false;
-            onResume?.Invoke();
+            onResumeCallback?.Invoke();
+            OnResume?.Invoke();
             Console.Log("GAME: ", "RESUME");
         }
 
@@ -42,6 +47,10 @@ namespace GamePush.Core
         public void SetAutoPause(bool isPause)
         {
             isAutoPaused = isPause;
+            
+            if (isPause) OnPause?.Invoke();
+            else OnResume?.Invoke();
+
             Console.Log("GAME: ", isPause ? "PAUSE" : "RESUME");
         }
 

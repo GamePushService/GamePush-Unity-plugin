@@ -9,7 +9,8 @@ namespace GamePushEditor
 {
     public class GP_LoginWindow : EditorWindow
     {
-        private const string SITE_URL = "https://www.gamepush.com";
+        private const string SITE_URL = "https://gamepush.com";
+
         private const string VERSION = "2.0.1";
 
         private static bool _isDataFetch;
@@ -30,7 +31,7 @@ namespace GamePushEditor
         private static void ShowWindow()
         {
             var window = GetWindow<GP_LoginWindow>();
-            window.minSize = new Vector2(300, 450);
+            window.minSize = new Vector2(300, 350);
             window.titleContent = new GUIContent("GamePush Settings");
             window.Show();
 
@@ -47,6 +48,8 @@ namespace GamePushEditor
             };
 
             _projectData = GetSavedProjectData();
+            _id = _projectData.id;
+            _token = _projectData.token;
         }
 
 
@@ -90,7 +93,8 @@ namespace GamePushEditor
 
         private void OnGUI()
         {
-            _menuOpened = GUILayout.Toolbar(_menuOpened, new[] { "Login", "Settings" });
+            _menuOpened = GUILayout.Toolbar(_menuOpened, new[] { "Setup", "Settings" });
+            
 
             switch (_menuOpened)
             {
@@ -102,10 +106,10 @@ namespace GamePushEditor
                     break;
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(100);
             DrawSeparator();
 
-            if (GUILayout.Button("<color=#2a9df4>GamePush 2021</color>",
+            if (GUILayout.Button("<color=#04bc04>GamePush 2024</color>",
                     new GUIStyle { alignment = TextAnchor.LowerRight, richText = true }))
                 Application.OpenURL(SITE_URL);
 
@@ -118,12 +122,12 @@ namespace GamePushEditor
             GUILayout.Label("Enter project ID and token", _titleStyle);
             GUILayout.Space(10);
 
-            _id = EditorGUILayout.TextField("ID", _projectData.id);
+            _id = EditorGUILayout.TextField("ID", _id);
             GUILayout.Space(5);
-            _token = EditorGUILayout.TextField("Token", _projectData.token);
+            _token = EditorGUILayout.TextField("Token", _token);
 
             GUILayout.Space(20);
-            if (GUILayout.Button("Connect"))
+            if (GUILayout.Button("Save"))
                 FetchConfig();
         }
 

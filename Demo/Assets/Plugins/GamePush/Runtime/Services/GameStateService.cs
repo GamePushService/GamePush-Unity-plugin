@@ -22,14 +22,14 @@ namespace GamePush.Services
             {
                 isFocus = false;
                 CoreSDK.game.SetAutoPause(isFocus);
-                gameObject.SendMessage("CallOnResume");
             }
             else if (!isFocus)
             {
                 isFocus = true;
                 CoreSDK.game.SetAutoPause(isFocus);
-                gameObject.SendMessage("CallOnPause");
             }
         }
+
+
     }
 }

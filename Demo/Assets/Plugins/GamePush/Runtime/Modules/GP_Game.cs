@@ -15,6 +15,17 @@ namespace GamePush
         private static event Action _onPause;
         private static event Action _onResume;
 
+        private void OnEnable()
+        {
+            CoreSDK.game.OnPause += CallOnPause;
+            CoreSDK.game.OnResume += CallOnResume;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.game.OnPause -= CallOnPause;
+            CoreSDK.game.OnResume -= CallOnResume;
+        }
 
         [DllImport("__Internal")]
         private static extern string GP_IsPaused();
@@ -37,8 +48,6 @@ namespace GamePush
             GP_Pause();
 #else
             CoreSDK.game.GamePause(onPause);
-
-            OnPause?.Invoke();
 #endif
         }
 
@@ -52,8 +61,6 @@ namespace GamePush
             GP_Resume();
 #else
             CoreSDK.game.GameResume(onResume);
-
-            OnResume?.Invoke();
 #endif
         }
 
