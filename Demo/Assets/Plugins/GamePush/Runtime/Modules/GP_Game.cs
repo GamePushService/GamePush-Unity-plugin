@@ -17,14 +17,25 @@ namespace GamePush
 
         private void OnEnable()
         {
+            CoreSDK.OnInit += SubToEvents;
+        }
+
+        private void SubToEvents()
+        {
             CoreSDK.game.OnPause += CallOnPause;
             CoreSDK.game.OnResume += CallOnResume;
         }
 
         private void OnDisable()
         {
-            CoreSDK.game.OnPause -= CallOnPause;
-            CoreSDK.game.OnResume -= CallOnResume;
+            CoreSDK.OnInit -= SubToEvents;
+
+            if (CoreSDK.isInit)
+            {
+                CoreSDK.game.OnPause -= CallOnPause;
+                CoreSDK.game.OnResume -= CallOnResume;
+            }
+            
         }
 
         [DllImport("__Internal")]

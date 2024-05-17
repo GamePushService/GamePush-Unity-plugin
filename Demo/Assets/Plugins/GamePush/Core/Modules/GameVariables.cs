@@ -16,6 +16,12 @@ namespace GamePush.Core
 
         public List<GameVariable> GetData() => data;
 
+        public GameVariables()
+        {
+            keyTypeData = new Dictionary<string, string>();
+            keyValueData = new Dictionary<string, object>();
+        }
+
         public GameVariables(List<GameVariable> gameVariables)
         {
             keyTypeData = new Dictionary<string, string>();

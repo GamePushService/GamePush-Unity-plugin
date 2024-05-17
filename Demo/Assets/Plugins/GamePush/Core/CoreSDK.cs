@@ -3,12 +3,14 @@ using GamePush.Core;
 using GamePush.Config;
 using UnityEditor;
 using UnityEngine;
+using System;
 
 namespace GamePush
 {
     public static class CoreSDK
     {
         public static bool isInit { get; private set; }
+        public static Action OnInit;
 
         public static int projectId { get; private set; }
         public static string projectToken { get; private set; }
@@ -29,7 +31,17 @@ namespace GamePush
 
             var savedProjectData = JsonUtility.FromJson<SavedProjectData>(json);
             SetProjectData(savedProjectData);
+
+            InitModules();
             FetchConfig();
+
+            OnInit?.Invoke();
+        }
+
+        private static void InitModules()
+        {
+            game = new GameModule();
+            variables = new GameVariables();
         }
 
         public static void SetProjectData(SavedProjectData data)
@@ -55,7 +67,6 @@ namespace GamePush
         {
             data = allData;
 
-            game = new GameModule();
             variables = new GameVariables(data.gameVariables);
         }
 
