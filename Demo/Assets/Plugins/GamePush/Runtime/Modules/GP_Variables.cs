@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 using GamePush.Data;
-using GP_Utilities;
+using GamePush.Utilities;
 
 namespace GamePush
 {
@@ -197,14 +197,14 @@ namespace GamePush
                 dict.Add(key, value);
             }
 
-            string clientParams = GP_JSON.DictionaryToJson(dict);
+            string clientParams = UtilityJSON.DictionaryToJson(dict);
 
             return clientParams;
         }
 
         private void CallVariablesFetchSuccess(string data)
         {
-            var gameVariable = GP_JSON.GetList<GameVariable>(data);
+            var gameVariable = UtilityJSON.GetList<GameVariable>(data);
             _onSuccess?.Invoke(gameVariable);
             OnFetchSuccess?.Invoke(gameVariable);
         }

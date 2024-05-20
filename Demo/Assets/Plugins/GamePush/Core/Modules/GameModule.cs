@@ -47,7 +47,8 @@ namespace GamePush.Core
         public void SetAutoPause(bool isPause)
         {
             isAutoPaused = isPause;
-            
+            if (isPaused) return;
+
             if (isPause) OnPause?.Invoke();
             else OnResume?.Invoke();
 
