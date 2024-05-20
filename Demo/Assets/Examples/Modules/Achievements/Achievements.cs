@@ -53,10 +53,10 @@ namespace Examples.Achievements
 
 
         public void Open() => GP_Achievements.Open(OnOpen, OnClose);
-        public void Unlock() => GP_Achievements.Unlock("LEVEL_25", OnUnlock, OnUnlockError);
-        private void SetProgress() => GP_Achievements.SetProgress("LEVEL_50", 25, OnPogress, OnProgressError);
-        private void GetProgress() => ConsoleUI.Instance.Log("PROGRESS: " + GP_Achievements.GetProgress("LEVEL_50"));
-        private void Has() => ConsoleUI.Instance.Log("HAS: " + GP_Achievements.Has("LEVEL_25"));
+        public void Unlock() => GP_Achievements.Unlock(_idOrTag.text, OnUnlock, OnUnlockError);
+        private void SetProgress() => GP_Achievements.SetProgress(_idOrTag.text, 25, OnPogress, OnProgressError);
+        private void GetProgress() => ConsoleUI.Instance.Log("PROGRESS: " + GP_Achievements.GetProgress(_idOrTag.text));
+        private void Has() => ConsoleUI.Instance.Log("HAS: " + GP_Achievements.Has(_idOrTag.text));
         private void Fetch() => GP_Achievements.Fetch();
 
 

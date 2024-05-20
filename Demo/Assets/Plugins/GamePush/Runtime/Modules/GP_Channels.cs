@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 using System;
 
@@ -762,13 +762,13 @@ namespace GamePush
         private void CallOnFetchChannelError() => OnFetchChannelError?.Invoke();
 
 
-        private void CallOnFetchChannels(string data) => OnFetchChannels?.Invoke(GP_JSON.GetList<FetchChannelData>(data), _canLoadMoreFetchChannels);
+        private void CallOnFetchChannels(string data) => OnFetchChannels?.Invoke(UtilityJSON.GetList<FetchChannelData>(data), _canLoadMoreFetchChannels);
         private bool _canLoadMoreFetchChannels;
         private void CallOnFetchChannelsCanLoadMore(string canLoadMore) => _canLoadMoreFetchChannels = canLoadMore == "true";
         private void CallOnFetchChannelsError() => OnFetchChannelsError?.Invoke();
 
 
-        private void CallOnFetchMoreChannels(string data) => OnFetchMoreChannels?.Invoke(GP_JSON.GetList<FetchChannelData>(data), _canLoadMoreFetchMoreChannels);
+        private void CallOnFetchMoreChannels(string data) => OnFetchMoreChannels?.Invoke(UtilityJSON.GetList<FetchChannelData>(data), _canLoadMoreFetchMoreChannels);
         private bool _canLoadMoreFetchMoreChannels;
         private void CallOnFetchMoreChannelsCanLoadMore(string canLoadMore) => _canLoadMoreFetchMoreChannels = canLoadMore == "true";
         private void CallOnFetchMoreChannelsError() => OnFetchMoreChannelsError?.Invoke();
@@ -896,13 +896,13 @@ namespace GamePush
         private void CallOnFetchMoreJoinRequestsError() => OnFetchMoreJoinRequestsError?.Invoke();
 
 
-        private void CallOnFetchSentJoinRequests(string data) => OnFetchSentJoinRequests?.Invoke(GP_JSON.GetList<JoinRequestsData>(data), _canLoadMoreFetchSentJoinRequests);
+        private void CallOnFetchSentJoinRequests(string data) => OnFetchSentJoinRequests?.Invoke(UtilityJSON.GetList<JoinRequestsData>(data), _canLoadMoreFetchSentJoinRequests);
         private bool _canLoadMoreFetchSentJoinRequests;
         private void CallOnFetchSentJoinRequestsCanLoadMore(string canLoadMore) => _canLoadMoreFetchSentJoinRequests = canLoadMore == "true";
         private void CallOnFetchSentJoinRequestsError() => OnFetchSentJoinRequestsError?.Invoke();
 
 
-        private void CallOnFetchMoreSentJoinRequests(string data) => OnFetchMoreSentJoinRequests?.Invoke(GP_JSON.GetList<JoinRequestsData>(data), _canLoadMoreFetchMoreSentJoinRequests);
+        private void CallOnFetchMoreSentJoinRequests(string data) => OnFetchMoreSentJoinRequests?.Invoke(UtilityJSON.GetList<JoinRequestsData>(data), _canLoadMoreFetchMoreSentJoinRequests);
         private bool _canLoadMoreFetchMoreSentJoinRequests;
         private void CallOnFetchMoreSentJoinRequestsCanLoadMore(string canLoadMore) => _canLoadMoreFetchMoreSentJoinRequests = canLoadMore == "true";
         private void CallOnFetchMoreSentJoinRequestsError() => OnFetchMoreSentJoinRequestsError?.Invoke();

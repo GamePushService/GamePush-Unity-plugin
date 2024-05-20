@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -157,8 +157,8 @@ namespace GamePush
         }
 
 
-        private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(GP_JSON.GetList<FetchProducts>(data));
-        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(GP_JSON.GetList<FetchPlayerPurchases>(data));
+        private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
+        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
 
         private void CallPaymentsFetchProductsError() => OnFetchProductsError?.Invoke();
 

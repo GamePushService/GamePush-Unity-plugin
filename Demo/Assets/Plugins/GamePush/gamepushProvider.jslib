@@ -1315,4 +1315,18 @@ mergeInto(LibraryManager.library, {
     
     /* CUSTOM */
 
+    /* LOGGER */
+    GP_LoggerInfo: function(title, text){
+        GamePush.LoggerInfo(UTF8ToString(title), UTF8ToString(text));
+    },
+    GP_LoggerWarn: function(title, text){
+        GamePush.LoggerWarn(UTF8ToString(title), UTF8ToString(text));
+    },
+    GP_LoggerError: function(title, text){
+        GamePush.LoggerError(UTF8ToString(title), UTF8ToString(text));
+    },
+    GP_LoggerLog: function(title, text){
+        GamePush.LoggerLog(UTF8ToString(title), UTF8ToString(text));
+    },
+    /* LOGGER */
 });

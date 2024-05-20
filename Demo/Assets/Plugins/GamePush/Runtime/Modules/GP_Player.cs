@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -85,7 +85,7 @@ namespace GamePush
         {
             string avatar = GP_Player_GetAvatar();
             if (avatar == null || avatar == "") return;
-            await GP_Utility.DownloadImageAsync(avatar, image);
+            await UtilityImage.DownloadImageAsync(avatar, image);
         }
 
 
@@ -590,8 +590,8 @@ namespace GamePush
 
         private void CallPlayerFetchFieldsComplete(string data)
         {
-            OnPlayerFetchFieldsComplete?.Invoke(GP_JSON.GetList<PlayerFetchFieldsData>(data));
-            _onFetchFields?.Invoke(GP_JSON.GetList<PlayerFetchFieldsData>(data));
+            OnPlayerFetchFieldsComplete?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
+            _onFetchFields?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
         }
         private void CallPlayerFetchFieldsError() => OnPlayerFetchFieldsError?.Invoke();
     }
