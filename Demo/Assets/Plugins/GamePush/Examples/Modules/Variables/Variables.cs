@@ -15,6 +15,8 @@ namespace Examples.Variables
         [SerializeField] private Button _checkButton;
         [SerializeField] private Button _fetchPlatformButton;
         [SerializeField] private Button _checkPlatformButton;
+        [Space]
+        [SerializeField] private TMP_InputField _variableKey;
         [SerializeField] private TMP_InputField _key1;
         [SerializeField] private TMP_InputField _value1;
         [SerializeField] private TMP_InputField _key2;
@@ -39,13 +41,23 @@ namespace Examples.Variables
         public void Fetch() => GP_Variables.Fetch(OnFetchSuccess, OnFetchError);
         public void Check()
         {
-            ConsoleUI.Instance.Log("VARIABLES: GET INT " + GP_Variables.GetInt("number"));
-            ConsoleUI.Instance.Log("VARIABLES: GET FLOAT " + GP_Variables.GetFloat("float"));
-            ConsoleUI.Instance.Log("VARIABLES: GET BOOL " + GP_Variables.GetBool("bool"));
-            ConsoleUI.Instance.Log("VARIABLES: GET STRING " + GP_Variables.GetString("string"));
-
-            ConsoleUI.Instance.Log("VARIABLES: GET IMAGE " + GP_Variables.GetImage("image"));
-            ConsoleUI.Instance.Log("VARIABLES: GET FILE " + GP_Variables.GetFile("file"));
+            if (GP_Variables.Has(_variableKey.text))
+            {
+                if (GP_Variables.GetString(_variableKey.text) != null)
+                    ConsoleUI.Instance.Log("VARIABLES: GET "
+                        + _variableKey.text + "\n"
+                        + GP_Variables.GetString(_variableKey.text));
+                else
+                {
+                    ConsoleUI.Instance.Log("VARIABLES: GET "
+                        + _variableKey.text + "\n"
+                        + GP_Variables.GetInt(_variableKey.text));
+                }
+            }
+            else
+            {
+                ConsoleUI.Instance.Log("VARIABLES: NO SUCH KEY");
+            }
         }
 
         public void IsPlatformFetchAvailable()
@@ -82,7 +94,7 @@ namespace Examples.Variables
             return dict;
         }
 
-        private void OnFetchSuccess(List<GameVariable> variables)
+        private void OnFetchSuccess(List<FetchGameVariable> variables)
         {
             for (int i = 0; i < variables.Count; i++)
             {

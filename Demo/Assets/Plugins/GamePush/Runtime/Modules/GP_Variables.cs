@@ -10,10 +10,10 @@ namespace GamePush
 {
     public class GP_Variables : MonoBehaviour
     {
-        public static event UnityAction<List<GameVariable>> OnFetchSuccess;
+        public static event UnityAction<List<FetchGameVariable>> OnFetchSuccess;
         public static event UnityAction OnFetchError;
 
-        private static event Action<List<GameVariable>> _onSuccess;
+        private static event Action<List<FetchGameVariable>> _onSuccess;
         private static event Action _onError;
 
         public static event UnityAction<Dictionary<string, string>> OnPlatformFetchSuccess;
@@ -24,7 +24,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
-        public static void Fetch(Action<List<GameVariable>> onFetchSuccess = null, Action onFetchError = null)
+        public static void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
             _onSuccess = onFetchSuccess;
             _onError = onFetchError;
@@ -204,7 +204,7 @@ namespace GamePush
 
         private void CallVariablesFetchSuccess(string data)
         {
-            var gameVariable = UtilityJSON.GetList<GameVariable>(data);
+            var gameVariable = UtilityJSON.GetList<FetchGameVariable>(data);
             _onSuccess?.Invoke(gameVariable);
             OnFetchSuccess?.Invoke(gameVariable);
         }
@@ -250,6 +250,15 @@ namespace GamePush
         }
 
     }
+
+    [System.Serializable]
+    public class FetchGameVariable
+    {
+        public string key;
+        public object value;
+        public string type;
+    }
+
     [System.Serializable]
     public class PlatformFetchVariables
     {

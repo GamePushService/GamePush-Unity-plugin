@@ -14,7 +14,27 @@ namespace GamePush.Core
         protected Dictionary<string, string> keyTypeData;
         protected Dictionary<string, object> keyValueData;
 
-        public List<GameVariable> GetData() => data;
+        protected List<FetchGameVariable> fetchGameVariables;
+
+        public List<FetchGameVariable> FetchData()
+        {
+            if (fetchGameVariables != null)
+                return fetchGameVariables;
+
+            List<FetchGameVariable> fetchData = new List<FetchGameVariable>();
+            foreach(string key in keyTypeData.Keys)
+            {
+                FetchGameVariable variable = new FetchGameVariable();
+                variable.key = key;
+                variable.value = keyValueData[key];
+                variable.type = keyTypeData[key];
+
+                fetchData.Add(variable);
+            }
+            fetchGameVariables = fetchData;
+
+            return fetchGameVariables;
+        }
 
         public GameVariables()
         {
@@ -36,7 +56,26 @@ namespace GamePush.Core
             foreach (GameVariable variable in data)
             {
                 keyTypeData.Add(variable.key, variable.type);
-                keyValueData.Add(variable.key, variable.value);
+                switch (variable.type)
+                {
+                    case "flag":
+                        bool value = variable.value == "true";
+                        keyValueData.Add(variable.key, value);
+                        break;
+                    case "stats":
+                        if(int.TryParse(variable.value, out int intValue))
+                            keyValueData.Add(variable.key, intValue);
+                        else if (float.TryParse(variable.value, out float floatValue))
+                            keyValueData.Add(variable.key, floatValue);
+                        else
+                            keyValueData.Add(variable.key, variable.value);
+                        break;
+                    default:
+                        keyValueData.Add(variable.key, variable.value);
+                        break;
+                }
+               
+                //Debug.Log(variable.key + " " + variable.type + " " + variable.value);
             }
         }
 
@@ -45,7 +84,17 @@ namespace GamePush.Core
         public T Get<T>(string key)
         {
             if(keyValueData.TryGetValue(key, out object value))
-                return (T)value;
+            {
+                try
+                {
+                    return (T)value;
+                }
+                catch
+                {
+                    return default(T);
+                }
+            }
+               
             
             return default(T);
         }
@@ -55,10 +104,10 @@ namespace GamePush.Core
             return false;
         }
 
-        public void Fetch(Action<List<GameVariable>> onFetchSuccess = null, Action onFetchError = null)
+        public void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
             if (data != null)
-                onFetchSuccess(data);
+                onFetchSuccess(FetchData());
             else
                 onFetchError();
         }

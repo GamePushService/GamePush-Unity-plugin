@@ -184,7 +184,7 @@ namespace GamePush.Data
         public string name;
         public string key;
         public string type;
-        public object @default;
+        public string @default;
         public bool important;
         public List<Variant> variants;
     }
@@ -200,7 +200,7 @@ namespace GamePush.Data
     public class GameVariable
     {
         public string key;
-        public object value;
+        public string value;
         public string type;
     }
 
