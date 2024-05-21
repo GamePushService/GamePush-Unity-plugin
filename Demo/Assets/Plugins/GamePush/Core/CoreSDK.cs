@@ -1,8 +1,6 @@
 using GamePush.Data;
 using GamePush.Core;
 using GamePush.Config;
-using UnityEngine;
-using UnityEditor;
 using System;
 
 namespace GamePush
@@ -22,14 +20,7 @@ namespace GamePush
 
         public static void Initialize()
         {
-            SavedDataSO config = Resources.Load<SavedDataSO>("GP_ConfigSO");
-
-            var path = AssetDatabase.GetAssetPath(config.saveFile);
-            var file = new System.IO.StreamReader(path);
-            var json = file.ReadToEnd();
-            file.Close();
-
-            var savedProjectData = JsonUtility.FromJson<SavedProjectData>(json);
+            var savedProjectData = new SavedProjectData(ProjectData.ID, ProjectData.TOKEN);
             SetProjectData(savedProjectData);
 
             InitModules();

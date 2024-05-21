@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using GamePush;
+using GamePush.Data;
 
 namespace GamePushEditor
 {
@@ -25,7 +26,7 @@ namespace GamePushEditor
 
         private static int _menuOpened;
 
-        private static SavedDataSO Config => Resources.Load<SavedDataSO>("GP_ConfigSO");
+        private static SavedDataSO Config => Resources.Load<SavedDataSO>("ConfigSO");
 
         [MenuItem("Tools/GamePush")]
         private static void ShowWindow()
@@ -78,6 +79,36 @@ namespace GamePushEditor
             var json = JsonUtility.ToJson(_projectData);
 
             System.IO.File.WriteAllText(path, json);
+            AssetDatabase.Refresh();
+        }
+
+        private static SavedProjectData GetProjectData()
+        {
+            if (ProjectData.ID == null)
+            {
+                SaveProjectData();
+                return new SavedProjectData(_id, _token);
+            }
+            var savedProjectData = new SavedProjectData(ProjectData.ID, ProjectData.TOKEN);
+            return savedProjectData;
+        }
+
+        private static void SaveProjectDataToScript()
+        {
+            _projectData = new SavedProjectData(_id, _token);
+
+            var path = AssetDatabase.GetAssetPath(Config.projectData);
+            var file = new System.IO.StreamWriter(path);
+
+            file.WriteLine("namespace GamePush.Data");
+            file.WriteLine("{");
+            file.WriteLine("    public static class ProjectData");
+            file.WriteLine("    {");
+            file.WriteLine($"        public static string ID = \"{_projectData.id}\";");
+            file.WriteLine($"        public static string TOKEN = \"{_projectData.token}\";");
+            file.WriteLine("    }");
+            file.WriteLine("}");
+            file.Close();
             AssetDatabase.Refresh();
         }
 
@@ -154,6 +185,7 @@ namespace GamePushEditor
             CoreSDK.SetProjectData(_projectId, _token);
             SetProjectDataToWebTemplate();
             SaveProjectData();
+            SaveProjectDataToScript();
 
             CoreSDK.FetchConfig();
         }

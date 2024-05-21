@@ -6,10 +6,10 @@ public class SavedDataSO : ScriptableObject
     public string fileName = "gamepush-guid.txt";
     public bool isLogsEnabled = true;
 
-    public TextAsset saveFile;
-/*
+
 #if UNITY_EDITOR
-    public TextAsset editorOnlySaveFile;
+    public TextAsset saveFile;
 #endif
-*/
+    public TextAsset projectData;
+
 }
