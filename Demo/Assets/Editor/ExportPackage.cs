@@ -8,7 +8,11 @@ public class ExportPackage
     static void export()
     {
         string fileName = "GP_plugin.unitypackage";
-        string[] paths = {"Assets/WebGLTemplates", "Packages/com.gamepush.gp-unity-plugin" };
+        string[] paths = {
+            "Assets/WebGLTemplates",
+            "Packages/com.gamepush.gp-unity-plugin",
+            "Packages/com.lastabyss.simplegraphql",
+        };
 
         AssetDatabase.ExportPackage(
             paths,
