@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/Plugins/GamePush/Examples/Examples.unity
+  - enabled: 0
+    path: Packages/com.gamepush.gp-unity-plugin/Samples/GP_Examples/Examples.unity
     guid: 2f1f74b392018a645acd08e42b82cb86
+  - enabled: 1
+    path: Assets/New Scene.unity
+    guid: efbba03481d42478c8643454acd70fcd
   m_configObjects: {}

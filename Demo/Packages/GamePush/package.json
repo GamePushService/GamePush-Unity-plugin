@@ -1,0 +1,29 @@
+{
+  "name": "com.gamepush.gp-unity-plugin",
+  "version": "1.3.3",
+  "displayName": "GamePush",
+  "description": "One solution for multiple platforms",
+  "documentationUrl": "https://docs.gamepush.com/docs/get-start",
+  "licensesUrl": "https://gamepush.com/ru/service/terms-of-service/",
+  "dependencies": {
+    "com.lastabyss.simplegraphql": "2.1.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.textmeshpro": "3.0.9"
+  },
+  "keywords": [
+    "WebGL",
+    "HTML5",
+    "DevTools"
+  ],
+  "author": {
+    "name": "GamePush",
+    "email": "official@gamepush.com",
+    "url": "https://gamepush.com"
+  },
+  "samples":{
+    "displayName" : "GP_Examples",
+    "description" : "Examples of modules usage",
+    "path" : "Samples~/GP_Examples"
+  }
+
+}

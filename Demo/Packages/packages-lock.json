@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.gamepush.gp-unity-plugin": {
+      "version": "file:GamePush",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.lastabyss.simplegraphql": "2.1.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.textmeshpro": "3.0.9"
+      }
+    },
     "com.lastabyss.simplegraphql": {
       "version": "https://github.com/ngoninteractive/SimpleGraphQL-For-Unity.git",
       "depth": 0,
@@ -77,6 +87,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.asset-store-tools": {
+      "version": "file:com.unity.asset-store-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.8.13",
       "depth": 2,
@@ -153,7 +169,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.8",
+      "version": "3.0.9",
       "depth": 0,
       "source": "registry",
       "dependencies": {
