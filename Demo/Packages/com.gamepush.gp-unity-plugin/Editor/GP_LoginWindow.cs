@@ -28,7 +28,7 @@ namespace GamePushEditor
 
         private static SavedDataSO Config => Resources.Load<SavedDataSO>("ConfigSO");
 
-        [MenuItem("Tools/GamePush")]
+        [MenuItem("Tools/GamePush/SetUp")]
         private static void ShowWindow()
         {
             var window = GetWindow<GP_LoginWindow>();
@@ -171,6 +171,7 @@ namespace GamePushEditor
 
         private static void FetchConfig()
         {
+            Debug.Log("Save data");
             if (string.IsNullOrEmpty(_id) || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
@@ -182,12 +183,16 @@ namespace GamePushEditor
 
             int.TryParse(_id, out _projectId);
 
+            Debug.Log("Set data");
             CoreSDK.SetProjectData(_projectId, _token);
+
             SetProjectDataToWebTemplate();
             SaveProjectData();
             SaveProjectDataToScript();
 
+            Debug.Log("Fetch data");
             CoreSDK.FetchConfig();
+            Debug.Log("Done");
         }
 
         private static bool ValidateId(string input)

@@ -1,4 +1,5 @@
 fragment translations on Translations { en fr it de es zh pt ko ja ru tr ar id hi }
+
 query result($lang: Lang) {
     result: FetchPlayerProjectConfig {
         __typename

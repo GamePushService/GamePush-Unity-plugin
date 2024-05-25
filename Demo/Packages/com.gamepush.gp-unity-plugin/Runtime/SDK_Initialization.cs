@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using GamePush.Services;
 using GamePush.Tools;
+using GamePush.Core;
 
 namespace GamePush.Initialization
 {
@@ -12,6 +13,7 @@ namespace GamePush.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+            GP_Logger.Log("Init plugin...");
             CoreSDK.Initialize();
 
             GameObject SDK = new GameObject();

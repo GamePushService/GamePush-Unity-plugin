@@ -5,36 +5,98 @@ using GamePush.Data;
 
 namespace GamePush.Core
 {
+
     [System.Serializable]
     public class PlayerModule
     {
-        protected List<PlayerField> data;
+        public Dictionary<string, object> playerState = new Dictionary<string, object>
+        {
+            { "id", 0 },
+            { "active", true },
+            { "removed", false },
+            { "test", false },
+            { "name", true },
+            { "avatar", true }
+        };
+      //{
+      //"playerState": {
+      //  "id": 0, //
+      //  "active": true, //
+      //  "removed": false, // 
+      //  "test": false, // closed fields
+      //  "name": "",
+      //  "avatar": "",
+      //  "score": 0
+      //},
+      //"override": false,
+      //"acceptedRewards": [],
+      //"givenRewards": [],
+      //"claimedTriggers": [],
+      //"claimedSchedulersDays": [],
+      //"isFirstRequest": true
+      //}
 
-        protected Dictionary<string, string> keyTypeData;
+
+
+    protected List<PlayerField> data;
+
         protected Dictionary<string, object> keyValueData;
+
+        private string SECRET_CODE_KEY = "xPlayerSecretCode";
 
         public Action OnPlayerChange;
 
         public PlayerModule()
         {
-            
+            keyValueData = new Dictionary<string, object>();
         }
 
         public PlayerModule(List<PlayerField> playerFields)
         {
-            data = playerFields;
+            SetData(playerFields);
+        }
+
+        public string GetPlayerDataCode()
+        {
+            if (PlayerPrefs.HasKey(SECRET_CODE_KEY))
+            {
+                Debug.Log(PlayerPrefs.GetString(SECRET_CODE_KEY));
+                return PlayerPrefs.GetString(SECRET_CODE_KEY);
+            }
+
+            return null;
+        }
+
+        public void SetPlayerDataCode(string code)
+        {
+            PlayerPrefs.SetString(SECRET_CODE_KEY, code);
         }
 
         public void SetData(List<PlayerField> playerFields)
         {
             data = playerFields;
-            keyTypeData = new Dictionary<string, string>();
             keyValueData = new Dictionary<string, object>();
 
             foreach (PlayerField field in data)
             {
-                
-                //Debug.Log(variable.key + " " + variable.type + " " + variable.value);
+                switch (field.type)
+                {
+                    case "flag":
+                        bool value = field.@default == "true";
+                        keyValueData.Add(field.key, value);
+                        break;
+                    case "stats":
+                        if (int.TryParse(field.@default, out int intValue))
+                            keyValueData.Add(field.key, intValue);
+                        else if (float.TryParse(field.@default, out float floatValue))
+                            keyValueData.Add(field.key, floatValue);
+                        else
+                            keyValueData.Add(field.key, field.@default);
+                        break;
+                    default:
+                        keyValueData.Add(field.key, field.@default);
+                        break;
+                }
             }
         }
 
@@ -78,6 +140,7 @@ namespace GamePush.Core
             return null;
         }
 
+        #region Set
         public void SetName(string name)
         {
 
@@ -97,6 +160,9 @@ namespace GamePush.Core
         {
 
         }
+        #endregion
+
+        #region Add
 
         public void AddScore(int score)
         {
@@ -108,6 +174,7 @@ namespace GamePush.Core
 
         }
 
+        #endregion
 
         public T Get<T>(string key)
         {

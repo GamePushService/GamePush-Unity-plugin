@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace GamePush
+namespace GamePush.Core
 {
     [System.Serializable]
     public class ReadyData
@@ -19,32 +19,36 @@ namespace GamePush
 
     public static class Hash
     {
-        public static string GetNullHash() => GetQueryHash(null);
+        public static Tuple<string, object> SingQuery(object query)
+            => GetProjectHash(CoreSDK.projectId, query, CoreSDK.projectToken);
 
-        public static string GetQueryHash(object query) => GetProjectHash(CoreSDK.projectId, query, CoreSDK.projectToken);
-
-        public static string GetProjectHash(int id, object query, string token)
+        private static Tuple<string, object> GetProjectHash(int id, object query, string token)
         {
+            var sortedQuery = query;
+            if (query != null)
+            {
+                string jsonQuery = JsonConvert.SerializeObject(query);
+                sortedQuery = SortKeys(jsonQuery);
+            }
+            
             Dictionary<string, object> data = new Dictionary<string, object>();
             data.Add("projectId", id);
-            data.Add("query", query);
+            data.Add("query", sortedQuery);
             data.Add("token", token);
 
             string json = JsonConvert.SerializeObject(data);
 
-            var sortedJson = SortKeys(json);
+            var sortedObj = SortKeys(json);
+            var hash = CalculateSHA256(sortedObj.ToString(Formatting.None));
 
-            var hash = CalculateSHA256(sortedJson);
-
-            return hash;
+            return new Tuple<string, object>(hash, sortedQuery);
         }
 
-        static string SortKeys(string json)
+        static Newtonsoft.Json.Linq.JObject SortKeys(string json)
         {
             var obj = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
             var sortedObj = new Newtonsoft.Json.Linq.JObject(obj.Properties().OrderBy(p => p.Name));
-            return sortedObj.ToString(Newtonsoft.Json.Formatting.None);
-
+            return sortedObj;
         }
 
         static string CalculateSHA256(string input)
@@ -57,6 +61,17 @@ namespace GamePush
             }
         }
 
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
 
         public static Dictionary<string, object> Sort(object src)
         {

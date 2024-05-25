@@ -1,0 +1,101 @@
+
+fragment PLAYER_ACHIEVEMENT on PlayerAchievement{
+    achievementId
+    createdAt
+    progress
+    unlocked
+}
+
+fragment PLAYER_PURCHASE on PlayerPurchase{
+    productId, 
+    payload, 
+    gift, 
+    subscribed, 
+    createdAt, 
+    expiredAt
+}
+
+fragment PLAYER_REWARD on PlayerReward{
+    rewardId
+    countTotal
+    countAccepted
+}
+
+fragment PLAYER_EVENT on PlayerEvent{
+    eventId
+    stats {
+        activeDays
+        activeDaysConsecutive
+    }
+}
+
+fragment PLAYER_TRIGGER on PlayerTrigger{
+    triggerId 
+    claimed
+}
+
+fragment EXPERIMENT on PlayerExperiment{
+    experiment
+    cohort
+}
+
+fragment SYNC_PLAYER_RESULT on Player{
+    state
+    stats {
+        playtimeAll
+        playtimeToday
+        activeDays
+        activeDaysConsecutive
+    }
+    achievementsList { ... PLAYER_ACHIEVEMENT }
+    purchasesListV2 { ... PLAYER_PURCHASE }
+    rewards { ... PLAYER_REWARD }
+    triggers { ... PLAYER_TRIGGER }
+    segments
+    leftSegments
+    newSegments
+    playerSchedulers {
+        schedulerId
+        daysClaimed
+        stats {
+            activeDays
+            activeDaysConsecutive
+        }
+    }
+    playerEvents { ... PLAYER_EVENT }
+    experiments  { ... EXPERIMENT }
+    rewardsData {
+        activatedTriggersNow
+        claimedTriggersNow
+        claimedSchedulersDaysNow { schedulerId day }
+        givenAchievements
+        givenRewards
+        givenProducts
+    }
+    sessionStart
+    token @include(if: $withToken)
+}
+
+mutation result($input: SyncPlayerInput!, $lang: Lang, $withToken: Boolean!) {
+    result: SyncPlayer(input: $input) {
+        __typename
+        ... SYNC_PLAYER_RESULT
+        ... on Problem {
+            message
+        }
+        ... on PlayerSyncConflict {
+            players
+            fields {
+                name(lang: $lang)
+                key
+                type
+                default
+                important
+                variants {
+                    value
+                    name(lang: $lang)
+                }
+            }
+        }
+    }
+}

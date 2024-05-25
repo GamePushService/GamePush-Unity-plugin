@@ -1,7 +1,7 @@
 using GamePush.Data;
 using GamePush.Core;
-using GamePush.Config;
 using System;
+using System.Threading.Tasks;
 
 namespace GamePush
 {
@@ -19,13 +19,13 @@ namespace GamePush
         public static PlayerModule player;
         public static GameVariables variables;
 
-        public static void Initialize()
+        public static async void Initialize()
         {
             var savedProjectData = new SavedProjectData(ProjectData.ID, ProjectData.TOKEN);
             SetProjectData(savedProjectData);
 
             InitModules();
-            FetchConfig();
+            await FetchData();
 
             OnInit?.Invoke();
         }
@@ -51,15 +51,30 @@ namespace GamePush
             projectToken = token;
         }
 
-        public static void FetchConfig()
+        public static async void FetchConfig()
         {
-            ConfigFetcher.GetConfig();
+            await DataFetcher.GetConfig();
+        }
+
+        public static async Task FetchData()
+        {
+            await DataFetcher.GetConfig();
+
+            SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
+            //syncPlayerInput.
+            await DataFetcher.SyncPlayer(syncPlayerInput, false);
+            /*
+            if(player.GetPlayerDataCode() != null)
+                await DataFetcher.GetPlayer();
+            else
+                await DataFetcher.SyncPlayer();
+            */
         }
 
         public static void SetConfig(AllData allData)
         {
             data = allData;
-
+            player = new PlayerModule(data.playerFields);
             variables = new GameVariables(data.gameVariables);
         }
 

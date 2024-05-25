@@ -32,7 +32,7 @@ namespace GamePush
 
         private void OnDisable()
         {
-            
+            CoreSDK.player.OnPlayerChange -= PlayerChange;
         }
 
         private void PlayerChange()

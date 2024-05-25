@@ -4,7 +4,7 @@ using UnityEditor;
 
 public class ExportPackage
 {
-    [MenuItem("Tools/Export/Export GamePush package")]
+    [MenuItem("Tools/GamePush/Export")]
     static void export()
     {
         string fileName = "GP_plugin.unitypackage";

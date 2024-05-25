@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 
-namespace GamePush.Config
+namespace GamePush.Core
 {
     public static class Headers
     {
@@ -15,9 +14,9 @@ namespace GamePush.Config
             X_Player_Data = "X-Player-Data";
 
 
-        public static Dictionary<string, string> GetConfigHeaders()
+        public static Dictionary<string, string> GetHeaders(string hash)
         {
-            string hash = Hash.GetQueryHash(null);
+            string base64 = GetBase64();
 
             return new Dictionary<string, string>()
             {
@@ -27,8 +26,17 @@ namespace GamePush.Config
             { X_Project_ID, CoreSDK.projectId.ToString() },
             { X_Project_Token, CoreSDK.projectToken.ToString() },
             { X_Language, "en" },
-            { X_Player_Data, "" },
+            { X_Player_Data, base64 },
             };
         }
+
+        private static string GetEncodeString(string secret) => $"{{\"secretCode\":\"{secret}\"}}";
+
+        private static string GetBase64()
+        {
+            string secret = CoreSDK.player.GetPlayerDataCode();
+            return Hash.Base64Encode(GetEncodeString(secret));
+        }
+
     }
 }
