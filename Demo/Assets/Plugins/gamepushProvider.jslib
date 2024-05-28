@@ -13,8 +13,6 @@ mergeInto(LibraryManager.library, {
     },
     /* LANGUAGE */
 
-
-
     /* AVATAR GENERATOR */
     GP_Change_AvatarGenerator: function (generator) {
         GamePush.ChangeAvatarGenerator(UTF8ToString(generator));
@@ -27,8 +25,6 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
     /* AVATAR GENERATOR */
-
-
 
     /* PLATFORM */
     GP_Platform_Type: function () {

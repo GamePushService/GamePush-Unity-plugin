@@ -1,21 +1,28 @@
 using UnityEngine;
 using GamePush;
 using GP_Utilities.Console;
+using System.Threading.Tasks;
+using System;
 
 namespace GP_Utilities.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.3.0";
+        static string VERSION = "v1.4.0";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+
             GameObject SDK = new GameObject();
-
             SDK.name = "GamePushSDK";
+            UnityEngine.Object.DontDestroyOnLoad(SDK);
 
-            Object.DontDestroyOnLoad(SDK);
+
+            Debug.Log("GamePush start init");
+            SetUpInitAwaiter();
+
+            SDK.AddComponent<GP_Init>();
 
             SDK.AddComponent<GP_ConsoleController>();
             SDK.AddComponent<GP_Achievements>();
@@ -51,6 +58,30 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Custom>();
 
             Debug.Log($"GamePush plugin ready ({VERSION})");
+            WaitAndGetID();
+        }
+
+        private static void SetUpInitAwaiter()
+        {
+            TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
+            GP_Init.Ready = _tcs.Task;
+
+            GP_Init.OnReady += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(true);
+            };
+
+            GP_Init.OnError += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(false);
+            };
+        }
+
+        public static async void WaitAndGetID()
+        {
+            Debug.Log("...");
+            await GP_Init.Ready;
+            Debug.Log(GP_Player.GetID().ToString());
         }
     }
 }
