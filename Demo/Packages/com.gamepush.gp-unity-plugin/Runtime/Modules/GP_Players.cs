@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
+using GamePush.Data;
 using GamePush.Tools;
 
 namespace GamePush

@@ -61,6 +61,8 @@ namespace GamePush
             await DataFetcher.GetConfig();
 
             SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
+            syncPlayerInput.playerState = player.GetPlayerState();
+            syncPlayerInput.isFirstRequest = true;
             //syncPlayerInput.
             await DataFetcher.SyncPlayer(syncPlayerInput, false);
             /*
@@ -74,7 +76,7 @@ namespace GamePush
         public static void SetConfig(AllData allData)
         {
             data = allData;
-            player = new PlayerModule(data.playerFields);
+            //player = new PlayerModule(data.playerFields);
             variables = new GameVariables(data.gameVariables);
         }
 

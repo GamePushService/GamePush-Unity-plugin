@@ -1,60 +1,46 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using GamePush.Data;
+using Newtonsoft.Json;
+using System.Linq;
+using System.Text;
 
 namespace GamePush.Core
 {
-
     [System.Serializable]
     public class PlayerModule
     {
-        public Dictionary<string, object> playerState = new Dictionary<string, object>
+
+        private Dictionary<string, object> playerState = new Dictionary<string, object>
         {
             { "id", 0 },
             { "active", true },
             { "removed", false },
             { "test", false },
-            { "name", true },
-            { "avatar", true }
+            { "score", 0 },
+            { "name", "" },
+            { "avatar", "" }
         };
-      //{
-      //"playerState": {
-      //  "id": 0, //
-      //  "active": true, //
-      //  "removed": false, // 
-      //  "test": false, // closed fields
-      //  "name": "",
-      //  "avatar": "",
-      //  "score": 0
-      //},
-      //"override": false,
-      //"acceptedRewards": [],
-      //"givenRewards": [],
-      //"claimedTriggers": [],
-      //"claimedSchedulersDays": [],
-      //"isFirstRequest": true
-      //}
 
+        public Newtonsoft.Json.Linq.JObject GetPlayerState()
+        {
+            string json = JsonConvert.SerializeObject(playerState);
+            var obj = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
+            var sortedObj = new Newtonsoft.Json.Linq.JObject(obj.Properties().OrderBy(p => p.Name));
+            return sortedObj;
+        }
 
-
-    protected List<PlayerField> data;
-
+        protected List<PlayerField> data;
         protected Dictionary<string, object> keyValueData;
-
-        private string SECRET_CODE_KEY = "xPlayerSecretCode";
 
         public Action OnPlayerChange;
 
-        public PlayerModule()
-        {
-            keyValueData = new Dictionary<string, object>();
-        }
 
-        public PlayerModule(List<PlayerField> playerFields)
-        {
-            SetData(playerFields);
-        }
+        #region SecretCode
+
+        private string SECRET_CODE_KEY = "xPlayerSecretCode";
 
         public string GetPlayerDataCode()
         {
@@ -70,6 +56,38 @@ namespace GamePush.Core
         public void SetPlayerDataCode(string code)
         {
             PlayerPrefs.SetString(SECRET_CODE_KEY, code);
+        }
+        #endregion
+
+
+        public async Task FetchPlayerConfig()
+        {
+            SyncPlayerInput playerInput = new SyncPlayerInput();
+            if (GetPlayerDataCode() != null)
+            {
+
+                playerInput.playerState = GetPlayerState();
+                playerInput.isFirstRequest = false;
+
+                await DataFetcher.GetPlayer(playerInput, false);
+            }
+            else
+            {
+                playerInput.playerState = GetPlayerState();
+                playerInput.isFirstRequest = true;
+
+                await DataFetcher.SyncPlayer(playerInput, false);
+            }
+        }
+
+        public PlayerModule()
+        {
+            keyValueData = new Dictionary<string, object>();
+        }
+
+        public PlayerModule(List<PlayerField> playerFields)
+        {
+            SetData(playerFields);
         }
 
         public void SetData(List<PlayerField> playerFields)
@@ -99,6 +117,8 @@ namespace GamePush.Core
                 }
             }
         }
+
+        #region Gettters
 
         public int GetID()
         {
@@ -140,7 +160,36 @@ namespace GamePush.Core
             return null;
         }
 
-        #region Set
+        public T Get<T>(string key)
+        {
+
+            return default(T);
+        }
+
+        public int GetActiveDays()
+        {
+            return 0;
+        }
+
+        public int GetActiveDaysConsecutive()
+        {
+            return 0;
+        }
+
+        public int GetPlaytimeToday()
+        {
+            return 0;
+        }
+
+        public int GetPlaytimeAll()
+        {
+            return 0;
+        }
+
+        #endregion
+
+        #region Setters
+
         public void SetName(string name)
         {
 
@@ -160,9 +209,20 @@ namespace GamePush.Core
         {
 
         }
+
+        public void Set<T>(string key, T value)
+        {
+
+        }
+
+        public void Toggle(string key)
+        {
+
+        }
+
         #endregion
 
-        #region Add
+        #region Adders
 
         public void AddScore(int score)
         {
@@ -174,28 +234,13 @@ namespace GamePush.Core
 
         }
 
-        #endregion
-
-        public T Get<T>(string key)
-        {
-            
-            return default(T);
-        }
-
-        public void Set<T>(string key, T value)
-        {
-
-        }
 
         public void Add<T>(string key, T value)
         {
 
         }
+        #endregion
 
-        public void Toggle(string key)
-        {
-
-        }
 
         public void Reset()
         {
@@ -227,6 +272,9 @@ namespace GamePush.Core
 
         }
 
+
+        #region IsFuncs
+
         public bool Has(string key)
         {
             return true;
@@ -246,25 +294,8 @@ namespace GamePush.Core
         {
             return true;
         }
+        #endregion
 
-        public int GetActiveDays()
-        {
-            return 0;
-        }
 
-        public int GetActiveDaysConsecutive()
-        {
-            return 0;
-        }
-
-        public int GetPlaytimeToday()
-        {
-            return 0;
-        }
-
-        public int GetPlaytimeAll()
-        {
-            return 0;
-        }
     }
 }

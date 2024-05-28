@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+using GamePush.Data;
 using GamePush.Tools;
 
 namespace GamePush

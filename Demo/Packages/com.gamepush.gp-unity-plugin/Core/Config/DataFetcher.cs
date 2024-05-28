@@ -38,7 +38,7 @@ namespace GamePush.Core
             //Debug.Log(JsonUtility.ToJson(configData.data.result));
         }
 
-        public static async Task GetPlayer()
+        public static async Task GetPlayer(SyncPlayerInput input, bool withToken)
         {
             Debug.Log("Get player");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -72,8 +72,10 @@ namespace GamePush.Core
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
-            Debug.Log(query.ToRequest(variables));
+
+            Debug.Log(queryTuple.Item2);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -84,7 +86,7 @@ namespace GamePush.Core
             Debug.Log(results);
 
             ConfigData configData = JsonUtility.FromJson<ConfigData>(results);
-            CoreSDK.SetConfig(configData.data.result);
+            //CoreSDK.SetConfig(configData.data.result);
 
             //Debug.Log(JsonUtility.ToJson(configData.data.result));
         }
@@ -92,33 +94,5 @@ namespace GamePush.Core
 
     }
 
-    [System.Serializable]
-    public class SyncPlayerInput
-    {
-        public object playerState;
-
-        [JsonProperty("override")]
-        public bool Override;
-
-        //public bool 
-
-        public RewardToIncrement[] acceptedRewards;
-        public RewardToIncrement[] givenRewards;
-        public string[] claimedTriggers;
-        public ClaimSchedulerDayInput[] claimedSchedulersDays;
-    }
-
-    [System.Serializable]
-    public class ClaimSchedulerDayInput
-    {
-        public int schedulerId;
-        public int day;
-    }
-
-    [System.Serializable]
-    public class RewardToIncrement
-    {
-        public int id;
-        public int count;
-    }
+    
 }
