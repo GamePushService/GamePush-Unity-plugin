@@ -6,7 +6,7 @@ using GP_Utilities.Console;
 namespace GamePush
 {
     [CustomEditor(typeof(GP_ConsoleController))]
-    public class GP_Editor : Editor
+    public class GP_EmulatorEditor : Editor
     {
         #region Serialized Property
         SerializedProperty AchievementsConsoleLogs;
