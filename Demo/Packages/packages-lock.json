@@ -1,15 +1,5 @@
 {
   "dependencies": {
-    "com.gamepush.gp-unity-plugin": {
-      "version": "file:com.gamepush.gp-unity-plugin",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.lastabyss.simplegraphql": "2.1.0",
-        "com.unity.nuget.newtonsoft-json": "3.2.1",
-        "com.unity.textmeshpro": "3.0.9"
-      }
-    },
     "com.lastabyss.simplegraphql": {
       "version": "https://github.com/ngoninteractive/SimpleGraphQL-For-Unity.git",
       "depth": 0,
