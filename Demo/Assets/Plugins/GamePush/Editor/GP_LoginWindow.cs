@@ -8,6 +8,7 @@ using GamePush.Data;
 
 namespace GamePushEditor
 {
+
     public class GP_LoginWindow : EditorWindow
     {
         private const string SITE_URL = "https://gamepush.com";
