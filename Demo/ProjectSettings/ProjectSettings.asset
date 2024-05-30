@@ -402,15 +402,15 @@ PlayerSettings:
   m_TemplateCustomTags:
     AUTOCALL_GAMEREADY: 
     CUSTOMIZATION: 
-    GAMEREADY_AUTOCALL_DELAY: 200
+    GAMEREADY_AUTOCALL_DELAY: 0
     OVERLAY_BACKGROUND_COLOR: 
     PRODUCT_DESCRIPTION: 
     PROGRESS_BAR_BACKGROUND_COLOR: 
     PROGRESS_BAR_BORDER_COLOR: 
     PROGRESS_BAR_FILL_COLOR: 
-    PROJECT_ID: 5815
-    SHOW_PRELOADER_AD: True
-    TOKEN: BL5y2Oqp3Wl622MDcOAWrd55hJJF08SD
+    PROJECT_ID: 1
+    SHOW_PRELOADER_AD: False
+    TOKEN: token
     X_SHOW_PRELOADER_AD: 
   mobileMTRendering:
     Android: 1
@@ -675,14 +675,14 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:PWA
+  webGLTemplate: PROJECT:GamePush
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 0
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
-  webGLDecompressionFallback: 0
+  webGLDecompressionFallback: 1
   webGLInitialMemorySize: 32
   webGLMaximumMemorySize: 2048
   webGLMemoryGrowthMode: 2

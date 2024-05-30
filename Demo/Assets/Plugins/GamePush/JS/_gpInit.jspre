@@ -1,5 +1,9 @@
 let GamePush;
 
+function _GP(){
+    return GamePush || window.GamePush;
+}
+
 setTimeout(() => {
     if ('GamePushUnity' in window) return;
 
