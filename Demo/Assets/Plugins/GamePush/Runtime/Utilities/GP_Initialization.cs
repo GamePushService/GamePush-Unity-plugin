@@ -13,13 +13,12 @@ namespace GP_Utilities.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+            //Debug.Log("GamePush plugin initialization");
 
             GameObject SDK = new GameObject();
             SDK.name = "GamePushSDK";
             UnityEngine.Object.DontDestroyOnLoad(SDK);
-
-
-            Debug.Log("GamePush start init");
+            
             SetUpInitAwaiter();
 
             SDK.AddComponent<GP_Init>();
