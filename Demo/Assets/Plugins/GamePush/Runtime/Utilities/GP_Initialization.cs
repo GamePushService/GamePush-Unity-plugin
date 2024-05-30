@@ -58,7 +58,6 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Custom>();
 
             Debug.Log($"GamePush plugin ready ({VERSION})");
-            WaitAndGetID();
         }
 
         private static void SetUpInitAwaiter()
@@ -75,13 +74,6 @@ namespace GP_Utilities.Initialization
                 if (!_tcs.Task.IsCompleted)
                     _tcs.SetResult(false);
             };
-        }
-
-        public static async void WaitAndGetID()
-        {
-            Debug.Log("...");
-            await GP_Init.Ready;
-            Debug.Log(GP_Player.GetID().ToString());
         }
     }
 }

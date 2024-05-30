@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 namespace GamePush.Data
 {
     //[CreateAssetMenu(fileName = "SavedDataSO", menuName = "GP_Settings/SavedDataSO")]
@@ -14,6 +13,7 @@ namespace GamePush.Data
         public TextAsset saveFile;
 #endif
         public TextAsset projectData;
+        public TextAsset jspreData;
 
     }
 

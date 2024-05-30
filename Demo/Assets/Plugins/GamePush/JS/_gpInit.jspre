@@ -1,19 +1,14 @@
 let GamePush;
 
-(() => {
+setTimeout(() => {
     if ('GamePushUnity' in window) return;
-
-    const projectId = '5815';
-    const publicToken = 'BL5y2Oqp3Wl622MDcOAWrd55hJJF08SD';
-    const showPreloaderAd = 'false';
-    const autocallGameReady = '0';
 
     window.onGPError = () => {
         SendMessage('GamePushSDK', 'CallOnSDKError');
     };
 
     window.onGPInit = async (gp) => {
-        if (showPreloaderAd == 'true' || showPreloaderAd == '1') {
+        if (showPreloaderAd == 'True') {
             gp.ads.showPreloader();
         }
 
@@ -47,7 +42,7 @@ let GamePush;
             'https://s3.eponesh.com/files/gs/sdk/gamepush.js',
             'TemplateData/gp_bundle/gamepush.js'
         ],
-        projectId,
-        publicToken
+        dataProjectId,
+        dataPublicToken
     );
-})();
+}, 0);

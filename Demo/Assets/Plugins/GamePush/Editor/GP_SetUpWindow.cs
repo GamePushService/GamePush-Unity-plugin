@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -15,8 +16,12 @@ namespace GamePushEditor
         private const string VERSION = "2.0.1";
 
         private static bool _isDataFetch;
-        private static string _id, _token;
-        private static int _projectId;
+
+        private static int _id;
+        private static string _token;
+
+        private static bool _showPreloaderAd;
+        private static int _gameReadyDelay;
 
         private static SavedProjectData _projectData;
 
@@ -26,7 +31,9 @@ namespace GamePushEditor
 
         private static int _menuOpened;
 
-        [MenuItem("Tools/GamePush/SetUp")]
+        private static SavedDataSO DataLinker => Resources.Load<SavedDataSO>("GP_DataLinker");
+
+        [MenuItem("Tools/GamePush")]
         private static void ShowWindow()
         {
             var window = GetWindow<GP_LoginWindow>();
@@ -48,13 +55,16 @@ namespace GamePushEditor
 
             _projectData = GetSavedProjectData();
             _id = _projectData.id;
+
             _token = _projectData.token;
+            _showPreloaderAd = _projectData.showPreAd;
+            _gameReadyDelay = _projectData.gameReadyDelay;
         }
 
 
         private static SavedProjectData GetSavedProjectData()
         {
-            var path = AssetDatabase.GetAssetPath(Config.saveFile);
+            var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var file = new System.IO.StreamReader(path);
             var json = file.ReadToEnd();
             file.Close();
@@ -71,42 +81,71 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            _projectData = new SavedProjectData(_id, _token);
+            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyDelay);
 
-            var path = AssetDatabase.GetAssetPath(Config.saveFile);
+            var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
 
             System.IO.File.WriteAllText(path, json);
             AssetDatabase.Refresh();
         }
 
-        private static SavedProjectData GetProjectData()
+        private static void SetProjectDataToWebTemplate()
         {
-            if (ProjectData.ID == null)
-            {
-                SaveProjectData();
-                return new SavedProjectData(_id, _token);
-            }
-            var savedProjectData = new SavedProjectData(ProjectData.ID, ProjectData.TOKEN);
-            return savedProjectData;
+            PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _id.ToString());
+            PlayerSettings.SetTemplateCustomValue("TOKEN", _token.ToString());
+            PlayerSettings.SetTemplateCustomValue("SHOW_PRELOADER_AD", _showPreloaderAd.ToString());
+            PlayerSettings.SetTemplateCustomValue("GAMEREADY_AUTOCALL_DELAY", _gameReadyDelay.ToString());
         }
 
         private static void SaveProjectDataToScript()
         {
-            _projectData = new SavedProjectData(_id, _token);
+            SaveProjectDataToJavaScript();
+            SaveProjectDataToSharp();
+        }
 
-            var path = AssetDatabase.GetAssetPath(Config.projectData);
+        private static void SaveProjectDataToSharp()
+        {
+            var path = AssetDatabase.GetAssetPath(DataLinker.projectData);
             var file = new System.IO.StreamWriter(path);
 
             file.WriteLine("namespace GamePush.Data");
             file.WriteLine("{");
             file.WriteLine("    public static class ProjectData");
             file.WriteLine("    {");
-            file.WriteLine($"        public static string ID = \"{_projectData.id}\";");
-            file.WriteLine($"        public static string TOKEN = \"{_projectData.token}\";");
+            file.WriteLine($"        public static string ID = \"{_id}\";");
+            file.WriteLine($"        public static string TOKEN = \"{_token}\";");
             file.WriteLine("    }");
             file.WriteLine("}");
             file.Close();
+            AssetDatabase.Refresh();
+        }
+
+        private static void SaveProjectDataToJavaScript()
+        {
+            var path = AssetDatabase.GetAssetPath(DataLinker.jspreData);
+
+            var pathJspre = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(DataLinker.jspreData)), "_dataFields.jspre");
+            
+            var file = new StreamWriter(path);
+
+            file.WriteLine($"const dataProjectId = \'{_id}\';");
+            file.WriteLine($"const dataPublicToken = \'{_token}\';");
+            file.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
+            file.WriteLine($"const autocallGameReady = \'{_gameReadyDelay}\';");
+
+            file.Close();
+
+            var filePre = new StreamWriter(pathJspre);
+
+            filePre.WriteLine($"const dataProjectId = \'{_id}\';");
+            filePre.WriteLine($"const dataPublicToken = \'{_token}\';");
+            filePre.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
+            filePre.WriteLine($"const autocallGameReady = \'{_gameReadyDelay}\';");
+
+            filePre.Close();
+
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
 
@@ -143,13 +182,13 @@ namespace GamePushEditor
             GUILayout.Label("Enter project ID and token", _titleStyle);
             GUILayout.Space(10);
 
-            _id = EditorGUILayout.TextField("ID", _id);
+            _id = EditorGUILayout.IntField("ID", _id);
             GUILayout.Space(5);
             _token = EditorGUILayout.TextField("Token", _token);
 
             GUILayout.Space(20);
             if (GUILayout.Button("Save"))
-                FetchConfig();
+                SaveConfig();
         }
 
         private void OnSettingsGUI()
@@ -157,6 +196,10 @@ namespace GamePushEditor
             GUILayout.Space(10);
             GUILayout.Label("Settings", _titleStyle);
             GUILayout.Space(10);
+
+            _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
+            GUILayout.Space(5);
+            _gameReadyDelay = EditorGUILayout.IntField("Game Ready Delay", _gameReadyDelay);
         }
 
         private static void DrawSeparator()
@@ -170,53 +213,30 @@ namespace GamePushEditor
         }
         #endregion
 
-        private static void FetchConfig()
+        private static void SaveConfig()
         {
             Debug.Log("Save data");
-            if (string.IsNullOrEmpty(_id) || string.IsNullOrEmpty(_token))
+            if (_id == 0 || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
                 return;
             }
 
-            if (!ValidateId(_id)) return;
             if (!ValidateToken(_token)) return;
 
-            int.TryParse(_id, out _projectId);
-
-            Debug.Log("Set data");
-            CoreSDK.SetProjectData(_projectId, _token);
+            SaveProjectData();
 
             SetProjectDataToWebTemplate();
-            SaveProjectData();
             SaveProjectDataToScript();
 
-            Debug.Log("Fetch data");
-            CoreSDK.FetchConfig();
             Debug.Log("Done");
-        }
-
-        private static bool ValidateId(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                EditorUtility.DisplayDialog("GamePush Error", "Please enter a name.", "OK");
-                return false;
-            }
-
-            if (!Regex.IsMatch(input, @"^[0-9]+$"))
-            {
-                EditorUtility.DisplayDialog("GamePush Error", "The project ID can only contain numbers", "OK");
-                return false;
-            }
-            return true;
         }
 
         private static bool ValidateToken(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
-                EditorUtility.DisplayDialog("GamePush Error", "Please enter a name.", "OK");
+                EditorUtility.DisplayDialog("GamePush Error", "Please enter project token.", "OK");
                 return false;
             }
 
@@ -228,10 +248,6 @@ namespace GamePushEditor
             return true;
         }
 
-        private static void SetProjectDataToWebTemplate()
-        {
-            PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _id);
-            PlayerSettings.SetTemplateCustomValue("TOKEN", _token);
-        }
+        
     }
 }
