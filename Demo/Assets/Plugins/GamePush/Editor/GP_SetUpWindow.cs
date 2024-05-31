@@ -183,7 +183,7 @@ namespace GamePushEditor
             GUILayout.Label("Enter project ID and token", _titleStyle);
             GUILayout.Space(10);
 
-            _id = EditorGUILayout.IntField("ID", _id);
+            _id = EditorGUILayout.IntField("Project ID", _id);
             GUILayout.Space(5);
             _token = EditorGUILayout.TextField("Token", _token);
 
