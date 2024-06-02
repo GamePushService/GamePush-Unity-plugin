@@ -28,6 +28,7 @@ namespace GamePushEditor
         private static Vector2 _scrollPos;
 
         private static GUIStyle _titleStyle;
+        private static GUIStyle _buttonStyle;
 
         private static int _menuOpened;
 
@@ -167,7 +168,7 @@ namespace GamePushEditor
             //        break;
             //}
 
-            GUILayout.Space(50);
+            GUILayout.Space(30);
             DrawSeparator();
 
             if (GUILayout.Button("<color=#04bc04>GamePush 2024</color>",
@@ -180,7 +181,7 @@ namespace GamePushEditor
         private void OnLoginGUI()
         {
             GUILayout.Space(20);
-            GUILayout.Label("Enter project ID and token", _titleStyle);
+            GUILayout.Label(" Enter project ID and token", _titleStyle);
             GUILayout.Space(10);
 
             _id = EditorGUILayout.IntField("Project ID", _id);
@@ -188,7 +189,7 @@ namespace GamePushEditor
             _token = EditorGUILayout.TextField("Token", _token);
 
             GUILayout.Space(15);
-            GUILayout.Label("Additional settings", _titleStyle);
+            GUILayout.Label(" Additional settings", _titleStyle);
             GUILayout.Space(10);
 
             _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
@@ -196,7 +197,8 @@ namespace GamePushEditor
             _gameReadyDelay = EditorGUILayout.IntField("Game Ready Delay", _gameReadyDelay);
 
             GUILayout.Space(25);
-            if (GUILayout.Button("Save"))
+
+            if (GUILayout.Button("Save", GUILayout.Height(30)))
                 SaveConfig();
         }
 
@@ -224,7 +226,7 @@ namespace GamePushEditor
 
         private static void SaveConfig()
         {
-            Debug.Log("Save data");
+            Console.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
@@ -238,7 +240,7 @@ namespace GamePushEditor
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
-            Debug.Log("Done");
+            Console.Log("Data saved");
         }
 
         private static bool ValidateToken(string input)
