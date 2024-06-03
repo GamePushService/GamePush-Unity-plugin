@@ -21,8 +21,9 @@ namespace GamePush
 
         public static async void Initialize()
         {
-            var savedProjectData = new SavedProjectData(ProjectData.ID, ProjectData.TOKEN);
-            SetProjectData(savedProjectData);
+            int id;
+            int.TryParse(ProjectData.ID, out id);
+            SetProjectData(id, ProjectData.TOKEN);
 
             InitModules();
             await FetchData();
@@ -39,9 +40,7 @@ namespace GamePush
 
         public static void SetProjectData(SavedProjectData data)
         {
-            int parseId;
-            int.TryParse(data.id, out parseId);
-            projectId = parseId;
+            projectId = data.id;
             projectToken = data.token;
         }
 

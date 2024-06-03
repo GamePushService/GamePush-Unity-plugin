@@ -1,8 +1,6 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-using GP_Utilities.Console;
-
 namespace GamePush
 {
     public class GP_Platform : MonoBehaviour
@@ -31,9 +29,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Platform_Type());
 #else
-            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+            Platform platform = Platform.None;
+            GP_Logger.Log("PLATFORM: TYPE: ", platform.ToString());
             return platform;
 #endif
         }
@@ -43,9 +40,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Type();
 #else
-            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+            Platform platform = Platform.None;
+            GP_Logger.Log("PLATFORM: TYPE: ", platform.ToString());
             return platform.ToString();
 #endif
         }
@@ -58,9 +54,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
-            bool auth = GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", auth.ToString());
+            bool auth = false;
+            GP_Logger.Log("PLATFORM: HAS INTEGRATED AUTH: ", auth.ToString());
             return auth;
 #endif
         }
@@ -73,9 +68,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsExternalLinksAllowed() == "true";
 #else
-            bool linkAllow = GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", linkAllow.ToString());
+            bool linkAllow = false;
+            GP_Logger.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", linkAllow.ToString());
             return linkAllow;
 #endif
         }
@@ -130,26 +124,6 @@ namespace GamePush
             return Platform.None;
         }
 
-    }
-
-    public enum Platform : byte
-    {
-        None = 0,
-        YANDEX = 1,
-        VK = 2,
-        CRAZY_GAMES = 3,
-        GAME_DISTRIBUTION = 4,
-        GAME_MONETIZE = 5,
-        OK = 6,
-        SMARTMARKET = 7,
-        GAMEPIX = 8,
-        POKI = 9,
-        VK_PLAY = 10,
-        WG_PLAYGROUND = 11,
-        KONGREGATE = 12,
-        GOOGLE_PLAY = 13,
-        PLAYDECK = 14,
-        CUSTOM = 15
     }
 }
 

@@ -1,5 +1,5 @@
 using System;
-using GamePush.Tools;
+using GamePush;
 
 namespace GamePush.Core
 {

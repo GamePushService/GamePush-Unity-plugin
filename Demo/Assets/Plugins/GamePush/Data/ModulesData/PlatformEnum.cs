@@ -15,6 +15,9 @@ namespace GamePush
         POKI = 9,
         VK_PLAY = 10,
         WG_PLAYGROUND = 11,
-        KONGREGATE = 12
+        KONGREGATE = 12,
+        GOOGLE_PLAY = 13,
+        PLAYDECK = 14,
+        CUSTOM = 15
     }
 }

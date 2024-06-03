@@ -226,7 +226,7 @@ namespace GamePushEditor
 
         private static void SaveConfig()
         {
-            Console.Log("Saving data");
+            GP_Logger.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
@@ -234,13 +234,14 @@ namespace GamePushEditor
             }
 
             if (!ValidateToken(_token)) return;
-
+            CoreSDK.SetProjectData(_id, _token);
             SaveProjectData();
 
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
-            Console.Log("Data saved");
+            GP_Logger.Log("Data saved");
+            CoreSDK.FetchConfig();
         }
 
         private static bool ValidateToken(string input)
