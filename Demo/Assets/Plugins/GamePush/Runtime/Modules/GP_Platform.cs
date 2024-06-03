@@ -19,6 +19,10 @@ namespace GamePush
         private static string VK_PLAY = "VK_PLAY";
         private static string WG_PLAYGROUND = "WG_PLAYGROUND";
         private static string KONGREGATE = "KONGREGATE";
+        private static string GOOGLE_PLAY = "GOOGLE_PLAY";
+        private static string PLAYDECK = "PLAYDECK";
+        private static string CUSTOM = "CUSTOM";
+
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_Type();
@@ -114,6 +118,15 @@ namespace GamePush
             if (platform == KONGREGATE)
                 return Platform.KONGREGATE;
 
+            if (platform == GOOGLE_PLAY)
+                return Platform.GOOGLE_PLAY;
+
+            if (platform == PLAYDECK)
+                return Platform.PLAYDECK;
+
+            if (platform == CUSTOM)
+                return Platform.CUSTOM;
+
             return Platform.None;
         }
 
@@ -133,7 +146,10 @@ namespace GamePush
         POKI = 9,
         VK_PLAY = 10,
         WG_PLAYGROUND = 11,
-        KONGREGATE = 12
+        KONGREGATE = 12,
+        GOOGLE_PLAY = 13,
+        PLAYDECK = 14,
+        CUSTOM = 15
     }
 }
 

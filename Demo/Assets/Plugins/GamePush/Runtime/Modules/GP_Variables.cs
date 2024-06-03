@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -209,7 +209,7 @@ namespace GamePush
                 dict.Add(key, value);
             }
 
-            string clientParams = GP_JSON.DictionaryToJson(dict);
+            string clientParams = UtilityJSON.DictionaryToJson(dict);
 
             return clientParams;
         }
@@ -218,7 +218,7 @@ namespace GamePush
 
         private void CallVariablesFetchSuccess(string data)
         {
-            var variablesData = GP_JSON.GetList<VariablesData>(data);
+            var variablesData = UtilityJSON.GetList<VariablesData>(data);
             _onSuccess?.Invoke(variablesData);
             OnFetchSuccess?.Invoke(variablesData);
         }

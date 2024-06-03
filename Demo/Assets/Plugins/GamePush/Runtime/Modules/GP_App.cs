@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -55,7 +55,7 @@ namespace GamePush
         {
             string cover = GP_App_Image();
             if (cover == null || cover == "") return;
-            await GP_Utility.DownloadImageAsync(cover, image);
+            await UtilityImage.DownloadImageAsync(cover, image);
         }
 
         public static string ImageUrl()

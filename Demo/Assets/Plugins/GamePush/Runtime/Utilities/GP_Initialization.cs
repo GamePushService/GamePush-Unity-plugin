@@ -1,21 +1,27 @@
 using UnityEngine;
 using GamePush;
 using GP_Utilities.Console;
+using System.Threading.Tasks;
+using System;
 
 namespace GP_Utilities.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.3.1";
+        static string VERSION = "v1.4.0";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+            //Debug.Log("GamePush plugin initialization");
+
             GameObject SDK = new GameObject();
-
             SDK.name = "GamePushSDK";
+            UnityEngine.Object.DontDestroyOnLoad(SDK);
+            
+            SetUpInitAwaiter();
 
-            Object.DontDestroyOnLoad(SDK);
+            SDK.AddComponent<GP_Init>();
 
             SDK.AddComponent<GP_ConsoleController>();
             SDK.AddComponent<GP_Achievements>();
@@ -51,6 +57,22 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Custom>();
 
             Debug.Log($"GamePush plugin ready ({VERSION})");
+        }
+
+        private static void SetUpInitAwaiter()
+        {
+            TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
+            GP_Init.Ready = _tcs.Task;
+
+            GP_Init.OnReady += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(true);
+            };
+
+            GP_Init.OnError += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(false);
+            };
         }
     }
 }

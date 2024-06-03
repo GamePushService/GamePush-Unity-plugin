@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -133,11 +133,11 @@ namespace GamePush
         }
 
 
-        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(GP_JSON.GetList<AchievementsFetch>(achievementsData));
+        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(UtilityJSON.GetList<AchievementsFetch>(achievementsData));
         private void CallAchievementsFetchError() => OnAchievementsFetchError?.Invoke();
 
-        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(GP_JSON.GetList<AchievementsFetchGroups>(achievementsGroupsData));
-        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(GP_JSON.GetList<AchievementsFetchPlayer>(achievementsPlayerData));
+        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(UtilityJSON.GetList<AchievementsFetchGroups>(achievementsGroupsData));
+        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(UtilityJSON.GetList<AchievementsFetchPlayer>(achievementsPlayerData));
 
         private void CallAchievementsOpen() { _onAchievementsOpen?.Invoke(); OnAchievementsOpen?.Invoke(); }
         private void CallAchievementsClose() { _onAchievementsClose?.Invoke(); OnAchievementsClose?.Invoke(); }

@@ -37,13 +37,14 @@
     window.onGPError = () => _gpAwaiter.done();
 
     window.onGPInit = async (gp) => {
-      if (showPreloaderAd == "true" || showPreloaderAd == "1") {
+      if (showPreloaderAd == "True" || showPreloaderAd == "1") {
         gp.ads.showPreloader();
       }
 
       window.GamePush = new GamePushUnity(gp);
       gp.player.ready.finally(_gpAwaiter.done);
 
+      console.info("GamePush initialization in index.html deprecated!!!")
       await _unityAwaiter.ready;
 
       if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
@@ -53,7 +54,22 @@
   </script>
 
   <script>
-    ((g, a, m, e) => { let o = () => { let p = document.createElement("script"); p.src = `${a[0]}?projectId=${m}&publicToken=${e}`, p.onerror = () => { a.shift(), a.length > 0 ? (o(), p.remove()) : "onGPError" in g && g.onGPError() }, document.head.appendChild(p) }; o() })(window, ["https://gs.eponesh.com/sdk/gamepush.js", "https://s3.eponesh.com/files/gs/sdk/gamepush.js", "TemplateData/gp_bundle/gamepush.js"], projectId, publicToken);
+    ((g, a, m, e) => { 
+      let o = () => { 
+        let p = document.createElement("script"); 
+        p.src = `${a[0]}?projectId=${m}&publicToken=${e}`, 
+        p.onerror = () => { 
+          a.shift(), 
+          a.length > 0 ? (o(), 
+          p.remove()) : "onGPError" in g && g.onGPError() }, 
+          document.head.appendChild(p) 
+        }; 
+        o() 
+      })(window, ["https://gs.eponesh.com/sdk/gamepush.js", 
+      "https://s3.eponesh.com/files/gs/sdk/gamepush.js", 
+      "TemplateData/gp_bundle/gamepush.js"], 
+      projectId, 
+      publicToken);
   </script>
 
 </head>

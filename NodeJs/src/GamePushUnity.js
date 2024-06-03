@@ -2041,6 +2041,20 @@ export default class GamePushUnity {
         
     }
     //Custom
+
+    //Logger
+    LoggerInfo(title, text){
+        this.gp.logger.info(title, text);
+    }
+    LoggerWarn(title, text){
+        this.gp.logger.warn(title, text);
+    }
+    LoggerError(title, text){
+        this.gp.logger.error(title, text);
+    }
+    LoggerLog(title, text){
+        this.gp.logger.log(title, text);
+    }
 }
 
 function formatCustomValue(value){
@@ -2083,15 +2097,12 @@ window.executeFunctionByName = function(functionName, context /*, args*/) {
     var args = Array.prototype.slice.call(arguments, 2);
     args = args.map(element => {
         try{
-            //console.log("try parse " + element);
             return JSON.parse(element);
         }
         catch(error){
-            //console.log("catch " + error);
             return element
         }
     });
-    //console.log(args);
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
 

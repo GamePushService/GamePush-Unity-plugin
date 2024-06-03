@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -153,7 +153,7 @@ namespace GamePush
 
         private void CallImagesFetchSuccess(string result)
         {
-            List<ImageData> images = GP_JSON.GetList<ImageData>(result);
+            List<ImageData> images = UtilityJSON.GetList<ImageData>(result);
 
             _onImagesFetchSuccess?.Invoke(images);
             OnImagesFetchSuccess?.Invoke(images);
@@ -173,7 +173,7 @@ namespace GamePush
 
         private void CallImagesUploadSuccess(string result)
         {
-            ImageData imageData = GP_JSON.Get<ImageData>(result);
+            ImageData imageData = UtilityJSON.Get<ImageData>(result);
             _onImagesUploadSuccess?.Invoke(imageData);
             OnImagesUploadSuccess?.Invoke(imageData);
         }
@@ -186,7 +186,7 @@ namespace GamePush
 
         private void CallImagesUploadUrlSuccess(string result)
         {
-            ImageData imageData = GP_JSON.Get<ImageData>(result);
+            ImageData imageData = UtilityJSON.Get<ImageData>(result);
             _onImagesUploadUrlSuccess?.Invoke(imageData);
             OnImagesUploadUrlSuccess?.Invoke(imageData);
         }

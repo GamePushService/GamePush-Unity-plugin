@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities;
+using GamePush.Utilities;
 using GP_Utilities.Console;
 
 namespace GamePush
@@ -36,7 +36,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string triggers = GP_Triggers_List();
-            return GP_JSON.GetArray<TriggerData>(triggers);
+            return UtilityJSON.GetArray<TriggerData>(triggers);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("TRIGGERS: ", "LIST");
@@ -51,7 +51,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string triggers = GP_Triggers_ActivatedList();
-            return GP_JSON.GetArray<TriggerActive>(triggers);
+            return UtilityJSON.GetArray<TriggerActive>(triggers);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("TRIGGERS: ", "Activated List");
@@ -66,7 +66,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Triggers_GetTrigger(idOrTag);
-            return GP_JSON.Get<TriggerAllData>(data);
+            return UtilityJSON.Get<TriggerAllData>(data);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("TRIGGERS: ", "Get Trigger");
