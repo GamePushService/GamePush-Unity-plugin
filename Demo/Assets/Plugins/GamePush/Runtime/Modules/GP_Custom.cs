@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -25,8 +24,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_CustomCall(name, args);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Call: ", "Test");
+            GP_Logger.Log("CUSTOM Call: ", "Test");
 #endif
         }
 
@@ -38,8 +36,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_CustomGetValue(path);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM value: ", "Test");
+            GP_Logger.Log("CUSTOM value: ", "Test");
             return null;
 #endif
         }
@@ -53,8 +50,7 @@ namespace GamePush
             string result = GP_CustomReturn(name, args);
             return result;
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Return: ", "Test");
+            GP_Logger.Log("CUSTOM Return: ", "Test");
             return null;
 #endif
         }
@@ -69,8 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_CustomAsyncReturn(name, args);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Async Return: ", "Test");
+            GP_Logger.Log("CUSTOM Async Return: ", "Test");
 #endif
         }
 

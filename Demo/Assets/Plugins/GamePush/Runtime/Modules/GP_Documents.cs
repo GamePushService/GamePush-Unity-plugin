@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -33,8 +33,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Documents_Open();
 #else
-            if (GP_ConsoleController.Instance.DocumentsConsoleLogs)
-                Console.Log("DOCUMENTS: ", "OPEN");
+            GP_Logger.Log("DOCUMENTS: ", "OPEN");
 #endif
         }
 
@@ -48,8 +47,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Documents_Fetch();
 #else
-            if (GP_ConsoleController.Instance.DocumentsConsoleLogs)
-                Console.Log("DOCUMENTS: ", "FETCH");
+            GP_Logger.Log("DOCUMENTS: ", "FETCH");
 #endif
         }
 

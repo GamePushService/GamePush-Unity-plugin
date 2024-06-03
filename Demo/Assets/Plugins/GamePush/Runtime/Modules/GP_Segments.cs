@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -23,8 +22,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Segments_List();
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("SEGMENTS: ", "LIST");
+            GP_Logger.Log("SEGMENTS: ", "LIST");
 
             return null;
 #endif
@@ -37,8 +35,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Segments_Has(tag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("SEGMENTS: ", tag);
+            GP_Logger.Log("SEGMENTS: ", tag);
             return false;
 #endif
         }

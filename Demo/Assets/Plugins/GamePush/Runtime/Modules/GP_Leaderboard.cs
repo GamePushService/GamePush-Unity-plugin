@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -44,8 +44,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
 #else
-            if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
-                Console.Log("LEADERBOARD: ", "OPEN");
+            GP_Logger.Log("LEADERBOARD: ", "OPEN");
 #endif
         }
 
@@ -69,8 +68,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields);
 #else
-            if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
-                Console.Log("LEADERBOARD: ", "FETCH");
+            GP_Logger.Log("LEADERBOARD: ", "FETCH");
 #endif
         }
 
@@ -88,8 +86,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_FetchPlayerRating(tag, orderBy, order.ToString());
 #else
-            if (GP_ConsoleController.Instance.LeaderboardConsoleLogs)
-                Console.Log("LEADERBOARD: ", "FETCH PLAYER RATING");
+            GP_Logger.Log("LEADERBOARD: ", "FETCH PLAYER RATING");
 #endif
         }
 

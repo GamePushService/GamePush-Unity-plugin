@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -26,8 +25,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Title();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: TITLE: ", "-> NULL");
+            GP_Logger.Log("APP: TITLE: ", "-> NULL");
             return null;
 #endif
         }
@@ -40,8 +38,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Description();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: DESCRIPTION: ", "-> NULL");
+            GP_Logger.Log("APP: DESCRIPTION: ", "-> NULL");
             return null;
 #endif
         }
@@ -63,8 +60,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Image();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: IMAGE URL: ", "-> URL");
+            GP_Logger.Log("APP: IMAGE URL: ", "-> URL");
             return "URL";
 #endif
         }
@@ -76,8 +72,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Url();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: URL: ", "-> URL");
+            GP_Logger.Log("APP: URL: ", "-> URL");
             return "URL";
 #endif
         }
@@ -92,8 +87,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_App_ReviewRequest();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: ReviewRequest");
+            GP_Logger.Log("APP: ReviewRequest");
 #endif
         }
 
@@ -104,11 +98,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_IsAlreadyReviewed() == "true";
 #else
-            bool result = GP_Settings.instance.GetPlatformSettings().IsAlreadyReviewed;
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: IsAlreadyReviewed: ", result.ToString());
             
-            return result;
+            return false;
 #endif
         }
 
@@ -119,11 +110,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanReview() == "true";
 #else
-            bool result = GP_Settings.instance.GetPlatformSettings().CanReview;
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: CanReview: ", result.ToString());
-
-            return result;
+           
+            return false;
 #endif
         }
 
@@ -138,8 +126,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_App_AddShortcut();
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: AddShortcut");
+            
+                GP_Logger.Log("APP: AddShortcut");
 #endif
         }
 
@@ -150,8 +138,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanAddShortcut() == "true";
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("APP: CanAddShortcut: ", "TRUE");
+
+                GP_Logger.Log("APP: CanAddShortcut: ", "TRUE");
             return true;
 #endif
         }

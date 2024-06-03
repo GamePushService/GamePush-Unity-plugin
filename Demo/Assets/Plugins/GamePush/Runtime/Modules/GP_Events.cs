@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -23,8 +22,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Events_Join(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("EVENTS: ", "Join");
+            GP_Logger.Log("EVENTS: ", "Join");
 #endif
         }
 
@@ -36,8 +34,7 @@ namespace GamePush
             string eventsData = GP_Events_List();
             return UtilityJSON.GetArray<EventData>(eventsData );
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("EVENTS: ", "LIST");
+            GP_Logger.Log("EVENTS: ", "LIST");
 
             return null;
 #endif
@@ -51,8 +48,7 @@ namespace GamePush
             string activeEvents = GP_Events_ActiveList();
             return UtilityJSON.GetArray<PlayerEvents>(activeEvents);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("EVENTS: ", "Active List");
+            GP_Logger.Log("EVENTS: ", "Active List");
 
             return null;
 #endif
@@ -66,8 +62,7 @@ namespace GamePush
             string data = GP_Events_GetEvent(idOrTag);
             return UtilityJSON.Get<EventData>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("EVENTS: ", "Get Event");
+            GP_Logger.Log("EVENTS: ", "Get Event");
 
             return null;
 #endif
@@ -80,8 +75,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Events_IsActive(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("EVENTS: ", "IsActive");
+            GP_Logger.Log("EVENTS: ", "IsActive");
             return false;
 #endif
         }
@@ -93,8 +87,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Events_IsJoined(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("EVENTS: ", "IsJoined");
+            GP_Logger.Log("EVENTS: ", "IsJoined");
             return false;
 #endif
         }

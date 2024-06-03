@@ -4,8 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -47,8 +46,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Open();
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: ", "OPEN");
+            GP_Logger.Log("ACHIEVEMENTS: ", "OPEN");
             OnAchievementsOpen?.Invoke();
             _onAchievementsOpen?.Invoke();
 #endif
@@ -62,8 +60,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Fetch();
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: ", "FETCH");
+            GP_Logger.Log("ACHIEVEMENTS: ", "FETCH");
 #endif
         }
 
@@ -78,8 +75,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Unlock(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: ", "UNLOCK: " + idOrTag);
+            GP_Logger.Log("ACHIEVEMENTS: ", "UNLOCK: " + idOrTag);
+
             OnAchievementsUnlock?.Invoke(idOrTag);
             _onAchievementsUnlock?.Invoke(idOrTag);
 #endif
@@ -96,8 +93,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_SetProgress(idOrTag,progress);
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: ", "PROGRESS: " + idOrTag + " : " + progress);
+            GP_Logger.Log("ACHIEVEMENTS: ", "PROGRESS: " + idOrTag + " : " + progress);
 
             OnAchievementsProgress?.Invoke(idOrTag);
             _onAchievementsProgress?.Invoke(idOrTag);
@@ -112,8 +108,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_Has(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: HAS: ", idOrTag + " : TRUE");
+            GP_Logger.Log("ACHIEVEMENTS: HAS: ", idOrTag + " : TRUE");
             return true;
 #endif
         }
@@ -126,8 +121,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_GetProgress(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.AchievementsConsoleLogs)
-                Console.Log("ACHIEVEMENTS: GET PROGRESS: ", idOrTag + " : 100");
+            GP_Logger.Log("ACHIEVEMENTS: GET PROGRESS: ", idOrTag + " : 100");
             return 100;
 #endif
         }

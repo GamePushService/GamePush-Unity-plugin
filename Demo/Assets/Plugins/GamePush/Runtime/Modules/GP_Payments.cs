@@ -4,8 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -47,10 +46,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_FetchProducts();
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("PAYMENTS: ", "FETCH PRODUCTS");
-            OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
-            OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
+            GP_Logger.Log("PAYMENTS: ", "FETCH PRODUCTS");
 #endif
         }
 
@@ -65,8 +61,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_Purchase(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("PAYMENTS: ", "PURCHASE: " + idOrTag);
+            GP_Logger.Log("PAYMENTS: ", "PURCHASE: " + idOrTag);
             _onPurchaseSuccess?.Invoke(idOrTag);
             OnPurchaseSuccess?.Invoke(idOrTag);
 #endif
@@ -84,8 +79,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_Consume(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("PAYMENTS: ", "CONSUME: " + idOrTag);
+            GP_Logger.Log("PAYMENTS: ", "CONSUME: " + idOrTag);
             _onConsumeSuccess?.Invoke(idOrTag);
             OnConsumeSuccess?.Invoke(idOrTag);
 #endif
@@ -99,9 +93,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Payments_IsAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("IS PAYMENTS AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
+            GP_Logger.Log("IS PAYMENTS AVAILABLE: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -113,9 +106,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Payments_IsSubscriptionsAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("IS SUBSCRIPTIONS AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSubscriptionsAvailable;
+            GP_Logger.Log("IS SUBSCRIPTIONS AVAILABLE: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -130,8 +122,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_Subscribe(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("PAYMENTS: SUBSCRIBE: ", idOrTag);
+            GP_Logger.Log("PAYMENTS: SUBSCRIBE: ", idOrTag);
             _onSubscribeSuccess?.Invoke(idOrTag);
             OnSubscribeSuccess?.Invoke(idOrTag);
 #endif
@@ -149,8 +140,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_Unsubscribe(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.PaymentsConsoleLogs)
-                Console.Log("PAYMENTS: UNSUBSCRIBE: ", idOrTag);
+            GP_Logger.Log("PAYMENTS: UNSUBSCRIBE: ", idOrTag);
             _onUnsubscribeSuccess?.Invoke(idOrTag);
             OnUnsubscribeSuccess?.Invoke(idOrTag);
 #endif

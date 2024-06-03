@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -44,8 +44,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_Ads_ShowFullscreen();
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("FULL SCREEN AD ", "SHOW");
+            GP_Logger.Log("FULL SCREEN AD ", "SHOW");
 #endif
         }
 
@@ -61,8 +60,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowRewarded(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
+            GP_Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
+
             OnRewardedReward?.Invoke(idOrTag);
             _onRewardedReward?.Invoke(idOrTag);
 #endif
@@ -79,8 +78,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowPreloader();
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("PRELOADER AD: ", "SHOW");
+            GP_Logger.Log("PRELOADER AD: ", "SHOW");
 #endif
         }
 
@@ -92,8 +90,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowSticky();
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("STICKY BANNER AD: ", "SHOW");
+            GP_Logger.Log("STICKY BANNER AD: ", "SHOW");
 #endif
         }
 
@@ -105,8 +102,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_CloseSticky();
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("STICKY BANNER AD: ", "CLOSE");
+            GP_Logger.Log("STICKY BANNER AD: ", "CLOSE");
 #endif
         }
 
@@ -118,8 +114,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_RefreshSticky();
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("STICKY BANNER AD: ", "REFRESH");
+            GP_Logger.Log("STICKY BANNER AD: ", "REFRESH");
 #endif
         }
 
@@ -131,9 +126,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsAdblockEnabled() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS ADBLOCK ENABLED: ", "FALSE");
-            return GP_Settings.instance.GetPlatformSettings().IsAdblockEnabled;
+            GP_Logger.Log("IS ADBLOCK ENABLED: ", "FALSE");
+            return false;
 #endif
         }
 
@@ -145,9 +139,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS STICKY BANNER AD AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsStickyAvailable;
+            GP_Logger.Log("IS STICKY BANNER AD AVAILABLE: ", "TRUE");
+            return false;
 #endif
         }
 
@@ -159,9 +152,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS FULL SCREEN AD AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsFullscreenAvailable;
+            GP_Logger.Log("IS FULL SCREEN AD AVAILABLE: ", "TRUE");
+            return false;
 #endif
         }
 
@@ -173,9 +165,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS REWARD AD AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsRewardedAvailable;
+            GP_Logger.Log("IS REWARD AD AVAILABLE: ", "TRUE");
+            return false;
 #endif
         }
 
@@ -187,9 +178,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderAvailable() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsPreloaderAvailable;
+            GP_Logger.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
+            return false;
 #endif
         }
 
@@ -201,8 +191,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyPlaying() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS STICKY PLAYING: ", "FALSE");
+            GP_Logger.Log("IS STICKY PLAYING: ", "FALSE");
             return false;
 #endif
         }
@@ -214,8 +203,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenPlaying() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
+            GP_Logger.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
             return false;
 #endif
         }
@@ -227,8 +215,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedPlaying() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS REWARDED AD PLAYING: ", "FALSE");
+            GP_Logger.Log("IS REWARDED AD PLAYING: ", "FALSE");
             return false;
 #endif
         }
@@ -240,8 +227,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderPlaying() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("IS PRELOADER AD PLAYING: ", "FALSE");
+            GP_Logger.Log("IS PRELOADER AD PLAYING: ", "FALSE");
             return false;
 #endif
         }
@@ -253,8 +239,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsCountdownOverlayEnabled() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("Is Countdown Overlay Enabled: ", "FALSE");
+            GP_Logger.Log("Is Countdown Overlay Enabled: ", "FALSE");
             return false;
 #endif
         }
@@ -266,8 +251,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedFailedOverlayEnabled() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("Is Rewarded Failed Overlay Enabled: ", "FALSE");
+            GP_Logger.Log("Is Rewarded Failed Overlay Enabled: ", "FALSE");
             return false;
 #endif
         }
@@ -279,8 +263,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_CanShowFullscreenBeforeGamePlay() == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("Can Show Fullscreen Before Gameplay: ", "FALSE");
+            GP_Logger.Log("Can Show Fullscreen Before Gameplay: ", "FALSE");
             return false;
 #endif
         }

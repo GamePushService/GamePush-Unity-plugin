@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Data;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -26,6 +26,21 @@ namespace GamePush
         private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
 
 
+        private void OnEnable()
+        {
+            CoreSDK.player.OnPlayerChange += PlayerChange;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.player.OnPlayerChange -= PlayerChange;
+        }
+
+        private void PlayerChange()
+        {
+            OnPlayerChange?.Invoke();
+        }
+
         [DllImport("__Internal")]
         private static extern int GP_Player_GetID();
         public static int GetID()
@@ -33,9 +48,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetID();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET ID: ", "0");
-            return 0;
+            return CoreSDK.player.GetID();
 #endif
         }
 
@@ -47,9 +60,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetScore();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET SCORE: ", "0f");
-            return 0f;
+            return CoreSDK.player.GetScore();
 #endif
         }
 
@@ -61,9 +72,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetName();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET NAME: ", "UNKNOWN");
-            return "UNKNOWN";
+            return CoreSDK.player.GetName();
 #endif
         }
 
@@ -76,14 +85,19 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetAvatar();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET AVATAR URL: ", "URL");
-            return "URL";
+            return CoreSDK.player.GetAvatarUrl();
 #endif
         }
+
         public async static void GetAvatar(Image image)
         {
-            string avatar = GP_Player_GetAvatar();
+            string avatar;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            avatar = GP_Player_GetAvatar();
+#else
+            avatar = CoreSDK.player.GetAvatarUrl();
+#endif
+            
             if (avatar == null || avatar == "") return;
             await UtilityImage.DownloadImageAsync(avatar, image);
         }
@@ -97,9 +111,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldName(key);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET FIELD NAME: ", key);
-            return null;
+            return CoreSDK.player.GetFieldName(key);
 #endif
         }
 
@@ -112,9 +124,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantName(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET FIELD VARIANT NAME: ", "KEY: " + key + " VALUE: " + value);
-            return null;
+            return CoreSDK.player.GetFieldVariantName(key, value);
 #endif
         }
 
@@ -127,9 +137,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantAt(key, index.ToString());
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET FIELD VARIANT AT: ", "KEY: " + key + " INDEX: " + index);
-            return null;
+            return CoreSDK.player.GetFieldVariantAt(key, index);
 #endif
         }
 
@@ -142,9 +150,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantIndex(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET FIELD VARIANT INDEX: ", "KEY: " + key + " VALUE: " + value);
-            return null;
+            return CoreSDK.player.GetFieldVariantIndex(key, value);
 #endif
         }
 
@@ -157,8 +163,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetName(name);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET NAME: ", name);
+            CoreSDK.player.SetName(name);
 #endif
         }
 
@@ -171,8 +176,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetAvatar(src);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET AVATAR: ", src);
+            CoreSDK.player.SetAvatar(src);
 #endif
         }
 
@@ -185,8 +189,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetScore(score);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET SCORE: ", "" + score);
+            CoreSDK.player.SetScore(score);
 #endif
         }
         public static void SetScore(int score)
@@ -194,8 +197,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetScore(score);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET SCORE: ", "" + score);
+            CoreSDK.player.SetScore(score);
 #endif
         }
 
@@ -208,8 +210,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_AddScore(score);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ADD SCORE: ", "" + score);
+            CoreSDK.player.AddScore(score);
 #endif
         }
         public static void AddScore(int score)
@@ -217,8 +218,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_AddScore(score);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ADD SCORE: ", "" + score);
+            CoreSDK.player.AddScore(score);
 #endif
         }
 
@@ -231,9 +231,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberInt(key);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET INT: ", "KEY: " + key + " -> 0");
-            return 0;
+            return CoreSDK.player.Get<int>(key);
 #endif
         }
 
@@ -246,9 +244,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberFloat(key);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET FLOAT: ", "KEY: " + key + " -> 0");
-            return 0;
+            return CoreSDK.player.Get<float>(key);
 #endif
         }
 
@@ -261,9 +257,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetString(key);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET STRING: ", "KEY: " + key);
-            return null;
+            return CoreSDK.player.Get<string>(key);
 #endif
         }
 
@@ -276,9 +270,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetBool(key) == "true";
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: GET BOOL: ", "KEY: " + key + " -> TRUE");
-            return true;
+            return CoreSDK.player.Get<bool>(key);
 #endif
         }
 
@@ -295,8 +287,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_String(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Set(key, value);
 #endif
         }
         public static void Set(string key, int value)
@@ -304,8 +295,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_Number(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Set(key, value);
 #endif
         }
         public static void Set(string key, bool value)
@@ -313,8 +303,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_Bool(key, value.ToString());
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Set(key, value);
 #endif
         }
         public static void Set(string key, float value)
@@ -322,8 +311,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_Number(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Set(key, value);
 #endif
         }
 
@@ -336,8 +324,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetFlag(key, value);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: SET FLAG: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Set(key, value);
 #endif
         }
 
@@ -350,8 +337,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ADD: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Add(key, value);
 #endif
         }
         public static void Add(string key, int value)
@@ -359,8 +345,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ADD: ", "KEY: " + key + " VALUE: " + value);
+            CoreSDK.player.Add(key, value);
 #endif
         }
 
@@ -373,8 +358,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Toggle(key);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: TOGGLE: ", "KEY: " + key);
+            CoreSDK.player.Toggle(key);
 #endif
         }
 
@@ -387,8 +371,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Reset();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "RESET");
+            CoreSDK.player.Reset();
 #endif
         }
 
@@ -401,8 +384,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Remove();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "REMOVE");
+            CoreSDK.player.Remove();
 #endif
         }
 
@@ -415,8 +397,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride);
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "SYNC");
+            CoreSDK.player.Sync();
 #endif
         }
 
@@ -429,8 +410,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Load();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "LOAD");
+            CoreSDK.player.Load();
 #endif
         }
 
@@ -443,8 +423,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Login();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "LOGIN");
+            CoreSDK.player.Login();
 #endif
         }
 
@@ -459,8 +438,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_FetchFields();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "FETCH FIELDS");
+            CoreSDK.player.FetchFields(onFetchFields);
 #endif
         }
 
@@ -473,9 +451,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_Has(key) == "true";
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ", "KEY: " + key + " -> EMPTY");
-            return true;
+            return CoreSDK.player.Has(key);
 #endif
         }
 
@@ -488,9 +464,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_IsLoggedIn() == "true";
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: IS LOGGED IN: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsLoggedIn;
+            return CoreSDK.player.IsLoggedIn();
 #endif
         }
 
@@ -503,9 +477,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_HasAnyCredentials() == "true";
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: HAS ANY CREDENTIALS: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().HasAnyCredentials;
+            return CoreSDK.player.HasAnyCredentials();
 #endif
         }
 
@@ -518,9 +490,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_IsStub() == "true";
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: IS STUB: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsStub;
+            return CoreSDK.player.IsStub();
 #endif
         }
 
@@ -531,9 +501,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetActiveDays();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ACTIVE DAYS: ", "1");
-            return 0;
+            return CoreSDK.player.GetActiveDays();
 #endif
         }
 
@@ -544,9 +512,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetActiveDaysConsecutive();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: ACTIVE DAYS CONSECUTIVE: ", "1");
-            return 0;
+            return CoreSDK.player.GetActiveDaysConsecutive();
 #endif
         }
 
@@ -557,9 +523,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetPlaytimeToday();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: PLAYTIME TODAY: ", "0");
-            return 0;
+            return CoreSDK.player.GetPlaytimeToday();
 #endif
         }
 
@@ -570,9 +534,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetPlaytimeAll();
 #else
-            if (GP_ConsoleController.Instance.PlayerConsoleLogs)
-                Console.Log("PLAYER: PLAYTIME ALL: ", "0");
-            return 0;
+            return CoreSDK.player.GetPlaytimeAll();
 #endif
         }
 
@@ -596,21 +558,5 @@ namespace GamePush
         private void CallPlayerFetchFieldsError() => OnPlayerFetchFieldsError?.Invoke();
     }
 
-    [System.Serializable]
-    public class PlayerFetchFieldsData
-    {
-        public string name;
-        public string key;
-        public string type;
-        public string defaultValue; // string | bool | number
-        public bool important;
-        public Variants[] variants;
-    }
-
-    [System.Serializable]
-    public class Variants
-    {
-        public string value; // string | number
-        public string name;
-    }
+    
 }

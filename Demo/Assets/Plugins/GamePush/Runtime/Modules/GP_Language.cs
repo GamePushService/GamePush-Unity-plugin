@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -34,9 +34,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Current_Language());
 #else
-            if (GP_ConsoleController.Instance.LanguageConsoleLogs)
-                Console.Log("LANGUAGE CURRENT: ", Language.English.ToString());
-            return GP_Settings.instance.GetLanguage();
+            GP_Logger.Log("LANGUAGE CURRENT: ", Language.English.ToString());
+            return Language.English;
 #endif
         }
 
@@ -48,8 +47,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(ConvertToString(lang));
 #else
-            if (GP_ConsoleController.Instance.LanguageConsoleLogs)
-                Console.Log("LANGUAGE CHANGE: ", lang.ToString());
+
+            GP_Logger.Log("LANGUAGE CHANGE: ", lang.ToString());
+
             OnChangeLanguage?.Invoke(lang);
             _onChangeLanguage?.Invoke(lang);
 #endif
@@ -150,23 +150,5 @@ namespace GamePush
 
             return English;
         }
-    }
-
-    public enum Language : byte
-    {
-        English,
-        Russian,
-        Turkish,
-        French,
-        Italian,
-        German,
-        Spanish,
-        Chineese,
-        Portuguese,
-        Korean,
-        Japanese,
-        Arab,
-        Hindi,
-        Indonesian,
     }
 }

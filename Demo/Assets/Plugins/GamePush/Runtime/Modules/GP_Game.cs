@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -15,17 +15,37 @@ namespace GamePush
         private static event Action _onPause;
         private static event Action _onResume;
 
+        private void OnEnable()
+        {
+            CoreSDK.OnInit += SubToEvents;
+        }
+
+        private void SubToEvents()
+        {
+            CoreSDK.game.OnPause += CallOnPause;
+            CoreSDK.game.OnResume += CallOnResume;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.OnInit -= SubToEvents;
+
+            if (CoreSDK.isInit)
+            {
+                CoreSDK.game.OnPause -= CallOnPause;
+                CoreSDK.game.OnResume -= CallOnResume;
+            }
+            
+        }
 
         [DllImport("__Internal")]
         private static extern string GP_IsPaused();
         public static bool IsPaused()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-           return GP_IsPaused() == "true";
+            return GP_IsPaused() == "true";
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: IS PAUSED: ", "FALSE");
-            return false;
+            return CoreSDK.game.IsPaused();
 #endif
         }
 
@@ -38,10 +58,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Pause();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: ", "PAUSE");
-            OnPause?.Invoke();
-            _onPause?.Invoke();
+            CoreSDK.game.GamePause(onPause);
 #endif
         }
 
@@ -54,10 +71,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Resume();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME: ", "RESUME");
-            OnResume?.Invoke();
-            _onResume?.Invoke();
+            CoreSDK.game.GameResume(onResume);
 #endif
         }
 
@@ -69,8 +83,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStart();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAMEPLAY: ", "START");
+            CoreSDK.game.GameplayStart();
 #endif
         }
 
@@ -81,8 +94,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStop();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAMEPLAY: ", "STOP");
+            CoreSDK.game.GameplayStop();
 #endif
         }
 
@@ -93,8 +105,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameReady();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME:", "READY");
+            CoreSDK.game.GameReady();
 #endif
         }
 
@@ -105,11 +116,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_HappyTime();
 #else
-            if (GP_ConsoleController.Instance.GameConsoleLogs)
-                Console.Log("GAME:", "HAPPY TIME!!!");
+            CoreSDK.game.HappyTime();
 #endif
         }
-
 
         private void CallOnPause() => OnPause?.Invoke();
         private void CallOnResume() => OnResume?.Invoke();

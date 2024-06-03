@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Data;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -28,8 +28,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Players_Fetch(playerId.ToString());
 #else
-            if (GP_ConsoleController.Instance.PlayersConsoleLogs)
-                Console.Log("PLAYERS: ", "FETCH");
+            GP_Logger.Log("PLAYERS: ", "FETCH");
 #endif
         }
 
@@ -50,8 +49,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Players_Fetch(JsonUtility.ToJson(ids));
 #else
-            if (GP_ConsoleController.Instance.PlayersConsoleLogs)
-                Console.Log("PLAYERS: ", "FETCH");
+            GP_Logger.Log("PLAYERS: ", "FETCH");
 #endif
         }
 
@@ -71,8 +69,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Players_Fetch(JsonUtility.ToJson(ids));
 #else
-            if (GP_ConsoleController.Instance.PlayersConsoleLogs)
-                Console.Log("PLAYERS: ", "FETCH");
+            GP_Logger.Log("PLAYERS: ", "FETCH");
 #endif
         }
 

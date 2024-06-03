@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -18,9 +18,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "true";
 #else
-            bool isMobile = GP_Settings.instance.GetFromPlatformSettings().IsMobile;
-            if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS MOBILE: ", isMobile.ToString());
+            bool isMobile = false;
+            GP_Logger.Log("IS MOBILE: ", isMobile.ToString());
             return isMobile;
 #endif
         }
@@ -29,9 +28,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "false";
 #else
-            bool isDesktop = !GP_Settings.instance.GetFromPlatformSettings().IsMobile;
-            if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS DESKTOP: ", isDesktop.ToString());
+            bool isDesktop = true;
+            GP_Logger.Log("IS DESKTOP: ", isDesktop.ToString());
             return isDesktop;
 #endif
         }
@@ -43,9 +41,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
-            bool isPortrait = GP_Settings.instance.GetFromPlatformSettings().IsPortrait;
-            if (GP_ConsoleController.Instance.DeviceConsoleLogs)
-                Console.Log("IS PORTRAIT: ", isPortrait.ToString());
+            bool isPortrait = false;
+            GP_Logger.Log("IS PORTRAIT: ", isPortrait.ToString());
             return isPortrait;
 #endif
         }

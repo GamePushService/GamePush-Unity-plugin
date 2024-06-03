@@ -4,8 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -52,8 +51,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_Choose();
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "Choose");
+            GP_Logger.Log("Images: ", "Choose");
 #endif
         }
 
@@ -67,8 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_Upload(string.Join(",", tags));
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "Upload");
+            GP_Logger.Log("Images: ", "Upload");
 #endif
         }
 
@@ -82,8 +79,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Images_UploadUrl(url, string.Join(",", tags));
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "Upload");
+            GP_Logger.Log("Images: ", "Upload");
 #endif
         }
 
@@ -101,8 +97,7 @@ namespace GamePush
             else
                 GP_Images_Fetch(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "FETCH");
+            GP_Logger.Log("Images: ", "FETCH");
 #endif
         }
 
@@ -119,8 +114,7 @@ namespace GamePush
             else
                 GP_Images_FetchMore(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "FETCH MORE");
+            GP_Logger.Log("Images: ", "FETCH MORE");
 #endif
         }
 
@@ -137,8 +131,7 @@ namespace GamePush
             else
                 GP_Images_Resize(JsonUtility.ToJson(resizeData));
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("Images: ", "RESIZE");
+            GP_Logger.Log("Images: ", "RESIZE");
 #endif
         }
 

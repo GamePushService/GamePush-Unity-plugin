@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -55,8 +54,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_Register(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "Register");
+            GP_Logger.Log("Schedulers:", "Register");
 #endif
         }
 
@@ -67,8 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimDay(idOrTag, day);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+            GP_Logger.Log("Schedulers:", "ClaimDay");
 #endif
         }
 
@@ -79,8 +76,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimDayAdditional(idOrTag, day, triggerIdOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDayAdditional");
+            GP_Logger.Log("Schedulers:", "ClaimDayAdditional");
 #endif
         }
 
@@ -91,8 +87,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimAllDay(idOrTag, day);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+            GP_Logger.Log("Schedulers:", "ClaimDay");
 #endif
         }
 
@@ -103,8 +98,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimAllDays(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+            GP_Logger.Log("Schedulers:", "ClaimDay");
 #endif
         }
 
@@ -116,8 +110,7 @@ namespace GamePush
             string data = GP_Schedulers_List();
             return UtilityJSON.GetArray<SchedulerData>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "List");
+            GP_Logger.Log("Schedulers: ", "List");
 
             return null;
 #endif
@@ -131,8 +124,7 @@ namespace GamePush
             string data = GP_Schedulers_ActiveList();
             return UtilityJSON.GetArray<PlayerScheduler>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "List");
+            GP_Logger.Log("Schedulers: ", "List");
 
             return null;
 #endif
@@ -146,8 +138,7 @@ namespace GamePush
             string data = GP_Schedulers_GetScheduler(idOrTag);
             return UtilityJSON.Get<SchedulerInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler");
+            GP_Logger.Log("Schedulers: ", "Get Scheduler");
 
             return null;
 #endif
@@ -161,8 +152,7 @@ namespace GamePush
             string data = GP_Schedulers_GetSchedulerDay(idOrTag, day);
             return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler Day");
+            GP_Logger.Log("Schedulers: ", "Get Scheduler Day");
 
             return null;
 #endif
@@ -176,8 +166,7 @@ namespace GamePush
             string data = GP_Schedulers_GetSchedulerCurrentDay(idOrTag);
             return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler");
+            GP_Logger.Log("Schedulers: ", "Get Scheduler");
 
             return null;
 #endif
@@ -190,8 +179,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_IsRegistered(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+            GP_Logger.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -205,8 +193,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_IsTodayRewardClaimed(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+            GP_Logger.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -220,8 +207,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimDay(idOrTag, day) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+            GP_Logger.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -235,8 +221,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimDayAdditional(idOrTag, day, triggerIdOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+            GP_Logger.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -249,8 +234,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimAllDay(idOrTag, day) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+            GP_Logger.Log("REWARDS: ", "Has");
 
             return true;
 #endif

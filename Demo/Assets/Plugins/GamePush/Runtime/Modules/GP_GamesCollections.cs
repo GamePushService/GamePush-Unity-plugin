@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -34,8 +34,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GamesCollections_Open(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.GamesCollectionsConsoleLogs)
-                Console.Log("GAMES COLLECTIONS: ", "OPEN: " + idOrTag);
+            GP_Logger.Log("GAMES COLLECTIONS: ", "OPEN: " + idOrTag);
 #endif
         }
 
@@ -49,8 +48,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GamesCollections_Fetch(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.GamesCollectionsConsoleLogs)
-                Console.Log("GAMES COLLECTIONS: ", "FETCH: " + idOrTag);
+            GP_Logger.Log("GAMES COLLECTIONS: ", "FETCH: " + idOrTag);
 #endif
         }
 

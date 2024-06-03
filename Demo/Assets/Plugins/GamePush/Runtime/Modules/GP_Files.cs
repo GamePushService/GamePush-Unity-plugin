@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
-using GamePush.Utilities;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -67,8 +66,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_Upload(tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD: ", tags);
+            GP_Logger.Log("FILES: UPLOAD: ", tags);
 #endif
         }
 
@@ -83,8 +81,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_UploadUrl(url, filename, tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD URL: ", url + " " + filename + " " + tags);
+            GP_Logger.Log("FILES: UPLOAD URL: ", url + " " + filename + " " + tags);
 #endif
         }
 
@@ -99,8 +96,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_UploadContent(content, filename, tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD CONTENT: ", content + " " + filename + " " + tags);
+            GP_Logger.Log("FILES: UPLOAD CONTENT: ", content + " " + filename + " " + tags);
 #endif
         }
 
@@ -115,8 +111,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_LoadContent(url);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "LOAD CONTENT: " + url);
+            GP_Logger.Log("FILES: ", "LOAD CONTENT: " + url);
 #endif
         }
 
@@ -131,8 +126,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_ChooseFile(type);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "CHOOSE FILE: " + type);
+            GP_Logger.Log("FILES: ", "CHOOSE FILE: " + type);
 #endif
         }
 
@@ -150,8 +144,7 @@ namespace GamePush
             else
                 GP_Files_Fetch(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "FETCH");
+            GP_Logger.Log("FILES: ", "FETCH");
 #endif
         }
 
@@ -169,8 +162,7 @@ namespace GamePush
             else
                 GP_Files_FetchMore(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "FETCH MORE");
+            GP_Logger.Log("FILES: ", "FETCH MORE");
 #endif
         }
 

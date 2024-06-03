@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -18,8 +18,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Current_AvatarGenerator();
 #else
-            if (GP_ConsoleController.Instance.AvatarGeneratorConsoleLogs)
-                Console.Log("AVATAR GENERATOR: ", "CURRENT: dicebear_retro");
+            GP_Logger.Log("AVATAR GENERATOR: ", "CURRENT: dicebear_retro");
             return "dicebear_retro";
 #endif
         }
@@ -32,8 +31,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Change_AvatarGenerator(generator.ToString());
 #else
-            if (GP_ConsoleController.Instance.AvatarGeneratorConsoleLogs)
-                Console.Log("AVATAR GENERATOR: ", "CHANGE: " + generator);
+            GP_Logger.Log("AVATAR GENERATOR: ", "CHANGE: " + generator);
 #endif
         }
 

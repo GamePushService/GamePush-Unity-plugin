@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-using GP_Utilities.Console;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -16,8 +16,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return DateTime.Parse(GP_ServerTime(), System.Globalization.CultureInfo.InvariantCulture);
 #else
-            if (GP_ConsoleController.Instance.ServerConsoleLogs)
-                Console.Log("SERVER: ", "TIME: " + DateTime.Now);
+            GP_Logger.Log("SERVER: ", "TIME: " + DateTime.Now);
             return DateTime.Now;
 #endif
         }
