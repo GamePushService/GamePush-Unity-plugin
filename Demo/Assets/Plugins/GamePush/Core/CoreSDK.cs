@@ -13,11 +13,13 @@ namespace GamePush
         public static int projectId { get; private set; }
         public static string projectToken { get; private set; }
 
-        private static AllData data = new AllData();
+        private static AllConfigData configData = new AllConfigData();
 
         public static GameModule game;
         public static PlayerModule player;
         public static GameVariables variables;
+
+        public static string GetServerTime() => configData.serverTime;
 
         public static async void Initialize()
         {
@@ -59,29 +61,34 @@ namespace GamePush
         {
             await DataFetcher.GetConfig();
 
-            SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
-            syncPlayerInput.playerState = player.GetPlayerState();
-            syncPlayerInput.isFirstRequest = true;
-            //syncPlayerInput.
-            await DataFetcher.SyncPlayer(syncPlayerInput, false);
-            /*
-            if(player.GetPlayerDataCode() != null)
-                await DataFetcher.GetPlayer();
-            else
-                await DataFetcher.SyncPlayer();
-            */
+            //SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
+            //syncPlayerInput.playerState = player.GetPlayerState();
+            //syncPlayerInput.isFirstRequest = true;
+
+            //await DataFetcher.SyncPlayer(syncPlayerInput, false);
+
+            await player.FetchPlayerConfig();
+
+
         }
 
-        public static void SetConfig(AllData allData)
+        public static void SetConfig(AllConfigData allData)
         {
-            data = allData;
-            //player = new PlayerModule(data.playerFields);
-            variables = new GameVariables(data.gameVariables);
+            configData = allData;
+
+            player.SetDataFields(configData.playerFields);
+            variables.SetVariablesData(configData.gameVariables);
         }
 
-        public static AllData GetConfig()
+        public static AllConfigData GetConfig()
         {
-            return data;
+            return configData;
+            
+        }
+
+        public static T GetValueWithDefault<T>(object value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
         }
     }
 

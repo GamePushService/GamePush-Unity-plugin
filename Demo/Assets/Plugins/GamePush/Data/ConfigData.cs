@@ -1,22 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 
 namespace GamePush.Data
 {
     [System.Serializable]
-    public class ConfigData
-    {
-        public DataWrap data;
-    }
-
-    [System.Serializable]
-    public class DataWrap
-    {
-        public AllData result;
-    }
-
-    [System.Serializable]
-    public class AllData
+    public class AllConfigData
     {
         public bool isDev;
         public bool isAllowedOrigin;
@@ -178,23 +165,6 @@ namespace GamePush.Data
         public List<Banner> banners;
     }
 
-    [System.Serializable]
-    public class PlayerField
-    {
-        public string name;
-        public string key;
-        public string type;
-        public string @default;
-        public bool important;
-        public List<Variant> variants;
-    }
-
-    [System.Serializable]
-    public class Variant
-    {
-        public string value;
-        public string name;
-    }
 
     [System.Serializable]
     public class GameVariable

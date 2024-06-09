@@ -1,5 +1,5 @@
 
-fragment PLAYER_ACHIEVEMENT on PlayerAchivement{
+fragment PLAYER_ACHIEVEMENT on PlayerAchievement{
     achievementId
     createdAt
     progress
@@ -34,12 +34,12 @@ fragment PLAYER_TRIGGER on PlayerTrigger{
     claimed
 }
 
-fragment EXPERIMENT on Experiment{
+fragment EXPERIMENT on PlayerExperiment{
     experiment
     cohort
 }
 
-fragment SYNC_PLAYER_RESULT on Player{
+fragment GET_PLAYER_RESULT on Player{
     state
     stats {
         playtimeAll
@@ -79,7 +79,7 @@ fragment SYNC_PLAYER_RESULT on Player{
 query result($input: GetPlayerInput!, $withToken: Boolean!) {
     result: GetPlayer(input: $input) {
         __typename
-        ... SYNC_PLAYER_RESULT
+        ... GET_PLAYER_RESULT
         ... on Problem {
             message
         }

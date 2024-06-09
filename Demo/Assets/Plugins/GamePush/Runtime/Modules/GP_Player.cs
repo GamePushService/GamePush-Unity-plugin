@@ -25,21 +25,33 @@ namespace GamePush
 
         private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
 
-
         private void OnEnable()
         {
             CoreSDK.player.OnPlayerChange += PlayerChange;
+
+            CoreSDK.player.OnSyncComplete += SyncComplete;
+            CoreSDK.player.OnSyncError += SyncError;
+            CoreSDK.player.OnLoadComplete += LoadComplete;
+            CoreSDK.player.OnLoadError += LoadError;
         }
 
         private void OnDisable()
         {
             CoreSDK.player.OnPlayerChange -= PlayerChange;
+
+            CoreSDK.player.OnSyncComplete -= SyncComplete;
+            CoreSDK.player.OnSyncError -= SyncError;
+            CoreSDK.player.OnLoadComplete -= LoadComplete;
+            CoreSDK.player.OnLoadError -= LoadError;
         }
 
-        private void PlayerChange()
-        {
-            OnPlayerChange?.Invoke();
-        }
+        private void PlayerChange() => OnPlayerChange?.Invoke();
+
+        private void SyncComplete() => OnSyncComplete?.Invoke();
+        private void SyncError() => OnSyncError?.Invoke();
+        private void LoadComplete() => OnLoadComplete?.Invoke();
+        private void LoadError() => OnLoadError?.Invoke();
+       
 
         [DllImport("__Internal")]
         private static extern int GP_Player_GetID();
@@ -397,7 +409,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride);
 #else
-            CoreSDK.player.Sync();
+            CoreSDK.player.Sync(forceOverride);
 #endif
         }
 

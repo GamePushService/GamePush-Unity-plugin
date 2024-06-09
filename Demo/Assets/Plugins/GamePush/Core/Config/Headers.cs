@@ -34,7 +34,7 @@ namespace GamePush.Core
 
         private static string GetBase64()
         {
-            string secret = CoreSDK.player.GetPlayerDataCode();
+            string secret = CoreSDK.player.GetPlayerLocalDataCode();
             return Hash.Base64Encode(GetEncodeString(secret));
         }
 

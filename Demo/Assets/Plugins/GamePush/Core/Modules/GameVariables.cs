@@ -41,19 +41,9 @@ namespace GamePush.Core
             keyValueData = new Dictionary<string, object>();
         }
 
-        public GameVariables(List<GameVariable> gameVariables)
-        {
-            keyTypeData = new Dictionary<string, string>();
-            keyValueData = new Dictionary<string, object>();
-
-            SetData(gameVariables);
-        }
-
-        public void SetData(List<GameVariable> gameVariables)
+        public void SetVariablesData(List<GameVariable> gameVariables)
         {
             data = gameVariables;
-            keyTypeData = new Dictionary<string, string>();
-            keyValueData = new Dictionary<string, object>();
 
             foreach (GameVariable variable in data)
             {
@@ -82,19 +72,12 @@ namespace GamePush.Core
         }
 
         public bool Has(string key) => keyValueData.ContainsKey(key);
-
+        
         public T Get<T>(string key)
         {
             if(keyValueData.TryGetValue(key, out object value))
             {
-                try
-                {
-                    return (T)value;
-                }
-                catch
-                {
-                    return default(T);
-                }
+                Helpers.ConvertValue<T>(value);
             }
             
             return default(T);

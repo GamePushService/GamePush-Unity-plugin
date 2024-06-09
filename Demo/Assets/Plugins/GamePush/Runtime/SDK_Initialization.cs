@@ -13,6 +13,7 @@ namespace GamePush.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+            //PlayerPrefs.DeleteAll();
             GP_Logger.Log("Init plugin...");
             CoreSDK.Initialize();
 

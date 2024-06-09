@@ -6,7 +6,7 @@ namespace GamePushEditor
 {
     public class GP_ExportPackage
     {
-        [MenuItem("Tools/GamePush/Export")]
+        //[MenuItem("Tools/Export package")]
         static void export()
         {
             string fileName = "GP_plugin.unitypackage";

@@ -75,8 +75,8 @@ namespace Examples.Player
             // #endif
 
             _gold.text = "SCORE: " + GP_Player.GetScore();
-            //_level.text = "LEVEL: " + GP_Player.GetInt("level");
-            //_vip.isOn = GP_Player.GetBool("vip");
+            _level.text = "LEVEL: " + GP_Player.GetInt("level");
+            _vip.isOn = GP_Player.GetBool("vip");
         }
 
 

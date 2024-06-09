@@ -7,11 +7,18 @@ namespace GamePush.Services
 {
     public class GameStateService : MonoBehaviour
     {
-        public bool isFocus;
-        
-        void Update()
+        private bool isFocus;
+
+        private void Update()
         {
             CheckGameFocus();
+            if (Input.GetKeyDown(KeyCode.T))
+                Debug.Log(CoreSDK.player.IsStub());
+        }
+
+        private void FixedUpdate()
+        {
+            CoreSDK.player.AddPlayTime(Time.fixedDeltaTime);
         }
 
         void CheckGameFocus()
@@ -29,6 +36,7 @@ namespace GamePush.Services
                 CoreSDK.game.SetAutoPause(isFocus);
             }
         }
+
 
 
     }
