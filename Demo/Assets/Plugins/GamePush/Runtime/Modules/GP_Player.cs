@@ -409,7 +409,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride);
 #else
-            CoreSDK.player.Sync(forceOverride);
+            CoreSDK.player.PlayerSync(forceOverride);
 #endif
         }
 
@@ -422,7 +422,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Load();
 #else
-            CoreSDK.player.Load();
+            CoreSDK.player.PlayerLoad();
 #endif
         }
 

@@ -28,8 +28,9 @@ namespace GamePush
             SetProjectData(id, ProjectData.TOKEN);
 
             InitModules();
-            await FetchData();
+            await InitFetch();
 
+            isInit = true;
             OnInit?.Invoke();
         }
 
@@ -54,21 +55,20 @@ namespace GamePush
 
         public static async void FetchConfig()
         {
-            await DataFetcher.GetConfig();
+            AllConfigData data = await DataFetcher.GetConfig();
+            SetConfig(data);
         }
 
-        public static async Task FetchData()
+        public static async Task InitFetch()
         {
-            AllConfigData data  = await DataFetcher.GetConfig();
-            SetConfig(data);
-            //SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
-            //syncPlayerInput.playerState = player.GetPlayerState();
-            //syncPlayerInput.isFirstRequest = true;
-
-            //await DataFetcher.SyncPlayer(syncPlayerInput, false);
+            if(configData.config == null)
+            {
+                AllConfigData data = await DataFetcher.GetConfig();
+                SetConfig(data);
+            }
+            
 
             await player.FetchPlayerConfig();
-
         }
 
         public static void SetConfig(AllConfigData allData)

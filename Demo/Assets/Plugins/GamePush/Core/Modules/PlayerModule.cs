@@ -48,7 +48,7 @@ namespace GamePush.Core
 
         public void SetPlayerData(JObject playerData)
         {
-            Debug.Log(playerData.ToString());
+            //Debug.Log(playerData.ToString());
 
             JObject statsObject = (JObject)playerData["stats"];
             playerStats = statsObject.ToObject<PlayerStats>();
@@ -69,7 +69,7 @@ namespace GamePush.Core
             if (playerData["token"].ToString() != "")
                 _token = playerData["token"].ToString();
 
-            Debug.Log($"ID {GetID()}");
+            Debug.Log($"TOKEN {_token}");
 
             _isFirstRequest = false;
 
@@ -95,6 +95,9 @@ namespace GamePush.Core
 
             }
         }
+
+        public async void PlayerSync(bool forceOverride = false) => await Sync(forceOverride);
+        public async void PlayerLoad() => await Load();
 
         public async Task Sync(bool forceOverride = false)
         {
@@ -272,7 +275,16 @@ namespace GamePush.Core
         protected List<PlayerField> dataFields;
         private Dictionary<string, object> playerDataFields;
         private Dictionary<string, object> defaultState;
-        private Dictionary<string, string> typeState;
+        private Dictionary<string, string> typeState = new Dictionary<string, string>
+        {
+            { ID_STATE_KEY, "stats" },
+            { ACTIVE_STATE_KEY, "service" },
+            { REMOVED_STATE_KEY, "service" },
+            { TEST_STATE_KEY, "service" },
+            { SCORE_STATE_KEY, "stats" },
+            { NAME_STATE_KEY, "data" },
+            { AVATAR_STATE_KEY, "data" }
+        };
 
         public void SetDataFields(List<PlayerField> playerFields)
         {
@@ -280,12 +292,11 @@ namespace GamePush.Core
 
             playerDataFields = new Dictionary<string, object>();
             defaultState = new Dictionary<string, object>();
-            typeState = new Dictionary<string, string>();
 
             foreach (PlayerField field in dataFields)
             {
                 playerDataFields.Add(field.key, field);
-                typeState.Add(field.key, field.type);
+                typeState.TryAdd(field.key, field.type);
 
                 switch (field.type)
                 {
@@ -313,10 +324,11 @@ namespace GamePush.Core
                 //Debug.Log(field.@default + " " + field.@default.GetType());
             }
 
-            //foreach (string key in typeState.Keys)
-            //{
-            //    Debug.Log(key + " " + typeState[key].ToString());
-            //}
+            Debug.Log("All types");
+            foreach (string key in typeState.Keys)
+            {
+                Debug.Log(key + " " + typeState[key].ToString());
+            }
         }
 
         #endregion
@@ -358,7 +370,7 @@ namespace GamePush.Core
 
         #region Getters
 
-        private T StateConverter<T>(string type, object value)
+        private T StateConverter<T>(string type, object value = null)
         {
             switch (type)
             {
@@ -572,7 +584,7 @@ namespace GamePush.Core
             foreach (string key in defaultState.Keys)
             {
                 Debug.Log($"{key}, {playerState[key]}, {defaultState[key]}");
-                if (key == "name" || key == "avatar") continue;
+                if (key == NAME_STATE_KEY || key == AVATAR_STATE_KEY) continue;
 
                 if (playerState[key].ToString() != defaultState[key].ToString())
                 {
@@ -616,6 +628,8 @@ namespace GamePush.Core
         public void Login()
         {
             OnLoginError?.Invoke();
+
+            //OnLoginComplete?.Invoke();
         }
 
     }

@@ -40,7 +40,7 @@ namespace Examples.Player.JSON
 
         private void Awake()
         {
-            //Get_Player_Data_JSON();
+            Get_Player_Data_JSON();
         }
 
 
@@ -64,9 +64,9 @@ namespace Examples.Player.JSON
             _saveData.Level = 10;
             UpdateTexts();
         }
+
         public void VIP(bool value) => _saveData.VIP = value;
         public void Save() => _saveSystem.Save(_saveData);
-
 
 
         private void UpdateTexts()

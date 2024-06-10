@@ -14,13 +14,14 @@ namespace GamePush
         public static event Action OnReady;
         public static event Action OnError;
 
-        private void Awake()
+        private void OnEnable()
         {
+            CoreSDK.OnInit += CallOnSDKReady;
+        }
 
-#if UNITY_EDITOR || !UNITY_WEBGL
-            Debug.Log("CallOnSDKReady");
-            CallOnSDKReady();
-#endif
+        private void OnDisable()
+        {
+            CoreSDK.OnInit -= CallOnSDKReady;
         }
 
         private void CallOnSDKReady()

@@ -13,7 +13,7 @@ namespace GamePush.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
-            //PlayerPrefs.DeleteAll();
+            PlayerPrefs.DeleteAll();
             GP_Logger.Log("Init plugin...");
             CoreSDK.Initialize();
 
@@ -54,6 +54,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Schedulers>();
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
+            SDK.AddComponent<GP_Init>();
 
             SDK.AddComponent<GameStateService>();
 

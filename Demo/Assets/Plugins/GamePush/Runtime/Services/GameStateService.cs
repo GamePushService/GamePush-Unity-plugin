@@ -26,17 +26,17 @@ namespace GamePush.Services
         {
             if (!CoreSDK.isInit) return;
 
-            if (!Application.isFocused)
+            if (!Application.isFocused && isFocus)
             {
                 isFocus = false;
                 OnFocusChange?.Invoke(isFocus);
-                CoreSDK.game.SetAutoPause(isFocus);
+                CoreSDK.game.SetAutoPause(true);
             }
-            else if (!isFocus)
+            else if (Application.isFocused && !isFocus)
             {
                 isFocus = true;
                 OnFocusChange?.Invoke(isFocus);
-                CoreSDK.game.SetAutoPause(isFocus);
+                CoreSDK.game.SetAutoPause(false);
             }
         }
     }

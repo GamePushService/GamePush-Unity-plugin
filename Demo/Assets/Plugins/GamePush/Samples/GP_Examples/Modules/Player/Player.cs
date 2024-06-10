@@ -32,6 +32,7 @@ namespace Examples.Player
         {
             GP_Player.OnConnect += OnConnect;
             GP_Player.OnLoadComplete += OnLogin;
+            GP_Init.OnReady += Get_Player_Data;
 
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
@@ -48,6 +49,7 @@ namespace Examples.Player
         {
             GP_Player.OnConnect -= OnConnect;
             GP_Player.OnLoadComplete -= OnLogin;
+            GP_Init.OnReady -= Get_Player_Data;
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
@@ -59,8 +61,9 @@ namespace Examples.Player
         }
 
 
-        private void Start()
+        private async void Start()
         {
+            await GP_Init.Ready;
             Get_Player_Data();
         }
 
@@ -74,9 +77,9 @@ namespace Examples.Player
             //                 GP_Player.GetAvatar(_playerAvatar);
             // #endif
 
-            _gold.text = "SCORE: " + GP_Player.GetScore();
-            _level.text = "LEVEL: " + GP_Player.GetInt("level");
-            _vip.isOn = GP_Player.GetBool("vip");
+            //_gold.text = "SCORE: " + GP_Player.GetScore();
+            //_level.text = "LEVEL: " + GP_Player.GetInt("level");
+            //_vip.isOn = GP_Player.GetBool("vip");
         }
 
 
