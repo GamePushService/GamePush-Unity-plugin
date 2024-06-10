@@ -29,7 +29,7 @@ namespace GamePush.Core
 
         public PlayerModule()
         {
-            playerDataFields = new Dictionary<string, object>();
+            playerDataFields = new Dictionary<string, PlayerField>();
         }
 
         public void Init(List<PlayerField> playerFields)
@@ -189,11 +189,11 @@ namespace GamePush.Core
             { AVATAR_STATE_KEY, "" }
         };
 
-        private Newtonsoft.Json.Linq.JObject GetPlayerState()
+        private JObject GetPlayerState()
         {
             string json = JsonConvert.SerializeObject(playerState);
-            var obj = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
-            var sortedObj = new Newtonsoft.Json.Linq.JObject(obj.Properties().OrderBy(p => p.Name));
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
+            var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
             return sortedObj;
         }
 
@@ -273,11 +273,11 @@ namespace GamePush.Core
         #region DataFields
 
         protected List<PlayerField> dataFields;
-        private Dictionary<string, object> playerDataFields;
+        private Dictionary<string, PlayerField> playerDataFields;
         private Dictionary<string, object> defaultState;
         private Dictionary<string, string> typeState = new Dictionary<string, string>
         {
-            { ID_STATE_KEY, "stats" },
+            { ID_STATE_KEY, "service" },
             { ACTIVE_STATE_KEY, "service" },
             { REMOVED_STATE_KEY, "service" },
             { TEST_STATE_KEY, "service" },
@@ -290,7 +290,7 @@ namespace GamePush.Core
         {
             dataFields = playerFields;
 
-            playerDataFields = new Dictionary<string, object>();
+            playerDataFields = new Dictionary<string, PlayerField>();
             defaultState = new Dictionary<string, object>();
 
             foreach (PlayerField field in dataFields)
@@ -324,11 +324,11 @@ namespace GamePush.Core
                 //Debug.Log(field.@default + " " + field.@default.GetType());
             }
 
-            Debug.Log("All types");
-            foreach (string key in typeState.Keys)
-            {
-                Debug.Log(key + " " + typeState[key].ToString());
-            }
+            //Debug.Log("All types");
+            //foreach (string key in typeState.Keys)
+            //{
+            //    Debug.Log(key + " " + typeState[key].ToString());
+            //}
         }
 
         #endregion
@@ -337,8 +337,20 @@ namespace GamePush.Core
 
         private void SetStateValue(string key, object value)
         {
-            object oldValue = playerState[key];
-            if (oldValue == value) return;
+            //Check type of state
+            if (typeState[key] == "service" || typeState[key] == "accounts") return;
+            //Check change of state
+            if (playerState[key] == value) return;
+
+            if (playerDataFields[key].variants.Count > 0)
+            {
+                var variantQuery =
+                    from variant in playerDataFields[key].variants
+                    where variant.value == value.ToString()
+                    select variant;
+
+                if(variantQuery.Count() == 0) return;
+            }
 
             playerState[key] = value;
             OnPlayerChange?.Invoke();
@@ -366,9 +378,6 @@ namespace GamePush.Core
             Reset();
         }
 
-        #endregion
-
-        #region Getters
 
         private T StateConverter<T>(string type, object value = null)
         {
@@ -385,6 +394,11 @@ namespace GamePush.Core
 
         }
 
+        #endregion
+
+        #region Getters
+
+
         public T GetValue<T>(string key)
         {
             if (key != "")
@@ -399,7 +413,8 @@ namespace GamePush.Core
 
         public int GetID()
         {
-            return GetValue<int>(ID_STATE_KEY);
+            playerState.TryGetValue(ID_STATE_KEY, out object value);
+            return Helpers.ConvertValue<int>(value);
         }
 
         public float GetScore()
