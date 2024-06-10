@@ -2,6 +2,7 @@
 using GamePush.Services;
 using GamePush.Tools;
 using GamePush.Core;
+using System.Threading.Tasks;
 
 namespace GamePush.Initialization
 {
@@ -22,6 +23,9 @@ namespace GamePush.Initialization
             SDK.name = "GamePushSDK";
 
             Object.DontDestroyOnLoad(SDK);
+
+            SDK.AddComponent<GP_Init>();
+            SetUpInitAwaiter();
 
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
@@ -54,11 +58,27 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Schedulers>();
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
-            SDK.AddComponent<GP_Init>();
+            
 
             SDK.AddComponent<GameStateService>();
 
             GP_Logger.Log($"plugin ready ({VERSION})");
+        }
+
+        private static void SetUpInitAwaiter()
+        {
+            TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
+            GP_Init.Ready = _tcs.Task;
+
+            GP_Init.OnReady += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(true);
+            };
+
+            GP_Init.OnError += () => {
+                if (!_tcs.Task.IsCompleted)
+                    _tcs.SetResult(false);
+            };
         }
     }
 }
