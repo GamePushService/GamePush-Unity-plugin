@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GamePush;
+using System.Collections;
 
 namespace GamePush.Services
 {
@@ -10,6 +11,17 @@ namespace GamePush.Services
         private bool isFocus;
         public event Action<bool> OnFocusChange;
 
+        private void Start()
+        {
+            StartCoroutine(PlayTimeCounter());
+            StartCoroutine(Ping());
+        }
+
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         private void Update()
         {
             CheckGameFocus();
@@ -17,9 +29,22 @@ namespace GamePush.Services
                 //Debug.Log();
         }
 
-        private void FixedUpdate()
+        IEnumerator Ping()
         {
-            CoreSDK.player.AddPlayTime(Time.fixedDeltaTime);
+            //print(Time.time);
+            yield return new WaitForSecondsRealtime(10);
+            CoreSDK.player.Ping();
+
+            StartCoroutine(Ping());
+        }
+
+        IEnumerator PlayTimeCounter()
+        {
+            yield return new WaitForSecondsRealtime(1);
+            CoreSDK.player.AddPlayTime(1);
+            CoreSDK.AddServerTime(1);
+
+            StartCoroutine(PlayTimeCounter());
         }
 
         void CheckGameFocus()

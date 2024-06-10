@@ -19,6 +19,9 @@ namespace GamePush
         public static PlayerModule player;
         public static GameVariables variables;
 
+        private static DateTime serverTime;
+
+        public static void AddServerTime(float time) => serverTime.AddSeconds(time);
         public static string GetServerTime() => configData.serverTime;
 
         public static async void Initialize()
@@ -75,6 +78,7 @@ namespace GamePush
         {
             configData = allData;
 
+            serverTime = DateTime.Parse(configData.serverTime);
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
         }
