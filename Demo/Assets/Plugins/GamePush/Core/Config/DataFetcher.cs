@@ -7,18 +7,21 @@ using UnityEngine.Serialization;
 using GamePush.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine.Networking;
+using System.Collections;
 
 namespace GamePush.Core
 {
     public class DataFetcher
     {
+        private static string _apiURL = "https://api.gamepush.com/gs/api";
         private static string _configName = "GP_GraphQL";
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";
         private static string _syncPlayerQueryName = "SyncPlayer";
         private static string _fetchPlayerFieldsQueryName = "FetchPlayerFields";
 
-        public static async Task GetConfig()
+        public static async Task<AllConfigData> GetConfig()
         {
             Debug.Log("Get config");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -39,10 +42,11 @@ namespace GamePush.Core
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
-            CoreSDK.SetConfig(configData);
+            return configData;
+            //CoreSDK.SetConfig(configData);
         }
 
-        public static async Task GetPlayer(GetPlayerInput input, bool withToken)
+        public static async Task<JObject> GetPlayer(GetPlayerInput input, bool withToken)
         {
             Debug.Log("Get player");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -70,11 +74,11 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //TODO return to player
-            CoreSDK.player.SetPlayerData(resultObject);
+            return resultObject;
+            //CoreSDK.player.SetPlayerData(resultObject);
         }
 
-        public static async Task SyncPlayer(SyncPlayerInput input, bool withToken)
+        public static async Task<JObject> SyncPlayer(SyncPlayerInput input, bool withToken)
         {
             Debug.Log("Sync player");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -102,8 +106,8 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //TODO return to player
-            CoreSDK.player.SetPlayerData(resultObject);
+            return resultObject;
+            //CoreSDK.player.SetPlayerData(resultObject);
         }
 
         public static async Task<List<PlayerField>> FetchPlayerFields(bool withToken)
@@ -139,7 +143,45 @@ namespace GamePush.Core
             return playerFields;
         }
 
+        public static async void Ping(string token) => await GetRequest($"{_apiURL}/ping?t={token}");
+
+        private static async Task<UnityWebRequest> GetRequest(string url)
+        {
+            UnityWebRequest webRequest = UnityWebRequest.Get(url);
+            webRequest.SendWebRequest();
+
+            while (!webRequest.isDone)
+            {
+                await Task.Yield();
+            }
+            return webRequest;
+        }
+
+        public static async void RequestExample()
+        {
+            string URL = "https://example.com";
+
+            UnityWebRequest webRequest = await GetRequest(URL);
+
+            string[] pages = URL.Split('/');
+            int page = pages.Length - 1;
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                    break;
+            }
+        }
+
     }
 
-    
+
 }

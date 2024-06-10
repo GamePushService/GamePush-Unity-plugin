@@ -59,8 +59,8 @@ namespace GamePush
 
         public static async Task FetchData()
         {
-            await DataFetcher.GetConfig();
-
+            AllConfigData data  = await DataFetcher.GetConfig();
+            SetConfig(data);
             //SyncPlayerInput syncPlayerInput = new SyncPlayerInput();
             //syncPlayerInput.playerState = player.GetPlayerState();
             //syncPlayerInput.isFirstRequest = true;
@@ -69,14 +69,13 @@ namespace GamePush
 
             await player.FetchPlayerConfig();
 
-
         }
 
         public static void SetConfig(AllConfigData allData)
         {
             configData = allData;
 
-            player.SetDataFields(configData.playerFields);
+            player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
         }
 

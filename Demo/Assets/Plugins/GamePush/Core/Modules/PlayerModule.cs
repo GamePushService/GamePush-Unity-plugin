@@ -23,12 +23,27 @@ namespace GamePush.Core
 
         private bool _isFirstRequest = true;
         private string _secretCode;
+        private string _token;
 
-        #region PlayerModuleInit
+        #region PlayerInit
 
         public PlayerModule()
         {
             playerDataFields = new Dictionary<string, object>();
+        }
+
+        public void Init(List<PlayerField> playerFields)
+        {
+            SetDataFields(playerFields);
+            foreach (string key in defaultState.Keys)
+            {
+                playerState.TryAdd(key, defaultState[key]);
+            }
+
+            //foreach (string key in playerState.Keys)
+            //{
+            //    Debug.Log(key + " " + playerState[key].ToString());
+            //}
         }
 
         public void SetPlayerData(JObject playerData)
@@ -41,15 +56,18 @@ namespace GamePush.Core
             JObject stateObject = (JObject)playerData["state"];
             playerState = stateObject.ToObject<Dictionary<string, object>>();
 
-            foreach (string key in playerState.Keys.ToList())
-            {
-                Debug.Log($"{key} , {playerState[key]}");
-            }
+            //foreach (string key in playerState.Keys.ToList())
+            //{
+            //    Debug.Log($"{key} , {playerState[key]}");
+            //}
 
             if (playerData["sessionStart"].ToString() != "")
                 SetStartTime(playerData["sessionStart"].ToString());
             else
                 SetStartTime(CoreSDK.GetServerTime());
+
+            if (playerData["token"].ToString() != "")
+                _token = playerData["token"].ToString();
 
             Debug.Log($"ID {GetID()}");
 
@@ -86,8 +104,8 @@ namespace GamePush.Core
             playerInput.isFirstRequest = _isFirstRequest;
             playerInput.Override = forceOverride;
 
-            //TODO get return
-            await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+            SetPlayerData(resultObject);
 
             OnSyncComplete?.Invoke();
         }
@@ -99,8 +117,9 @@ namespace GamePush.Core
 
             playerInput.isFirstRequest = _isFirstRequest;
 
-            //TODO get return
-            await DataFetcher.GetPlayer(playerInput, _isFirstRequest);
+            JObject resultObject = await DataFetcher.GetPlayer(playerInput, _isFirstRequest);
+            SetPlayerData(resultObject);
+
             OnLoadComplete?.Invoke();
         }
 
@@ -112,7 +131,7 @@ namespace GamePush.Core
 
             List<PlayerFetchFieldsData> fetchFields = new List<PlayerFetchFieldsData>();
 
-            foreach(PlayerField playerField in dataFields)
+            foreach (PlayerField playerField in dataFields)
             {
                 fetchFields.Add(FieldToFetchField(playerField));
             }
@@ -133,6 +152,8 @@ namespace GamePush.Core
             return fetchField;
         }
 
+        public void Ping() => DataFetcher.Ping(_token);
+
         #endregion
 
         #region PlayerState
@@ -143,7 +164,13 @@ namespace GamePush.Core
         private static string TEST_STATE_KEY = "test";
         private static string SCORE_STATE_KEY = "score";
         private static string NAME_STATE_KEY = "name";
-        private static string AVATAR_STATE_KEY = "avatat";
+        private static string AVATAR_STATE_KEY = "avatar";
+
+        private static List<string> IGNORE_FOR_STAB
+            = new List<string>(){
+                NAME_STATE_KEY,
+                AVATAR_STATE_KEY
+            };
 
         private static string SECRETCODE_STATE_KEY = "secretCode";
         private static string SAVE_MODIFICATOR = "xSaveState_";
@@ -173,17 +200,17 @@ namespace GamePush.Core
 
             foreach (string key in playerState.Keys.ToList())
             {
-                if(PlayerPrefs.HasKey(SAVE_MODIFICATOR + key))
+                if (PlayerPrefs.HasKey(SAVE_MODIFICATOR + key))
                     playerState[key] = PlayerPrefs.GetString(SAVE_MODIFICATOR + key);
             }
 
             if (PlayerPrefs.HasKey(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY))
             {
-                Debug.Log("Secret code from prefs: " + PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY));
+                //Debug.Log("Secret code from prefs: " + PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY));
                 playerState.Add(SECRETCODE_STATE_KEY, "");
                 playerState[SECRETCODE_STATE_KEY] = PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY);
             }
-                
+
         }
 
         private void SavePlayerStateToPrefs()
@@ -207,6 +234,7 @@ namespace GamePush.Core
         #endregion
 
         #region PlayerStats
+
         private PlayerStats playerStats;
 
         public void SetPlayerStats()
@@ -244,6 +272,7 @@ namespace GamePush.Core
         protected List<PlayerField> dataFields;
         private Dictionary<string, object> playerDataFields;
         private Dictionary<string, object> defaultState;
+        private Dictionary<string, string> typeState;
 
         public void SetDataFields(List<PlayerField> playerFields)
         {
@@ -251,11 +280,13 @@ namespace GamePush.Core
 
             playerDataFields = new Dictionary<string, object>();
             defaultState = new Dictionary<string, object>();
+            typeState = new Dictionary<string, string>();
 
             foreach (PlayerField field in dataFields)
             {
                 playerDataFields.Add(field.key, field);
-                
+                typeState.Add(field.key, field.type);
+
                 switch (field.type)
                 {
                     case "flag":
@@ -282,51 +313,74 @@ namespace GamePush.Core
                 //Debug.Log(field.@default + " " + field.@default.GetType());
             }
 
-            foreach(string key in defaultState.Keys)
-            {
-                //Debug.Log(key + " " + defaultState[key].ToString() + " " + defaultState[key].GetType());
-            }
+            //foreach (string key in typeState.Keys)
+            //{
+            //    Debug.Log(key + " " + typeState[key].ToString());
+            //}
         }
 
         #endregion
 
-        #region TimeSpan
+        #region StateChange
 
-        private DateTime _startSessionTime;
-        private float _playTime;
-        private float _timeSpan;
-
-        public void AddPlayTime(float time) {
-            _playTime += time;
-            _timeSpan += time;
-        }
-
-        private int GetPlayTime()
-        { 
-            return (int)_playTime;
-        }
-
-        private int GetTimeSpan()
+        private void SetStateValue(string key, object value)
         {
-            return (int)_timeSpan;
+            object oldValue = playerState[key];
+            if (oldValue == value) return;
+
+            playerState[key] = value;
+            OnPlayerChange?.Invoke();
         }
 
-        private void SetStartTime(string sessionStart)
+        public void Reset()
         {
-            _startSessionTime = DateTime.Parse(sessionStart);
-            _timeSpan = 0;
+            foreach (string key in defaultState.Keys)
+            {
+                playerState[key] = defaultState[key];
+            }
+
+            //acceptedRewards = [];
+            //givenRewards = [];
+            //claimedTriggers = [];
+            //claimedSchedulersDays = [];
+        }
+
+        public void Remove()
+        {
+            playerState[ID_STATE_KEY] = 0;
+            playerState[SECRETCODE_STATE_KEY] = "";
+            _secretCode = "";
+
+            Reset();
         }
 
         #endregion
 
         #region Getters
 
+        private T StateConverter<T>(string type, object value)
+        {
+            switch (type)
+            {
+                case "service":
+                case "accounts":
+                    return default(T);
+
+                default:
+
+                    return Helpers.ConvertValue<T>(value);
+            }
+
+        }
+
         public T GetValue<T>(string key)
         {
-            if(playerState.TryGetValue(key, out object value))
-            {
-                return Helpers.ConvertValue<T>(value);
-            }
+            if (key != "")
+                if (playerState.TryGetValue(key, out object value))
+                {
+                    typeState.TryGetValue(key, out string valueType);
+                    return StateConverter<T>(valueType, value);
+                }
 
             return default(T);
         }
@@ -361,7 +415,7 @@ namespace GamePush.Core
         {
             PlayerField field = (PlayerField)playerDataFields[key];
 
-            foreach(PlayerFieldVariant variant in field.variants)
+            foreach (PlayerFieldVariant variant in field.variants)
             {
                 if (variant.value == value)
                     return variant.name;
@@ -417,78 +471,87 @@ namespace GamePush.Core
 
         #region Setters
 
-                private void SetStateValue<T>(string key, T value)
-                {
-                    playerState[key] = value;
-                    OnPlayerChange?.Invoke();
-                }
+        public void SetName(string name)
+        {
+            SetStateValue(NAME_STATE_KEY, name);
+        }
 
-                public void SetName(string name)
-                {
-                    SetStateValue(NAME_STATE_KEY, name);
-                }
+        public void SetAvatar(string src)
+        {
+            SetStateValue(AVATAR_STATE_KEY, src);
+        }
 
-                public void SetAvatar(string src)
-                {
-                    SetStateValue(AVATAR_STATE_KEY, src);
-                }
+        public void SetScore(int score)
+        {
+            SetStateValue(SCORE_STATE_KEY, score);
+        }
 
-                public void SetScore(int score)
-                {
-                    SetStateValue(SCORE_STATE_KEY, score);
-                }
+        public void SetScore(float score)
+        {
+            SetStateValue(SCORE_STATE_KEY, score);
+        }
 
-                public void SetScore(float score)
-                {
-                    SetStateValue(SCORE_STATE_KEY, score);
-                }
+        public void Set<T>(string key, T value)
+        {
+            SetStateValue(key, value);
+        }
 
-                public void Set<T>(string key, T value)
-                {
-                    SetStateValue(key, value);
-                }
-
-                public void Toggle(string key)
-                {
-                    SetStateValue(key, !GetValue<bool>(key));
-                }
+        public void Toggle(string key)
+        {
+            SetStateValue(key, !GetValue<bool>(key));
+        }
 
         #endregion
 
         #region Adders
 
-                public void AddScore(int score)
-                {
-                    
-                }
+        public void AddScore(int score)
+        {
+            SetScore(GetScore() + score);
+        }
 
-                public void AddScore(float score)
-                {
+        public void AddScore(float score)
+        {
+            SetScore(GetScore() + score);
+        }
 
-                }
+        public void Add(string key, int value)
+        {
+            int oldValue = Get<int>(key);
+            Set(key, oldValue + value);
+        }
 
-
-                public void Add<T>(string key, T value)
-                {
-
-                }
+        public void Add(string key, float value)
+        {
+            float oldValue = Get<float>(key);
+            Set(key, oldValue + value);
+        }
         #endregion
 
         #region IsFuncs
 
         public bool HasField(string key)
         {
-            return playerState.TryGetValue(key, out object value);
+            return typeState.TryGetValue(key, out string type);
         }
 
         public bool Has(string key)
         {
-            if (playerState.TryGetValue(key, out object value))
+            if(typeState.TryGetValue(key, out string type))
             {
-//TODO Helpers.ConvertValue
-
-                string t = value.ToString();
-                return !(t == "" || t == "0" || t == "False");
+                switch (type)
+                {
+                    case "stats":
+                        return Helpers.ConvertValue<double>(playerState[key]) != 0;
+                    case "data":
+                        return Helpers.ConvertValue<string>(playerState[key]) != "";
+                    case "flag":
+                        return Helpers.ConvertValue<bool>(playerState[key]) != false;
+                    case "service":
+                        return false;
+                    case "accounts":
+                        return false;
+                }
             }
 
             return false;
@@ -506,7 +569,7 @@ namespace GamePush.Core
 
         public bool IsStub()
         {
-            foreach(string key in defaultState.Keys)
+            foreach (string key in defaultState.Keys)
             {
                 Debug.Log($"{key}, {playerState[key]}, {defaultState[key]}");
                 if (key == "name" || key == "avatar") continue;
@@ -520,29 +583,36 @@ namespace GamePush.Core
         }
         #endregion
 
-        public void Reset()
-        {
-            foreach(string key in defaultState.Keys)
-            {
-                playerState[key] = defaultState[key];
-            }
+        #region TimeSpan
 
-            //acceptedRewards = [];
-            //givenRewards = [];
-            //claimedTriggers = [];
-            //claimedSchedulersDays = [];
+        private DateTime _startSessionTime;
+        private float _playTime;
+        private float _timeSpan;
+
+        public void AddPlayTime(float time)
+        {
+            _playTime += time;
+            _timeSpan += time;
         }
 
-        public void Remove()
+        private int GetPlayTime()
         {
-            playerState[ID_STATE_KEY] = 0;
-            playerState[SECRETCODE_STATE_KEY] = "";
-            _secretCode = "";
-
-            Reset();
+            return (int)_playTime;
         }
 
-        
+        private int GetTimeSpan()
+        {
+            return (int)_timeSpan;
+        }
+
+        private void SetStartTime(string sessionStart)
+        {
+            _startSessionTime = DateTime.Parse(sessionStart);
+            _timeSpan = 0;
+        }
+
+        #endregion
+
         public void Login()
         {
             OnLoginError?.Invoke();

@@ -14,7 +14,6 @@ namespace GamePush.Core
             {
                 return default(T);
             }
-            
         }
     }
     
