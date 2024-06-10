@@ -32,7 +32,7 @@ namespace Examples.Player
         {
             GP_Player.OnConnect += OnConnect;
             GP_Player.OnLoadComplete += OnLogin;
-            GP_Init.OnReady += Get_Player_Data;
+            //GP_Init.OnReady += Get_Player_Data;
 
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
@@ -49,7 +49,7 @@ namespace Examples.Player
         {
             GP_Player.OnConnect -= OnConnect;
             GP_Player.OnLoadComplete -= OnLogin;
-            GP_Init.OnReady -= Get_Player_Data;
+            //GP_Init.OnReady -= Get_Player_Data;
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
