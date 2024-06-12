@@ -66,10 +66,13 @@ namespace GamePush.Core
             else
                 SetStartTime(CoreSDK.GetServerTime());
 
-            if (playerData["token"].ToString() != "")
-                _token = playerData["token"].ToString();
+            if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
+            {
+                _token = token.ToString();
+            }
+                
 
-            Debug.Log($"TOKEN {_token}");
+            //Debug.Log($"TOKEN {_token}");
 
             _isFirstRequest = false;
 

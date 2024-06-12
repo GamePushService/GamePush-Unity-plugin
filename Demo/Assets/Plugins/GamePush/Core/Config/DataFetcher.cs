@@ -35,11 +35,9 @@ namespace GamePush.Core
                 null, Headers.GetHeaders(queryTuple.Item1)
             );
 
-            //Debug.Log(results);
-
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-            Debug.Log(resultObject.ToString());
+            //Debug.Log(resultObject.ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -70,10 +68,9 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            //Debug.Log(results);
-
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
+            //Debug.Log(resultObject.ToString());
 
             return resultObject;
             //CoreSDK.player.SetPlayerData(resultObject);
@@ -102,10 +99,9 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            //Debug.Log(results);
-
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
+            Debug.Log(resultObject.ToString());
 
             return resultObject;
             //CoreSDK.player.SetPlayerData(resultObject);
@@ -126,7 +122,7 @@ namespace GamePush.Core
             variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
 
-            Debug.Log(queryTuple.Item2);
+            //Debug.Log(queryTuple.Item2);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),

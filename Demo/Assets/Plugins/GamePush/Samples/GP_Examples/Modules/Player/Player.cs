@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 using GamePush;
+using GamePush.Data;
 using Examples.Console;
 
 namespace Examples.Player
@@ -14,33 +16,53 @@ namespace Examples.Player
         [SerializeField] private Image _playerAvatar;
 
         [Space(15)]
-        [SerializeField] private TMP_Text _gold;
-        [SerializeField] private TMP_Text _level;
-        [SerializeField] private Toggle _vip;
+        [SerializeField] private TMP_InputField _value;
+        [SerializeField] private TMP_InputField _key;
+        [SerializeField] private Toggle _flag;
 
         [Space(15)]
-        [SerializeField] private Button _addButton;
+        [SerializeField] private Button _getIntButton;
+        [SerializeField] private Button _getFloatButton;
+        [SerializeField] private Button _getBoolButton;
+        [SerializeField] private Button _getStringButton;
+
         [SerializeField] private Button _setButton;
-        [SerializeField] private Button _saveButton;
-        [SerializeField] private Button _loginButton;
+        [SerializeField] private Button _addButton;
+        [SerializeField] private Button _hasButton;
+
+        [SerializeField] private Button _syncButton;
         [SerializeField] private Button _resetButton;
         [SerializeField] private Button _removeButton;
+        [SerializeField] private Button _loginButton;
         [SerializeField] private Button _statsButton;
+        [SerializeField] private Button _isStabButton;
+
+        [SerializeField] private Button _fetchButton;
 
 
         private void OnEnable()
         {
             GP_Player.OnConnect += OnConnect;
-            GP_Player.OnLoadComplete += OnLogin;
-            //GP_Init.OnReady += Get_Player_Data;
+            GP_Player.OnLoadComplete += OnLoad;
+            GP_Player.OnSyncComplete += OnSync;
+
+            _getIntButton.onClick.AddListener(GetInt);
+            _getFloatButton.onClick.AddListener(GetFloat);
+            _getBoolButton.onClick.AddListener(GetBool);
+            _getStringButton.onClick.AddListener(GetString);
 
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
-            _saveButton.onClick.AddListener(Save);
+            _hasButton.onClick.AddListener(Has);
+
+            _syncButton.onClick.AddListener(Sync);
             _loginButton.onClick.AddListener(Login);
             _resetButton.onClick.AddListener(ResetPlayer);
             _removeButton.onClick.AddListener(Remove);
             _statsButton.onClick.AddListener(PlayerStats);
+            _isStabButton.onClick.AddListener(IsStab);
+
+            _fetchButton.onClick.AddListener(FetchFields);
         }
 
 
@@ -48,16 +70,26 @@ namespace Examples.Player
         private void OnDisable()
         {
             GP_Player.OnConnect -= OnConnect;
-            GP_Player.OnLoadComplete -= OnLogin;
-            //GP_Init.OnReady -= Get_Player_Data;
+            GP_Player.OnLoadComplete -= OnLoad;
+            GP_Player.OnSyncComplete -= OnSync;
+
+            _getIntButton.onClick.RemoveListener(GetInt);
+            _getFloatButton.onClick.RemoveListener(GetFloat);
+            _getBoolButton.onClick.RemoveListener(GetBool);
+            _getStringButton.onClick.RemoveListener(GetString);
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
-            _saveButton.onClick.RemoveListener(Save);
+            _hasButton.onClick.RemoveListener(Has);
+
+            _syncButton.onClick.RemoveListener(Sync);
             _loginButton.onClick.RemoveListener(Login);
             _resetButton.onClick.RemoveListener(ResetPlayer);
             _removeButton.onClick.RemoveListener(Remove);
             _statsButton.onClick.RemoveListener(PlayerStats);
+            _isStabButton.onClick.RemoveListener(IsStab);
+
+            _fetchButton.onClick.RemoveListener(FetchFields);
         }
 
 
@@ -73,9 +105,9 @@ namespace Examples.Player
             _id.text = "ID: " + GP_Player.GetID();
             _name.text = "NAME: " + GP_Player.GetName();
 
-            // #if !UNITY_EDITOR && UNITY_WEBGL
-            //                 GP_Player.GetAvatar(_playerAvatar);
-            // #endif
+        #if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player.GetAvatar(_playerAvatar);
+        #endif
 
             //_gold.text = "SCORE: " + GP_Player.GetScore();
             //_level.text = "LEVEL: " + GP_Player.GetInt("level");
@@ -84,46 +116,120 @@ namespace Examples.Player
 
 
         #region Button Methods
-        public void Add()
+
+        public void GetInt()
         {
-            GP_Player.AddScore(50);
-            UpdateGoldText();
+            int value = GP_Player.GetInt(_key.text);
+            ConsoleUI.Instance.Log($"\nGet int {_key.text}: {value}");
         }
+
+        public void GetFloat()
+        {
+            float value = GP_Player.GetFloat(_key.text);
+            ConsoleUI.Instance.Log($"\nGet float {_key.text}: {value}");
+        }
+
+        public void GetBool()
+        {
+            bool value = GP_Player.GetBool(_key.text);
+            ConsoleUI.Instance.Log($"\nGet bool {_key.text}: {value}");
+        }
+
+        public void GetString()
+        {
+            string value = GP_Player.GetString(_key.text);
+            ConsoleUI.Instance.Log($"\nGet string {_key.text}: {value}");
+        }
+        
+
         public void Set()
         {
-            GP_Player.Set("level", 10);
-            GP_Player.Set("vip", true);
-            UpdateLevelText();
+            ConsoleUI.Instance.Log($"\nSet {_key.text}: {_value.text}");
+            GP_Player.Set(_key.text, _value.text);
         }
-        public void Save() => GP_Player.Sync();
 
-        public void ResetPlayer() => GP_Player.ResetPlayer();
-        public void Remove() => GP_Player.Remove();
-        public void Login() => GP_Player.Login();
+        public void Add()
+        {
+            ConsoleUI.Instance.Log($"\nAdd {_key.text}: {_value.text}");
+            float.TryParse(_value.text, out float value);
+            GP_Player.Add(_key.text, value);
+        }
+
+        public void Has()
+        {
+            bool has = GP_Player.Has(_key.text);
+            ConsoleUI.Instance.Log($"\nHas {_key.text}: {has}");
+        }
+
+        public void Sync()
+        {
+            ConsoleUI.Instance.Log($"\nSync player");
+            GP_Player.Sync();
+        }
+
+        public void ResetPlayer()
+        {
+            ConsoleUI.Instance.Log($"\nReset player");
+            GP_Player.ResetPlayer();
+        }
+        public void Remove()
+        {
+            ConsoleUI.Instance.Log($"\nRemove player");
+            GP_Player.Remove();
+        }
+        public void Login()
+        {
+            ConsoleUI.Instance.Log($"\nLogin");
+            GP_Player.Login();
+        }
 
         public void PlayerStats()
         {
-            ConsoleUI.Instance.Log("PLAYER STATS:");
+            ConsoleUI.Instance.Log("\nPLAYER STATS:");
             ConsoleUI.Instance.Log("Active Days:" + GP_Player.GetActiveDays());
             ConsoleUI.Instance.Log("Active Days Consecutive:" + GP_Player.GetActiveDaysConsecutive());
             ConsoleUI.Instance.Log("Playtime Today:" + GP_Player.GetPlaytimeToday());
             ConsoleUI.Instance.Log("Playtime All:" + GP_Player.GetPlaytimeAll());
         }
+
+        public void IsStab()
+        {
+            bool stab = GP_Player.IsStub();
+            ConsoleUI.Instance.Log($"\nIs Stab: {stab}");
+        }
+
+        public void FetchFields()
+        {
+            ConsoleUI.Instance.Log("\nFetch player fields");
+            GP_Player.FetchFields(OnFetchFields);
+        }
         #endregion
 
-
-        private int _goldCount;
-        private void UpdateGoldText() { _goldCount += 50; _gold.text = "SCORE: " + _goldCount; }
-        private void UpdateLevelText() => _level.text = "LEVEL: " + 10;
+        private void OnFetchFields(List<PlayerFetchFieldsData> playerFetchFields)
+        {
+            ConsoleUI.Instance.Log("\nPLAYER FIELDS:");
+            foreach (PlayerFetchFieldsData field in playerFetchFields)
+            {
+                ConsoleUI.Instance.Log($"\nField key: {field.key}");
+                ConsoleUI.Instance.Log($"Field name: {field.name}");
+                ConsoleUI.Instance.Log($"Field type: {field.type}");
+                ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
+            }
+        }
 
         private void OnConnect()
         {
             ConsoleUI.Instance.Log("Connect");
         }
 
-        private void OnLogin()
+        private void OnLoad()
         {
-            ConsoleUI.Instance.Log("Login");
+            ConsoleUI.Instance.Log("Player Load");
+        }
+
+        private void OnSync()
+        {
+            ConsoleUI.Instance.Log("Sync Complete");
         }
     }
 }
