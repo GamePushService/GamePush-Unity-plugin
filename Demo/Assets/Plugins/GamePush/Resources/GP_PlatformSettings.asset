@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89dbd408fcef4c6c9ec88804ecf62a23, type: 3}
   m_Name: GP_PlatformSettings
   m_EditorClassIdentifier: 
-  PlatformToEmulate: 0
+  PlatformToEmulate: 1
   Language: 0
   IsMobile: 1
-  IsPortrait: 1
+  IsPortrait: 0
   HasIntegratedAuth: 1
   IsExternalLinksAllowed: 1
   IsLoggedIn: 1
@@ -39,6 +39,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
+    IsAlreadyReviewed: 0
   - Platform: 1
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -54,6 +55,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 2
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -69,6 +71,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 3
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -84,6 +87,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 4
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -99,6 +103,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 5
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -114,6 +119,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
+    IsAlreadyReviewed: 0
   - Platform: 6
     IsSupportsShare: 0
     IsSupportsNativeShare: 0
@@ -129,6 +135,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 7
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -144,6 +151,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 8
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -159,6 +167,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 9
     IsSupportsShare: 1
     IsSupportsNativeShare: 0
@@ -174,6 +183,7 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 0
+    IsAlreadyReviewed: 0
   - Platform: 10
     IsSupportsShare: 1
     IsSupportsNativeShare: 1
@@ -189,3 +199,4 @@ MonoBehaviour:
     IsPreloaderAvailable: 1
     IsAdblockEnabled: 1
     CanReview: 1
+    IsAlreadyReviewed: 0
