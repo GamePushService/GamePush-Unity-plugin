@@ -4,30 +4,6 @@ using UnityEngine;
 
 namespace GamePush
 {
-    [Serializable]
-    public class PlatformSettings
-    {
-        public Platform Platform;
-        [Header("Social")]
-        public bool IsSupportsShare;
-        public bool IsSupportsNativeShare;
-        public bool IsSupportsNativeInvite;
-        public bool IsSupportsNativePosts;
-        public bool IsSupportsNativeCommunityJoin;
-        public bool CanJoinCommunity;
-        [Header("Payments")]
-        public bool IsPaymentsAvailable;
-        public bool IsSubscriptionsAvailable;
-        [Header("Ads")]
-        public bool IsFullscreenAvailable;
-        public bool IsRewardedAvailable;
-        public bool IsStickyAvailable;
-        public bool IsPreloaderAvailable;
-        public bool IsAdblockEnabled;
-        [Header("Review")]
-        public bool CanReview;
-        public bool IsAlreadyReviewed;
-    }
     
     [CreateAssetMenu(fileName = "GP_PlatformSettings", menuName = "GP_Settings/GP_PlatformSettings")]
     public class GP_PlatformSettings : ScriptableObject
@@ -61,5 +37,30 @@ namespace GamePush
             Console.Log("PLATFORM SETTINGS: ", "DEFAULT");
             return new PlatformSettings();
         }
+    }
+
+    [Serializable]
+    public class PlatformSettings
+    {
+        public Platform Platform;
+        [Header("Social")]
+        public bool IsSupportsShare;
+        public bool IsSupportsNativeShare;
+        public bool IsSupportsNativeInvite;
+        public bool IsSupportsNativePosts;
+        public bool IsSupportsNativeCommunityJoin;
+        public bool CanJoinCommunity;
+        [Header("Payments")]
+        public bool IsPaymentsAvailable;
+        public bool IsSubscriptionsAvailable;
+        [Header("Ads")]
+        public bool IsFullscreenAvailable;
+        public bool IsRewardedAvailable;
+        public bool IsStickyAvailable;
+        public bool IsPreloaderAvailable;
+        public bool IsAdblockEnabled;
+        [Header("Review")]
+        public bool CanReview;
+        public bool IsAlreadyReviewed;
     }
 }

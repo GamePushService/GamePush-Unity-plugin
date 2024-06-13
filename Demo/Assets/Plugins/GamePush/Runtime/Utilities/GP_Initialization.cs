@@ -1,10 +1,10 @@
 using UnityEngine;
 using GamePush;
-using GP_Utilities.Console;
+using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
 
-namespace GP_Utilities.Initialization
+namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
@@ -56,7 +56,7 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
 
-            Debug.Log($"GamePush plugin ready ({VERSION})");
+            Debug.Log($"GamePush plugin ({VERSION}) initialize");
         }
 
         private static void SetUpInitAwaiter()

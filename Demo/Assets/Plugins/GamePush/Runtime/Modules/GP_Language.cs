@@ -3,14 +3,14 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GP_Utilities.Console;
+using GamePush.ConsoleController;
 
 namespace GamePush
 {
     public class GP_Language : MonoBehaviour
     {
         public static event UnityAction<Language> OnChangeLanguage;
-        public static event Action<Language> _onChangeLanguage;
+        private static event Action<Language> _onChangeLanguage;
 
         private static string English = "en";
         private static string Russian = "ru";

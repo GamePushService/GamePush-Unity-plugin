@@ -18,7 +18,7 @@ namespace GamePush
         {
 
 #if UNITY_EDITOR || !UNITY_WEBGL
-            Debug.Log("CallOnSDKReady");
+            Console.Log("SDK ready");
             CallOnSDKReady();
 #endif
         }

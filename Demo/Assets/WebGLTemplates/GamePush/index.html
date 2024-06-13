@@ -36,7 +36,7 @@
     window.unityInstance = null;
     window.onGPError = () => {
       _gpAwaiter.done();
-      SendMessage('GamePushSDK', 'CallOnSDKError');
+      // SendMessage('GamePushSDK', 'CallOnSDKError');
     }
 
     window.onGPInit = async (gp) => {
@@ -49,7 +49,8 @@
 
       console.info("GamePush initialization in index.html deprecated!!!")
       await _unityAwaiter.ready;
-      SendMessage('GamePushSDK', 'CallOnSDKReady');
+
+      setTimeout(() => window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKReady'), 1000);
 
       if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
         setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
