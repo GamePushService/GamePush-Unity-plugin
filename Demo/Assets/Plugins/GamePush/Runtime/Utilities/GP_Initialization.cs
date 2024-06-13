@@ -8,7 +8,7 @@ namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.0";
+        static string VERSION = "v1.4.1";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
@@ -56,7 +56,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
 
-            Debug.Log($"GamePush plugin ({VERSION}) initialize");
+            Console.Log($"plugin {VERSION} initialize");
         }
 
         private static void SetUpInitAwaiter()
