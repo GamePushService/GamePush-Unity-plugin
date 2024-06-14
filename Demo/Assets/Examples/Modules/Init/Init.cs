@@ -8,6 +8,7 @@ namespace Examples.Init
         private void OnEnable()
         {
             GP_Init.OnReady += OnPluginReady;
+            GP_Init.OnError += OnPluginError;
         }
 
         private async void Start()
@@ -21,6 +22,11 @@ namespace Examples.Init
         private void OnPluginReady()
         {
             Debug.Log("Init Example: SDK ready");
+        }
+
+        private void OnPluginError()
+        {
+            Debug.Log("Init Example: SDK error");
         }
     }
 }
