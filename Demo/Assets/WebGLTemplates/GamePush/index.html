@@ -36,7 +36,8 @@
     window.unityInstance = null;
     window.onGPError = () => {
       _gpAwaiter.done();
-      // SendMessage('GamePushSDK', 'CallOnSDKError');
+      await _unityAwaiter.ready;
+      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKError');
     }
 
     window.onGPInit = async (gp) => {
