@@ -49,8 +49,8 @@
 
       console.info("GamePush initialization in index.html deprecated!!!")
       await _unityAwaiter.ready;
-
-      setTimeout(() => window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKReady'), 1000);
+      await _gpAwaiter.done;
+      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKReady');
 
       if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
         setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
