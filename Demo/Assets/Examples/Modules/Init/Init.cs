@@ -13,20 +13,14 @@ namespace Examples.Init
         private async void Start()
         {
             await GP_Init.Ready;
-            OnPluginReady();
+            Debug.Log($"Init Example: isReady {IsReady()}");
         }
 
-        private void CheckReady()
-        {
-            if (GP_Init.isReady)
-            {
-                OnPluginReady();
-            }
-        }
+        private bool IsReady() => GP_Init.isReady;
 
         private void OnPluginReady()
         {
-            Debug.Log("Init Example: Plugin ready");
+            Debug.Log("Init Example: SDK ready");
         }
     }
 }
