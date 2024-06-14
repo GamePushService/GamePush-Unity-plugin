@@ -8,8 +8,8 @@ Creator of early version GamePush Unity plugin - [Dinar Shagidullin](https://git
 
 
 ## Download
-Latest version of GamePush plugin:  
-[GamePush v1.4.0](https://github.com/GamePushService/GamePush-Unity-plugin/tree/main/Releases/GamePush)
+Latest version of GamePush Unity plugin:  
+[GamePush plugin](https://github.com/GamePushService/GamePush-Unity-plugin/tree/main/Releases/GamePush)
 
 
 Examples for GamePush plugin modules:  
