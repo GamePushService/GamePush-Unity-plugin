@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using GamePush.Utilities;
-using GP_Utilities.Console;
+using GamePush.ConsoleController;
 
 namespace GamePush
 {

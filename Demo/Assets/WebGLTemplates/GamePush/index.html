@@ -34,7 +34,11 @@
     });
 
     window.unityInstance = null;
-    window.onGPError = () => _gpAwaiter.done();
+    window.onGPError = async () => {
+      _gpAwaiter.done();
+      await _unityAwaiter.ready;
+      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKError');
+    }
 
     window.onGPInit = async (gp) => {
       if (showPreloaderAd == "True" || showPreloaderAd == "1") {
@@ -46,6 +50,8 @@
 
       console.info("GamePush initialization in index.html deprecated!!!")
       await _unityAwaiter.ready;
+      await _gpAwaiter.done;
+      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKReady');
 
       if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
         setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));

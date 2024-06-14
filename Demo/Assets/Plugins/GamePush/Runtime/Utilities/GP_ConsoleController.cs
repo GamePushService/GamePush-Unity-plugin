@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GP_Utilities.Console
+namespace GamePush.ConsoleController
 {
     public class GP_ConsoleController : MonoBehaviour
     {

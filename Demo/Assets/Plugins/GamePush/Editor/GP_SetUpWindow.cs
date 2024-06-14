@@ -226,7 +226,7 @@ namespace GamePushEditor
 
         private static void SaveConfig()
         {
-            Console.Log("Saving data");
+            //Console.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");

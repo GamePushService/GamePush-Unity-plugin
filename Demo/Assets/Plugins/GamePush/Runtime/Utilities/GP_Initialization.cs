@@ -1,14 +1,14 @@
 using UnityEngine;
 using GamePush;
-using GP_Utilities.Console;
+using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
 
-namespace GP_Utilities.Initialization
+namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.0";
+        static string VERSION = "v1.4.1";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
@@ -56,7 +56,7 @@ namespace GP_Utilities.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
 
-            Debug.Log($"GamePush plugin ready ({VERSION})");
+            Console.Log($"plugin {VERSION} initialize");
         }
 
         private static void SetUpInitAwaiter()
