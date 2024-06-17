@@ -8,7 +8,7 @@ namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.1";
+        static string VERSION = "v1.4.2";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()

@@ -340,7 +340,8 @@ class GamePushUnityInner {
         this.gp.variables.on('error:fetchPlatformVariables', (error) => {this.trigger('CallOnFetchPlatformVariablesError', error);});
     }
 
-    trigger(eventName, value) {
+    async trigger(eventName, value) {
+        await _waitFor((w) => "_malloc" in w);
         SendMessage('GamePushSDK', eventName, this.toUnity(value));
     }
 
