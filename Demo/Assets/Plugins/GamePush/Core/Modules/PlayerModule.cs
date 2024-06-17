@@ -254,25 +254,12 @@ namespace GamePush.Core
 
         #region SecretCode
 
-        private string SECRETCODE_SAVE_KEY = SAVE_MODIFICATOR + SECRETCODE_STATE_KEY;
+        private static string SECRETCODE_SAVE_KEY = SAVE_MODIFICATOR + SECRETCODE_STATE_KEY;
 
-        public string GetPlayerLocalDataCode() => _secretCode;
+        public static string GetPlayerSavedDataCode() => DataHolder.GetSavedSecretCode();
 
-        public string GetPlayerSavedDataCode()
-        {
-            if (PlayerPrefs.HasKey(SECRETCODE_SAVE_KEY))
-            {
-                return PlayerPrefs.GetString(SECRETCODE_SAVE_KEY);
-            }
+        public void SetPlayerDataCode(string code) => DataHolder.SetSecretCode(code);
 
-            return "";
-        }
-
-        public void SetPlayerDataCode(string code)
-        {
-            PlayerPrefs.SetString(SECRETCODE_SAVE_KEY, code);
-            _secretCode = code;
-        }
         #endregion
 
         #region DataFields
@@ -378,7 +365,8 @@ namespace GamePush.Core
         {
             playerState[ID_STATE_KEY] = 0;
             playerState[SECRETCODE_STATE_KEY] = "";
-            _secretCode = "";
+
+            DataHolder.ResetSecretCode();
 
             Reset();
         }
@@ -657,7 +645,10 @@ namespace GamePush.Core
 
         public void Login()
         {
-            OnLoginError?.Invoke();
+            if (_token != null)
+                OnLoginError?.Invoke();
+            else
+                OnLoginComplete?.Invoke();
 
             //OnLoginComplete?.Invoke();
         }

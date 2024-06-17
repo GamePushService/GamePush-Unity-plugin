@@ -256,9 +256,9 @@ namespace Examples.Player
              
                 foreach (PlayerFieldVariant variant in field.variants)
                 {
-                    ConsoleUI.Instance.Log($"variant");
-                    ConsoleUI.Instance.Log($"name: {variant.name}");
-                    ConsoleUI.Instance.Log($"value: {variant.value}");
+                    ConsoleUI.Instance.Log($" variant:");
+                    ConsoleUI.Instance.Log($"  name: {variant.name}");
+                    ConsoleUI.Instance.Log($"  value: {variant.value}");
                 }
                
             }
