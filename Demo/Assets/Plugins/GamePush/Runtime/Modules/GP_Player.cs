@@ -31,8 +31,12 @@ namespace GamePush
 
             CoreSDK.player.OnSyncComplete += SyncComplete;
             CoreSDK.player.OnSyncError += SyncError;
+
             CoreSDK.player.OnLoadComplete += LoadComplete;
             CoreSDK.player.OnLoadError += LoadError;
+
+            CoreSDK.player.OnLoginComplete += LoginComplete;
+            CoreSDK.player.OnLoginError += LoginError;
         }
 
         private void OnDisable()
@@ -41,17 +45,24 @@ namespace GamePush
 
             CoreSDK.player.OnSyncComplete -= SyncComplete;
             CoreSDK.player.OnSyncError -= SyncError;
+
             CoreSDK.player.OnLoadComplete -= LoadComplete;
             CoreSDK.player.OnLoadError -= LoadError;
+
+            CoreSDK.player.OnLoginComplete -= LoginComplete;
+            CoreSDK.player.OnLoginError -= LoginError;
         }
 
         private void PlayerChange() => OnPlayerChange?.Invoke();
 
         private void SyncComplete() => OnSyncComplete?.Invoke();
         private void SyncError() => OnSyncError?.Invoke();
+
         private void LoadComplete() => OnLoadComplete?.Invoke();
         private void LoadError() => OnLoadError?.Invoke();
-       
+
+        private void LoginComplete() => OnLoginComplete?.Invoke();
+        private void LoginError() => OnLoginError?.Invoke();
 
         [DllImport("__Internal")]
         private static extern int GP_Player_GetID();

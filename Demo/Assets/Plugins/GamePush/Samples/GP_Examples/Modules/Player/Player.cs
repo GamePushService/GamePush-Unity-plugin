@@ -216,7 +216,7 @@ namespace Examples.Player
         }
         public void Login()
         {
-            ConsoleUI.Instance.Log($"\nLogin");
+            ConsoleUI.Instance.Log($"\nTry to login");
             GP_Player.Login();
         }
 
