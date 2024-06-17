@@ -215,7 +215,7 @@ namespace GamePushEditor
 
         private static async void SaveConfig()
         {
-            GP_Logger.Log("Saving data");
+            //GP_Logger.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
@@ -230,7 +230,8 @@ namespace GamePushEditor
             SaveProjectDataToScript();
 
             GP_Logger.Log("Data saved");
-            await CoreSDK.FetchCoreConfig();
+            await CoreSDK.FetchEditorConfig();
+            GP_Logger.Log("Config fetched");
         }
 
         private static bool ValidateToken(string input)

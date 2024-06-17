@@ -56,6 +56,12 @@ namespace GamePush
             projectToken = token;
         }
 
+        public static async Task FetchEditorConfig()
+        {
+            AllConfigData data = await DataFetcher.GetConfig();
+            configData = data;
+        }
+
         public static async Task FetchCoreConfig()
         {
             AllConfigData data = await DataFetcher.GetConfig();
