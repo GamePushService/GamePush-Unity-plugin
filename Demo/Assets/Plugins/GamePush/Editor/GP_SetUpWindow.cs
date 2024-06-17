@@ -224,7 +224,7 @@ namespace GamePushEditor
         }
         #endregion
 
-        private static void SaveConfig()
+        private static async void SaveConfig()
         {
             GP_Logger.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
@@ -241,7 +241,7 @@ namespace GamePushEditor
             SaveProjectDataToScript();
 
             GP_Logger.Log("Data saved");
-            CoreSDK.FetchConfig();
+            await CoreSDK.FetchCoreConfig();
         }
 
         private static bool ValidateToken(string input)

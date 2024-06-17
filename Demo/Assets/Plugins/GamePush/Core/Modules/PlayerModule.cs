@@ -194,6 +194,8 @@ namespace GamePush.Core
 
         private JObject GetPlayerState()
         {
+            UpdatePlayTime();
+
             string json = JsonConvert.SerializeObject(playerState);
             var obj = JsonConvert.DeserializeObject<JObject>(json);
             var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
@@ -397,6 +399,12 @@ namespace GamePush.Core
 
         }
 
+        private void UpdatePlayTime()
+        {
+            playerStats.playtimeToday = GetPlaytimeToday();
+            playerStats.playtimeAll = GetPlaytimeAll();
+        }
+
         #endregion
 
         #region Getters
@@ -489,12 +497,12 @@ namespace GamePush.Core
 
         public int GetPlaytimeToday()
         {
-            return playerStats.playtimeToday + GetTimeSpan();
+            return playerStats.playtimeToday + GetPlayTime();
         }
 
         public int GetPlaytimeAll()
         {
-            return playerStats.playtimeAll + GetTimeSpan();
+            return playerStats.playtimeAll + GetPlayTime();
         }
 
         #endregion
@@ -627,11 +635,13 @@ namespace GamePush.Core
 
         private int GetPlayTime()
         {
+            Debug.Log($"Play Time {_timeSpan}");
             return (int)_playTime;
         }
 
         private int GetTimeSpan()
         {
+            Debug.Log($"Time Span {_timeSpan}");
             return (int)_timeSpan;
         }
 
@@ -639,6 +649,8 @@ namespace GamePush.Core
         {
             _startSessionTime = DateTime.Parse(sessionStart);
             _timeSpan = 0;
+
+            Debug.Log($"Session Time {_startSessionTime}");
         }
 
         #endregion

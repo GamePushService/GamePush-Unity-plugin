@@ -19,6 +19,14 @@ namespace Examples.Player
         [SerializeField] private TMP_InputField _value;
         [SerializeField] private TMP_InputField _key;
         [SerializeField] private Toggle _flag;
+        
+        [Space(15)]
+        [SerializeField] private Button _getIDButton;
+        [SerializeField] private Button _getScoreButton;
+        [SerializeField] private Button _getNameButton;
+        [SerializeField] private Button _getAvatarButton;
+        [SerializeField] private Button _isLoggedButton;
+        [SerializeField] private Button _hasCredsButton;
 
         [Space(15)]
         [SerializeField] private Button _getIntButton;
@@ -45,6 +53,17 @@ namespace Examples.Player
             GP_Player.OnConnect += OnConnect;
             GP_Player.OnLoadComplete += OnLoad;
             GP_Player.OnSyncComplete += OnSync;
+            GP_Player.OnLoginComplete += OnLoginComplete;
+            GP_Player.OnLoginError += OnLoginError;
+
+            GP_Player.OnPlayerChange += OnPlayerChange;
+
+            _getIDButton.onClick.AddListener(GetID);
+            _getScoreButton.onClick.AddListener(GetScore);
+            _getNameButton.onClick.AddListener(GetScore);
+            _getAvatarButton.onClick.AddListener(GetAvatarURL);
+            _isLoggedButton.onClick.AddListener(IsLoggedIn);
+            _hasCredsButton.onClick.AddListener(HasCreds);
 
             _getIntButton.onClick.AddListener(GetInt);
             _getFloatButton.onClick.AddListener(GetFloat);
@@ -72,6 +91,17 @@ namespace Examples.Player
             GP_Player.OnConnect -= OnConnect;
             GP_Player.OnLoadComplete -= OnLoad;
             GP_Player.OnSyncComplete -= OnSync;
+            GP_Player.OnLoginComplete -= OnLoginComplete;
+            GP_Player.OnLoginError -= OnLoginError;
+
+            GP_Player.OnPlayerChange -= OnPlayerChange;
+
+            _getIDButton.onClick.RemoveListener(GetID);
+            _getScoreButton.onClick.RemoveListener(GetScore);
+            _getNameButton.onClick.RemoveListener(GetScore);
+            _getAvatarButton.onClick.RemoveListener(GetAvatarURL);
+            _isLoggedButton.onClick.RemoveListener(IsLoggedIn);
+            _hasCredsButton.onClick.RemoveListener(HasCreds);
 
             _getIntButton.onClick.RemoveListener(GetInt);
             _getFloatButton.onClick.RemoveListener(GetFloat);
@@ -116,6 +146,13 @@ namespace Examples.Player
 
 
         #region Button Methods
+
+        public void GetID() => ConsoleUI.Instance.Log($"\nID: {GP_Player.GetID()}");
+        public void GetScore() => ConsoleUI.Instance.Log($"\nScore: {GP_Player.GetScore()}");
+        public void GetName() => ConsoleUI.Instance.Log($"\nName: {GP_Player.GetName()}");
+        public void GetAvatarURL() => ConsoleUI.Instance.Log($"\nAvatar URL: {GP_Player.GetAvatarUrl()}");
+        public void IsLoggedIn() => ConsoleUI.Instance.Log($"\nIs logged in: {GP_Player.IsLoggedIn()}");
+        public void HasCreds() => ConsoleUI.Instance.Log($"\nHas any credentials: {GP_Player.HasAnyCredentials()}");
 
         public void GetInt()
         {
@@ -213,23 +250,29 @@ namespace Examples.Player
                 ConsoleUI.Instance.Log($"\nField key: {field.key}");
                 ConsoleUI.Instance.Log($"Field name: {field.name}");
                 ConsoleUI.Instance.Log($"Field type: {field.type}");
+                ConsoleUI.Instance.Log($"Field important: {field.important}");
+
                 ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
+             
+                foreach (PlayerFieldVariant variant in field.variants)
+                {
+                    ConsoleUI.Instance.Log($"variant");
+                    ConsoleUI.Instance.Log($"name: {variant.name}");
+                    ConsoleUI.Instance.Log($"value: {variant.value}");
+                }
+               
             }
         }
 
-        private void OnConnect()
-        {
-            ConsoleUI.Instance.Log("Connect");
-        }
+        private void OnConnect() => ConsoleUI.Instance.Log("Player Connect");
 
-        private void OnLoad()
-        {
-            ConsoleUI.Instance.Log("Player Load");
-        }
+        private void OnLoad() => ConsoleUI.Instance.Log("Player Load");
 
-        private void OnSync()
-        {
-            ConsoleUI.Instance.Log("Sync Complete");
-        }
+        private void OnLoginComplete() => ConsoleUI.Instance.Log("Login Complete");
+        private void OnLoginError() => ConsoleUI.Instance.Log("Login Error");
+
+        private void OnSync() => ConsoleUI.Instance.Log("Sync Complete");
+
+        private void OnPlayerChange() => ConsoleUI.Instance.Log("Player Change");
     }
 }

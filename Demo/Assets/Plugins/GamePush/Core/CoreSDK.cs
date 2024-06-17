@@ -56,7 +56,7 @@ namespace GamePush
             projectToken = token;
         }
 
-        public static async void FetchConfig()
+        public static async Task FetchCoreConfig()
         {
             AllConfigData data = await DataFetcher.GetConfig();
             SetConfig(data);
@@ -64,12 +64,7 @@ namespace GamePush
 
         public static async Task InitFetch()
         {
-            if(configData.config == null)
-            {
-                AllConfigData data = await DataFetcher.GetConfig();
-                SetConfig(data);
-            }
-            
+            await FetchCoreConfig();
 
             await player.FetchPlayerConfig();
         }
