@@ -37,6 +37,7 @@ namespace Examples.Player
         [SerializeField] private Button _setButton;
         [SerializeField] private Button _addButton;
         [SerializeField] private Button _hasButton;
+        [SerializeField] private Button _toggleButton;
 
         [SerializeField] private Button _syncButton;
         [SerializeField] private Button _resetButton;
@@ -73,6 +74,7 @@ namespace Examples.Player
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
             _hasButton.onClick.AddListener(Has);
+            _toggleButton.onClick.AddListener(Toggle);
 
             _syncButton.onClick.AddListener(Sync);
             _loginButton.onClick.AddListener(Login);
@@ -111,6 +113,7 @@ namespace Examples.Player
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
             _hasButton.onClick.RemoveListener(Has);
+            _toggleButton.onClick.RemoveListener(Toggle);
 
             _syncButton.onClick.RemoveListener(Sync);
             _loginButton.onClick.RemoveListener(Login);
@@ -196,6 +199,12 @@ namespace Examples.Player
         {
             bool has = GP_Player.Has(_key.text);
             ConsoleUI.Instance.Log($"\nHas {_key.text}: {has}");
+        }
+
+        public void Toggle()
+        {
+            GP_Player.Toggle(_key.text);
+            ConsoleUI.Instance.Log($"\nToggle {_key.text}: {GP_Player.GetBool(_key.text)}");
         }
 
         public void Sync()
