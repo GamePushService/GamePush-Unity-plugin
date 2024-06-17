@@ -95,7 +95,6 @@ namespace GamePush.Core
             else
             {
                 await Load();
-
             }
         }
 

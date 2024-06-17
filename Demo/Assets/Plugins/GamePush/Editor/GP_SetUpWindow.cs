@@ -202,17 +202,6 @@ namespace GamePushEditor
                 SaveConfig();
         }
 
-        //private void OnSettingsGUI()
-        //{
-        //    GUILayout.Space(10);
-        //    GUILayout.Label("Settings", _titleStyle);
-        //    GUILayout.Space(10);
-
-        //    _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
-        //    GUILayout.Space(5);
-        //    _gameReadyDelay = EditorGUILayout.IntField("Game Ready Delay", _gameReadyDelay);
-        //}
-
         private static void DrawSeparator()
         {
             GUILayout.Space(10);

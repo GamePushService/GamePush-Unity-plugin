@@ -65,7 +65,6 @@ namespace GamePush
         public static async Task InitFetch()
         {
             await FetchCoreConfig();
-
             await player.FetchPlayerConfig();
         }
 

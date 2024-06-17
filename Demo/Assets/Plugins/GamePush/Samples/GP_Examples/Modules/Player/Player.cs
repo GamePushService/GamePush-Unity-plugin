@@ -61,7 +61,7 @@ namespace Examples.Player
 
             _getIDButton.onClick.AddListener(GetID);
             _getScoreButton.onClick.AddListener(GetScore);
-            _getNameButton.onClick.AddListener(GetScore);
+            _getNameButton.onClick.AddListener(GetName);
             _getAvatarButton.onClick.AddListener(GetAvatarURL);
             _isLoggedButton.onClick.AddListener(IsLoggedIn);
             _hasCredsButton.onClick.AddListener(HasCreds);
@@ -86,8 +86,6 @@ namespace Examples.Player
             _fetchButton.onClick.AddListener(FetchFields);
         }
 
-
-
         private void OnDisable()
         {
             GP_Player.OnConnect -= OnConnect;
@@ -100,7 +98,7 @@ namespace Examples.Player
 
             _getIDButton.onClick.RemoveListener(GetID);
             _getScoreButton.onClick.RemoveListener(GetScore);
-            _getNameButton.onClick.RemoveListener(GetScore);
+            _getNameButton.onClick.RemoveListener(GetName);
             _getAvatarButton.onClick.RemoveListener(GetAvatarURL);
             _isLoggedButton.onClick.RemoveListener(IsLoggedIn);
             _hasCredsButton.onClick.RemoveListener(HasCreds);

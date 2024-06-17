@@ -33,7 +33,7 @@ namespace GamePush.Services
         {
             //print(Time.time);
             yield return new WaitForSecondsRealtime(5);
-            print($"Ping {Time.realtimeSinceStartup}");
+            print($"Ping");
             CoreSDK.player.Ping();
 
             StartCoroutine(Ping());
