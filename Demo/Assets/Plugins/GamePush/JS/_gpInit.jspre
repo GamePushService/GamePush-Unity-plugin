@@ -4,10 +4,34 @@ function _GP(){
     return GamePush || window.GamePush;
 }
 
+function _waitFor(check, timeout) {
+    return new Promise((resolve, reject) => {
+      let intervalId = 0
+  
+      function checkReady() {
+        if (check(window)) {
+          clearInterval(intervalId)
+          resolve()
+        }
+      }
+  
+      if (check(window)) {
+        resolve()
+        return
+      }
+  
+      intervalId = setInterval(checkReady, 100)
+      if (timeout) {
+        setTimeout(reject, timeout)
+      }
+    })
+  }
+
 setTimeout(() => {
     if ('GamePushUnity' in window) return;
 
-    window.onGPError = () => {
+    window.onGPError = async () => {
+        await _waitFor((w) => "_malloc" in w);
         SendMessage('GamePushSDK', 'CallOnSDKError');
     };
 
@@ -17,7 +41,8 @@ setTimeout(() => {
         }
 
         GamePush = new GamePushUnityInner(gp);
-        gp.player.ready.finally(() => {
+        gp.player.ready.finally( async () => {
+            await _waitFor((w) => "_malloc" in w);
             SendMessage('GamePushSDK', 'CallOnSDKReady');
         });
 
