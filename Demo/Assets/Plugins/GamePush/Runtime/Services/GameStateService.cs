@@ -10,6 +10,7 @@ namespace GamePush.Services
     {
         private bool isFocus;
         public event Action<bool> OnFocusChange;
+        private float counterWaitTime = 1f;
 
         private void Start()
         {
@@ -25,23 +26,23 @@ namespace GamePush.Services
         private void Update()
         {
             CheckGameFocus();
-            if (Input.GetKeyDown(KeyCode.P)) CoreSDK.player.Ping();
-                //Debug.Log();
+            if (Input.GetKeyDown(KeyCode.P)) print("Handle P");//CoreSDK.player.Ping();
+                                                                //Debug.Log();
         }
 
         IEnumerator Ping()
         {
-            yield return new WaitForSecondsRealtime(5);
+            yield return new WaitForSecondsRealtime(10);
             CoreSDK.player.Ping();
 
+            //Debug.Log(CoreSDK.player.GetPlaytimeToday());
             StartCoroutine(Ping());
         }
 
         IEnumerator PlayTimeCounter()
         {
-            yield return new WaitForSecondsRealtime(1);
-            CoreSDK.player.AddPlayTime(1);
-            CoreSDK.AddServerTime(1);
+            yield return new WaitForSecondsRealtime(counterWaitTime);
+            CoreSDK.AddPlayTime(counterWaitTime);
 
             StartCoroutine(PlayTimeCounter());
         }

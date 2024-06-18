@@ -13,7 +13,7 @@ namespace GamePushEditor
     {
         private const string SITE_URL = "https://gamepush.com";
 
-        private const string VERSION = "2.0.1";
+        private const string VERSION = "1.4.2";
 
         private static bool _isDataFetch;
 

@@ -16,7 +16,6 @@ namespace GamePush.Initialization
         {
             //PlayerPrefs.DeleteAll();
             GP_Logger.Log("Init plugin...");
-            CoreSDK.Initialize();
 
             GameObject SDK = new GameObject();
 
@@ -26,6 +25,8 @@ namespace GamePush.Initialization
 
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
+
+            CoreSDK.Initialize();
 
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();

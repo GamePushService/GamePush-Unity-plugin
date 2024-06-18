@@ -21,8 +21,13 @@ namespace GamePush
 
         private static DateTime serverTime;
 
-        public static void AddServerTime(float time) => serverTime.AddSeconds(time);
-        public static string GetServerTime() => configData.serverTime;
+        public static DateTime GetServerTime() => serverTime;
+
+        public static void AddPlayTime(float time)
+        {
+            serverTime.AddSeconds(time);
+            player.AddPlayTime(time);
+        }
 
         public static async void Initialize()
         {
@@ -78,7 +83,8 @@ namespace GamePush
         {
             configData = allData;
 
-            serverTime = DateTime.Parse(configData.serverTime);
+            DateTime.TryParse(configData.serverTime, out serverTime);
+
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
         }

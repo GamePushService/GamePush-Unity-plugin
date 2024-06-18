@@ -61,16 +61,14 @@ namespace GamePush.Core
             //    Debug.Log($"{key} , {playerState[key]}");
             //}
 
-            if (playerData["sessionStart"].ToString() != "")
-                SetStartTime(playerData["sessionStart"].ToString());
-            else
-                SetStartTime(CoreSDK.GetServerTime());
+
+            SetStartTime(playerData["sessionStart"].ToString());
 
             if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
             {
                 _token = token.ToString();
             }
-                
+
 
             //Debug.Log($"TOKEN {_token}");
 
@@ -194,11 +192,10 @@ namespace GamePush.Core
 
         private JObject GetPlayerState()
         {
-            UpdatePlayTime();
-
             string json = JsonConvert.SerializeObject(playerState);
             var obj = JsonConvert.DeserializeObject<JObject>(json);
             var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
+
             return sortedObj;
         }
 
@@ -215,7 +212,8 @@ namespace GamePush.Core
             if (PlayerPrefs.HasKey(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY))
             {
                 //Debug.Log("Secret code from prefs: " + PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY));
-                playerState.Add(SECRETCODE_STATE_KEY, "");
+
+                playerState.TryAdd(SECRETCODE_STATE_KEY, "");
                 playerState[SECRETCODE_STATE_KEY] = PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY);
             }
 
@@ -341,7 +339,7 @@ namespace GamePush.Core
                     where variant.value == value.ToString()
                     select variant;
 
-                if(variantQuery.Count() == 0) return;
+                if (variantQuery.Count() == 0) return;
             }
 
             playerState[key] = value;
@@ -384,13 +382,6 @@ namespace GamePush.Core
 
                     return Helpers.ConvertValue<T>(value);
             }
-
-        }
-
-        private void UpdatePlayTime()
-        {
-            playerStats.playtimeToday = GetPlaytimeToday();
-            playerStats.playtimeAll = GetPlaytimeAll();
         }
 
         #endregion
@@ -485,12 +476,12 @@ namespace GamePush.Core
 
         public int GetPlaytimeToday()
         {
-            return playerStats.playtimeToday + GetPlayTime();
+            return (int)_playTimeToday;
         }
 
         public int GetPlaytimeAll()
         {
-            return playerStats.playtimeAll + GetPlayTime();
+            return (int)_playTimeAll;
         }
 
         #endregion
@@ -563,7 +554,7 @@ namespace GamePush.Core
 
         public bool Has(string key)
         {
-            if(typeState.TryGetValue(key, out string type))
+            if (typeState.TryGetValue(key, out string type))
             {
                 switch (type)
                 {
@@ -611,34 +602,27 @@ namespace GamePush.Core
 
         #region TimeSpan
 
-        private DateTime _startSessionTime;
-        private float _playTime;
-        private float _timeSpan;
+        private double _playTimeAll;
+        private double _playTimeToday;
 
         public void AddPlayTime(float time)
         {
-            _playTime += time;
-            _timeSpan += time;
-        }
-
-        private int GetPlayTime()
-        {
-            Debug.Log($"Play Time {_timeSpan}");
-            return (int)_playTime;
-        }
-
-        private int GetTimeSpan()
-        {
-            Debug.Log($"Time Span {_timeSpan}");
-            return (int)_timeSpan;
+            _playTimeAll += time;
+            _playTimeToday += time;
         }
 
         private void SetStartTime(string sessionStart)
         {
-            _startSessionTime = DateTime.Parse(sessionStart);
-            _timeSpan = 0;
+            Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
+            Debug.Log($"sessionStart {sessionStart}");
+            TimeSpan timeFromStart =
+                sessionStart != "" ?
+                (CoreSDK.GetServerTime() - DateTime.Parse(sessionStart)) :
+                TimeSpan.Zero;
 
-            Debug.Log($"Session Time {_startSessionTime}");
+            Debug.Log($"timeFromStart {timeFromStart.TotalSeconds}");
+            _playTimeAll = playerStats.playtimeAll + timeFromStart.TotalSeconds;
+            _playTimeToday = playerStats.playtimeToday + timeFromStart.TotalSeconds;
         }
 
         #endregion

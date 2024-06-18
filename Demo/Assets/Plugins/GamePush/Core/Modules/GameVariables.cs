@@ -9,7 +9,7 @@ namespace GamePush.Core
     [System.Serializable]
     public class GameVariables
     {
-        protected List<GameVariable> data;
+        protected List<GameVariable> variablesData;
         protected Dictionary<string, string> keyTypeData;
         protected Dictionary<string, object> keyValueData;
 
@@ -43,27 +43,27 @@ namespace GamePush.Core
 
         public void SetVariablesData(List<GameVariable> gameVariables)
         {
-            data = gameVariables;
+            variablesData = gameVariables;
 
-            foreach (GameVariable variable in data)
+            foreach (GameVariable variable in variablesData)
             {
-                keyTypeData.Add(variable.key, variable.type);
+                keyTypeData.TryAdd(variable.key, variable.type);
                 switch (variable.type)
                 {
                     case "flag":
                         bool value = variable.value == "true";
-                        keyValueData.Add(variable.key, value);
+                        keyValueData.TryAdd(variable.key, value);
                         break;
                     case "stats":
                         if(int.TryParse(variable.value, out int intValue))
-                            keyValueData.Add(variable.key, intValue);
+                            keyValueData.TryAdd(variable.key, intValue);
                         else if (float.TryParse(variable.value, out float floatValue))
-                            keyValueData.Add(variable.key, floatValue);
+                            keyValueData.TryAdd(variable.key, floatValue);
                         else
-                            keyValueData.Add(variable.key, variable.value);
+                            keyValueData.TryAdd(variable.key, variable.value);
                         break;
                     default:
-                        keyValueData.Add(variable.key, variable.value);
+                        keyValueData.TryAdd(variable.key, variable.value);
                         break;
                 }
                
@@ -90,7 +90,7 @@ namespace GamePush.Core
 
         public void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
-            if (data != null)
+            if (variablesData != null)
                 onFetchSuccess(FetchData());
             else
                 onFetchError();

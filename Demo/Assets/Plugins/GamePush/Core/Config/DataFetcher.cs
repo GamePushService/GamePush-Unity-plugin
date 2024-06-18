@@ -37,7 +37,8 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-            //Debug.Log(resultObject.ToString());
+
+            Debug.Log(resultObject["serverTime"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -70,6 +71,7 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
+
             Debug.Log(resultObject.ToString());
 
             return resultObject;
@@ -101,6 +103,7 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
+
             Debug.Log(resultObject.ToString());
 
             return resultObject;
@@ -129,7 +132,7 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            Debug.Log(results);
+            //Debug.Log(results);
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
@@ -141,6 +144,7 @@ namespace GamePush.Core
 
         public static async void Ping(string token)
         {
+            //Debug.Log($"Try Ping: {_apiURL}/ping?t={token}");
             UnityWebRequest pingRequest = await GetRequest($"{_apiURL}/ping?t={token}");
             Debug.Log($"Ping: {pingRequest.result}");
         }

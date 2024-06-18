@@ -134,7 +134,6 @@ namespace Examples.Player
             Get_Player_Data();
         }
 
-
         private void Get_Player_Data()
         {
             _id.text = "ID: " + GP_Player.GetID();
@@ -143,10 +142,6 @@ namespace Examples.Player
         #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player.GetAvatar(_playerAvatar);
         #endif
-
-            //_gold.text = "SCORE: " + GP_Player.GetScore();
-            //_level.text = "LEVEL: " + GP_Player.GetInt("level");
-            //_vip.isOn = GP_Player.GetBool("vip");
         }
 
 
