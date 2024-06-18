@@ -615,6 +615,11 @@ namespace GamePush.Core
         {
             Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
             Debug.Log($"sessionStart {sessionStart}");
+
+
+            if (CoreSDK.GetServerTime() < DateTime.Parse(sessionStart))
+                CoreSDK.SetServerTime(sessionStart);
+
             TimeSpan timeFromStart =
                 sessionStart != "" ?
                 (CoreSDK.GetServerTime() - DateTime.Parse(sessionStart)) :
