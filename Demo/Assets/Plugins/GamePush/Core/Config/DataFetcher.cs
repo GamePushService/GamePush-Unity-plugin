@@ -139,7 +139,11 @@ namespace GamePush.Core
             return playerFields;
         }
 
-        public static async void Ping(string token) => await GetRequest($"{_apiURL}/ping?t={token}");
+        public static async void Ping(string token)
+        {
+            UnityWebRequest pingRequest = await GetRequest($"{_apiURL}/ping?t={token}");
+            Debug.Log($"Ping: {pingRequest.result}");
+        }
 
         private static async Task<UnityWebRequest> GetRequest(string url)
         {

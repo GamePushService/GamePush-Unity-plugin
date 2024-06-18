@@ -31,9 +31,7 @@ namespace GamePush.Services
 
         IEnumerator Ping()
         {
-            //print(Time.time);
             yield return new WaitForSecondsRealtime(5);
-            print($"Ping");
             CoreSDK.player.Ping();
 
             StartCoroutine(Ping());
