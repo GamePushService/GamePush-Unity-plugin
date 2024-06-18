@@ -32,6 +32,7 @@ namespace GamePush
         public static void SetServerTime(string time)
         {
             DateTime.TryParse(time, out serverTime);
+            serverTime = serverTime.ToLocalTime();
         }
 
         public static async void Initialize()

@@ -26,7 +26,7 @@ namespace GamePush.Services
         private void Update()
         {
             CheckGameFocus();
-            if (Input.GetKeyDown(KeyCode.P)) print("Handle P");//CoreSDK.player.Ping();
+            if (Input.GetKeyDown(KeyCode.P)) CoreSDK.player.Ping();
                                                                 //Debug.Log();
         }
 

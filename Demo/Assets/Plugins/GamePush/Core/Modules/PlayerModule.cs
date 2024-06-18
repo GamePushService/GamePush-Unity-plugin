@@ -616,14 +616,17 @@ namespace GamePush.Core
             Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
             Debug.Log($"sessionStart {sessionStart}");
 
+            DateTime session;
+            TimeSpan timeFromStart = TimeSpan.Zero;
 
-            if (CoreSDK.GetServerTime() < DateTime.Parse(sessionStart))
-                CoreSDK.SetServerTime(sessionStart);
+            if (DateTime.TryParse(sessionStart, out session))
+            {
+                session = session.ToLocalTime();
+                if (CoreSDK.GetServerTime() < session)
+                    CoreSDK.SetServerTime(sessionStart);
 
-            TimeSpan timeFromStart =
-                sessionStart != "" ?
-                (CoreSDK.GetServerTime() - DateTime.Parse(sessionStart)) :
-                TimeSpan.Zero;
+                timeFromStart = CoreSDK.GetServerTime() - session;
+            }
 
             Debug.Log($"timeFromStart {timeFromStart.TotalSeconds}");
             _playTimeAll = playerStats.playtimeAll + timeFromStart.TotalSeconds;
