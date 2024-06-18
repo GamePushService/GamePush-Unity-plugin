@@ -39,7 +39,9 @@ namespace Examples.Player
         [SerializeField] private Button _hasButton;
         [SerializeField] private Button _toggleButton;
 
+        [Space(15)]
         [SerializeField] private Button _syncButton;
+        [SerializeField] private Button _loadButton;
         [SerializeField] private Button _resetButton;
         [SerializeField] private Button _removeButton;
         [SerializeField] private Button _loginButton;
@@ -77,6 +79,7 @@ namespace Examples.Player
             _toggleButton.onClick.AddListener(Toggle);
 
             _syncButton.onClick.AddListener(Sync);
+            _loadButton.onClick.AddListener(Load);
             _loginButton.onClick.AddListener(Login);
             _resetButton.onClick.AddListener(ResetPlayer);
             _removeButton.onClick.AddListener(Remove);
@@ -114,6 +117,7 @@ namespace Examples.Player
             _toggleButton.onClick.RemoveListener(Toggle);
 
             _syncButton.onClick.RemoveListener(Sync);
+            _loadButton.onClick.RemoveListener(Load);
             _loginButton.onClick.RemoveListener(Login);
             _resetButton.onClick.RemoveListener(ResetPlayer);
             _removeButton.onClick.RemoveListener(Remove);
@@ -211,6 +215,12 @@ namespace Examples.Player
             GP_Player.Sync();
         }
 
+        public void Load()
+        {
+            ConsoleUI.Instance.Log($"\nLoad player");
+            GP_Player.Load();
+        }
+
         public void ResetPlayer()
         {
             ConsoleUI.Instance.Log($"\nReset player");
@@ -258,7 +268,7 @@ namespace Examples.Player
                 ConsoleUI.Instance.Log($"Field name: {field.name}");
                 ConsoleUI.Instance.Log($"Field type: {field.type}");
                 ConsoleUI.Instance.Log($"Field important: {field.important}");
-
+                ConsoleUI.Instance.Log($"Field public: {field.isPublic}");
                 ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
              
                 foreach (PlayerFieldVariant variant in field.variants)

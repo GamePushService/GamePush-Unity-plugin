@@ -152,6 +152,7 @@ namespace GamePush.Core
             fetchField.type = playerField.type;
             fetchField.defaultValue = playerField.@default;
             fetchField.important = playerField.important;
+            fetchField.isPublic = playerField.@public;
             fetchField.variants = playerField.variants.ToArray();
 
             return fetchField;

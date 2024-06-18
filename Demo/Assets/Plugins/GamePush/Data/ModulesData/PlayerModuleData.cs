@@ -67,6 +67,7 @@ namespace GamePush.Data
         public string type;
         public string defaultValue; // string | bool | number
         public bool important;
+        public bool isPublic;
         public PlayerFieldVariant[] variants;
     }
 
@@ -79,6 +80,7 @@ namespace GamePush.Data
         public string type;
         public string @default;
         public bool important;
+        public bool @public;
         public List<PlayerFieldVariant> variants;
     }
 
