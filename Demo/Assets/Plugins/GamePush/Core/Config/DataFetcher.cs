@@ -30,6 +30,9 @@ namespace GamePush.Core
 
             Tuple<string, object> queryTuple = Hash.SingQuery(null);
 
+            Debug.Log(queryTuple.Item1);
+            Debug.Log(queryTuple.Item2);
+
             string results = await graphQL.Send(
                 query.ToRequest(new Dictionary<string, object>()),
                 null, Headers.GetHeaders(queryTuple.Item1)

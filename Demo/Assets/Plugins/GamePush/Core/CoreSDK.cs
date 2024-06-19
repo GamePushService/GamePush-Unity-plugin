@@ -21,11 +21,14 @@ namespace GamePush
 
         private static DateTime serverTime;
 
-        public static DateTime GetServerTime() => serverTime;
+        public static DateTime GetServerTime()
+        {
+            return serverTime.ToUniversalTime();
+        }
 
         public static void AddPlayTime(float time)
         {
-            serverTime.AddSeconds(time);
+            serverTime = serverTime.AddSeconds(time);
             player.AddPlayTime(time);
         }
 

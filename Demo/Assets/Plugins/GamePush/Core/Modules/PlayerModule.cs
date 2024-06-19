@@ -621,11 +621,10 @@ namespace GamePush.Core
 
             if (DateTime.TryParse(sessionStart, out session))
             {
-                session = session.ToLocalTime();
-                if (CoreSDK.GetServerTime() < session)
-                    CoreSDK.SetServerTime(sessionStart);
+                DateTime tempSession = session.ToUniversalTime();
+                DateTime tempServer = CoreSDK.GetServerTime().ToUniversalTime();
 
-                timeFromStart = CoreSDK.GetServerTime() - session;
+                timeFromStart = tempServer - tempSession;
             }
 
             Debug.Log($"timeFromStart {timeFromStart.TotalSeconds}");
