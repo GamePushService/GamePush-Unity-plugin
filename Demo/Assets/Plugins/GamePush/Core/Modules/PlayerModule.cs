@@ -614,15 +614,18 @@ namespace GamePush.Core
         private void SetStartTime(string sessionStart)
         {
             Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
-            Debug.Log($"sessionStart {sessionStart}");
+            Debug.Log($"SessionStart {sessionStart}");
 
             DateTime session;
             TimeSpan timeFromStart = TimeSpan.Zero;
 
             if (DateTime.TryParse(sessionStart, out session))
             {
-                DateTime tempSession = session.ToUniversalTime();
-                DateTime tempServer = CoreSDK.GetServerTime().ToUniversalTime();
+                DateTime tempSession = session.ToUniversalTime().ToLocalTime();
+                DateTime tempServer = CoreSDK.GetServerTime().ToUniversalTime().ToLocalTime();
+
+                Debug.Log($"tempSession {tempSession}");
+                Debug.Log($"tempServer {tempServer}");
 
                 timeFromStart = tempServer - tempSession;
             }
