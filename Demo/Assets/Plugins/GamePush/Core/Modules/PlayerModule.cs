@@ -614,8 +614,8 @@ namespace GamePush.Core
         private void SetStartTime(string sessionStart)
         {
             Debug.Log($"ServerTime string {CoreSDK.GetConfig().serverTime}"); 
-            Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
-            Debug.Log($"SessionStart {sessionStart}");
+            //Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
+            //Debug.Log($"SessionStart {sessionStart}");
 
             DateTime session;
             TimeSpan timeFromStart = TimeSpan.Zero;
@@ -625,8 +625,8 @@ namespace GamePush.Core
                 DateTime tempSession = session.ToUniversalTime();
                 DateTime tempServer = CoreSDK.GetServerTime().ToUniversalTime().ToLocalTime();
 
-                Debug.Log($"tempSession {tempSession}");
-                Debug.Log($"tempServer {tempServer}");
+                //Debug.Log($"tempSession {tempSession}");
+                //Debug.Log($"tempServer {tempServer}");
 
                 timeFromStart = tempServer - tempSession;
             }

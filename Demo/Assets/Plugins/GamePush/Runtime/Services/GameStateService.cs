@@ -26,7 +26,8 @@ namespace GamePush.Services
         private void Update()
         {
             CheckGameFocus();
-            if (Input.GetKeyDown(KeyCode.P)) Debug.Log(CoreSDK.GetServerTime());
+            if (Input.GetKeyDown(KeyCode.P))
+                Debug.Log(CoreSDK.TestConvert());
                                                                 //Debug.Log();
         }
 

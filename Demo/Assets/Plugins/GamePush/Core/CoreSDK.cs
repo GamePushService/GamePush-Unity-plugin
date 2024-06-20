@@ -24,14 +24,30 @@ namespace GamePush
 
         private static DateTime serverTime;
 
+        private static string[] formats =
+        {
+            "MM/dd/yyyy HH:mm:ss",
+            "dd.MM.yyyy HH:mm:ss"
+        };
+
+        public static string TestConvert()
+        {
+            string date = "20.06.2024 09:45:52";
+            DateTime.TryParseExact(date, formats, null, System.Globalization.DateTimeStyles.None, out DateTime dateTime);
+
+            //return dateTime.ToString();
+            return dateTime.ToString();
+        }
+
         public static DateTime ConvertToDateTime(string time)
         {
             DateTime dateTime;
-            if (DateTime.TryParse(time, null, System.Globalization.DateTimeStyles.RoundtripKind, out dateTime)){
+            if (DateTime.TryParse(time, out dateTime))
+            {
                 return dateTime;
             }
             else
-                return DateTime.Now;
+                return DateTime.ParseExact(time, formats, null, System.Globalization.DateTimeStyles.None);
         }
 
 
@@ -84,6 +100,12 @@ namespace GamePush
             projectToken = token;
         }
 
+        public static async Task InitFetch()
+        {
+            await FetchCoreConfig();
+            await player.FetchPlayerConfig();
+        }
+
         public static async Task FetchEditorConfig()
         {
             AllConfigData data = await DataFetcher.GetConfig();
@@ -96,17 +118,11 @@ namespace GamePush
             SetConfig(data);
         }
 
-        public static async Task InitFetch()
-        {
-            await FetchCoreConfig();
-            await player.FetchPlayerConfig();
-        }
-
         public static void SetConfig(AllConfigData allData)
         {
             configData = allData;
 
-            SetServerTime(configData.serverTime);
+            SetServerTime(allData.serverTime);
 
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
