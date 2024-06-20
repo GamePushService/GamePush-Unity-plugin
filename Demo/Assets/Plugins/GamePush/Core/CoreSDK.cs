@@ -27,9 +27,13 @@ namespace GamePush
         public static DateTime ConvertToDateTime(string time)
         {
             DateTime dateTime;
-            dateTime = DateTime.Parse(time, null, System.Globalization.DateTimeStyles.RoundtripKind);
-            return dateTime;
+            if (DateTime.TryParse(time, null, System.Globalization.DateTimeStyles.RoundtripKind, out dateTime)){
+                return dateTime;
+            }
+            else
+                return DateTime.Now;
         }
+
 
         public static DateTime GetServerTime()
         {
