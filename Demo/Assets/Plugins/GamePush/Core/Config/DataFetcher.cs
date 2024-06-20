@@ -38,7 +38,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //Debug.Log(resultObject["serverTime"].ToString());
+            Debug.Log(resultObject["serverTime"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
