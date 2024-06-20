@@ -2,6 +2,7 @@ using GamePush.Data;
 using GamePush.Core;
 using System;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace GamePush
 {
@@ -19,11 +20,20 @@ namespace GamePush
         public static PlayerModule player;
         public static GameVariables variables;
 
+        #region ServerTime
+
         private static DateTime serverTime;
+
+        public static DateTime ConvertToDateTime(string time)
+        {
+            DateTime dateTime;
+            dateTime = DateTime.Parse(time, null, System.Globalization.DateTimeStyles.RoundtripKind);
+            return dateTime;
+        }
 
         public static DateTime GetServerTime()
         {
-            return serverTime.ToUniversalTime();
+            return serverTime;
         }
 
         public static void AddPlayTime(float time)
@@ -34,9 +44,9 @@ namespace GamePush
 
         public static void SetServerTime(string time)
         {
-            DateTime.TryParse(time, out serverTime);
-            serverTime = serverTime.ToLocalTime();
+            serverTime = ConvertToDateTime(time);
         }
+        #endregion
 
         public static async void Initialize()
         {

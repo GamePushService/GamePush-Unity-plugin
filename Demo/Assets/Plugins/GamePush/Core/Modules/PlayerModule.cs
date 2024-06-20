@@ -622,7 +622,7 @@ namespace GamePush.Core
 
             if (DateTime.TryParse(sessionStart, out session))
             {
-                DateTime tempSession = session.ToUniversalTime().ToLocalTime();
+                DateTime tempSession = session.ToUniversalTime();
                 DateTime tempServer = CoreSDK.GetServerTime().ToUniversalTime().ToLocalTime();
 
                 Debug.Log($"tempSession {tempSession}");
