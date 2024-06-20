@@ -613,6 +613,7 @@ namespace GamePush.Core
 
         private void SetStartTime(string sessionStart)
         {
+            Debug.Log($"ServerTime string {CoreSDK.GetConfig().serverTime}"); 
             Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
             Debug.Log($"SessionStart {sessionStart}");
 
