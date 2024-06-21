@@ -48,7 +48,7 @@ namespace GamePush.Core
 
         public void SetPlayerData(JObject playerData)
         {
-            //Debug.Log(playerData.ToString());
+            Debug.Log(playerData.ToString());
 
             JObject statsObject = (JObject)playerData["stats"];
             playerStats = statsObject.ToObject<PlayerStats>();
