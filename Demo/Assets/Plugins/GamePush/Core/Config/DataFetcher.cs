@@ -94,7 +94,7 @@ namespace GamePush.Core
             variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
 
-            //Debug.Log(queryTuple.Item2);
+            Debug.Log(queryTuple.Item2);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -105,7 +105,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            Debug.Log(resultObject.ToString());
+            //Debug.Log(resultObject.ToString());
 
             return resultObject;
         }

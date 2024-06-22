@@ -188,8 +188,15 @@ namespace Examples.Player
         public void Add()
         {
             ConsoleUI.Instance.Log($"\nAdd {_key.text}: {_value.text}");
-            float.TryParse(_value.text, out float value);
-            GP_Player.Add(_key.text, value);
+
+            if(int.TryParse(_value.text, out int value))
+            {
+                GP_Player.Add(_key.text, value);
+            }
+            else if (float.TryParse(_value.text, out float fvalue))
+            {
+                GP_Player.Add(_key.text, fvalue);
+            }
         }
 
         public void Has()

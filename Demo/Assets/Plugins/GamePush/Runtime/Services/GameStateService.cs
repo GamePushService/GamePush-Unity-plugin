@@ -28,7 +28,6 @@ namespace GamePush.Services
             CheckGameFocus();
             if (Input.GetKeyDown(KeyCode.P))
                 Debug.Log(CoreSDK.TestConvert());
-                                                                //Debug.Log();
         }
 
         IEnumerator Ping()

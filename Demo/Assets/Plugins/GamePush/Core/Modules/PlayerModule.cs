@@ -535,13 +535,19 @@ namespace GamePush.Core
         public void Add(string key, int value)
         {
             int oldValue = Get<int>(key);
-            Set(key, oldValue + value);
+            Debug.Log(oldValue);
+            Debug.Log(oldValue + value);
+            int newValue = oldValue + value;
+            SetStateValue(key, newValue);
         }
 
         public void Add(string key, float value)
         {
             float oldValue = Get<float>(key);
-            Set(key, oldValue + value);
+            Debug.Log(oldValue);
+            Debug.Log(oldValue + value);
+            float newValue = oldValue + value;
+            SetStateValue(key, newValue);
         }
         #endregion
 
