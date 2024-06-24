@@ -3,6 +3,7 @@ class GamePushUnityInner {
         this.gp = gp;
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
+        
         this.gp.player.on('sync', (success) => {
             this.trigger(success ? 'CallPlayerSyncComplete' : 'CallPlayerSyncError');
         });
@@ -340,7 +341,8 @@ class GamePushUnityInner {
         this.gp.variables.on('error:fetchPlatformVariables', (error) => {this.trigger('CallOnFetchPlatformVariablesError', error);});
     }
 
-    trigger(eventName, value) {
+    async trigger(eventName, value) {
+        await _unityInnerAwaiter.ready;
         SendMessage('GamePushSDK', eventName, this.toUnity(value));
     }
 
