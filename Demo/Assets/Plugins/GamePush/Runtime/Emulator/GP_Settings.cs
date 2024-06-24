@@ -28,7 +28,7 @@ namespace GamePush
             {
                 return platformSettings.GetPlatformSettings();
             }
-            Console.Log("PLATFORM SETTINGS: ", "DEFAULT");
+            GP_Logger.Log("PLATFORM SETTINGS: ", "DEFAULT");
             return new PlatformSettings();
         }
         
@@ -37,7 +37,7 @@ namespace GamePush
             {
                 return platformSettings;
             }
-            Console.Log("PLATFORM SETTINGS: ", "NULL");
+            GP_Logger.Log("PLATFORM SETTINGS: ", "NULL");
             return new GP_PlatformSettings();
         }
 
@@ -47,7 +47,7 @@ namespace GamePush
             {
                 return platformSettings.Language;
             }
-            Console.Log("PLATFORM LANGUAGE: ", "DEFAULT - ENGLISH");
+            GP_Logger.Log("PLATFORM LANGUAGE: ", "DEFAULT - ENGLISH");
             return Language.English;
         }
 
@@ -57,7 +57,7 @@ namespace GamePush
             {
                 return new List<FetchPlayerPurchases>(paymentsStub.Purchases);
             }
-            Console.Log("PURCHASES SETTINGS: ", "EMPTY");
+            GP_Logger.Log("PURCHASES SETTINGS: ", "EMPTY");
             return new List<FetchPlayerPurchases>();
         }
         public List<FetchProducts> GetProducts()
@@ -66,7 +66,7 @@ namespace GamePush
             {
                 return new List<FetchProducts>(paymentsStub.Products);
             }
-            Console.Log("PRODUCTS SETTINGS: ", "EMPTY");
+            GP_Logger.Log("PRODUCTS SETTINGS: ", "EMPTY");
             return new List<FetchProducts>();
         }
     }

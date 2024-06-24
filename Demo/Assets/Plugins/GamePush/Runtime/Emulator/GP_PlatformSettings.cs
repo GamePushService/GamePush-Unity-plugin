@@ -34,7 +34,7 @@ namespace GamePush
                     return s;
                 }
             }
-            Console.Log("PLATFORM SETTINGS: ", "DEFAULT");
+            GP_Logger.Log("PLATFORM SETTINGS: ", "DEFAULT");
             return new PlatformSettings();
         }
     }
