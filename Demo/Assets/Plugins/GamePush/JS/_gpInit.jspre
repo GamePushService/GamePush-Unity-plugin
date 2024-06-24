@@ -87,4 +87,4 @@ setTimeout(() => {
         dataProjectId,
         dataPublicToken
     );
-}, 1000);
+}, 0);
