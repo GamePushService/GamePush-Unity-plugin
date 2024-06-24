@@ -51,8 +51,6 @@ setTimeout(() => {
         }
 
         gp.player.ready.finally( async () => {
-            console.warn("gp.player.ready");
-
             await _unityInnerAwaiter.ready;
             SendMessage('GamePushSDK', 'CallOnSDKReady');
         });
