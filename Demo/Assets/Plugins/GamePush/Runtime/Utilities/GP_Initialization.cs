@@ -3,25 +3,31 @@ using GamePush;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.2";
+        static string VERSION = "v1.4.3";
+
+
+        [DllImport("__Internal")]
+        private static extern void GP_UnityReady();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
-            //Debug.Log("GamePush plugin initialization");
+#if !UNITY_EDITOR && UNITY_WEBGL
+                        GP_UnityReady();
+#endif
 
             GameObject SDK = new GameObject();
             SDK.name = "GamePushSDK";
             UnityEngine.Object.DontDestroyOnLoad(SDK);
-            
-            SetUpInitAwaiter();
 
             SDK.AddComponent<GP_Init>();
+            SetUpInitAwaiter();
 
             SDK.AddComponent<GP_ConsoleController>();
             SDK.AddComponent<GP_Achievements>();
