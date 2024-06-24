@@ -11,7 +11,6 @@ var _unityInnerAwaiter = {};
 
 function _UnityReady() {
     console.log("Unity is ready");
-    // Здесь вы можете вызвать SendMessage или выполнить другие действия
     _unityInnerAwaiter.done();
 }
 
