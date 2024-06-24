@@ -3,6 +3,7 @@ class GamePushUnityInner {
         this.gp = gp;
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
+        
         this.gp.player.on('sync', (success) => {
             this.trigger(success ? 'CallPlayerSyncComplete' : 'CallPlayerSyncError');
         });
@@ -341,7 +342,7 @@ class GamePushUnityInner {
     }
 
     async trigger(eventName, value) {
-        await _waitFor((w) => "_malloc" in w);
+        await _unityInnerAwaiter.ready;
         SendMessage('GamePushSDK', eventName, this.toUnity(value));
     }
 

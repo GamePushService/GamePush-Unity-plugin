@@ -4,6 +4,16 @@ function _GP(){
     return GamePush || window.GamePush;
 }
 
+var _unityInnerAwaiter = {};
+    _unityInnerAwaiter.ready = new Promise((resolve) => {
+      _unityInnerAwaiter.done = resolve;
+    });
+
+function _UnityReady() {
+    console.log("Unity is ready");
+    _unityInnerAwaiter.done();
+}
+
 function _waitFor(check, timeout) {
     return new Promise((resolve, reject) => {
       let intervalId = 0
@@ -31,7 +41,7 @@ setTimeout(() => {
     if ('GamePushUnity' in window) return;
 
     window.onGPError = async () => {
-        await _waitFor((w) => "_malloc" in w);
+        await _unityInnerAwaiter.ready;
         SendMessage('GamePushSDK', 'CallOnSDKError');
     };
 
@@ -40,11 +50,12 @@ setTimeout(() => {
             gp.ads.showPreloader();
         }
 
-        GamePush = new GamePushUnityInner(gp);
         gp.player.ready.finally( async () => {
-            await _waitFor((w) => "_malloc" in w);
+            await _unityInnerAwaiter.ready;
             SendMessage('GamePushSDK', 'CallOnSDKReady');
         });
+
+        GamePush = new GamePushUnityInner(gp);
 
         if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
             setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));

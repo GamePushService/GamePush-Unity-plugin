@@ -35,7 +35,7 @@ namespace GamePush
             return ConvertToEnum(GP_Current_Language());
 #else
             if (GP_ConsoleController.Instance.LanguageConsoleLogs)
-                Console.Log("LANGUAGE CURRENT: ", Language.English.ToString());
+                Console.Log("LANGUAGE CURRENT: ", GP_Settings.instance.GetLanguage().ToString());
             return GP_Settings.instance.GetLanguage();
 #endif
         }

@@ -1,5 +1,9 @@
 mergeInto(LibraryManager.library, {
 
+    GP_UnityReady: function () {
+        _UnityReady();
+    },
+
     /* LANGUAGE */
     GP_Current_Language: function () {
         var value = _GP().Language();
