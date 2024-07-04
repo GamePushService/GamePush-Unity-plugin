@@ -258,7 +258,11 @@ namespace GamePush
 
     }
 
-    public enum SchedulerType { ACTIVE_DAYS, ACTIVE_DAYS_CONSECUTIVE}
+    public enum SchedulerType 
+    { 
+        ACTIVE_DAYS, 
+        ACTIVE_DAYS_CONSECUTIVE
+    }
 
     [System.Serializable]
     public class SchedulerData
