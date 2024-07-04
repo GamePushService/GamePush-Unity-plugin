@@ -104,18 +104,7 @@ namespace GamePush
                 Console.Log("LEADERBOARD SCOPED: ", "PUBLICH RECORD");
 #endif
         }
-
-        public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, string key1 = "", float record_value1 = 0, string key2 = "", float record_value2 = 0, string key3 = "", float record_value3 = 0)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
-#else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "PUBLICH RECORD");
-#endif
-        }
-
-
+        
 
         [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Scoped_FetchPlayerRating(string idOrTag = "", string variant = "", string includeFields = "");
