@@ -107,8 +107,8 @@ namespace Examples.Channel.Requests
         public void RejectJoinRequest() => GP_Channels.RejectJoinRequest(int.Parse(_inputChannelIds.text), int.Parse(_inputPlayerIds.text));
         public void FetchJoinRequest() => GP_Channels.FetchJoinRequests(int.Parse(_inputChannelIds.text), 10);
         public void FetchMoreJoinRequest() => GP_Channels.FetchMoreJoinRequests(int.Parse(_inputChannelIds.text), 10);
-        public void FetchSentJoinRequest() => GP_Channels.FetchSentJoinRequests(int.Parse(_inputChannelIds.text), 10);
-        public void FetchMoreSentJoinRequest() => GP_Channels.FetchMoreSentJoinRequests(int.Parse(_inputChannelIds.text), 10);
+        public void FetchSentJoinRequest() => GP_Channels.FetchSentJoinRequests(10);
+        public void FetchMoreSentJoinRequest() => GP_Channels.FetchMoreSentJoinRequests(10);
 
 
 

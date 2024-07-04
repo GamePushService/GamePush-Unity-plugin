@@ -112,8 +112,6 @@ namespace Examples.Channels.Messages
 
         }
 
-
-
         private void OnDisable()
         {
             _sendMessageButton.onClick.RemoveListener(SendMessage);
@@ -179,9 +177,6 @@ namespace Examples.Channels.Messages
 
         public void FetchFeedMessages() => GP_Channels.FetchFeedMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10, 0);
         public void FetchMoreFeedMessages() => GP_Channels.FetchMoreFeedMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10);
-
-
-
 
         private void OnMessage(GP_Data data)
         {

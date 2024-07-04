@@ -479,11 +479,11 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_FetchSentJoinRequests(int channel_ID, int limit, int offset);
-        public static void FetchSentJoinRequests(int channel_ID, int limit = 50, int offset = 0)
+        private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
+        public static void FetchSentJoinRequests(int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_FetchSentJoinRequests(channel_ID, limit, offset);
+            GP_Channels_FetchSentJoinRequests(limit, offset);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("CHANNELS: ", "FETCH SENT JOIN REQUESTS");
@@ -491,11 +491,11 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_FetchMoreSentJoinRequests(int channel_ID, int limit);
-        public static void FetchMoreSentJoinRequests(int channel_ID, int limit = 50)
+        private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
+        public static void FetchMoreSentJoinRequests(int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_FetchMoreSentJoinRequests(channel_ID, limit);
+            GP_Channels_FetchMoreSentJoinRequests(limit);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("CHANNELS: ", "FETCH MORE SENT JOIN REQUESTS");

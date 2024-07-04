@@ -1430,12 +1430,12 @@ class GamePushUnityInner {
         this.gp.channels.fetchMoreJoinRequests({ channelId, limit, });
     }
 
-    Channels_FetchSentJoinRequests(channelId, limit, offset) {
-        this.gp.channels.fetchSentJoinRequests({ channelId, limit, offset, });
+    Channels_FetchSentJoinRequests(limit, offset) {
+        this.gp.channels.fetchSentJoinRequests({limit, offset});
     }
 
-    Channels_FetchMoreSentJoinRequests(channelId, limit) {
-        this.gp.channels.fetchMoreSentJoinRequests({ channelId, limit, });
+    Channels_FetchMoreSentJoinRequests(limit) {
+        this.gp.channels.fetchMoreSentJoinRequests({limit});
     }
 
     Channels_SendMessage(channelId, text, tags) {

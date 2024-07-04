@@ -902,11 +902,11 @@ mergeInto(LibraryManager.library, {
     GP_Channels_FetchMoreJoinRequests: function (channel_ID, limit) {
         _GP().Channels_FetchMoreJoinRequests(channel_ID, limit);
     },
-    GP_Channels_FetchSentJoinRequests: function (channel_ID, limit, offset) {
-        _GP().Channels_FetchSentJoinRequests(channel_ID, limit, offset);
+    GP_Channels_FetchSentJoinRequests: function (limit, offset) {
+        _GP().Channels_FetchSentJoinRequests(limit, offset);
     },
-    GP_Channels_FetchMoreSentJoinRequests: function (channel_ID, limit) {
-        _GP().Channels_FetchMoreSentJoinRequests(channel_ID, limit);
+    GP_Channels_FetchMoreSentJoinRequests: function (limit) {
+        _GP().Channels_FetchMoreSentJoinRequests(limit);
     },
     GP_Channels_SendMessage: function (channel_ID, text, tags) {
         _GP().Channels_SendMessage(channel_ID, UTF8ToString(text), UTF8ToString(tags));

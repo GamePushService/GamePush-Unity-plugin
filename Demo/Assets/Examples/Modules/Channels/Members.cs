@@ -185,7 +185,6 @@ namespace Examples.Channel.Members
             GP_Channels.UpdateChannel(filter);
         }
 
-
         private void OnJoinSuccess() => ConsoleUI.Instance.Log("JOIN: SUCCESS");
         private void OnJoinError() => ConsoleUI.Instance.Log("JOIN: ERROR");
         private void OnJoinEvent(GP_Data data)
@@ -210,7 +209,6 @@ namespace Examples.Channel.Members
             ConsoleUI.Instance.Log(" ");
         }
 
-
         private void OnJoinRequest(GP_Data data)
         {
             var joinRequestData = data.Get<JoinRequestData>();
@@ -231,7 +229,6 @@ namespace Examples.Channel.Members
             ConsoleUI.Instance.Log("JOIN REQUEST EVENT: PLAYER STATE: SCORE: " + joinRequestData.player.score);
             ConsoleUI.Instance.Log(" ");
         }
-
 
         private void OnCancelJoinError() => ConsoleUI.Instance.Log("CANCEL JOIN: ERROR");
         private void OnCancelJoinSuccess() => ConsoleUI.Instance.Log("CANCEL JOIN: SUCCESS");

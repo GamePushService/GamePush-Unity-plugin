@@ -515,8 +515,5 @@ namespace Examples.Channel.Invitations
             }
         }
 
-
-
-
     }
 }
