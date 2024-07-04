@@ -16,7 +16,6 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string map = GP_Experiments_Map();
-            Debug.Log(map);
             return map;
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
