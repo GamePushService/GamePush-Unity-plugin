@@ -824,8 +824,20 @@ mergeInto(LibraryManager.library, {
 
 
     /* CHANNELS */
-    GP_Channels_Open: function (channel_ID) {
+    GP_Channels_OpenChat: function (channel_ID) {
         _GP().Channels_Open_Chat(channel_ID);
+    },
+
+    GP_Channels_OpenChatWithTags: function (channel_ID, tags) {
+        _GP().Channels_Open_Chat_WithTags(channel_ID, UTF8ToString(tags));
+    },
+
+    GP_Channels_OpenPersonalChat: function (player_ID, tags) {
+        _GP().Channels_Open_Personal_Chat(player_ID, UTF8ToString(tags));
+    },
+
+    GP_Channels_OpenFeed: function (player_ID, tags) {
+        _GP().Channels_Open_Feed(player_ID, UTF8ToString(tags));
     },
 
     GP_Channels_IsMainChatEnabled: function () {

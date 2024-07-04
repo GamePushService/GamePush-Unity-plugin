@@ -1338,6 +1338,48 @@ export default class GamePushUnity {
             this.gp.channels.openChat({ channel_ID });
         }
     }
+
+    Channels_Open_Chat_WithTags(channel_ID, tags) {
+        if (channel_ID == -10) {
+            this.gp.channels.openChat({
+            tags: tags
+                .split(',')
+                .map((o) => o.trim())
+                .filter((f) => f)
+            });
+        }
+        else {
+            this.gp.channels.openChat({
+                channel_ID,
+                tags: tags
+                    .split(',')
+                    .map((o) => o.trim())
+                    .filter((f) => f)
+                }); 
+        }
+    }
+
+    Channels_Open_Personal_Chat(player_ID, tags) {
+        this.gp.channels.openPersonalChat({
+            player_ID,
+            tags: tags
+                .split(',')
+                .map((o) => o.trim())
+                .filter((f) => f)
+            }); 
+    }
+
+    Channels_Open_Feed(player_ID, tags) {
+        this.gp.channels.openFeed({
+            player_ID,
+            tags: tags
+                .split(',')
+                .map((o) => o.trim())
+                .filter((f) => f)
+            }); 
+    }
+
+
     Channels_IsMainChatEnabled() {
         return this.toUnity(this.gp.channels.isMainChatEnabled);
     }

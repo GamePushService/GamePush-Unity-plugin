@@ -167,7 +167,35 @@ namespace GamePush
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_Open(channel_ID);
+            GP_Channels_OpenChat(channel_ID);
+#else
+            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+                Console.Log("CHANNELS: OPEN CHAT: CHANNEL ID: ", "" + channel_ID);
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        public static void OpenChat(string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenChatWithTags(-10, tags);
+#else
+            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+                Console.Log("CHANNELS: ", "OPEN CHAT");
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        public static void OpenChat(int channel_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenChatWithTags(channel_ID, tags);
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("CHANNELS: OPEN CHAT: CHANNEL ID: ", "" + channel_ID);
@@ -181,11 +209,39 @@ namespace GamePush
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_Open(-10);
+            GP_Channels_OpenChat(-10);
             WebGLInput.captureAllKeyboardInput = false;
 #else
             if (GP_ConsoleController.Instance.ChannelConsoleLogs)
                 Console.Log("CHANNELS: ", "OPEN CHAT");
+#endif
+        }
+
+        public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenPersonalChat(player_ID, tags);
+#else
+            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+                Console.Log("CHANNELS: OPEN PERSONAL CHAT: PLAYER ID: ", "" + player_ID);
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenFeed(player_ID, tags);
+#else
+            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+                Console.Log("CHANNELS: OPEN FEED: PLAYER ID: ", "" + player_ID);
+            _onOpenChat?.Invoke();
 #endif
         }
 
