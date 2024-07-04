@@ -33,34 +33,12 @@ https://docs.gamepush.com/docs/get-start/
 
 https://docs.gamepush.com/ru/docs/get-start/
 
-## Development
-
-### Install
-
-Install [nodejs](https://nodejs.org/en/)
-
-```sh
-# install dependencies
-npm i
-```
-
-### Dev
-
-```sh
-# start dev on https://localhost:8888
-npm run dev
-```
-
-### Build
-
-```sh
-# Create minified js version in folder GamePush
-npm run build
-```
 
 # Methods List
 
 ## GP_Achievements
+
+[Achievements documentation](https://docs.gamepush.com/docs/achievements/)
 
 ### Methods
 
@@ -132,6 +110,8 @@ public class AchievementsFetchPlayer
 
 ## GP_Ads
 
+[Ads documentation](https://docs.gamepush.com/docs/advertising/)
+
 ### Methods
 
 | Method name                       | Method parameters                                                                                                                      | Return value |
@@ -175,6 +155,8 @@ public class AchievementsFetchPlayer
 
 ## GP_Analytics
 
+[Analytics documentation](https://docs.gamepush.com/docs/analytics/)
+
 ### Methods
 
 | Method name | Method parameters                | Return value |
@@ -184,6 +166,8 @@ public class AchievementsFetchPlayer
 | `Goal`      | `string eventName, int value`    | void         |
 
 ## GP_App
+
+[Application documentation](https://docs.gamepush.com/docs/application/)
 
 ### Methods
 
@@ -240,6 +224,8 @@ public enum GeneratorType : byte
 ```
 
 ## GP_Channels
+
+[Channels documentation](https://docs.gamepush.com/docs/channels/)
 
 ### Methods
 
@@ -733,6 +719,8 @@ public class GuestAcl
 
 ## GP_Device
 
+[Device documentation](https://docs.gamepush.com/docs/get-start/common-features/#device-detection)
+
 ### Methods
 
 | Method name  | Method parameters | Return value |
@@ -748,6 +736,8 @@ public class GuestAcl
 | `OnChangeOrientation` | void         |
 
 ## GP_Documents
+
+[Documents documentation](https://docs.gamepush.com/docs/documents/)
 
 ### Methods
 
@@ -766,6 +756,8 @@ public class GuestAcl
 | `OnFetchError`     | void         |
 
 ## GP_Events
+
+[Events documentation](https://docs.gamepush.com/docs/events/)
 
 ### Methods
 
@@ -821,7 +813,9 @@ public class EventStats
 }
 ```
 
-## GP_Events
+## GP_Experiments
+
+[Experiments documentation](https://docs.gamepush.com/docs/experiments/)
 
 ### Methods
 
@@ -831,6 +825,8 @@ public class EventStats
 | `Has`       | `string tag, string cohort` | `bool`       |
 
 ## GP_Files
+
+[Files documentation](https://docs.gamepush.com/docs/files/)
 
 ### Methods
 
@@ -900,6 +896,8 @@ public class FilesFetchMoreFilter
 
 ## GP_Fullscreen
 
+[Fullscreen documentation](https://docs.gamepush.com/docs/fullscreen/)
+
 ### Methods
 
 | Method name | Method parameters                 | Return value |
@@ -917,6 +915,8 @@ public class FilesFetchMoreFilter
 | `OnFullscreenChange` | void         |
 
 ## GP_Game
+
+[Game documentation](https://docs.gamepush.com/docs/get-start/common-features/#pause)
 
 ### Methods
 
@@ -938,6 +938,8 @@ public class FilesFetchMoreFilter
 | `OnResume`  | void         |
 
 ## GP_GamesCollections
+
+[GamesCollections documentation](https://docs.gamepush.com/docs/games-collections/)
 
 ### Methods
 
@@ -980,6 +982,8 @@ public class Games
 ```
 
 ## GP_Images
+
+[Images documentation](https://docs.gamepush.com/docs/images/)
 
 ### Methods
 
@@ -1047,6 +1051,8 @@ public class ImagesFetchFilter
 
 ## GP_Language
 
+[Language documentation](https://docs.gamepush.com/docs/get-start/common-features/#language)
+
 ### Methods
 
 | Method name | Method parameters                                         | Return value |
@@ -1083,6 +1089,8 @@ public enum Language : byte
 ```
 
 ## GP_Leaderboard
+
+[Leaderboard documentation](https://docs.gamepush.com/docs/leaderboards/leaderboard/)
 
 ### Methods
 
@@ -1129,6 +1137,9 @@ public enum WithMe : byte
 
 ## GP_LeaderboardScoped
 
+[Scoped Leaderboard documentation](https://docs.gamepush.com/docs/leaderboards/scoped-leaderboard/)
+
+
 ### Methods
 
 | Method name         | Method parameters                                                                                                                                                                                         | Return value |
@@ -1159,6 +1170,8 @@ public enum WithMe : byte
 | `OnPublishRecordError`          | void                      |
 
 ## GP_Payments
+
+[Payments documentation](https://docs.gamepush.com/docs/purchases/)
 
 ### Methods
 
@@ -1223,6 +1236,8 @@ public class FetchPlayerPurchases
 
 ## GP_Platform
 
+[Platform documentation](https://docs.gamepush.com/docs/get-start/platform/)
+
 ### Methods
 
 | Method name              | Method parameters | Return value |
@@ -1257,6 +1272,8 @@ public enum Platform : byte
 ```
 
 ## GP_Player
+
+[Player documentation](https://docs.gamepush.com/docs/player/)
 
 ### Methods
 
@@ -1343,6 +1360,8 @@ public class Variants
 
 ## GP_Players
 
+[Players documentation](https://docs.gamepush.com/docs/player/players-data/)
+
 ### Methods
 
 | Method name              | Method parameters                                                                        | Return value |
@@ -1360,6 +1379,8 @@ public class Variants
 | `OnFetchError`   | void         |
 
 ## GP_Rewards
+
+[Rewards documentation](https://docs.gamepush.com/docs/rewards/)
 
 ### Methods
 
@@ -1436,6 +1457,8 @@ public enum MutationAction
 ```
 
 ## GP_Schedulers
+
+[Schedulers documentation](https://docs.gamepush.com/docs/schedulers/)
 
 ### Methods
 
@@ -1540,6 +1563,8 @@ public class SchedulerDayInfo
 
 ## GP_Segments
 
+[Segments documentation](https://docs.gamepush.com/docs/segments/)
+
 ### Methods
 
 | Method name | Method parameters | Return value |
@@ -1556,6 +1581,8 @@ public class SchedulerDayInfo
 
 ## GP_Server
 
+[Server documentation](https://docs.gamepush.com/docs/get-start/common-features/#server-time)
+
 ### Methods
 
 | Method name | Method parameters | Return value |
@@ -1563,6 +1590,8 @@ public class SchedulerDayInfo
 | `Time`      | void              | `DateTime`   |
 
 ## GP_Socials
+
+[Socials documentation](https://docs.gamepush.com/docs/social-actions/)
 
 ### Methods
 
@@ -1594,6 +1623,8 @@ public class SchedulerDayInfo
 
 ## GP_System
 
+[Game Host documentation](https://docs.gamepush.com/docs/get-start/common-features/#game-host-information)
+
 ### Methods
 
 | Method name       | Method parameters | Return value |
@@ -1602,6 +1633,8 @@ public class SchedulerDayInfo
 | `IsAllowedOrigin` | void              | `bool`       |
 
 ## GP_Triggers
+
+[Triggers documentation](https://docs.gamepush.com/docs/triggers/)
 
 ### Methods
 
@@ -1672,6 +1705,8 @@ public class TriggerActive
 ```
 
 ## GP_Variables
+
+[Game variables documentation](https://docs.gamepush.com/docs/game-variables/)
 
 ### Methods
 
