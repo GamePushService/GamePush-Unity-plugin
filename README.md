@@ -33,8 +33,40 @@ https://docs.gamepush.com/docs/get-start/
 
 https://docs.gamepush.com/ru/docs/get-start/
 
-
 # Methods List
+
+| Plugin modules                                |
+| --------------------------------------------- |
+| [GP_Achievements](#GP_Achievements)           |
+| [GP_Ads](#GP_Ads)                             |
+| [GP_Analytics](#GP_Analytics)                 |
+| [GP_App](#GP_App)                             |
+| [GP_AvatarGenerator](#GP_AvatarGenerator)     |
+| [GP_Channels](#GP_Channels)                   |
+| [GP_Custom](#GP_Custom)                       |
+| [GP_Device](#GP_Device)                       |
+| [GP_Documents](#GP_Documents)                 |
+| [GP_Events](#GP_Events)                       |
+| [GP_Experiments](#GP_Experiments)             |
+| [GP_Fullscreen](#GP_Fullscreen)               |
+| [GP_Game](#GP_Game)                           |
+| [GP_GamesCollections](#GP_GamesCollections)   |
+| [GP_Images](#GP_Images)                       |
+| [GP_Language](#GP_Language)                   |
+| [GP_Leaderboard](#GP_Leaderboard)             |
+| [GP_LeaderboardScoped](#GP_LeaderboardScoped) |
+| [GP_Payments](#GP_Payments)                   |
+| [GP_Platform](#GP_Platform)                   |
+| [GP_Player](#GP_Player)                       |
+| [GP_Players](#GP_Players)                     |
+| [GP_Rewards](#GP_Rewards)                     |
+| [GP_Schedulers](#GP_Schedulers)               |
+| [GP_Segments](#GP_Segments)                   |
+| [GP_Server](#GP_Server)                       |
+| [GP_Socials](#GP_Socials)                     |
+| [GP_System](#GP_System)                       |
+| [GP_Triggers](#GP_Triggers)                   |
+| [GP_Variables](#GP_Variables)                 |
 
 ## GP_Achievements
 
@@ -1138,7 +1170,6 @@ public enum WithMe : byte
 ## GP_LeaderboardScoped
 
 [Scoped Leaderboard documentation](https://docs.gamepush.com/docs/leaderboards/scoped-leaderboard/)
-
 
 ### Methods
 
