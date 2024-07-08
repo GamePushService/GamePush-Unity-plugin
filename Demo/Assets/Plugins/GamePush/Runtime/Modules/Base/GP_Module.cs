@@ -6,8 +6,8 @@ namespace GamePush
 {
     public class GP_Module : MonoBehaviour, IGP_Module
     {
-        private ModuleName _name;
-        public ModuleName Name
+        private static ModuleName _name;
+        public static ModuleName Name
         {
             get => _name;
             set => _name = value;

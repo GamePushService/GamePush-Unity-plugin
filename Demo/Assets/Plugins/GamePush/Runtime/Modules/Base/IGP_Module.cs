@@ -6,7 +6,7 @@ namespace GamePush
 {
     public interface IGP_Module
     {
-        ModuleName Name
+        static ModuleName Name
         {
             get;
             set;
