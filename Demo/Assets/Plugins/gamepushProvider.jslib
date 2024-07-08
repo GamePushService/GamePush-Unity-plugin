@@ -1341,4 +1341,22 @@ mergeInto(LibraryManager.library, {
         _GP().LoggerLog(UTF8ToString(title), UTF8ToString(text));
     },
     /* LOGGER */
+
+     /* UNIQUES */
+    GP_UniquesRegister: function(tag, value){
+        _GP().UniquesRegister(UTF8ToString(tag), UTF8ToString(value));
+    },
+    GP_UniquesGet: function(tag){
+        _GP().UniquesGet(UTF8ToString(tag));
+    },
+    GP_UniquesList: function(){
+        _GP().UniquesList();
+    },
+    GP_UniquesCheck: function(tag, value){
+        _GP().UniquesCheck(UTF8ToString(tag), UTF8ToString(value));
+    },
+    GP_UniquesDelete: function(tag){
+        _GP().UniquesDelete(UTF8ToString(tag));
+    },
+     /* UNIQUES */
 });
