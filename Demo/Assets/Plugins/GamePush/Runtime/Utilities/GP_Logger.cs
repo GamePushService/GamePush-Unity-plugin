@@ -22,7 +22,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_LoggerInfo(string title, string text);
-        public static void Info(string title, string text = null)
+        public static void Info(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_LoggerInfo(title, text);
@@ -33,7 +33,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_LoggerWarn(string title, string text);
-        public static void Warn(string title, string text = null)
+        public static void Warn(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_LoggerWarn(title, text);
@@ -44,7 +44,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_LoggerError(string title, string text);
-        public static void Error(string title, string text = null)
+        public static void Error(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_LoggerError(title, text);
@@ -55,7 +55,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_LoggerLog(string title, string text);
-        public static void Log(string title, string text = null)
+        public static void Log(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_LoggerLog(title, text);
