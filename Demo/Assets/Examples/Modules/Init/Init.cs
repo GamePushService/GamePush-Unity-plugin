@@ -11,22 +11,28 @@ namespace Examples.Init
             GP_Init.OnError += OnPluginError;
         }
 
+        private void OnDisable()
+        {
+            GP_Init.OnReady -= OnPluginReady;
+            GP_Init.OnError -= OnPluginError;
+        }
+
         private async void Start()
         {
             await GP_Init.Ready;
-            Debug.Log($"Init Example: isReady {IsReady()}");
+            GP_Logger.SystemLog("Init Example: isReady {IsReady()}");
         }
 
         private bool IsReady() => GP_Init.isReady;
 
         private void OnPluginReady()
         {
-            Debug.Log("Init Example: SDK ready");
+            GP_Logger.SystemLog("Init Example: SDK ready");
         }
 
         private void OnPluginError()
         {
-            Debug.Log("Init Example: SDK error");
+            GP_Logger.SystemLog("Init Example: SDK error");
         }
     }
 }
