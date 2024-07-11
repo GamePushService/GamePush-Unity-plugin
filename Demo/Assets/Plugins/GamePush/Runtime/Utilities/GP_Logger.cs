@@ -17,14 +17,15 @@ namespace GamePush
         private static void RedMessage(string title, string text) =>
             ColorMessage("CE342A", "ERR", title, text);
         private static void LogMessage(string title, string text) =>
-            Debug.Log($"GP: {title}: {text}");
+            Debug.Log($" GP: {title}: {text}");
+
 
         [DllImport("__Internal")]
         private static extern string GP_LoggerInfo(string title, string text);
         public static void Info(string title, string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-             GP_LoggerInfo(title, text);
+            GP_LoggerInfo(title, text);
 #else
             GreenMessage(title, text);
 #endif
@@ -66,7 +67,15 @@ namespace GamePush
         public static void ModuleLog(ModuleName name, string log)
         {
             if (GP_ConsoleController.Instance.IsModuleLogs(name))
-                Debug.Log("<color=#04bc04>GP: </color> " + $"{name}: {log}");
+                Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
         }
+
+        public static void SystemLog(string text) =>
+#if !UNITY_EDITOR && UNITY_WEBGL
+             GP_LoggerLog("System", text);
+#else
+            Debug.Log("<color=#04bc04> GP: </color> " + $"{text}");
+#endif
+
     }
 }
