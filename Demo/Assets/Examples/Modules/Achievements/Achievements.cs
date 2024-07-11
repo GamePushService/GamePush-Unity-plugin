@@ -50,8 +50,6 @@ namespace Examples.Achievements
             GP_Achievements.OnAchievementsFetchPlayer -= OnFetchPlayer;
         }
 
-
-
         public void Open() => GP_Achievements.Open(OnOpen, OnClose);
         public void Unlock() => GP_Achievements.Unlock(_idOrTag.text, OnUnlock, OnUnlockError);
         private void SetProgress() => GP_Achievements.SetProgress(_idOrTag.text, 25, OnPogress, OnProgressError);

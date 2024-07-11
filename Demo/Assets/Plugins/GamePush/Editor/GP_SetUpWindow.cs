@@ -240,7 +240,7 @@ namespace GamePushEditor
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
-            Console.Log("Data saved");
+            GP_Logger.SystemLog("Data saved");
         }
 
         private static bool ValidateToken(string input)

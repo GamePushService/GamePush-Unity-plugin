@@ -660,7 +660,10 @@ class GamePushUnityInner {
         });
 
         gp.uniques.on('check', (uniqueValue) => {
-            this.trigger('CallOnUniqueValueCheck', JSON.stringify(uniqueValue));
+            this.trigger(
+                'CallOnUniqueValueCheck', 
+                JSON.stringify(uniqueValue)
+            );
         });
         gp.uniques.on('error:check', (error) => {
             this.trigger('CallOnUniqueValueCheckError', error);

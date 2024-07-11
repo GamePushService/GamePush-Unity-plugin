@@ -53,7 +53,7 @@ namespace Examples.Triggers
 
         public void Claim()
         {
-            Debug.Log("Claim: " + _triggerTag.text);
+            ConsoleUI.Instance.Log("Claim: " + _triggerTag.text);
             GP_Triggers.Claim(_triggerTag.text);
         }
 
