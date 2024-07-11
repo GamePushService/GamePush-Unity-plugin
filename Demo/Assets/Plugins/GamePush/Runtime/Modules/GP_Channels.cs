@@ -160,7 +160,10 @@ namespace GamePush
         #endregion
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_Open(int channel_ID);
+        private static extern void GP_Channels_OpenChat(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
+
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
@@ -217,6 +220,8 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
         public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
@@ -231,6 +236,8 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
         public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;

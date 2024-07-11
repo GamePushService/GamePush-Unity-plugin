@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-using GamePush;
-using GamePush.Utilities;
 
 namespace GamePush.Utilities
 {
