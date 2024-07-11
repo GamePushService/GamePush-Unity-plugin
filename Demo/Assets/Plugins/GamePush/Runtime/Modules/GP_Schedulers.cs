@@ -1,15 +1,13 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_Schedulers : MonoBehaviour
+    public class GP_Schedulers : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Schedulers);
+
         public static event UnityAction<SchedulerInfo> OnSchedulerRegister;
         public static event UnityAction<string> OnSchedulerRegisterError;
 
@@ -55,8 +53,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_Register(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "Register");
+
+            ConsoleLog("Register");
 #endif
         }
 
@@ -67,8 +65,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimDay(idOrTag, day);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+
+            ConsoleLog("ClaimDay");
 #endif
         }
 
@@ -79,8 +77,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimDayAdditional(idOrTag, day, triggerIdOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDayAdditional");
+
+            ConsoleLog("ClaimDayAdditional");
 #endif
         }
 
@@ -91,8 +89,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimAllDay(idOrTag, day);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+
+            ConsoleLog("ClaimDay");
 #endif
         }
 
@@ -103,8 +101,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Schedulers_ClaimAllDays(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers:", "ClaimDay");
+
+            ConsoleLog("ClaimDay");
 #endif
         }
 
@@ -116,8 +114,8 @@ namespace GamePush
             string data = GP_Schedulers_List();
             return UtilityJSON.GetArray<SchedulerData>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "List");
+
+            Console.Log("Schedulers: ", "List");
 
             return null;
 #endif
@@ -131,8 +129,8 @@ namespace GamePush
             string data = GP_Schedulers_ActiveList();
             return UtilityJSON.GetArray<PlayerScheduler>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "List");
+
+            Console.Log("Schedulers: ", "List");
 
             return null;
 #endif
@@ -146,8 +144,8 @@ namespace GamePush
             string data = GP_Schedulers_GetScheduler(idOrTag);
             return UtilityJSON.Get<SchedulerInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler");
+
+            Console.Log("Schedulers: ", "Get Scheduler");
 
             return null;
 #endif
@@ -161,8 +159,8 @@ namespace GamePush
             string data = GP_Schedulers_GetSchedulerDay(idOrTag, day);
             return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler Day");
+
+            Console.Log("Schedulers: ", "Get Scheduler Day");
 
             return null;
 #endif
@@ -176,8 +174,8 @@ namespace GamePush
             string data = GP_Schedulers_GetSchedulerCurrentDay(idOrTag);
             return UtilityJSON.Get<SchedulerDayInfo>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("Schedulers: ", "Get Scheduler");
+
+            Console.Log("Schedulers: ", "Get Scheduler");
 
             return null;
 #endif
@@ -190,8 +188,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_IsRegistered(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+
+            Console.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -205,8 +203,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_IsTodayRewardClaimed(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+
+            Console.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -220,8 +218,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimDay(idOrTag, day) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+
+            Console.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -235,8 +233,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimDayAdditional(idOrTag, day, triggerIdOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+
+            Console.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -249,8 +247,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Schedulers_CanClaimAllDay(idOrTag, day) == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("REWARDS: ", "Has");
+
+            Console.Log("REWARDS: ", "Has");
 
             return true;
 #endif
@@ -258,9 +256,9 @@ namespace GamePush
 
     }
 
-    public enum SchedulerType 
-    { 
-        ACTIVE_DAYS, 
+    public enum SchedulerType
+    {
+        ACTIVE_DAYS,
         ACTIVE_DAYS_CONSECUTIVE
     }
 

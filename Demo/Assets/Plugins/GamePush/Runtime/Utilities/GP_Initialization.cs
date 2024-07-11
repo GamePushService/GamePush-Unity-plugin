@@ -19,17 +19,21 @@ namespace GamePush.Initialization
         private static void Execute()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-                        GP_UnityReady();
+             GP_UnityReady();
 #endif
 
             GameObject SDK = new GameObject();
             SDK.name = "GamePushSDK";
             UnityEngine.Object.DontDestroyOnLoad(SDK);
 
+#if UNITY_EDITOR
+            SDK.AddComponent<GP_ConsoleController>();
+#endif
+
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
 
-            SDK.AddComponent<GP_ConsoleController>();
+            
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
             SDK.AddComponent<GP_Analytics>();
@@ -62,7 +66,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
 
-            Console.Log($"plugin {VERSION} initialize");
+            GP_Logger.Info($"Plugin {VERSION}", "Initialize");
         }
 
         private static void SetUpInitAwaiter()

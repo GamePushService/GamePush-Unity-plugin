@@ -1,14 +1,10 @@
 ﻿using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System;
-using UnityEngine;
-
-using GamePush.ConsoleController;
 
 namespace GamePush
 {
-    public class GP_System : MonoBehaviour
+    public class GP_System : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.System);
 
         [DllImport("__Internal")]
         private static extern string GP_IsDev();
@@ -17,9 +13,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsDev() == "true";
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("SYSTEM: IS DEV: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsDev;
+            bool isVal = GP_Settings.instance.GetFromPlatformSettings().IsDev;
+            ConsoleLog("IS DEV: " + isVal);
+            return isVal;
 #endif
         }
 
@@ -30,13 +26,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsAllowedOrigin() == "true";
 #else
-            if (GP_ConsoleController.Instance.SystemConsoleLogs)
-                Console.Log("SYSTEM: IS ALLOWED ORIGIN: ", "TRUE");
-            return GP_Settings.instance.GetFromPlatformSettings().IsAllowedOrigin;
+            bool isVal = GP_Settings.instance.GetFromPlatformSettings().IsAllowedOrigin;
+            ConsoleLog("IS ALLOWED ORIGIN: " + isVal);
+            return isVal;
 #endif
         }
 
-       
+
     }
 
 }

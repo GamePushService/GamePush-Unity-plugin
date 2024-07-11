@@ -1,12 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEngine;
 
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_Platform : MonoBehaviour
+    public class GP_Platform : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Platform);
+
         private static string YANDEX = "YANDEX";
         private static string VK = "VK";
         private static string CRAZY_GAMES = "CRAZY_GAMES";
@@ -32,8 +32,8 @@ namespace GamePush
             return ConvertToEnum(GP_Platform_Type());
 #else
             Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+
+            ConsoleLog("TYPE: " + platform.ToString());
             return platform;
 #endif
         }
@@ -44,8 +44,8 @@ namespace GamePush
             return GP_Platform_Type();
 #else
             Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: TYPE: ", platform.ToString());
+
+            ConsoleLog("TYPE: " + platform.ToString());
             return platform.ToString();
 #endif
         }
@@ -59,12 +59,12 @@ namespace GamePush
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
             bool auth = GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: HAS INTEGRATED AUTH: ", auth.ToString());
+
+            ConsoleLog("HAS INTEGRATED AUTH: " + auth.ToString());
             return auth;
 #endif
         }
-        
+
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_IsExternalLinksAllowed();
@@ -74,8 +74,8 @@ namespace GamePush
             return GP_Platform_IsExternalLinksAllowed() == "true";
 #else
             bool linkAllow = GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
-            if (GP_ConsoleController.Instance.PlatformConsoleLogs)
-                Console.Log("PLATFORM: IS EXTERNAL LINKS ALLOWED: ", linkAllow.ToString());
+
+            ConsoleLog("IS EXTERNAL LINKS ALLOWED: " + linkAllow.ToString());
             return linkAllow;
 #endif
         }

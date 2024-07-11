@@ -2,12 +2,12 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_LeaderboardScoped : MonoBehaviour
+    public class GP_LeaderboardScoped : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.LeaderboardScoped);
+
         public static event UnityAction<string, GP_Data> OnFetchSuccess;
         public static event UnityAction<string, GP_Data> OnFetchTopPlayers;
         public static event UnityAction<string, GP_Data> OnFetchAbovePlayers;
@@ -52,8 +52,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
 #else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "OPEN");
+
+            ConsoleLog("OPEN");
 #endif
         }
 
@@ -75,8 +75,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
 #else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "FETCH");
+
+            ConsoleLog("FETCH");
 #endif
         }
 
@@ -100,8 +100,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "PUBLICH RECORD");
+
+            ConsoleLog("PUBLICH RECORD");
 #endif
         }
 
@@ -110,8 +110,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "PUBLICH RECORD");
+
+            ConsoleLog("PUBLICH RECORD");
 #endif
         }
 
@@ -124,8 +124,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, includeFields);
 #else
-            if (GP_ConsoleController.Instance.LeaderboardScopedConsoleLogs)
-                Console.Log("LEADERBOARD SCOPED: ", "FETCH PLAYER RATING");
+
+            ConsoleLog("FETCH PLAYER RATING");
 #endif
         }
 

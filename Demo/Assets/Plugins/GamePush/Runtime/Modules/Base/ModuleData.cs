@@ -7,6 +7,7 @@ namespace GamePush
     public enum ModuleName
     {
         None,
+        Init,
         Achievements,
         Ads,
         Analytics,
@@ -22,6 +23,7 @@ namespace GamePush
         Fullscreen,
         Game,
         GamesCollections,
+        Images,
         Language,
         Leaderboard,
         LeaderboardScoped,

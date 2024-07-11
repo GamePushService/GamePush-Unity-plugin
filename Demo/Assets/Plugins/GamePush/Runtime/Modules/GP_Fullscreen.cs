@@ -3,12 +3,12 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_Fullscreen : MonoBehaviour
+    public class GP_Fullscreen : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Custom);
+
         public static event UnityAction OnFullscreenOpen;
         public static event UnityAction OnFullscreenClose;
         public static event UnityAction OnFullscreenChange;
@@ -26,8 +26,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Open();
 #else
-            if (GP_ConsoleController.Instance.FullscreenConsoleLogs)
-                Console.Log("FULL SCREEN: ", "OPEN");
+
+            ConsoleLog("OPEN");
             OnFullscreenOpen?.Invoke();
             _onFullscreenOpen?.Invoke();
 #endif
@@ -43,8 +43,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Close();
 #else
-            if (GP_ConsoleController.Instance.FullscreenConsoleLogs)
-                Console.Log("FULL SCREEN: ", "CLOSE");
+
+            ConsoleLog("CLOSE");
             OnFullscreenClose?.Invoke();
             _onFullscreenClose?.Invoke();
 #endif
@@ -58,8 +58,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Toggle();
 #else
-            if (GP_ConsoleController.Instance.FullscreenConsoleLogs)
-                Console.Log("FULL SCREEN: ", "TOGGLE");
+
+            ConsoleLog("TOGGLE");
 #endif
         }
 

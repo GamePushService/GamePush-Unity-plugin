@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
 using GamePush.Utilities;
 
 namespace GamePush
 {
-    public class GP_Files : MonoBehaviour
+    public class GP_Files : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Files);
+
         public static event UnityAction<FileData> OnUploadSuccess;
         public static event UnityAction OnUploadError;
 
@@ -54,9 +55,6 @@ namespace GamePush
         private static event Action<List<FileData>, bool> _onFetchMore;
         private static event Action _onFetchMoreError;
 
-
-
-
         [DllImport("__Internal")]
         private static extern void GP_Files_Upload(string tags);
         public static void Upload(string tags, Action<FileData> onUpload = null, Action onUploadError = null)
@@ -67,8 +65,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_Upload(tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD: ", tags);
+
+            ConsoleLog("UPLOAD: " + tags);
 #endif
         }
 
@@ -83,8 +81,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_UploadUrl(url, filename, tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD URL: ", url + " " + filename + " " + tags);
+
+            ConsoleLog("UPLOAD URL: " + url + " " + filename + " " + tags);
 #endif
         }
 
@@ -99,8 +97,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_UploadContent(content, filename, tags);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: UPLOAD CONTENT: ", content + " " + filename + " " + tags);
+
+            ConsoleLog("UPLOAD CONTENT: " + content + " " + filename + " " + tags);
 #endif
         }
 
@@ -115,8 +113,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_LoadContent(url);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "LOAD CONTENT: " + url);
+
+            ConsoleLog("LOAD CONTENT: " + url);
 #endif
         }
 
@@ -131,8 +129,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Files_ChooseFile(type);
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "CHOOSE FILE: " + type);
+
+            ConsoleLog("CHOOSE FILE: " + type);
 #endif
         }
 
@@ -150,8 +148,8 @@ namespace GamePush
             else
                 GP_Files_Fetch(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "FETCH");
+
+            ConsoleLog("FETCH");
 #endif
         }
 
@@ -169,8 +167,8 @@ namespace GamePush
             else
                 GP_Files_FetchMore(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.FilesConsoleLogs)
-                Console.Log("FILES: ", "FETCH MORE");
+
+            ConsoleLog("FETCH MORE");
 #endif
         }
 

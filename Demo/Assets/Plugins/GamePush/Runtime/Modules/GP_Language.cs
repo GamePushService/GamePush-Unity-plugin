@@ -3,12 +3,12 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_Language : MonoBehaviour
+    public class GP_Language : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Language);
+
         public static event UnityAction<Language> OnChangeLanguage;
         private static event Action<Language> _onChangeLanguage;
 
@@ -34,8 +34,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Current_Language());
 #else
-            if (GP_ConsoleController.Instance.LanguageConsoleLogs)
-                Console.Log("LANGUAGE CURRENT: ", GP_Settings.instance.GetLanguage().ToString());
+
+            ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
             return GP_Settings.instance.GetLanguage();
 #endif
         }
@@ -48,8 +48,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(ConvertToString(lang));
 #else
-            if (GP_ConsoleController.Instance.LanguageConsoleLogs)
-                Console.Log("LANGUAGE CHANGE: ", lang.ToString());
+
+            ConsoleLog("CHANGE: " + lang.ToString());
             OnChangeLanguage?.Invoke(lang);
             _onChangeLanguage?.Invoke(lang);
 #endif
