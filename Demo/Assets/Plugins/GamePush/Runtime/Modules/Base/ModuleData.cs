@@ -6,14 +6,18 @@ namespace GamePush
 {
     public enum ModuleName
     {
+        None,
         Achievements,
         Ads,
         Analytics,
         App,
         AvatarGenerator,
         Channels,
+        Custom,
         Device,
         Documents,
+        Events,
+        Experiments,
         Files,
         Fullscreen,
         Game,
@@ -25,6 +29,9 @@ namespace GamePush
         Platform,
         Player,
         Players,
+        Rewards,
+        Schedulers,
+        Segments,
         Server,
         Socials,
         System,
