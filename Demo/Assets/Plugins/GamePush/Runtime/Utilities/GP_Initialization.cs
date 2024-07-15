@@ -9,7 +9,7 @@ namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.3";
+        static string VERSION = "v1.5.0";
 
 
         [DllImport("__Internal")]
@@ -65,7 +65,15 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Schedulers>();
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
+            SDK.AddComponent<GP_Uniques>();
+            SDK.AddComponent<GP_Logger>();
 
+            EndInit();
+        }
+
+        private static async void EndInit()
+        {
+            await GP_Init.Ready;
             GP_Logger.Info($"Plugin {VERSION}", "Initialize");
         }
 

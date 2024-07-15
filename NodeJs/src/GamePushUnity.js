@@ -18,6 +18,11 @@ export default class GamePushUnity {
                 success ? 'CallPlayerLoginComplete' : 'CallPlayerLoginError'
             );
         });
+        this.gp.player.on('logout', (success) => {
+            this.trigger(
+                success ? 'CallPlayerLogoutComplete' : 'CallPlayerLogoutError'
+            );
+        });
 
         this.gp.on('event:connect', () => this.trigger('CallPlayerConnect'));
 
@@ -648,30 +653,30 @@ export default class GamePushUnity {
         });
 
         //Uniques
-        gp.uniques.on('register', (uniqueValue) => {
+        this.gp.uniques.on('register', (uniqueValue) => {
             this.trigger(
                 'CallOnUniqueValueRegister',
                 JSON.stringify(uniqueValue)
             );
         });
-        gp.uniques.on('error:register', (error) => {
+        this.gp.uniques.on('error:register', (error) => {
             this.trigger('CallOnUniqueValueRegisterError', error);
         });
 
-        gp.uniques.on('check', (uniqueValue) => {
+        this.gp.uniques.on('check', (uniqueValue) => {
             this.trigger('CallOnUniqueValueCheck', JSON.stringify(uniqueValue));
         });
-        gp.uniques.on('error:check', (error) => {
+        this.gp.uniques.on('error:check', (error) => {
             this.trigger('CallOnUniqueValueCheckError', error);
         });
 
-        gp.uniques.on('delete', (uniqueValue) => {
+        this.gp.uniques.on('delete', (uniqueValue) => {
             this.trigger(
                 'CallOnUniqueValueDelete',
                 JSON.stringify(uniqueValue)
             );
         });
-        gp.uniques.on('error:delete', (error) => {
+        this.gp.uniques.on('error:delete', (error) => {
             this.trigger('CallOnUniqueValueDeleteError', error);
         });
     }
@@ -862,6 +867,9 @@ export default class GamePushUnity {
     }
     PlayerLogin() {
         return this.gp.player.login();
+    }
+    PlayerLogout() {
+        return this.gp.player.logout();
     }
     PlayerFetchFields() {
         this.gp.player.fetchFields();
@@ -2626,7 +2634,7 @@ export default class GamePushUnity {
         this.gp.uniques.register({ tag, value });
     }
     UniquesDelete(tag) {
-        return this.toUnity(this.gp.uniques.delete(tag));
+        return this.toUnity(this.gp.uniques.delete({tag}));
     }
     //Uniques
 }

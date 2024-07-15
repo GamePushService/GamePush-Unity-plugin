@@ -19,6 +19,11 @@ class GamePushUnityInner {
                 success ? 'CallPlayerLoginComplete' : 'CallPlayerLoginError'
             );
         });
+        this.gp.player.on('logout', (success) => {
+            this.trigger(
+                success ? 'CallPlayerLogoutComplete' : 'CallPlayerLogoutError'
+            );
+        });
 
         this.gp.on('event:connect', () => this.trigger('CallPlayerConnect'));
 
@@ -649,33 +654,36 @@ class GamePushUnityInner {
         });
 
         //Uniques
-        gp.uniques.on('register', (uniqueValue) => {
+        this.gp.uniques.on('register', (uniqueValue) => {
+            console.log(uniqueValue);
             this.trigger(
                 'CallOnUniqueValueRegister',
                 JSON.stringify(uniqueValue)
             );
         });
-        gp.uniques.on('error:register', (error) => {
+        this.gp.uniques.on('error:register', (error) => {
             this.trigger('CallOnUniqueValueRegisterError', error);
         });
 
-        gp.uniques.on('check', (uniqueValue) => {
+        this.gp.uniques.on('check', (uniqueValue) => {
+            console.log(uniqueValue);
             this.trigger(
                 'CallOnUniqueValueCheck', 
                 JSON.stringify(uniqueValue)
             );
         });
-        gp.uniques.on('error:check', (error) => {
+        this.gp.uniques.on('error:check', (error) => {
             this.trigger('CallOnUniqueValueCheckError', error);
         });
 
-        gp.uniques.on('delete', (uniqueValue) => {
+        this.gp.uniques.on('delete', (uniqueValue) => {
+            console.log(uniqueValue);
             this.trigger(
                 'CallOnUniqueValueDelete',
                 JSON.stringify(uniqueValue)
             );
         });
-        gp.uniques.on('error:delete', (error) => {
+        this.gp.uniques.on('error:delete', (error) => {
             this.trigger('CallOnUniqueValueDeleteError', error);
         });
     }
@@ -861,6 +869,9 @@ class GamePushUnityInner {
     }
     PlayerLogin() {
         return this.gp.player.login();
+    }
+    PlayerLogout() {
+        return this.gp.player.logout();
     }
     PlayerFetchFields() {
         this.gp.player.fetchFields();
@@ -2624,7 +2635,7 @@ class GamePushUnityInner {
         this.gp.uniques.register({ tag, value });
     }
     UniquesDelete(tag) {
-        return this.toUnity(this.gp.uniques.delete(tag));
+        this.toUnity(this.gp.uniques.delete({tag}));
     }
     //Uniques
 }

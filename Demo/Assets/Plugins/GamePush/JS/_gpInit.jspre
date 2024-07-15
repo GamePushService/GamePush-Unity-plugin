@@ -4,6 +4,13 @@ function _GP(){
     return GamePush || window.GamePush;
 }
 
+function _ToBuff(value){
+    var bufferSize = lengthBytesUTF8(value) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(value, buffer, bufferSize);
+    return buffer;
+}
+
 var _unityInnerAwaiter = {};
     _unityInnerAwaiter.ready = new Promise((resolve) => {
       _unityInnerAwaiter.done = resolve;
