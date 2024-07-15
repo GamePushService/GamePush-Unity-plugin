@@ -19,8 +19,13 @@ namespace GamePush
         public static event UnityAction OnSyncError;
         public static event UnityAction OnLoadComplete;
         public static event UnityAction OnLoadError;
+
         public static event UnityAction OnLoginComplete;
         public static event UnityAction OnLoginError;
+
+        public static event UnityAction OnLogoutComplete;
+        public static event UnityAction OnLogoutError;
+
         public static event UnityAction<List<PlayerFetchFieldsData>> OnPlayerFetchFieldsComplete;
         public static event UnityAction OnPlayerFetchFieldsError;
 
@@ -449,6 +454,18 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Logout();
+        public static void Logout()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_Logout();
+#else
+
+            ConsoleLog("LOGOUT");
+#endif
+        }
+
 
 
         [DllImport("__Internal")]
@@ -589,6 +606,9 @@ namespace GamePush
         private void CallPlayerLoginComplete() => OnLoginComplete?.Invoke();
         private void CallPlayerLoginError() => OnLoginError?.Invoke();
 
+        private void CallPlayerLogoutComplete() => OnLogoutComplete?.Invoke();
+        private void CallPlayerLogoutError() => OnLogoutError?.Invoke();
+
         private void CallPlayerFetchFieldsComplete(string data)
         {
             OnPlayerFetchFieldsComplete?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
@@ -605,11 +625,12 @@ namespace GamePush
         public string type;
         public string defaultValue; // string | bool | number
         public bool important;
-        public Variants[] variants;
+        public bool isPublic;
+        public PlayerFieldVariant[] variants;
     }
 
     [System.Serializable]
-    public class Variants
+    public class PlayerFieldVariant
     {
         public string value; // string | number
         public string name;
