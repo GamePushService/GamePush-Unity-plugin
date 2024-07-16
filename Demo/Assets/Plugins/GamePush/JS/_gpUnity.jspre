@@ -25,6 +25,18 @@ class GamePushUnityInner {
             );
         });
 
+        this.gp.player.on('field:maximum', ({ field }) => {
+            this.trigger('CallPlayerFieldReachMaximum', JSON.stringify(field));
+        });
+
+        this.gp.player.on('field:minimum', ({ field }) => {
+            this.trigger('CallPlayerFieldReachMinimum', JSON.stringify(field));
+        });
+
+        this.gp.player.on('field:increment', ({ field, oldValue, newValue }) => {
+            this.trigger('CallPlayerFieldIncrement', JSON.stringify(field));
+        });
+
         this.gp.on('event:connect', () => this.trigger('CallPlayerConnect'));
 
         this.gp.player.on('fetchFields', (success) => {
@@ -654,38 +666,35 @@ class GamePushUnityInner {
         });
 
         //Uniques
-        this.gp.uniques.on('register', (uniqueValue) => {
-            console.log(uniqueValue);
-            this.trigger(
-                'CallOnUniqueValueRegister',
-                JSON.stringify(uniqueValue)
-            );
-        });
-        this.gp.uniques.on('error:register', (error) => {
-            this.trigger('CallOnUniqueValueRegisterError', error);
-        });
+        // this.gp.uniques.on('register', (uniqueValue) => {
+        //     this.trigger(
+        //         'CallOnUniqueValueRegister',
+        //         JSON.stringify(uniqueValue)
+        //     );
+        // });
+        // this.gp.uniques.on('error:register', (error) => {
+        //     this.trigger('CallOnUniqueValueRegisterError', error);
+        // });
 
-        this.gp.uniques.on('check', (uniqueValue) => {
-            console.log(uniqueValue);
-            this.trigger(
-                'CallOnUniqueValueCheck', 
-                JSON.stringify(uniqueValue)
-            );
-        });
-        this.gp.uniques.on('error:check', (error) => {
-            this.trigger('CallOnUniqueValueCheckError', error);
-        });
+        // this.gp.uniques.on('check', (uniqueValue) => {
+        //     this.trigger(
+        //         'CallOnUniqueValueCheck', 
+        //         JSON.stringify(uniqueValue)
+        //     );
+        // });
+        // this.gp.uniques.on('error:check', (error) => {
+        //     this.trigger('CallOnUniqueValueCheckError', error);
+        // });
 
-        this.gp.uniques.on('delete', (uniqueValue) => {
-            console.log(uniqueValue);
-            this.trigger(
-                'CallOnUniqueValueDelete',
-                JSON.stringify(uniqueValue)
-            );
-        });
-        this.gp.uniques.on('error:delete', (error) => {
-            this.trigger('CallOnUniqueValueDeleteError', error);
-        });
+        // this.gp.uniques.on('delete', (uniqueValue) => {
+        //     this.trigger(
+        //         'CallOnUniqueValueDelete',
+        //         JSON.stringify(uniqueValue)
+        //     );
+        // });
+        // this.gp.uniques.on('error:delete', (error) => {
+        //     this.trigger('CallOnUniqueValueDeleteError', error);
+        // });
     }
 
     async trigger(eventName, value) {
@@ -811,6 +820,14 @@ class GamePushUnityInner {
 
     PlayerGet(key) {
         return this.toUnity(this.gp.player.get(key));
+    }
+
+    PlayerGetMaxValue(key) {
+        return this.toUnity(this.gp.player.getMaxValue(key));
+    }
+
+    PlayerGetMinValue(key) {
+        return this.toUnity(this.gp.player.getMinValue(key));
     }
 
     PlayerSetString(key, value) {
@@ -2623,7 +2640,16 @@ class GamePushUnityInner {
 
     //Uniques
     UniquesRegister(tag, value) {
-        this.gp.uniques.register({ tag, value });
+        this.gp.uniques.register({ tag, value })
+        .then((uniqueValue) => {
+            this.trigger(
+                'CallOnUniqueValueRegister',
+                JSON.stringify(uniqueValue)
+            );
+        })
+        .catch((error) => {
+            this.trigger('CallOnUniqueValueRegisterError', error);
+        });
     }
     UniquesGet(tag) {
         return this.toUnity(this.gp.uniques.get(tag));
@@ -2632,10 +2658,28 @@ class GamePushUnityInner {
         return this.toUnity(this.gp.uniques.list);
     }
     UniquesCheck(tag, value) {
-        this.gp.uniques.register({ tag, value });
+        this.gp.uniques.register({ tag, value })
+        .then((uniqueValue) => {
+            this.trigger(
+                'CallOnUniqueValueCheck',
+                JSON.stringify(uniqueValue)
+            );
+        })
+        .catch((error) => {
+            this.trigger('CallOnUniqueValueCheckError', error);
+        });
     }
     UniquesDelete(tag) {
-        this.toUnity(this.gp.uniques.delete({tag}));
+        this.gp.uniques.delete({tag})
+        .then((uniqueValue) => {
+            this.trigger(
+                'CallOnUniqueValueDelete',
+                JSON.stringify(uniqueValue)
+            );
+        })
+        .catch((error) => {
+            this.trigger('CallOnUniqueValueDeleteError', error);
+        });
     }
     //Uniques
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
+using GamePush.Utilities;
 
 namespace GamePush
 {
@@ -11,16 +11,16 @@ namespace GamePush
     {
         private void OnValidate() => SetModuleName(ModuleName.Uniques);
 
-        public static event UnityAction<string> OnUniqueValueRegister;
+        public static event UnityAction<UniquesData> OnUniqueValueRegister;
         public static event UnityAction<string> OnUniqueValueRegisterError;
-        public static event UnityAction<string> OnUniqueValueCheck;
+        public static event UnityAction<UniquesData> OnUniqueValueCheck;
         public static event UnityAction<string> OnUniqueValueCheckError;
         public static event UnityAction<string> OnUniqueValueDelete;
         public static event UnityAction<string> OnUniqueValueDeleteError;
 
-        private static event Action<string> _onUniqueValueRegister;
+        private static event Action<UniquesData> _onUniqueValueRegister;
         private static event Action<string> _onUniqueValueRegisterError;
-        private static event Action<string> _onUniqueValueCheck;
+        private static event Action<UniquesData> _onUniqueValueCheck;
         private static event Action<string> _onUniqueValueCheckError;
         private static event Action<string> _onUniqueValueDelete;
         private static event Action<string> _onUniqueValueDeleteError;
@@ -31,9 +31,8 @@ namespace GamePush
         public static void Register(
             string tag,
             string value,
-            Action<string> onUniqueValueRegister = null,
-            Action<string> onUniqueValueRegisterError = null
-            )
+            Action<UniquesData> onUniqueValueRegister = null,
+            Action<string> onUniqueValueRegisterError = null)
         {
             _onUniqueValueRegister = onUniqueValueRegister;
             _onUniqueValueRegisterError = onUniqueValueRegisterError;
@@ -47,10 +46,12 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_UniquesGet(string tag);
-        public static string Get(string tag)
+        public static UniquesData Get(string tag)
         {
+
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_UniquesGet(tag);
+            string json = GP_UniquesGet(tag);
+            return UtilityJSON.Get<UniquesData>(json);
 #else
             ConsoleLog("Get");
             return null;
@@ -59,10 +60,11 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_UniquesList();
-        public static string List()
+        public static UniquesData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_UniquesList();
+            string json = GP_UniquesList();
+            return UtilityJSON.GetArray<UniquesData>(json);
 #else
             ConsoleLog("List");
             return null;
@@ -74,9 +76,8 @@ namespace GamePush
         public static void Check(
             string tag,
             string value,
-            Action<string> onUniqueValueCheck = null,
-            Action<string> onUniqueValueCheckError = null
-            )
+            Action<UniquesData> onUniqueValueCheck = null,
+            Action<string> onUniqueValueCheckError = null)
         {
             _onUniqueValueCheck = onUniqueValueCheck;
             _onUniqueValueCheckError = onUniqueValueCheckError;
@@ -93,8 +94,7 @@ namespace GamePush
         public static void Delete(
             string tag,
             Action<string> onUniqueValueDelete = null,
-            Action<string> onUniqueValueDeleteError = null
-            )
+            Action<string> onUniqueValueDeleteError = null)
         {
             _onUniqueValueDelete = onUniqueValueDelete;
             _onUniqueValueDeleteError = onUniqueValueDeleteError;
@@ -108,8 +108,9 @@ namespace GamePush
 
         private void CallOnUniqueValueRegister(string uniqueValue)
         {
-            OnUniqueValueRegister?.Invoke(uniqueValue);
-            _onUniqueValueRegister?.Invoke(uniqueValue);
+            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            OnUniqueValueRegister?.Invoke(data);
+            _onUniqueValueRegister?.Invoke(data);
         }
         private void CallOnUniqueValueRegisterError(string error)
         {
@@ -119,8 +120,9 @@ namespace GamePush
 
         private void CallOnUniqueValueCheck(string uniqueValue)
         {
-            OnUniqueValueCheck?.Invoke(uniqueValue);
-            _onUniqueValueCheck?.Invoke(uniqueValue);
+            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            OnUniqueValueCheck?.Invoke(data);
+            _onUniqueValueCheck?.Invoke(data);
         }
         private void CallOnUniqueValueCheckError(string error)
         {

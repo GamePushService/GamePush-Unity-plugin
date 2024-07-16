@@ -29,6 +29,10 @@ namespace GamePush
         public static event UnityAction<List<PlayerFetchFieldsData>> OnPlayerFetchFieldsComplete;
         public static event UnityAction OnPlayerFetchFieldsError;
 
+        public static event UnityAction<PlayerFetchFieldsData> OnFieldMaximum;
+        public static event UnityAction<PlayerFetchFieldsData> OnFieldMinimum;
+        public static event UnityAction<PlayerFetchFieldsData> OnFieldIncrement;
+
         private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
 
 
@@ -258,7 +262,31 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetMaxValue(string key);
+        public static float GetMaxValue(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetMaxValue(key);
+#else
 
+            ConsoleLog("GET MAX: KEY: " + key);
+            return 0;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetMinValue(string key);
+        public static float GetMinValue(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetMinValue(key);
+#else
+
+            ConsoleLog("GET MIN: KEY: " + key);
+            return 0;
+#endif
+        }
 
         [DllImport("__Internal")]
         private static extern string GP_Player_GetString(string key);
@@ -615,6 +643,13 @@ namespace GamePush
             _onFetchFields?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
         }
         private void CallPlayerFetchFieldsError() => OnPlayerFetchFieldsError?.Invoke();
+
+        private void CallPlayerFieldReachMaximum(string field) =>
+            OnFieldMaximum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+        private void CallPlayerFieldReachMinimum(string field) =>
+            OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+        private void CallPlayerFieldIncrement(string field) =>
+            OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
     }
 
     [System.Serializable]
@@ -625,8 +660,25 @@ namespace GamePush
         public string type;
         public string defaultValue; // string | bool | number
         public bool important;
-        public bool isPublic;
+        public bool @public;
+        public PlayerFieldIncrement intervalIncrement;
+        public PlayerFieldLimits limits;
         public PlayerFieldVariant[] variants;
+    }
+
+    [System.Serializable]
+    public class PlayerFieldIncrement
+    {
+        public float interval;
+        public float increment;
+    }
+
+    [System.Serializable]
+    public class PlayerFieldLimits
+    {
+        public float min;
+        public float max;
+        public bool couldGoOverLimit;
     }
 
     [System.Serializable]

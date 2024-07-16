@@ -94,6 +94,15 @@ mergeInto(LibraryManager.library, {
     GP_Player_GetNumberFloat: function (key) {
         return _GP().PlayerGet(UTF8ToString(key));
     },
+
+    GP_Player_GetMaxValue: function (key) {
+        return _GP().PlayerGetMaxValue(UTF8ToString(key));
+    },
+
+    GP_Player_GetMinValue: function (key) {
+        return _GP().PlayerGetMinValue(UTF8ToString(key));
+    },
+
     GP_Player_GetBool: function (key) {
         var value = _GP().PlayerGet(UTF8ToString(key));
         return _ToBuff(value);
