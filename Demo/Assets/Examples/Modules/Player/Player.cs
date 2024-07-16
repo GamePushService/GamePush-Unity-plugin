@@ -33,7 +33,10 @@ namespace Examples.Player
         [SerializeField] private Button _getFloatButton;
         [SerializeField] private Button _getBoolButton;
         [SerializeField] private Button _getStringButton;
+        [SerializeField] private Button _getMaxButton;
+        [SerializeField] private Button _getMinButton;
 
+        [Space(15)]
         [SerializeField] private Button _setButton;
         [SerializeField] private Button _addButton;
         [SerializeField] private Button _hasButton;
@@ -66,6 +69,10 @@ namespace Examples.Player
 
             GP_Player.OnPlayerChange += OnPlayerChange;
 
+            GP_Player.OnFieldMaximum += OnFieldMaximum;
+            GP_Player.OnFieldMinimum += OnFieldMinimum;
+            GP_Player.OnFieldIncrement += OnFieldIncrement;
+
             _getIDButton.onClick.AddListener(GetID);
             _getScoreButton.onClick.AddListener(GetScore);
             _getNameButton.onClick.AddListener(GetName);
@@ -77,6 +84,9 @@ namespace Examples.Player
             _getFloatButton.onClick.AddListener(GetFloat);
             _getBoolButton.onClick.AddListener(GetBool);
             _getStringButton.onClick.AddListener(GetString);
+
+            _getMaxButton.onClick.AddListener(GetMax);
+            _getMinButton.onClick.AddListener(GetMin);
 
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
@@ -108,6 +118,10 @@ namespace Examples.Player
 
             GP_Player.OnPlayerChange -= OnPlayerChange;
 
+            GP_Player.OnFieldMaximum -= OnFieldMaximum;
+            GP_Player.OnFieldMinimum -= OnFieldMinimum;
+            GP_Player.OnFieldIncrement -= OnFieldIncrement;
+
             _getIDButton.onClick.RemoveListener(GetID);
             _getScoreButton.onClick.RemoveListener(GetScore);
             _getNameButton.onClick.RemoveListener(GetName);
@@ -119,6 +133,9 @@ namespace Examples.Player
             _getFloatButton.onClick.RemoveListener(GetFloat);
             _getBoolButton.onClick.RemoveListener(GetBool);
             _getStringButton.onClick.RemoveListener(GetString);
+
+            _getMaxButton.onClick.RemoveListener(GetMax);
+            _getMinButton.onClick.RemoveListener(GetMin);
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
@@ -186,6 +203,18 @@ namespace Examples.Player
         {
             string value = GP_Player.GetString(_key.text);
             ConsoleUI.Instance.Log($"\nGet string {_key.text}: {value}");
+        }
+
+        public void GetMax()
+        {
+            float value = GP_Player.GetMaxValue(_key.text);
+            ConsoleUI.Instance.Log($"\nGet max value {_key.text}: {value}");
+        }
+
+        public void GetMin()
+        {
+            float value = GP_Player.GetMinValue(_key.text);
+            ConsoleUI.Instance.Log($"\nGet min value {_key.text}: {value}");
         }
 
 
@@ -281,20 +310,34 @@ namespace Examples.Player
             ConsoleUI.Instance.Log("\nPLAYER FIELDS:");
             foreach (PlayerFetchFieldsData field in playerFetchFields)
             {
-                ConsoleUI.Instance.Log($"\nField key: {field.key}");
-                ConsoleUI.Instance.Log($"Field name: {field.name}");
-                ConsoleUI.Instance.Log($"Field type: {field.type}");
-                ConsoleUI.Instance.Log($"Field important: {field.important}");
-                ConsoleUI.Instance.Log($"Field public: {field.isPublic}");
-                ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
+                PrintPlayerField(field);
+            }
+        }
 
-                foreach (PlayerFieldVariant variant in field.variants)
-                {
-                    ConsoleUI.Instance.Log($" variant:");
-                    ConsoleUI.Instance.Log($"  name: {variant.name}");
-                    ConsoleUI.Instance.Log($"  value: {variant.value}");
-                }
+        private void PrintPlayerField(PlayerFetchFieldsData field)
+        {
+            ConsoleUI.Instance.Log($"\nField key: {field.key}");
+            ConsoleUI.Instance.Log($"Field name: {field.name}");
+            ConsoleUI.Instance.Log($"Field type: {field.type}");
+            ConsoleUI.Instance.Log($"Field important: {field.important}");
+            ConsoleUI.Instance.Log($"Field public: {field.@public}");
+            ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
 
+            if (field.intervalIncrement != null)
+            {
+                ConsoleUI.Instance.Log($"Interval: {field.intervalIncrement.interval}");
+                ConsoleUI.Instance.Log($"Increment: {field.intervalIncrement.increment}");
+            }
+
+            ConsoleUI.Instance.Log($"Min value: {field.limits.min}");
+            ConsoleUI.Instance.Log($"Max value: {field.limits.max}");
+            ConsoleUI.Instance.Log($"Could Go Over Limit: {field.limits.couldGoOverLimit}");
+
+            foreach (PlayerFieldVariant variant in field.variants)
+            {
+                ConsoleUI.Instance.Log($" variant:");
+                ConsoleUI.Instance.Log($"  name: {variant.name}");
+                ConsoleUI.Instance.Log($"  value: {variant.value}");
             }
         }
 
@@ -311,5 +354,18 @@ namespace Examples.Player
         private void OnSync() => ConsoleUI.Instance.Log("Sync Complete");
 
         private void OnPlayerChange() => ConsoleUI.Instance.Log("Player Change");
+
+        private void OnFieldMaximum(PlayerFetchFieldsData field)
+        {
+            ConsoleUI.Instance.Log($"Field {field.name} Maximum");
+        }
+        private void OnFieldMinimum(PlayerFetchFieldsData field)
+        {
+            ConsoleUI.Instance.Log($"Field {field.name} Minimum");
+        }
+        private void OnFieldIncrement(PlayerFetchFieldsData field)
+        {
+            ConsoleUI.Instance.Log($"Field {field.name} Increment");
+        }
     }
 }

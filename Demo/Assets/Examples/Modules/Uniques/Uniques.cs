@@ -42,20 +42,24 @@ namespace Examples.Uniques
             GP_Uniques.Register(_tagInput.text, _valueInput.text, OnRegister, OnError);
         }
 
-        private void OnRegister(string tag) => ConsoleUI.Instance.Log("Register: SUCCESS: " + tag);
+        private void OnRegister(UniquesData data) => ConsoleUI.Instance.Log("Register: SUCCESS: " + data.tag + ": " + data.value);
 
         public void Get()
         {
             ConsoleUI.Instance.Log($"Get {_tagInput.text}:");
-            string value = GP_Uniques.Get(_tagInput.text);
-            ConsoleUI.Instance.Log(value);
+            UniquesData data = GP_Uniques.Get(_tagInput.text);
+            ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");
         }
 
         public void List()
         {
             ConsoleUI.Instance.Log($"Get List:");
-            string list = GP_Uniques.List();
-            ConsoleUI.Instance.Log(list);
+            UniquesData[] uniques = GP_Uniques.List();
+            foreach(UniquesData data in uniques)
+            {
+                ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");
+            }
+            
         }
 
         public void Check()
@@ -64,7 +68,7 @@ namespace Examples.Uniques
             GP_Uniques.Check(_tagInput.text, _valueInput.text, OnCheck, OnError);
         }
 
-        private void OnCheck(string tag) => ConsoleUI.Instance.Log("Check: SUCCESS: " + tag);
+        private void OnCheck(UniquesData data) => ConsoleUI.Instance.Log("Check: SUCCESS: " + data.tag + ": " + data.value);
 
         public void Delete()
         {
