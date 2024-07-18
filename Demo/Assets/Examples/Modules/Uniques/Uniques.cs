@@ -42,13 +42,15 @@ namespace Examples.Uniques
             GP_Uniques.Register(_tagInput.text, _valueInput.text, OnRegister, OnError);
         }
 
-        private void OnRegister(UniquesData data) => ConsoleUI.Instance.Log("Register: SUCCESS: " + data.tag + ": " + data.value);
+        private void OnRegister() => ConsoleUI.Instance.Log("Register: SUCCESS");
 
         public void Get()
         {
             ConsoleUI.Instance.Log($"Get {_tagInput.text}:");
-            UniquesData data = GP_Uniques.Get(_tagInput.text);
-            ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");
+            //UniquesData data = GP_Uniques.Get(_tagInput.text);
+            //ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");
+            string data = GP_Uniques.Get(_tagInput.text);
+            ConsoleUI.Instance.Log($"Value: {data}");
         }
 
         public void List()
@@ -68,7 +70,7 @@ namespace Examples.Uniques
             GP_Uniques.Check(_tagInput.text, _valueInput.text, OnCheck, OnError);
         }
 
-        private void OnCheck(UniquesData data) => ConsoleUI.Instance.Log("Check: SUCCESS: " + data.tag + ": " + data.value);
+        private void OnCheck() => ConsoleUI.Instance.Log("Check: Value available");
 
         public void Delete()
         {
@@ -76,7 +78,7 @@ namespace Examples.Uniques
             GP_Uniques.Delete(_tagInput.text, OnDelete, OnError);
         }
 
-        private void OnDelete(string tag) => ConsoleUI.Instance.Log("Delete: SUCCESS: " + tag);
+        private void OnDelete() => ConsoleUI.Instance.Log("Delete complete");
 
         private void OnError(string error) => ConsoleUI.Instance.Log("ERROR: " + error);
     }

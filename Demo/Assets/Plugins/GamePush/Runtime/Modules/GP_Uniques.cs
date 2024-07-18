@@ -11,18 +11,18 @@ namespace GamePush
     {
         private void OnValidate() => SetModuleName(ModuleName.Uniques);
 
-        public static event UnityAction<UniquesData> OnUniqueValueRegister;
+        public static event UnityAction OnUniqueValueRegister;
         public static event UnityAction<string> OnUniqueValueRegisterError;
-        public static event UnityAction<UniquesData> OnUniqueValueCheck;
+        public static event UnityAction OnUniqueValueCheck;
         public static event UnityAction<string> OnUniqueValueCheckError;
-        public static event UnityAction<string> OnUniqueValueDelete;
+        public static event UnityAction OnUniqueValueDelete;
         public static event UnityAction<string> OnUniqueValueDeleteError;
 
-        private static event Action<UniquesData> _onUniqueValueRegister;
+        private static event Action _onUniqueValueRegister;
         private static event Action<string> _onUniqueValueRegisterError;
-        private static event Action<UniquesData> _onUniqueValueCheck;
+        private static event Action _onUniqueValueCheck;
         private static event Action<string> _onUniqueValueCheckError;
-        private static event Action<string> _onUniqueValueDelete;
+        private static event Action _onUniqueValueDelete;
         private static event Action<string> _onUniqueValueDeleteError;
 
 
@@ -31,7 +31,7 @@ namespace GamePush
         public static void Register(
             string tag,
             string value,
-            Action<UniquesData> onUniqueValueRegister = null,
+            Action onUniqueValueRegister = null,
             Action<string> onUniqueValueRegisterError = null)
         {
             _onUniqueValueRegister = onUniqueValueRegister;
@@ -46,12 +46,13 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_UniquesGet(string tag);
-        public static UniquesData Get(string tag)
+        public static string Get(string tag)
         {
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            string json = GP_UniquesGet(tag);
-            return UtilityJSON.Get<UniquesData>(json);
+            //string json = GP_UniquesGet(tag);
+            //return UtilityJSON.Get<UniquesData>(json);
+            return GP_UniquesGet(tag);
 #else
             ConsoleLog("Get");
             return null;
@@ -76,7 +77,7 @@ namespace GamePush
         public static void Check(
             string tag,
             string value,
-            Action<UniquesData> onUniqueValueCheck = null,
+            Action onUniqueValueCheck = null,
             Action<string> onUniqueValueCheckError = null)
         {
             _onUniqueValueCheck = onUniqueValueCheck;
@@ -93,7 +94,7 @@ namespace GamePush
         private static extern void GP_UniquesDelete(string tag);
         public static void Delete(
             string tag,
-            Action<string> onUniqueValueDelete = null,
+            Action onUniqueValueDelete = null,
             Action<string> onUniqueValueDeleteError = null)
         {
             _onUniqueValueDelete = onUniqueValueDelete;
@@ -108,9 +109,8 @@ namespace GamePush
 
         private void CallOnUniqueValueRegister(string uniqueValue)
         {
-            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
-            OnUniqueValueRegister?.Invoke(data);
-            _onUniqueValueRegister?.Invoke(data);
+            OnUniqueValueRegister?.Invoke();
+            _onUniqueValueRegister?.Invoke();
         }
         private void CallOnUniqueValueRegisterError(string error)
         {
@@ -120,9 +120,8 @@ namespace GamePush
 
         private void CallOnUniqueValueCheck(string uniqueValue)
         {
-            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
-            OnUniqueValueCheck?.Invoke(data);
-            _onUniqueValueCheck?.Invoke(data);
+            OnUniqueValueCheck?.Invoke();
+            _onUniqueValueCheck?.Invoke();
         }
         private void CallOnUniqueValueCheckError(string error)
         {
@@ -132,11 +131,12 @@ namespace GamePush
 
         private void CallOnUniqueValueDelete(string uniqueValue)
         {
-            OnUniqueValueDelete?.Invoke(uniqueValue);
-            _onUniqueValueDelete?.Invoke(uniqueValue);
+            OnUniqueValueDelete?.Invoke();
+            _onUniqueValueDelete?.Invoke();
         }
         private void CallOnUniqueValueDeleteError(string error)
         {
+            GP_Logger.Log("Delete", error);
             OnUniqueValueDeleteError?.Invoke(error);
             _onUniqueValueDeleteError?.Invoke(error);
         }
