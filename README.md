@@ -67,6 +67,7 @@ https://docs.gamepush.com/ru/docs/get-start/
 | [GP_System](#GP_System)                       |
 | [GP_Triggers](#GP_Triggers)                   |
 | [GP_Variables](#GP_Variables)                 |
+| [GP_Uniques](#GP_Uniques)                     |
 
 ## GP_Achievements
 
@@ -1342,6 +1343,7 @@ public enum Platform : byte
 | `Load`                     | void                                                       | void         |
 | `Sync`                     | `bool forceOverride = false`                               | void         |
 | `Login`                    | void                                                       | void         |
+| `Logout`                   | void                                                       | void         |
 | `FetchFields`              | `Action<List<PlayerFetchFieldsData>> onFetchFields = null` | void         |
 | `Has`                      | `string key`                                               | `bool`       |
 | `IsLoggedIn`               | void                                                       | `bool`       |
@@ -1364,6 +1366,8 @@ public enum Platform : byte
 | `OnLoadError`                 | void                          |
 | `OnLoginComplete`             | void                          |
 | `OnLoginError`                | void                          |
+| `OnLogoutComplete`            | void                          |
+| `OnLogoutError`               | void                          |
 | `OnPlayerFetchFieldsComplete` | `List<PlayerFetchFieldsData>` |
 | `OnPlayerFetchFieldsError`    | void                          |
 
@@ -1382,7 +1386,24 @@ public class PlayerFetchFieldsData
 ```
 
 ```c
-public class Variants
+public class PlayerFieldIncrement
+{
+    public float interval;
+    public float increment;
+}
+```
+
+```c
+public class PlayerFieldLimits
+{
+    public float min;
+    public float max;
+    public bool couldGoOverLimit;
+}
+```
+
+```c
+public class PlayerFieldVariant
 {
     public string value; // string | number
     public string name;
@@ -1781,3 +1802,43 @@ public class VariablesData
     public string value;
 }
 ```
+
+## GP_Uniques
+
+[Uniques variables documentation](https://docs.gamepush.com/docs/uniques/)
+
+### Methods
+
+| Method name | Method parameters                                                                                                 | Return value    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- | --------------- |
+| `Register`  | `string tag, string value, Action onUniqueValueRegister = null, Action<string> onUniqueValueRegisterError = null` | void            |
+| `Get`       | `string tag`                                                                                                      | `string`        |
+| `List`      | void                                                                                                              | `UniquesData[]` |
+| `Check`     | `string tag, string value, Action onUniqueValueCheck = null, Action<string> onUniqueValueCheckError = null`       | void            |
+| `Delete`    | `string tag, Action onUniqueValueCheck = null, Action<string> onUniqueValueCheckError = null`                     | void            |
+| `GetString` | `string key`                                                                                                      | `string`        |
+| `GetBool`   | `string key`                                                                                                      | `bool`          |
+| `GetImage`  | `string key`                                                                                                      | `string`        |
+| `GetFile`   | `string key`                                                                                                      | `string`        |
+
+### Actions
+
+| Action name                  | Return value |
+| ---------------------------- | ------------ |
+| `OnUniqueValueRegister`      | void         |
+| `OnUniqueValueRegisterError` | `string`     |
+| `OnUniqueValueCheck`         | void         |
+| `OnUniqueValueCheckError`    | `string`     |
+| `OnUniqueValueDelete`        | void         |
+| `OnUniqueValueDeleteError`   | `string`     |
+
+### Data structures
+
+```c
+public class UniquesData
+{
+    public string tag;
+    public string value;
+}
+```
+
