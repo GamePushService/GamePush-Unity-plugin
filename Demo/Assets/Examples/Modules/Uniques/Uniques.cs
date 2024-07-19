@@ -36,14 +36,6 @@ namespace Examples.Uniques
             _buttonDelete.onClick.RemoveListener(Delete);
         }
 
-        public void Register()
-        {
-            ConsoleUI.Instance.Log($"Register {_tagInput.text}, value: {_valueInput.text}");
-            GP_Uniques.Register(_tagInput.text, _valueInput.text, OnRegister, OnError);
-        }
-
-        private void OnRegister() => ConsoleUI.Instance.Log("Register: SUCCESS");
-
         public void Get()
         {
             ConsoleUI.Instance.Log($"Get {_tagInput.text}:");
@@ -57,11 +49,17 @@ namespace Examples.Uniques
         {
             ConsoleUI.Instance.Log($"Get List:");
             UniquesData[] uniques = GP_Uniques.List();
-            foreach(UniquesData data in uniques)
+            foreach (UniquesData data in uniques)
             {
                 ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");
             }
-            
+
+        }
+
+        public void Register()
+        {
+            ConsoleUI.Instance.Log($"Register {_tagInput.text}, value: {_valueInput.text}");
+            GP_Uniques.Register(_tagInput.text, _valueInput.text, OnRegister, OnError);
         }
 
         public void Check()
@@ -70,15 +68,17 @@ namespace Examples.Uniques
             GP_Uniques.Check(_tagInput.text, _valueInput.text, OnCheck, OnError);
         }
 
-        private void OnCheck() => ConsoleUI.Instance.Log("Check: Value available");
-
         public void Delete()
         {
             ConsoleUI.Instance.Log($"Delete {_tagInput.text}");
             GP_Uniques.Delete(_tagInput.text, OnDelete, OnError);
         }
 
-        private void OnDelete() => ConsoleUI.Instance.Log("Delete complete");
+        private void OnRegister(UniquesData unique) => ConsoleUI.Instance.Log("Register success: " + unique.tag + ", " + unique.value);
+
+        private void OnCheck(UniquesData unique) => ConsoleUI.Instance.Log("Check: Value available: " + unique.tag + ", " + unique.value);
+
+        private void OnDelete(string unique) => ConsoleUI.Instance.Log("Delete complete: " + unique);
 
         private void OnError(string error) => ConsoleUI.Instance.Log("ERROR: " + error);
     }

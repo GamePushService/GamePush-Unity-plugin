@@ -11,18 +11,18 @@ namespace GamePush
     {
         private void OnValidate() => SetModuleName(ModuleName.Uniques);
 
-        public static event UnityAction OnUniqueValueRegister;
+        public static event UnityAction<UniquesData> OnUniqueValueRegister;
         public static event UnityAction<string> OnUniqueValueRegisterError;
-        public static event UnityAction OnUniqueValueCheck;
+        public static event UnityAction<UniquesData> OnUniqueValueCheck;
         public static event UnityAction<string> OnUniqueValueCheckError;
-        public static event UnityAction OnUniqueValueDelete;
+        public static event UnityAction<string> OnUniqueValueDelete;
         public static event UnityAction<string> OnUniqueValueDeleteError;
 
-        private static event Action _onUniqueValueRegister;
+        private static event Action<UniquesData> _onUniqueValueRegister;
         private static event Action<string> _onUniqueValueRegisterError;
-        private static event Action _onUniqueValueCheck;
+        private static event Action<UniquesData> _onUniqueValueCheck;
         private static event Action<string> _onUniqueValueCheckError;
-        private static event Action _onUniqueValueDelete;
+        private static event Action<string> _onUniqueValueDelete;
         private static event Action<string> _onUniqueValueDeleteError;
 
 
@@ -31,7 +31,7 @@ namespace GamePush
         public static void Register(
             string tag,
             string value,
-            Action onUniqueValueRegister = null,
+            Action<UniquesData> onUniqueValueRegister = null,
             Action<string> onUniqueValueRegisterError = null)
         {
             _onUniqueValueRegister = onUniqueValueRegister;
@@ -77,7 +77,7 @@ namespace GamePush
         public static void Check(
             string tag,
             string value,
-            Action onUniqueValueCheck = null,
+            Action<UniquesData> onUniqueValueCheck = null,
             Action<string> onUniqueValueCheckError = null)
         {
             _onUniqueValueCheck = onUniqueValueCheck;
@@ -94,7 +94,7 @@ namespace GamePush
         private static extern void GP_UniquesDelete(string tag);
         public static void Delete(
             string tag,
-            Action onUniqueValueDelete = null,
+            Action<string> onUniqueValueDelete = null,
             Action<string> onUniqueValueDeleteError = null)
         {
             _onUniqueValueDelete = onUniqueValueDelete;
@@ -109,8 +109,9 @@ namespace GamePush
 
         private void CallOnUniqueValueRegister(string uniqueValue)
         {
-            OnUniqueValueRegister?.Invoke();
-            _onUniqueValueRegister?.Invoke();
+            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            OnUniqueValueRegister?.Invoke(data);
+            _onUniqueValueRegister?.Invoke(data);
         }
         private void CallOnUniqueValueRegisterError(string error)
         {
@@ -120,8 +121,9 @@ namespace GamePush
 
         private void CallOnUniqueValueCheck(string uniqueValue)
         {
-            OnUniqueValueCheck?.Invoke();
-            _onUniqueValueCheck?.Invoke();
+            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            OnUniqueValueCheck?.Invoke(data);
+            _onUniqueValueCheck?.Invoke(data);
         }
         private void CallOnUniqueValueCheckError(string error)
         {
@@ -131,8 +133,9 @@ namespace GamePush
 
         private void CallOnUniqueValueDelete(string uniqueValue)
         {
-            OnUniqueValueDelete?.Invoke();
-            _onUniqueValueDelete?.Invoke();
+            UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            OnUniqueValueDelete?.Invoke(data.tag);
+            _onUniqueValueDelete?.Invoke(data.tag);
         }
         private void CallOnUniqueValueDeleteError(string error)
         {
