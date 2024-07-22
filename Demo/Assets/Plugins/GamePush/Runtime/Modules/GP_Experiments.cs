@@ -8,19 +8,20 @@ using GamePush.ConsoleController;
 
 namespace GamePush
 {
-    public class GP_Experiments : MonoBehaviour
+    public class GP_Experiments : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Experiments);
+
         [DllImport("__Internal")]
         private static extern string GP_Experiments_Map();
         public static string Map()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string map = GP_Experiments_Map();
-            Debug.Log(map);
             return map;
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("EXPERIMENTS: ", "MAP");
+
+            ConsoleLog("MAP");
 
             return null;
 #endif
@@ -33,8 +34,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Experiments_Has(tag, cohort) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("EXPERIMENTS: ", tag + " | " + cohort);
+
+            ConsoleLog(tag + " | " + cohort);
             return false;
 #endif
         }

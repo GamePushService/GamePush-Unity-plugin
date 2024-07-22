@@ -9,11 +9,11 @@ using GamePush.Data;
 
 namespace GamePushEditor
 {
-    public class GP_LoginWindow : EditorWindow
+    public class GP_Window : EditorWindow
     {
         private const string SITE_URL = "https://gamepush.com";
 
-        private const string VERSION = "1.4.3";
+        private const string VERSION = "1.5.0";
 
         private static bool _isDataFetch;
 
@@ -37,7 +37,7 @@ namespace GamePushEditor
         [MenuItem("Tools/GamePush")]
         private static void ShowWindow()
         {
-            var window = GetWindow<GP_LoginWindow>();
+            var window = GetWindow<GP_Window>();
             window.minSize = new Vector2(300, 350);
             window.titleContent = new GUIContent("GamePush Settings");
             window.Show();
@@ -116,6 +116,7 @@ namespace GamePushEditor
             file.WriteLine("    {");
             file.WriteLine($"        public static string ID = \"{_id}\";");
             file.WriteLine($"        public static string TOKEN = \"{_token}\";");
+            file.WriteLine($"        public static int GAMEREADY_AUTOCALL = {_gameReadyDelay};");
             file.WriteLine("    }");
             file.WriteLine("}");
             file.Close();
@@ -240,7 +241,7 @@ namespace GamePushEditor
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
-            Console.Log("Data saved");
+            GP_Logger.SystemLog("Data saved");
         }
 
         private static bool ValidateToken(string input)

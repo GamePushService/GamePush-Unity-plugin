@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using GamePush.Utilities;
-using GamePush.ConsoleController;
 using System;
 
 namespace GamePush
 {
-    public class GP_Channels : MonoBehaviour
+    public class GP_Channels : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Channels);
         #region Actions
 
         public static event UnityAction<CreateChannelData> OnCreateChannel;
@@ -160,17 +160,48 @@ namespace GamePush
         #endregion
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_Open(int channel_ID);
+        private static extern void GP_Channels_OpenChat(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
+
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_Open(channel_ID);
+            GP_Channels_OpenChat(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: OPEN CHAT: CHANNEL ID: ", "" + channel_ID);
+
+            ConsoleLog("OPEN CHAT: CHANNEL ID: " + channel_ID);
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        public static void OpenChat(string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenChatWithTags(-10, tags);
+#else
+
+            ConsoleLog("OPEN CHAT");
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        public static void OpenChat(int channel_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenChatWithTags(channel_ID, tags);
+#else
+
+            ConsoleLog("OPEN CHAT: CHANNEL ID: " + channel_ID);
             _onOpenChat?.Invoke();
 #endif
         }
@@ -181,11 +212,43 @@ namespace GamePush
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_Open(-10);
+            GP_Channels_OpenChat(-10);
             WebGLInput.captureAllKeyboardInput = false;
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "OPEN CHAT");
+
+            ConsoleLog("OPEN CHAT");
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
+        public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenPersonalChat(player_ID, tags);
+#else
+
+            ConsoleLog("OPEN PERSONAL CHAT: PLAYER ID: " + player_ID);
+            _onOpenChat?.Invoke();
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
+        public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
+        {
+            _onOpenChat = onOpen;
+            _onCloseChat = onClose;
+            _onOpenChatError = onOpenError;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Channels_OpenFeed(player_ID, tags);
+#else
+
+            ConsoleLog("OPEN FEED: PLAYER ID: " + player_ID);
+            _onOpenChat?.Invoke();
 #endif
         }
 
@@ -196,8 +259,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Channels_IsMainChatEnabled() == "true";
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("IS MAIN CHAT ENABLED: ", "TRUE");
+
+            Console.Log("IS MAIN CHAT ENABLED: TRUE");
             return true;
 #endif
         }
@@ -210,8 +273,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Channels_MainChatId();
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("MAIN CHAT ID: ", "0");
+
+            Console.Log("MAIN CHAT ID: 0");
             return 0;
 #endif
         }
@@ -224,8 +287,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Join(channel_ID, "");
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "JOIN");
+
+            ConsoleLog("JOIN");
 #endif
         }
         public static void Join(int channel_ID, string password)
@@ -233,8 +296,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Join(channel_ID, password);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "JOIN");
+
+            ConsoleLog("JOIN");
 #endif
         }
 
@@ -245,8 +308,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_CancelJoin(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "CANCEL JOIN");
+
+            ConsoleLog("CANCEL JOIN");
 #endif
         }
 
@@ -257,8 +320,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Leave(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "LEAVE");
+
+            ConsoleLog("LEAVE");
 #endif
         }
 
@@ -269,8 +332,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Kick(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "KICK");
+
+            ConsoleLog("KICK");
 #endif
         }
 
@@ -281,8 +344,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Mute_Seconds(channel_ID, player_ID, seconds);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "MUTE");
+
+            ConsoleLog("MUTE");
 #endif
         }
 
@@ -293,8 +356,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_Mute_UnmuteAt(channel_ID, player_ID, unmuteAT);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "MUTE");
+
+            ConsoleLog("MUTE");
 #endif
         }
 
@@ -305,8 +368,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_UnMute(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "UNMUTE");
+
+            ConsoleLog("UNMUTE");
 #endif
         }
 
@@ -317,8 +380,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_SendInvite(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "SEND INVITE");
+
+            ConsoleLog("SEND INVITE");
 #endif
         }
 
@@ -329,8 +392,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_CancelInvite(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "CANCEL INVITE");
+
+            ConsoleLog("CANCEL INVITE");
 #endif
         }
 
@@ -341,8 +404,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_AcceptInvite(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "ACCEPT INVITE");
+
+            ConsoleLog("ACCEPT INVITE");
 #endif
         }
 
@@ -353,8 +416,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_RejectInvite(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "REJECT INVITE");
+
+            ConsoleLog("REJECT INVITE");
 #endif
         }
 
@@ -365,8 +428,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchInvites(limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH INVITES");
 #endif
         }
 
@@ -377,8 +440,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreInvites(limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE INVITES");
 #endif
         }
 
@@ -389,8 +452,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchChannelInvites(channel_ID, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH CHANNEL INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH CHANNEL INVITES");
 #endif
         }
 
@@ -401,8 +464,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreChannelInvites(channel_ID, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE CHANNEL INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE CHANNEL INVITES");
 #endif
         }
 
@@ -413,8 +476,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchSentInvites(channel_ID, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH SENT INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH SENT INVITES");
 #endif
         }
 
@@ -425,8 +488,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreSentInvites(channel_ID, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE SENT INVITES");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE SENT INVITES");
 #endif
         }
 
@@ -437,8 +500,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_AcceptJoinRequest(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "ACCEPT JOIN REQUEST");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("ACCEPT JOIN REQUEST");
 #endif
         }
 
@@ -449,8 +512,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_RejectJoinRequest(channel_ID, player_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "REJECT JOIN REQUEST");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("REJECT JOIN REQUEST");
 #endif
         }
 
@@ -461,8 +524,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchJoinRequests(channel_ID, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH JOIN REQUESTS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH JOIN REQUESTS");
 #endif
         }
 
@@ -473,32 +536,32 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreJoinRequests(channel_ID, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE JOIN REQUESTS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE JOIN REQUESTS");
 #endif
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_FetchSentJoinRequests(int channel_ID, int limit, int offset);
-        public static void FetchSentJoinRequests(int channel_ID, int limit = 50, int offset = 0)
+        private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
+        public static void FetchSentJoinRequests(int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_FetchSentJoinRequests(channel_ID, limit, offset);
+            GP_Channels_FetchSentJoinRequests(limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH SENT JOIN REQUESTS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH SENT JOIN REQUESTS");
 #endif
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Channels_FetchMoreSentJoinRequests(int channel_ID, int limit);
-        public static void FetchMoreSentJoinRequests(int channel_ID, int limit = 50)
+        private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
+        public static void FetchMoreSentJoinRequests(int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Channels_FetchMoreSentJoinRequests(channel_ID, limit);
+            GP_Channels_FetchMoreSentJoinRequests(limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE SENT JOIN REQUESTS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE SENT JOIN REQUESTS");
 #endif
         }
 
@@ -509,8 +572,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_SendMessage(channel_ID, text, tags);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "SEND MESSAGE");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("SEND MESSAGE");
 #endif
         }
 
@@ -521,8 +584,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_SendPersonalMessage(player_ID, text, tags);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "SEND PERSONAL MESSAGE");
+
+            ConsoleLog("SEND PERSONAL MESSAGE");
 #endif
         }
 
@@ -533,8 +596,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_SendFeedMessage(player_ID, text, tags);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "SEND FEED MESSAGE");
+
+            ConsoleLog("SEND FEED MESSAGE");
 #endif
         }
 
@@ -545,8 +608,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_EditMessage(message_ID, text);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "EDIT MESSAGE");
+
+            ConsoleLog("EDIT MESSAGE");
 #endif
         }
 
@@ -557,8 +620,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_DeleteMessage(message_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "DELETE MESSAGE");
+
+            ConsoleLog("DELETE MESSAGE");
 #endif
         }
 
@@ -569,8 +632,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMessages(channel_ID, tags, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MESSAGES");
+
+            ConsoleLog("FETCH MESSAGES");
 #endif
         }
 
@@ -581,8 +644,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchPersonalMessages(player_ID, tags, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH PERSONAL MESSAGES");
+
+            ConsoleLog("FETCH PERSONAL MESSAGES");
 #endif
         }
 
@@ -593,8 +656,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchFeedMessages(player_ID, tags, limit, offset);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH FEED MESSAGES");
+
+            ConsoleLog("FETCH FEED MESSAGES");
 #endif
         }
 
@@ -605,8 +668,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreMessages(channel_ID, tags, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE MESSAGES");
+
+            ConsoleLog("FETCH MORE MESSAGES");
 #endif
         }
 
@@ -617,8 +680,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMorePersonalMessages(player_ID, tags, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE PERSONAL MESSAGES");
+
+            ConsoleLog("FETCH MORE PERSONAL MESSAGES");
 #endif
         }
 
@@ -629,8 +692,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreFeedMessages(player_ID, tags, limit);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE FEED MESSAGES");
+
+            ConsoleLog("FETCH MORE FEED MESSAGES");
 #endif
         }
 
@@ -642,8 +705,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_DeleteChannel(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "DELETE CHANNEL");
+
+            ConsoleLog("DELETE CHANNEL");
 #endif
         }
 
@@ -654,8 +717,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchChannel(channel_ID);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH CHANNEL");
+
+            ConsoleLog("FETCH CHANNEL");
 #endif
         }
 
@@ -667,8 +730,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_CreateChannel(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "CREATE CHANNEL");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("CREATE CHANNEL");
 #endif
         }
 
@@ -680,8 +743,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_UpdateChannel(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "UPDATE CHANNEL");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("UPDATE CHANNEL");
 #endif
         }
 
@@ -692,8 +755,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchChannels(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH CHANNELS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH CHANNELS");
 #endif
         }
 
@@ -704,8 +767,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreChannels(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE CHANNELS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE CHANNELS");
 #endif
         }
 
@@ -716,8 +779,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMembers(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MEMBERS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MEMBERS");
 #endif
         }
 
@@ -728,8 +791,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Channels_FetchMoreMembers(JsonUtility.ToJson(filter));
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("CHANNELS: ", "FETCH MORE MEMBERS");
+            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            ConsoleLog("FETCH MORE MEMBERS");
 #endif
         }
 

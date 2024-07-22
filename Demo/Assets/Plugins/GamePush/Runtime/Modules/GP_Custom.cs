@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using GamePush.Utilities;
-using GamePush.ConsoleController;
 
 namespace GamePush
 {
-    public class GP_Custom : MonoBehaviour
+    public class GP_Custom : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Custom);
 
         public static event UnityAction<string> OnCustomAsyncReturn;
         public static event UnityAction<string> OnCustomAsyncError;
@@ -17,7 +17,7 @@ namespace GamePush
         public static event Action<string> _onCustomAsyncReturn;
         public static event Action<string> _onCustomAsyncError;
 
-        
+
         [DllImport("__Internal")]
         private static extern void GP_CustomCall(string name, string args);
         public static void Call(string name, string args = null)
@@ -25,8 +25,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_CustomCall(name, args);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Call: ", "Test");
+
+            ConsoleLog("Call: Test");
 #endif
         }
 
@@ -38,8 +38,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_CustomGetValue(path);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM value: ", "Test");
+
+            ConsoleLog("value: Test");
             return null;
 #endif
         }
@@ -53,8 +53,8 @@ namespace GamePush
             string result = GP_CustomReturn(name, args);
             return result;
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Return: ", "Test");
+
+            ConsoleLog("Return: Test");
             return null;
 #endif
         }
@@ -69,8 +69,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_CustomAsyncReturn(name, args);
 #else
-            if (GP_ConsoleController.Instance.AppConsoleLogs)
-                Console.Log("CUSTOM Async Return: ", "Test");
+
+            ConsoleLog("Async Return: Test");
 #endif
         }
 

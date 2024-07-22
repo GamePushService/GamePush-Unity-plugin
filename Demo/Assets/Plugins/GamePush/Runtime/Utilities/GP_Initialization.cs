@@ -9,7 +9,7 @@ namespace GamePush.Initialization
 {
     public class GP_Initialization
     {
-        static string VERSION = "v1.4.3";
+        static string VERSION = "v1.5.0";
 
 
         [DllImport("__Internal")]
@@ -19,17 +19,21 @@ namespace GamePush.Initialization
         private static void Execute()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-                        GP_UnityReady();
+             GP_UnityReady();
 #endif
 
             GameObject SDK = new GameObject();
             SDK.name = "GamePushSDK";
             UnityEngine.Object.DontDestroyOnLoad(SDK);
 
+#if UNITY_EDITOR
+            SDK.AddComponent<GP_ConsoleController>();
+#endif
+
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
 
-            SDK.AddComponent<GP_ConsoleController>();
+            
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
             SDK.AddComponent<GP_Analytics>();
@@ -61,8 +65,16 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Schedulers>();
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
+            SDK.AddComponent<GP_Uniques>();
+            SDK.AddComponent<GP_Logger>();
 
-            Console.Log($"plugin {VERSION} initialize");
+            EndInit();
+        }
+
+        private static async void EndInit()
+        {
+            await GP_Init.Ready;
+            GP_Logger.Info($"Plugin {VERSION}", "Initialize");
         }
 
         private static void SetUpInitAwaiter()

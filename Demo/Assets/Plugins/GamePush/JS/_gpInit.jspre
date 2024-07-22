@@ -4,6 +4,13 @@ function _GP(){
     return GamePush || window.GamePush;
 }
 
+function _ToBuff(value){
+    var bufferSize = lengthBytesUTF8(value) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(value, buffer, bufferSize);
+    return buffer;
+}
+
 var _unityInnerAwaiter = {};
     _unityInnerAwaiter.ready = new Promise((resolve) => {
       _unityInnerAwaiter.done = resolve;
@@ -46,20 +53,28 @@ setTimeout(() => {
     };
 
     window.onGPInit = async (gp) => {
+
+        GamePush = new GamePushUnityInner(gp);
+
         if (showPreloaderAd == 'True') {
             gp.ads.showPreloader();
         }
 
+        // if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
+        //     setTimeout(() => {
+        //         gp.gameStart();
+        //         gp.logger.log("GameReady autocall");
+        //         gp.logger.log(autocallGameReady);
+        //     }, parseFloat(autocallGameReady));
+        // }
+
         gp.player.ready.finally( async () => {
             await _unityInnerAwaiter.ready;
             SendMessage('GamePushSDK', 'CallOnSDKReady');
+            
         });
 
-        GamePush = new GamePushUnityInner(gp);
-
-        if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
-            setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
-        }
+        
     };
 
     ((g, a, m, e) => {

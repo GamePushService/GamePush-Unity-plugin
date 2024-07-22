@@ -2,12 +2,12 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-using GamePush.ConsoleController;
-
 namespace GamePush
 {
-    public class GP_AvatarGenerator : MonoBehaviour
+    public class GP_AvatarGenerator : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.AvatarGenerator);
+
         public static event UnityAction<string> OnChange;
 
 
@@ -18,8 +18,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Current_AvatarGenerator();
 #else
-            if (GP_ConsoleController.Instance.AvatarGeneratorConsoleLogs)
-                Console.Log("AVATAR GENERATOR: ", "CURRENT: dicebear_retro");
+
+            ConsoleLog("CURRENT: dicebear_retro");
             return "dicebear_retro";
 #endif
         }
@@ -32,8 +32,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Change_AvatarGenerator(generator.ToString());
 #else
-            if (GP_ConsoleController.Instance.AvatarGeneratorConsoleLogs)
-                Console.Log("AVATAR GENERATOR: ", "CHANGE: " + generator);
+
+            ConsoleLog("CHANGE: " + generator);
 #endif
         }
 

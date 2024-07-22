@@ -7,10 +7,7 @@ mergeInto(LibraryManager.library, {
     /* LANGUAGE */
     GP_Current_Language: function () {
         var value = _GP().Language();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_ChangeLanguage: function (language) {
         _GP().ChangeLanguage(UTF8ToString(language));
@@ -23,35 +20,23 @@ mergeInto(LibraryManager.library, {
     },
     GP_Current_AvatarGenerator: function () {
         var value = _GP().AvatarGenerator();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* AVATAR GENERATOR */
 
     /* PLATFORM */
     GP_Platform_Type: function () {
         var value = _GP().PlatformType();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Platform_HasIntegratedAuth: function () {
         var value = _GP().PlatformHasIntegratedAuth();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Platform_IsExternalLinksAllowed: function () {
         var value = _GP().PlatformIsExternalLinksAllowed();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* PLATFORM */
 
@@ -59,70 +44,43 @@ mergeInto(LibraryManager.library, {
     /* APP */
     GP_App_Title: function () {
         var value = _GP().AppTitle();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_App_Description: function () {
         var value = _GP().AppDescription();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_App_Image: function () {
         var value = _GP().AppImage();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_App_Url: function () {
         var value = _GP().AppUrl();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_App_ReviewRequest: function(){
         var value = _GP().AppRequestReview();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_App_CanReview: function(){
         var value = _GP().AppCanRequestReview();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_App_IsAlreadyReviewed: function(){
         var value = _GP().AppIsAlreadyReviewed();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_App_AddShortcut: function(){
         var value = _GP().AppAddShortcut();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_App_CanAddShortcut: function(){
         var value = _GP().AppCanAddShortcut();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     /* APP */
@@ -136,20 +94,23 @@ mergeInto(LibraryManager.library, {
     GP_Player_GetNumberFloat: function (key) {
         return _GP().PlayerGet(UTF8ToString(key));
     },
+
+    GP_Player_GetMaxValue: function (key) {
+        return _GP().PlayerGetMaxValue(UTF8ToString(key));
+    },
+
+    GP_Player_GetMinValue: function (key) {
+        return _GP().PlayerGetMinValue(UTF8ToString(key));
+    },
+
     GP_Player_GetBool: function (key) {
         var value = _GP().PlayerGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Player_GetString: function (key) {
         var value = _GP().PlayerGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Player_GetID: function () {
@@ -160,17 +121,11 @@ mergeInto(LibraryManager.library, {
     },
     GP_Player_GetName: function () {
         var value = _GP().PlayerGetName();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Player_GetAvatar: function () {
         var value = _GP().PlayerGetAvatar();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Player_GetFieldName: function (key) {
         return _GP().PlayerGetFieldName(UTF8ToString(key));
@@ -230,38 +185,29 @@ mergeInto(LibraryManager.library, {
     GP_Player_Login: function () {
         _GP().PlayerLogin();
     },
+    GP_Player_Logout: function () {
+        _GP().PlayerLogout();
+    },
     GP_Player_FetchFields: function () {
         _GP().PlayerFetchFields();
     },
 
     GP_Player_Has: function (key) {
         var value = _GP().PlayerHas(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Player_IsLoggedIn: function () {
         var value = _GP().PlayerIsLoggedIn();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Player_HasAnyCredentials: function () {
         var value = _GP().PlayerHasAnyCredentials();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Player_IsStub: function () {
         var value = _GP().PlayerIsStub();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     // Player stats 
@@ -331,10 +277,7 @@ mergeInto(LibraryManager.library, {
     },
     GP_Achievements_Has: function (idOrTag) {
         var value = _GP().AchievementsHas(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Achievements_GetProgress: function (idOrTag) {
         return _GP().AchievementsGetProgress(UTF8ToString(idOrTag));
@@ -355,19 +298,13 @@ mergeInto(LibraryManager.library, {
 
     GP_Payments_IsAvailable: function () {
         var value = _GP().PaymentsIsAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     /* Subscription */
     GP_Payments_IsSubscriptionsAvailable: function () {
         var value = _GP().PaymentsIsSubscriptionsAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Payments_Subscribe: function (idOrTag) {
         _GP().PaymentsSubscribe(UTF8ToString(idOrTag));
@@ -420,91 +357,55 @@ mergeInto(LibraryManager.library, {
 
     GP_Ads_IsAdblockEnabled: function () {
         var value = _GP().AdsIsAdblockEnabled();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
 
     GP_Ads_IsStickyAvailable: function () {
         var value = _GP().AdsIsStickyAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
 
     },
     GP_Ads_IsFullscreenAvailable: function () {
         var value = _GP().AdsIsFullscreenAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
 
     },
     GP_Ads_IsRewardedAvailable: function () {
         var value = _GP().AdsIsRewardedAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsPreloaderAvailable: function () {
         var value = _GP().AdsIsPreloaderAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsStickyPlaying: function () {
         var value = _GP().AdsIsStickyPlaying();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsFullscreenPlaying: function () {
         var value = _GP().AdsIsFullscreenPlaying();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsRewardedPlaying: function () {
         var value = _GP().AdsIsRewardedPlaying();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsPreloaderPlaying: function () {
         var value = _GP().AdsIsPreloaderPlaying();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsCountdownOverlayEnabled: function () {
         var value = _GP().AdsIsCountdownOverlayEnabled();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_IsRewardedFailedOverlayEnabled: function () {
         var value = _GP().AdsIsRewardedFailedOverlayEnabled();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Ads_CanShowFullscreenBeforeGamePlay: function () {
         var value = _GP().AdsCanShowFullscreenBeforeGamePlay();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     /* ADS */
@@ -541,62 +442,38 @@ mergeInto(LibraryManager.library, {
 
     GP_Socials_CommunityLink: function () {
         var value = _GP().SocialsCommunityLink();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Socials_IsSupportsShare: function () {
         var value = _GP().SocialsIsSupportsShare();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Socials_IsSupportsNativeShare: function () {
         var value = _GP().SocialsIsSupportsNativeShare();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Socials_IsSupportsNativePosts: function () {
         var value = _GP().SocialsIsSupportsNativePosts();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Socials_IsSupportsNativeInvite: function () {
         var value = _GP().SocialsIsSupportsNativeInvite();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Socials_CanJoinCommunity: function () {
         var value = _GP().SocialsCanJoinCommunity();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Socials_IsSupportsNativeCommunityJoin: function () {
         var value = _GP().SocialsIsSupportsNativeCommunityJoin();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
 
     },
 
     GP_Socials_MakeShareLink: function (content) {
         var value = _GP().SocialsMakeShareLink(UTF8ToString(content));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Socials_GetSharePlayerID: function () {
@@ -604,10 +481,7 @@ mergeInto(LibraryManager.library, {
     },
     GP_Socials_GetShareContent: function () {
         var value = _GP().SocialsGetShareContent();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* SOCIALS */
 
@@ -627,10 +501,7 @@ mergeInto(LibraryManager.library, {
     /*GAME*/
     GP_IsPaused: function () {
         var value = _GP().IsPaused();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Pause: function () {
@@ -663,18 +534,12 @@ mergeInto(LibraryManager.library, {
     /*DEVICE*/
     GP_IsMobile: function () {
         var value = _GP().IsMobile();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_IsPortrait: function () {
         var value = _GP().IsPortrait();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     /*DEVICE*/
@@ -684,10 +549,7 @@ mergeInto(LibraryManager.library, {
     /*SERVER*/
     GP_ServerTime: function () {
         var value = _GP().ServerTime();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /*SERVER*/
 
@@ -696,18 +558,12 @@ mergeInto(LibraryManager.library, {
     /*SYSTEM*/
     GP_IsDev: function () {
         var value = _GP().IsDev();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_IsAllowedOrigin: function () {
         var value = _GP().IsAllowedOrigin();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /*SYSTEM*/
 
@@ -718,10 +574,7 @@ mergeInto(LibraryManager.library, {
 
     GP_Variables_Has: function (key) {
         var value = _GP().VariablesHas(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Variables_GetNumberInt: function (key) {
@@ -734,41 +587,26 @@ mergeInto(LibraryManager.library, {
 
     GP_Variables_GetString: function (key) {
         var value = _GP().VariablesGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Variables_GetBool: function (key) {
         var value = _GP().VariablesGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Variables_GetImage: function (key) {
         var value = _GP().VariablesGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Variables_GetFile: function (key) {
         var value = _GP().VariablesGet(UTF8ToString(key));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Variables_IsPlatformVariablesAvailable: function(){
         var value = _GP().VariablesIsPlatformVariablesAvailable();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     
     GP_Variables_FetchPlatformVariables: function (params) {
@@ -824,16 +662,25 @@ mergeInto(LibraryManager.library, {
 
 
     /* CHANNELS */
-    GP_Channels_Open: function (channel_ID) {
+    GP_Channels_OpenChat: function (channel_ID) {
         _GP().Channels_Open_Chat(channel_ID);
+    },
+
+    GP_Channels_OpenChatWithTags: function (channel_ID, tags) {
+        _GP().Channels_Open_Chat_WithTags(channel_ID, UTF8ToString(tags));
+    },
+
+    GP_Channels_OpenPersonalChat: function (player_ID, tags) {
+        _GP().Channels_Open_Personal_Chat(player_ID, UTF8ToString(tags));
+    },
+
+    GP_Channels_OpenFeed: function (player_ID, tags) {
+        _GP().Channels_Open_Feed(player_ID, UTF8ToString(tags));
     },
 
     GP_Channels_IsMainChatEnabled: function () {
         var value = _GP().Channels_IsMainChatEnabled();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     GP_Channels_MainChatId: function () {
         return _GP().Channels_MainChatId();
@@ -902,11 +749,11 @@ mergeInto(LibraryManager.library, {
     GP_Channels_FetchMoreJoinRequests: function (channel_ID, limit) {
         _GP().Channels_FetchMoreJoinRequests(channel_ID, limit);
     },
-    GP_Channels_FetchSentJoinRequests: function (channel_ID, limit, offset) {
-        _GP().Channels_FetchSentJoinRequests(channel_ID, limit, offset);
+    GP_Channels_FetchSentJoinRequests: function (limit, offset) {
+        _GP().Channels_FetchSentJoinRequests(limit, offset);
     },
-    GP_Channels_FetchMoreSentJoinRequests: function (channel_ID, limit) {
-        _GP().Channels_FetchMoreSentJoinRequests(channel_ID, limit);
+    GP_Channels_FetchMoreSentJoinRequests: function (limit) {
+        _GP().Channels_FetchMoreSentJoinRequests(limit);
     },
     GP_Channels_SendMessage: function (channel_ID, text, tags) {
         _GP().Channels_SendMessage(channel_ID, UTF8ToString(text), UTF8ToString(tags));
@@ -983,42 +830,27 @@ mergeInto(LibraryManager.library, {
 
     GP_Triggers_List: function () {
         var value = _GP().Triggers_List();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Triggers_ActivatedList: function () {
         var value = _GP().Triggers_ActivatedList();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Triggers_GetTrigger: function (idOrTag) {
         var value = _GP().Triggers_GetTrigger(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Triggers_IsActivated: function (idOrTag) {
         var value = _GP().Triggers_IsActivated(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Triggers_IsClaimed: function (idOrTag) {
         var value = _GP().Triggers_IsClaimed(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* TRIGGERS */
 
@@ -1029,78 +861,51 @@ mergeInto(LibraryManager.library, {
 
     GP_Events_List: function () {
         var value = _GP().Events_List();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Events_ActiveList: function () {
         var value = _GP().Events_ActiveList();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Events_GetEvent: function (idOrTag) {
         var value = _GP().Events_GetEvent(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Events_IsActive: function (idOrTag) {
         var value = _GP().Events_IsActive(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Events_IsJoined: function (idOrTag) {
         var value = _GP().Events_IsJoined(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* EVENTS */
 
     /* SEGMENTS */
     GP_Segments_List: function () {
         var value = _GP().Segments_List();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Segments_Has: function (idOrTag) {
         var value = _GP().Segments_Has(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* SEGMENTS */
 
     /* EXPERIMENTS */
     GP_Experiments_Map: function () {
         var value = _GP().Experiments_Map();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Experiments_Has: function (tag, cohort) {
         var value = _GP().Experiments_Has(UTF8ToString(tag), UTF8ToString(cohort));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* EXPERIMENTS */
 
@@ -1115,50 +920,32 @@ mergeInto(LibraryManager.library, {
 
     GP_Rewards_List: function () {
         var value = _GP().Rewards_List();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Rewards_GivenList: function () {
         var value = _GP().Rewards_GivenList();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Rewards_GetReward: function (idOrTag) {
         var value = _GP().Rewards_GetReward(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Rewards_Has: function (idOrTag) {
         var value = _GP().Rewards_Has(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Rewards_HasAccepted: function (idOrTag) {
         var value = _GP().Rewards_HasAccepted(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Rewards_HasUnaccepted: function (idOrTag) {
         var value = _GP().Rewards_HasUnaccepted(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
     /* REWARDS */
 
@@ -1185,82 +972,52 @@ mergeInto(LibraryManager.library, {
 
     GP_Schedulers_List: function () {
         var value = _GP().Schedulers_List();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_ActiveList: function () {
         var value = _GP().Schedulers_ActiveList();
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_GetScheduler: function (idOrTag) {
         var value = _GP().Schedulers_GetScheduler(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_GetSchedulerDay: function (idOrTag, day) {
         var value = _GP().Schedulers_GetSchedulerDay(UTF8ToString(idOrTag), day);
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_GetSchedulerCurrentDay: function (idOrTag) {
         var value = _GP().Schedulers_GetSchedulerCurrentDay(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_IsRegistered: function (idOrTag) {
         var value = _GP().Schedulers_IsRegistered(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_IsTodayRewardClaimed: function (idOrTag) {
         var value = _GP().Schedulers_IsTodayRewardClaimed(UTF8ToString(idOrTag));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_CanClaimDay: function (idOrTag, day) {
         var value = _GP().Schedulers_CanClaimDay(UTF8ToString(idOrTag), day);
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_CanClaimDayAdditional: function (idOrTag, day, trigger) {
         var value = _GP().Schedulers_CanClaimDayAdditional(UTF8ToString(idOrTag), day,  UTF8ToString(trigger));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_Schedulers_CanClaimAllDay: function (idOrTag, day) {
         var value = _GP().Schedulers_CanClaimAllDay(UTF8ToString(idOrTag), day);
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     /* SCHEDULERS */
@@ -1295,18 +1052,12 @@ mergeInto(LibraryManager.library, {
 
     GP_CustomReturn: function(name, args){
         var value = _GP().CustomReturn(UTF8ToString(name), UTF8ToString(args));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_CustomGetValue: function(name){
         var value = _GP().CustomGetValue(UTF8ToString(name));
-        var bufferSize = lengthBytesUTF8(value) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(value, buffer, bufferSize);
-        return buffer;
+        return _ToBuff(value);
     },
 
     GP_CustomAsyncReturn: function(name, args){
@@ -1329,4 +1080,22 @@ mergeInto(LibraryManager.library, {
         _GP().LoggerLog(UTF8ToString(title), UTF8ToString(text));
     },
     /* LOGGER */
+
+     /* UNIQUES */
+    GP_UniquesRegister: function(tag, value){
+        _GP().UniquesRegister(UTF8ToString(tag), UTF8ToString(value));
+    },
+    GP_UniquesGet: function(tag){
+        return _ToBuff(_GP().UniquesGet(UTF8ToString(tag)));
+    },
+    GP_UniquesList: function(){
+        return _ToBuff(_GP().UniquesList());
+    },
+    GP_UniquesCheck: function(tag, value){
+        _GP().UniquesCheck(UTF8ToString(tag), UTF8ToString(value));
+    },
+    GP_UniquesDelete: function(tag){
+        _GP().UniquesDelete(UTF8ToString(tag));
+    },
+     /* UNIQUES */
 });

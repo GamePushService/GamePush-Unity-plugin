@@ -2,14 +2,14 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
-
 using GamePush.Utilities;
-using GamePush.ConsoleController;
 
 namespace GamePush
 {
-    public class GP_Triggers : MonoBehaviour
+    public class GP_Triggers : GP_Module
     {
+        private void OnValidate() => SetModuleName(ModuleName.Triggers);
+
         public static event UnityAction<TriggerData> OnTriggerActivate;
         public static event UnityAction<TriggerData> OnTriggerClaim;
         public static event UnityAction<string> OnTriggerClaimError;
@@ -25,8 +25,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Triggers_Claim(idOrTag);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("TRIGGERS: ", "CLAIM");
+
+            ConsoleLog("CLAIM");
 #endif
         }
 
@@ -38,8 +38,8 @@ namespace GamePush
             string triggers = GP_Triggers_List();
             return UtilityJSON.GetArray<TriggerData>(triggers);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("TRIGGERS: ", "LIST");
+
+            ConsoleLog("LIST");
 
             return null;
 #endif
@@ -53,8 +53,8 @@ namespace GamePush
             string triggers = GP_Triggers_ActivatedList();
             return UtilityJSON.GetArray<TriggerActive>(triggers);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("TRIGGERS: ", "Activated List");
+
+            ConsoleLog("Activated List");
 
             return null;
 #endif
@@ -68,8 +68,8 @@ namespace GamePush
             string data = GP_Triggers_GetTrigger(idOrTag);
             return UtilityJSON.Get<TriggerAllData>(data);
 #else
-            if (GP_ConsoleController.Instance.ChannelConsoleLogs)
-                Console.Log("TRIGGERS: ", "Get Trigger");
+
+            ConsoleLog("Get Trigger");
 
             return null;
 #endif
@@ -82,8 +82,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Triggers_IsActivated(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("TRIGGERS: ", "IsActivated");
+            ConsoleLog("IsActivated");
             return false;
 #endif
         }
@@ -95,8 +94,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Triggers_IsClaimed(idOrTag) == "true";
 #else
-            if (GP_ConsoleController.Instance.AdsConsoleLogs)
-                Console.Log("TRIGGERS: ", "IsClaimed");
+
+            ConsoleLog("IsClaimed");
             return false;
 #endif
         }
