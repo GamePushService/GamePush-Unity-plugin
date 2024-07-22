@@ -53,20 +53,28 @@ setTimeout(() => {
     };
 
     window.onGPInit = async (gp) => {
+
+        GamePush = new GamePushUnityInner(gp);
+
         if (showPreloaderAd == 'True') {
             gp.ads.showPreloader();
         }
 
+        // if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
+        //     setTimeout(() => {
+        //         gp.gameStart();
+        //         gp.logger.log("GameReady autocall");
+        //         gp.logger.log(autocallGameReady);
+        //     }, parseFloat(autocallGameReady));
+        // }
+
         gp.player.ready.finally( async () => {
             await _unityInnerAwaiter.ready;
             SendMessage('GamePushSDK', 'CallOnSDKReady');
+            
         });
 
-        GamePush = new GamePushUnityInner(gp);
-
-        if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
-            setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
-        }
+        
     };
 
     ((g, a, m, e) => {

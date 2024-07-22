@@ -41,7 +41,7 @@ PlayerSettings:
     height: 1
   m_SplashScreenLogos:
   - logo: {fileID: 21300000, guid: 4f50c24e0cf0e400f811fc2af70c978d, type: 3}
-    duration: 2
+    duration: 3
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1920
@@ -402,7 +402,7 @@ PlayerSettings:
   m_TemplateCustomTags:
     AUTOCALL_GAMEREADY: 
     CUSTOMIZATION: 
-    GAMEREADY_AUTOCALL_DELAY: 0
+    GAMEREADY_AUTOCALL_DELAY: 2000
     OVERLAY_BACKGROUND_COLOR: 
     PRODUCT_DESCRIPTION: 
     PROGRESS_BAR_BACKGROUND_COLOR: 
@@ -675,7 +675,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:PWA
+  webGLTemplate: PROJECT:GamePush
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 0

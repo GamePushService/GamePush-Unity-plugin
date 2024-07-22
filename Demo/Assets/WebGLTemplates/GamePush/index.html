@@ -82,17 +82,17 @@
     const unityLoader = document.createElement("script");
     unityLoader.src = loaderUrl;
     unityLoader.onload = async () => {
-      await _gpAwaiter.ready;
+      //await _gpAwaiter.ready;
       createUnityInstance(canvas, config, (progress) => {
         spinner.style.display = "none";
         progressBarEmpty.style.display = "";
         progressBarFull.style.width = `${100 * progress}%`;
       }).then((unityInstance) => {
         window.unityInstance = unityInstance;
-        _unityAwaiter.done(unityInstance);
+        //_unityAwaiter.done(unityInstance);
         loadingCover.style.display = "none";
       }).catch((message) => {
-        _unityAwaiter.abort(message);
+        //_unityAwaiter.abort(message);
         alert(message);
       });
     };
