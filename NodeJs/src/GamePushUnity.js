@@ -811,6 +811,14 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.player.get(key));
     }
 
+    PlayerGetMaxValue(key) {
+        return this.toUnity(this.gp.player.getMaxValue(key));
+    }
+
+    PlayerGetMinValue(key) {
+        return this.toUnity(this.gp.player.getMinValue(key));
+    }
+
     PlayerSetString(key, value) {
         this.gp.player.set(key, value);
     }
