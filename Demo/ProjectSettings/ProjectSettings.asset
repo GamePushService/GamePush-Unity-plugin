@@ -409,7 +409,7 @@ PlayerSettings:
   m_TemplateCustomTags:
     AUTOCALL_GAMEREADY: 
     CUSTOMIZATION: 
-    GAMEREADY_AUTOCALL_DELAY: 0
+    GAMEREADY_AUTOCALL_DELAY: 200
     OVERLAY_BACKGROUND_COLOR: 
     PRODUCT_DESCRIPTION: 
     PROGRESS_BAR_BACKGROUND_COLOR: 
@@ -682,7 +682,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: PROJECT:GamePush
+  webGLTemplate: APPLICATION:PWA
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 0

@@ -36,12 +36,6 @@ namespace GamePush
         {
             isReady = true;
             OnReady?.Invoke();
-
-            //if (ProjectData.GAMEREADY_AUTOCALL > 0)
-            //{
-            //    GP_Logger.Info("Autocall start");
-            //    StartCoroutine(GameReadyAutocall());
-            //}
         }
 
         private void CallOnSDKError()
@@ -57,7 +51,7 @@ namespace GamePush
             }
             if (ProjectData.GAMEREADY_AUTOCALL > 0)
             {
-                GP_Logger.Info("Autocall", "GameReady");
+                //GP_Logger.Info("Autocall", "GameReady");
                 GP_Game.GameReady();
             }
         }

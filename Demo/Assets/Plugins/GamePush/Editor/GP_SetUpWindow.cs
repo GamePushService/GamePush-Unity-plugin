@@ -23,6 +23,8 @@ namespace GamePushEditor
         private static bool _showPreloaderAd;
         private static int _gameReadyDelay;
 
+        private static bool _gameReadyAuto;
+
         private static SavedProjectData _projectData;
 
         private static Vector2 _scrollPos;

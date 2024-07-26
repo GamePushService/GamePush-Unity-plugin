@@ -29,6 +29,7 @@ namespace GamePush.Initialization
 #if UNITY_EDITOR
             SDK.AddComponent<GP_ConsoleController>();
 #endif
+            SDK.AddComponent<GP_Logger>();
 
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
@@ -66,8 +67,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
             SDK.AddComponent<GP_Uniques>();
-            SDK.AddComponent<GP_Logger>();
-
+            
             EndInit();
         }
 
