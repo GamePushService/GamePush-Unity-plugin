@@ -2,7 +2,10 @@
     "name": "GamePush.Data",
     "rootNamespace": "GamePush.Data",
     "references": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "WebGL"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
