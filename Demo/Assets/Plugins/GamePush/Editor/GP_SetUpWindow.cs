@@ -21,8 +21,6 @@ namespace GamePushEditor
         private static string _token;
 
         private static bool _showPreloaderAd;
-        private static int _gameReadyDelay;
-
         private static bool _gameReadyAuto;
 
         private static SavedProjectData _projectData;
@@ -61,7 +59,7 @@ namespace GamePushEditor
 
             _token = _projectData.token;
             _showPreloaderAd = _projectData.showPreAd;
-            _gameReadyDelay = _projectData.gameReadyDelay;
+            _gameReadyAuto = _projectData.gameReadyAuto;
         }
 
 
@@ -84,7 +82,7 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyDelay);
+            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyAuto);
 
             var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
@@ -98,7 +96,7 @@ namespace GamePushEditor
             PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _id.ToString());
             PlayerSettings.SetTemplateCustomValue("TOKEN", _token.ToString());
             PlayerSettings.SetTemplateCustomValue("SHOW_PRELOADER_AD", _showPreloaderAd.ToString());
-            PlayerSettings.SetTemplateCustomValue("GAMEREADY_AUTOCALL_DELAY", _gameReadyDelay.ToString());
+            PlayerSettings.SetTemplateCustomValue("GAMEREADY_AUTOCALL", _gameReadyAuto.ToString());
         }
 
         private static void SaveProjectDataToScript()
@@ -112,13 +110,15 @@ namespace GamePushEditor
             var path = AssetDatabase.GetAssetPath(DataLinker.projectData);
             var file = new System.IO.StreamWriter(path);
 
+            string gameReadyBool = _gameReadyAuto.ToString().ToLower();
+
             file.WriteLine("namespace GamePush.Data");
             file.WriteLine("{");
             file.WriteLine("    public static class ProjectData");
             file.WriteLine("    {");
             file.WriteLine($"        public static string ID = \"{_id}\";");
             file.WriteLine($"        public static string TOKEN = \"{_token}\";");
-            file.WriteLine($"        public static int GAMEREADY_AUTOCALL = {_gameReadyDelay};");
+            file.WriteLine($"        public static bool GAMEREADY_AUTOCALL = {gameReadyBool};");
             file.WriteLine("    }");
             file.WriteLine("}");
             file.Close();
@@ -136,7 +136,7 @@ namespace GamePushEditor
             file.WriteLine($"const dataProjectId = \'{_id}\';");
             file.WriteLine($"const dataPublicToken = \'{_token}\';");
             file.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
-            file.WriteLine($"const autocallGameReady = \'{_gameReadyDelay}\';");
+            file.WriteLine($"const autocallGameReady = \'{_gameReadyAuto}\';");
 
             file.Close();
 
@@ -145,7 +145,7 @@ namespace GamePushEditor
             filePre.WriteLine($"const dataProjectId = \'{_id}\';");
             filePre.WriteLine($"const dataPublicToken = \'{_token}\';");
             filePre.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
-            filePre.WriteLine($"const autocallGameReady = \'{_gameReadyDelay}\';");
+            filePre.WriteLine($"const autocallGameReady = \'{_gameReadyAuto}\';");
 
             filePre.Close();
 
@@ -197,7 +197,7 @@ namespace GamePushEditor
 
             _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
             GUILayout.Space(5);
-            _gameReadyDelay = EditorGUILayout.IntField("Game Ready Delay", _gameReadyDelay);
+            _gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _gameReadyAuto);
 
             GUILayout.Space(25);
 

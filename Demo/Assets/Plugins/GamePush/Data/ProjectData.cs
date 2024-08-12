@@ -4,6 +4,6 @@ namespace GamePush.Data
     {
         public static string ID = "1";
         public static string TOKEN = "token";
-        public static int GAMEREADY_AUTOCALL = 0;
+        public static bool GAMEREADY_AUTOCALL = true;
     }
 }

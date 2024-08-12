@@ -49,9 +49,8 @@ namespace GamePush
             {
                 yield return null;
             }
-            if (ProjectData.GAMEREADY_AUTOCALL > 0)
+            if (ProjectData.GAMEREADY_AUTOCALL)
             {
-                //GP_Logger.Info("Autocall", "GameReady");
                 GP_Game.GameReady();
             }
         }
