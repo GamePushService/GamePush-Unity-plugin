@@ -29,13 +29,24 @@ mergeInto(LibraryManager.library, {
         var value = _GP().PlatformType();
         return _ToBuff(value);
     },
-
     GP_Platform_HasIntegratedAuth: function () {
         var value = _GP().PlatformHasIntegratedAuth();
         return _ToBuff(value);
     },
+    GP_Platform_IsLogoutAvailable: function () {
+        var value = _GP().PlatformIsLogoutAvailable();
+        return _ToBuff(value);
+    },
     GP_Platform_IsExternalLinksAllowed: function () {
         var value = _GP().PlatformIsExternalLinksAllowed();
+        return _ToBuff(value);
+    },
+    GP_Platform_IsSecretCodeAuthAvailable: function () {
+        var value = _GP().PlatformIsSecretCodeAuthAvailable();
+        return _ToBuff(value);
+    },
+    GP_Platform_IsSupportsCloudSaves: function () {
+        var value = _GP().PlatformIsSupportsCloudSaves();
         return _ToBuff(value);
     },
     /* PLATFORM */
@@ -176,8 +187,17 @@ mergeInto(LibraryManager.library, {
     GP_Player_Remove: function () {
         _GP().PlayerRemove();
     },
+    GP_Player_Sync: function (storage, override) {
+        _GP().PlayerSync(storage, override);
+    },
     GP_Player_Sync: function (override) {
         _GP().PlayerSync(override);
+    },
+    GP_Player_EnableAutoSync: function (interval) {
+        _GP().PlayerEnableAutoSync(interval);
+    },
+    GP_Player_DisableAutoSync: function () {
+        _GP().PlayerDisableAutoSync();
     },
     GP_Player_Load: function () {
         _GP().PlayerLoad();
@@ -1081,7 +1101,7 @@ mergeInto(LibraryManager.library, {
     },
     /* LOGGER */
 
-     /* UNIQUES */
+    /* UNIQUES */
     GP_UniquesRegister: function(tag, value){
         _GP().UniquesRegister(UTF8ToString(tag), UTF8ToString(value));
     },
@@ -1097,5 +1117,23 @@ mergeInto(LibraryManager.library, {
     GP_UniquesDelete: function(tag){
         _GP().UniquesDelete(UTF8ToString(tag));
     },
-     /* UNIQUES */
+    /* UNIQUES */
+
+    /* STORAGE */
+    GP_StorageSetType: function(type){
+        _GP().StorageSetType(UTF8ToString(type));
+    },
+    GP_StorageGet: function(key){
+        _GP().StorageGet(UTF8ToString(key));
+    },
+    GP_StorageSet: function(key, value){
+        _GP().StorageSetType(UTF8ToString(key), UTF8ToString(value));
+    },
+    GP_StorageGetGlobal: function(key){
+        _GP().StorageSetType(UTF8ToString(key));
+    },
+    GP_StorageSetGlobal: function(key, value){
+        _GP().StorageSetType(UTF8ToString(key), UTF8ToString(value));
+    },
+    /* STORAGE */
 });

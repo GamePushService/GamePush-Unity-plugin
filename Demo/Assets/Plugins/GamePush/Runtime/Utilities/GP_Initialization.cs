@@ -67,7 +67,8 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Images>();
             SDK.AddComponent<GP_Custom>();
             SDK.AddComponent<GP_Uniques>();
-            
+            SDK.AddComponent<GP_Storage>();
+
             EndInit();
         }
 

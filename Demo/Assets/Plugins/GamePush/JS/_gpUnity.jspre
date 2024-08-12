@@ -696,6 +696,20 @@ class GamePushUnityInner {
         this.gp.uniques.on('error:delete', (error) => {
             this.trigger('CallOnUniqueValueDeleteError', error);
         });
+
+        //Storage
+        this.gp.storage.on('get', ({ key, value }) => {
+            this.trigger('CallOnStorageGet', value);
+        });
+        this.gp.storage.on('set', ({ key, value }) => {
+            this.trigger('CallOnStorageSet', value);
+        });
+        this.gp.storage.on('get:global', ({ key, value }) => {
+            this.trigger('CallOnStorageGetGlobal', value);
+        });
+        this.gp.storage.on('set:global', ({ key, value }) => {
+            this.trigger('CallOnStorageSetGlobal', value);
+        });
     }
 
     async trigger(eventName, value) {
@@ -739,14 +753,24 @@ class GamePushUnityInner {
     AvatarGenerator() {
         return this.gp.avatarGenerator;
     }
+
     PlatformType() {
         return this.gp.platform.type;
     }
     PlatformHasIntegratedAuth() {
         return this.toUnity(this.gp.platform.hasIntegratedAuth);
     }
+    PlatformIsLogoutAvailable() {
+        return this.toUnity(this.gp.platform.isLogoutAvailable);
+    }
     PlatformIsExternalLinksAllowed() {
         return this.toUnity(this.gp.platform.isExternalLinksAllowed);
+    }
+    PlatformIsSecretCodeAuthAvailable() {
+        return this.toUnity(this.gp.platform.isSecretCodeAuthAvailable);
+    }
+    PlatformIsSupportsCloudSaves() {
+        return this.toUnity(this.gp.platform.isSupportsCloudSaves);
     }
 
     AppTitle() {
@@ -879,9 +903,21 @@ class GamePushUnityInner {
     PlayerRemove() {
         this.gp.player.remove();
     }
+    //Sync
+    PlayerSync(storage = 'local', override = false) {
+        return this.gp.player.sync({ storage: storage, override: Boolean(override) });
+    }
     PlayerSync(override = false) {
         return this.gp.player.sync({ override: Boolean(override) });
     }
+    //AutoSync
+    PlayerEnableAutoSync(interval = 10) {
+        return this.gp.player.enableAutoSync({ interval: interval, storage: 'cloud' });
+    }
+    PlayerDisableAutoSync() {
+        return this.gp.player.disableAutoSync({ storage: 'cloud' });
+    }
+
     PlayerLoad() {
         return this.gp.player.load();
     }
@@ -2659,6 +2695,26 @@ class GamePushUnityInner {
         
     }
     //Uniques
+
+    //Storage
+    StorageSetType(type = "platform") {
+        this.gp.storage.setStorage({ type: type});
+    }
+    
+    StorageGet(key) {
+        return this.toUnity(this.gp.storage.get(key));
+    }
+    StorageSet(key, value) {
+        this.gp.storage.set({key: key, value: value});
+    }
+
+    StorageGetGlobal(key) {
+        return this.toUnity(this.gp.storage.getGlobal(key));
+    }
+    StorageSetGlobal(key, value) {
+        this.gp.storage.setGlobal({key: key, value: value});
+    }
+    //Storage
 }
 
 function formatCustomValue(value) {
