@@ -443,8 +443,20 @@ namespace GamePush
 
 
         [DllImport("__Internal")]
-        private static extern void GP_Player_Sync(bool forceOverride = false);
-        public static void Sync(bool forceOverride = false)
+        private static extern void GP_Player_Sync(string storage = "local", bool forceOverride = false);
+        public static void Sync(StorageType storage = StorageType.local, bool forceOverride = false)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_Sync(storage.ToString(), forceOverride);
+#else
+
+            ConsoleLog("SYNC");
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Sync(bool forceOverride);
+        public static void Sync(bool forceOverride)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride);
@@ -454,7 +466,27 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Player_EnableAutoSync(int interval);
+        public static void EnableAutoSync(int interval)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_EnableAutoSync(interval);
+#else
+            ConsoleLog("AUTO SYNC: ON");
+#endif
+        }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Player_DisableAutoSync();
+        public static void DisableAutoSync()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_DisableAutoSync();
+#else
+            ConsoleLog("AUTO SYNC: OFF");
+#endif
+        }
 
         [DllImport("__Internal")]
         private static extern void GP_Player_Load();
@@ -650,6 +682,15 @@ namespace GamePush
             OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
         private void CallPlayerFieldIncrement(string field) =>
             OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+    }
+
+    [System.Serializable]
+    public enum StorageType
+    {
+        local,
+        platform,
+        cloud,
+        preffered
     }
 
     [System.Serializable]
