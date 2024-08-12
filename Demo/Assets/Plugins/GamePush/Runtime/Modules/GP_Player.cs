@@ -450,7 +450,7 @@ namespace GamePush
             GP_Player_Sync(storage.ToString(), forceOverride);
 #else
 
-            ConsoleLog("SYNC");
+            ConsoleLog($"SYNC: {storage.ToString()}");
 #endif
         }
 
