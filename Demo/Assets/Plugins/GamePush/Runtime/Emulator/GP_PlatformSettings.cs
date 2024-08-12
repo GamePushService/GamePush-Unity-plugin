@@ -15,7 +15,10 @@ namespace GamePush
         [SerializeField] public bool IsPortrait = true;
         [Header("Platform")]
         [SerializeField] public bool HasIntegratedAuth = true;
+        [SerializeField] public bool IsLogoutAvailable = true;
         [SerializeField] public bool IsExternalLinksAllowed = true;
+        [SerializeField] public bool IsSecretCodeAuthAvailable = true;
+        [SerializeField] public bool IsSupportsCloudSaves = true;
         [Header("Player")]
         [SerializeField] public bool IsLoggedIn = true;
         [SerializeField] public bool HasAnyCredentials = true;
