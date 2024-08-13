@@ -11,29 +11,77 @@ namespace GamePush
     {
         private void OnValidate() => SetModuleName(ModuleName.Storage);
 
-        public static event UnityAction<object> OnGetValue;
-        public static event UnityAction<object> OnSetValue;
-        public static event UnityAction<object> OnGetGlobalValue;
-        public static event UnityAction<object> OnSetGlobalValue;
+        //public static event UnityAction<object> OnGetValue;
+        //public static event UnityAction<object> OnSetValue;
+        //public static event UnityAction<object> OnGetGlobalValue;
+        //public static event UnityAction<object> OnSetGlobalValue;
 
         private static event Action<object> _onGetValue;
         private static event Action<object> _onSetValue;
         private static event Action<object> _onGetGlobalValue;
         private static event Action<object> _onSetGlobalValue;
 
-        [DllImport("__Internal")]
-        private static extern string GP_StorageGet(string key);
+        public enum SaveStorage { local, platform};
 
-        public static T Get<T>(string key)
+        [DllImport("__Internal")]
+        private static extern void GP_StorageSetType(string key);
+        public static void SetStorage(SaveStorage storage)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_Player_GetString(key);
+            GP_StorageSetType(storage.ToString());
 #else
-            ConsoleLog("GET: KEY: " + key);
-            return GetPref<T>(key);
+            ConsoleLog("Set storage: " + storage.ToString());
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_StorageGet(string key);
+        public static void Get(string key, Action<object> onGetValue)
+        {
+            _onGetValue = onGetValue;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_StorageGet(key);
+#else
+            ConsoleLog("GET: KEY: " + key);
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSet(string key, string value);
+        public static void Set(string key, object value, Action<object> onSetValue = null)
+        {
+            _onSetValue = onSetValue;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_StorageSet(key, value.ToString());
+#else
+            ConsoleLog($"SET: KEY: {key}, VALUE: {value}");
+#endif
+        }
+
+
+        [DllImport("__Internal")]
+        private static extern string GP_StorageGetGlobal(string key);
+        public static void GetGlobal(string key, Action<object> onGetGlobalValue)
+        {
+            _onGetGlobalValue = onGetGlobalValue;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_StorageGet(key);
+#else
+            ConsoleLog("GET GLOBAL: KEY: " + key);
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobal(string key, string value);
+        public static void SetGlobal(string key, object value, Action<object> onSetGlobalValue = null)
+        {
+            _onSetGlobalValue = onSetGlobalValue;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_StorageSet(key, value.ToString());
+#else
+            ConsoleLog($"SET GLOBAL: KEY: {key}, VALUE: {value}");
+#endif
+        }
 
         private static T GetPref<T>(string key)
         {
@@ -67,25 +115,25 @@ namespace GamePush
 
         private void CallOnStorageGet(object value)
         {
-            OnGetValue?.Invoke(value);
+            //OnGetValue?.Invoke(value);
             _onGetValue?.Invoke(value);
         }
 
         private void CallOnStorageSet(object value)
         {
-            OnSetValue?.Invoke(value);
+            //OnSetValue?.Invoke(value);
             _onSetValue?.Invoke(value);
         }
 
         private void CallOnStorageGetGlobal(object value)
         {
-            OnGetGlobalValue?.Invoke(value);
+            //OnGetGlobalValue?.Invoke(value);
             _onGetGlobalValue?.Invoke(value);
         }
 
         private void CallOnStorageSetGlobal(object value)
         {
-            OnSetGlobalValue?.Invoke(value);
+            //OnSetGlobalValue?.Invoke(value);
             _onSetGlobalValue?.Invoke(value);
         }
 
