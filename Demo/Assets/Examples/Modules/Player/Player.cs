@@ -271,7 +271,6 @@ namespace Examples.Player
         {
             int.TryParse(_value.text, out int value);
 
-            
             if(value > 0)
             {
                 ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
