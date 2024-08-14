@@ -19,10 +19,12 @@ namespace Examples.Platforms
         }
 
         public string Type() => GP_Platform.Type().ToString();
+        public string Tag() => GP_Platform.Tag();
 
         public void DefinePlatform()
         {
             ConsoleUI.Instance.Log(Type());
+            ConsoleUI.Instance.Log(Tag());
             ConsoleUI.Instance.Log("Has Integrated Auth: " + GP_Platform.HasIntegratedAuth().ToString());
             ConsoleUI.Instance.Log("Is External Links Allowed: " + GP_Platform.IsExternalLinksAllowed().ToString());
             ConsoleUI.Instance.Log("Is Logout Available: " + GP_Platform.IsLogoutAvailable().ToString());
