@@ -66,10 +66,10 @@ namespace Examples.Storage
             GP_Storage.SetStorage((SaveStorageType)_storage.value);
         }
 
-        private void OnGetValue(object value) => ConsoleUI.Instance.Log($"Get Value: {value.ToString()}, Type: {value.GetType()}");
-        private void OnSetValue(StorageField storage) => ConsoleUI.Instance.Log($"Set string: Key: {storage.key}, Value: {storage.value}");
-        private void OnGetGlobal(object value) => ConsoleUI.Instance.Log("Get Value: " + value.ToString());
-        private void OnSetGlobal(object value) => ConsoleUI.Instance.Log("Set Value: " + value.ToString());
+        private void OnGetValue(object value) => ConsoleUI.Instance.Log($"Get value: {value}, Type: {value.GetType()}");
+        private void OnSetValue(StorageField storage) => ConsoleUI.Instance.Log($"Set value: Key: {storage.key}, Value: {storage.value}");
+        private void OnGetGlobal(object value) => ConsoleUI.Instance.Log("Get global value: " + value.ToString());
+        private void OnSetGlobal(StorageField storage) => ConsoleUI.Instance.Log($"Set global value: Key: {storage.key}, Value: {storage.value}");
     }
 }
 

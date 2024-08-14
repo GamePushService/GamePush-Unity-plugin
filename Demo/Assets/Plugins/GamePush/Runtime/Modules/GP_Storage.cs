@@ -14,10 +14,15 @@ namespace GamePush
     {
         private void OnValidate() => SetModuleName(ModuleName.Storage);
 
+        public static event UnityAction<StorageField> OnGetValue;
+        public static event UnityAction<StorageField> OnSetValue;
+        public static event UnityAction<StorageField> OnGetGlobalValue;
+        public static event UnityAction<StorageField> OnSetGlobalValue;
+
         private static event Action<object> _onGetValue;
         private static event Action<StorageField> _onSetValue;
-        private static event Action<string> _onGetGlobalValue;
-        private static event Action<string> _onSetGlobalValue;
+        private static event Action<object> _onGetGlobalValue;
+        private static event Action<StorageField> _onSetGlobalValue;
 
 
         [DllImport("__Internal")]
@@ -92,7 +97,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern string GP_StorageGetGlobal(string key);
-        public static void GetGlobal(string key, Action<string> onGetGlobalValue)
+        public static void GetGlobal(string key, Action<object> onGetGlobalValue)
         {
             _onGetGlobalValue = onGetGlobalValue;
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -105,16 +110,47 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern string GP_StorageSetGlobal(string key, string value);
-        public static void SetGlobal(string key, string value, Action<string> onSetGlobalValue = null)
+        private static extern string GP_StorageSetGlobalString(string key, string value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobalNumber(string key, float value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobalBool(string key, bool value);
+
+        public static void SetGlobal(string key, object value, Action<StorageField> onSetGlobalValue = null)
         {
             _onSetGlobalValue = onSetGlobalValue;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_StorageSetGlobal(key, value);
+            StorageSetGlobalValue(key, value);
 #else
             ConsoleLog($"SET GLOBAL: KEY: {key}, VALUE: {value}");
             SetPref(key, value);
 #endif
+        }
+
+        private static void StorageSetGlobalValue(string key, object value)
+        {
+            if (value.GetType() == typeof(int))
+            {
+                GP_StorageSetGlobalNumber(key, (int)value);
+                return;
+            }
+            if (value.GetType() == typeof(float))
+            {
+                GP_StorageSetGlobalNumber(key, (float)value);
+                return;
+            }
+            if (value.GetType() == typeof(bool))
+            {
+                GP_StorageSetGlobalBool(key, (bool)value);
+                return;
+            }
+            if (value.GetType() == typeof(string))
+            {
+                GP_StorageSetGlobalString(key, (string)value);
+                return;
+            }
+            GP_StorageSetGlobalString(key, (string)value);
+
         }
 
         private static T GetPref<T>(string key)
@@ -153,8 +189,8 @@ namespace GamePush
 
         private void CallOnStorageGetValue(string result)
         {
-            Debug.Log("Call: " + result);
             StorageField field = JsonUtility.FromJson<StorageField>(result);
+            OnGetValue?.Invoke(field);
 
             string value = field.value;
             if (int.TryParse(value, out int i))
@@ -169,21 +205,32 @@ namespace GamePush
 
         private void CallOnStorageSetValue(string result)
         {
-            Debug.Log("Call: " + result);
             StorageField field = JsonUtility.FromJson<StorageField>(result);
             _onSetValue?.Invoke(field);
+            OnSetValue?.Invoke(field);
         }
 
-        private void CallOnStorageGetGlobal(string value)
+        private void CallOnStorageGetGlobal(string result)
         {
-            //OnGetGlobalValue?.Invoke(value);
-            _onGetGlobalValue?.Invoke(value);
+            StorageField field = JsonUtility.FromJson<StorageField>(result);
+            OnGetGlobalValue?.Invoke(field);
+
+            string value = field.value;
+            if (int.TryParse(value, out int i))
+                _onGetGlobalValue?.Invoke(i);
+            else if (float.TryParse(value, out float f))
+                _onGetGlobalValue?.Invoke(f);
+            else if (bool.TryParse(value, out bool b))
+                _onGetGlobalValue?.Invoke(b);
+            else
+                _onGetGlobalValue?.Invoke(value);
         }
 
-        private void CallOnStorageSetGlobal(string value)
+        private void CallOnStorageSetGlobal(string result)
         {
-            //OnSetGlobalValue?.Invoke(value);
-            _onSetGlobalValue?.Invoke(value);
+            StorageField field = JsonUtility.FromJson<StorageField>(result);
+            _onSetGlobalValue?.Invoke(field);
+            OnSetGlobalValue?.Invoke(field);
         }
     }
 
