@@ -29,6 +29,10 @@ mergeInto(LibraryManager.library, {
         var value = _GP().PlatformType();
         return _ToBuff(value);
     },
+    GP_Platform_Tag: function () {
+        var value = _GP().PlatformTag();
+        return _ToBuff(value);
+    },
     GP_Platform_HasIntegratedAuth: function () {
         var value = _GP().PlatformHasIntegratedAuth();
         return _ToBuff(value);
@@ -187,17 +191,14 @@ mergeInto(LibraryManager.library, {
     GP_Player_Remove: function () {
         _GP().PlayerRemove();
     },
-    GP_Player_Sync: function (storage, override) {
-        _GP().PlayerSync(storage, override);
+    GP_Player_Sync: function (override, storage) {
+        _GP().PlayerSync(UTF8ToString(storage), UTF8ToString(override));
     },
-    GP_Player_Sync: function (override) {
-        _GP().PlayerSync(override);
+    GP_Player_EnableAutoSync: function (interval, storage) {
+        _GP().PlayerEnableAutoSync(interval, UTF8ToString(storage));
     },
-    GP_Player_EnableAutoSync: function (interval) {
-        _GP().PlayerEnableAutoSync(interval);
-    },
-    GP_Player_DisableAutoSync: function () {
-        _GP().PlayerDisableAutoSync();
+    GP_Player_DisableAutoSync: function (storage) {
+        _GP().PlayerDisableAutoSync(UTF8ToString(storage));
     },
     GP_Player_Load: function () {
         _GP().PlayerLoad();
@@ -1135,11 +1136,19 @@ mergeInto(LibraryManager.library, {
     GP_StorageSetBool: function(key, value){
         _GP().StorageSetBool(UTF8ToString(key), UTF8ToString(value));
     },
+
     GP_StorageGetGlobal: function(key){
         _GP().StorageGetGlobal(UTF8ToString(key));
     },
-    GP_StorageSetGlobal: function(key, value){
-        _GP().StorageSetGlobal(UTF8ToString(key), UTF8ToString(value));
+
+   GP_StorageSetGlobalString: function(key, value){
+        _GP().StorageSetGlobalString(UTF8ToString(key), UTF8ToString(value));
+    },
+    GP_StorageSetGlobalNumber: function(key, value){
+        _GP().StorageSetGlobalNumber(UTF8ToString(key), value);
+    },
+    GP_StorageSetGlobalBool: function(key, value){
+        _GP().StorageSetGlobalBool(UTF8ToString(key), UTF8ToString(value));
     },
     /* STORAGE */
 });

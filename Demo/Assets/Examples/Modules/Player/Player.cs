@@ -275,7 +275,7 @@ namespace Examples.Player
             if(value > 0)
             {
                 ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
-                GP_Player.EnableAutoSync(value, (SyncStorageType)_storage.value);
+                GP_Player.EnableAutoSync(interval: value, storage: (SyncStorageType)_storage.value);
             }
             else
             {

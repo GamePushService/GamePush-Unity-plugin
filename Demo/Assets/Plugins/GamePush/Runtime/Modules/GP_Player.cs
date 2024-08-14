@@ -440,26 +440,22 @@ namespace GamePush
 #endif
         }
 
-
-
         [DllImport("__Internal")]
-        private static extern void GP_Player_Sync(string storage = "local", bool forceOverride = false);
-        public static void Sync(SyncStorageType storage = SyncStorageType.local, bool forceOverride = false)
+        private static extern void GP_Player_Sync(bool forceOverride = false, string storage = "preferred");
+        public static void Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Player_Sync(storage.ToString(), forceOverride);
+            GP_Player_Sync(forceOverride: forceOverride, storage: storage.ToString());
 #else
 
             ConsoleLog($"SYNC: {storage.ToString()}");
 #endif
         }
 
-        [DllImport("__Internal")]
-        private static extern void GP_Player_Sync(bool forceOverride);
         public static void Sync(bool forceOverride)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Player_Sync(forceOverride);
+            GP_Player_Sync(forceOverride: forceOverride);
 #else
 
             ConsoleLog("SYNC");
@@ -687,10 +683,10 @@ namespace GamePush
     [System.Serializable]
     public enum SyncStorageType
     {
+        preffered,
         local,
         platform,
-        cloud,
-        preffered
+        cloud
     }
 
     [System.Serializable]
