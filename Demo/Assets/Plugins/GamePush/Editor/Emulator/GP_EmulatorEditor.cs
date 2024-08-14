@@ -32,6 +32,9 @@ namespace GamePush
         SerializedProperty SocialsConsoleLogs;
         SerializedProperty SystemConsoleLogs;
         SerializedProperty VariablesConsoleLogs;
+        SerializedProperty TriggersConsoleLogs;
+        SerializedProperty UniquesConsoleLogs;
+        SerializedProperty StorageConsoleLogs;
         #endregion
 
         private void OnEnable()
@@ -41,7 +44,7 @@ namespace GamePush
             AnalyticsConsoleLogs = serializedObject.FindProperty("AnalyticsConsoleLogs");
             AppConsoleLogs = serializedObject.FindProperty("AppConsoleLogs");
             AvatarGeneratorConsoleLogs = serializedObject.FindProperty("AvatarGeneratorConsoleLogs");
-            ChannelConsoleLogs = serializedObject.FindProperty("ChannelConsoleLogs");
+            ChannelConsoleLogs = serializedObject.FindProperty("ChannelsConsoleLogs");
             DeviceConsoleLogs = serializedObject.FindProperty("DeviceConsoleLogs");
             DocumentsConsoleLogs = serializedObject.FindProperty("DocumentsConsoleLogs");
             FilesConsoleLogs = serializedObject.FindProperty("FilesConsoleLogs");
@@ -59,6 +62,9 @@ namespace GamePush
             SocialsConsoleLogs = serializedObject.FindProperty("SocialsConsoleLogs");
             SystemConsoleLogs = serializedObject.FindProperty("SystemConsoleLogs");
             VariablesConsoleLogs = serializedObject.FindProperty("VariablesConsoleLogs");
+            TriggersConsoleLogs = serializedObject.FindProperty("TriggersConsoleLogs");
+            UniquesConsoleLogs = serializedObject.FindProperty("UniquesConsoleLogs");
+            StorageConsoleLogs = serializedObject.FindProperty("StorageConsoleLogs");
         }
 
         public override void OnInspectorGUI()
@@ -101,6 +107,9 @@ namespace GamePush
             EditorGUILayout.PropertyField(SocialsConsoleLogs);
             EditorGUILayout.PropertyField(SystemConsoleLogs);
             EditorGUILayout.PropertyField(VariablesConsoleLogs);
+            EditorGUILayout.PropertyField(TriggersConsoleLogs);
+            EditorGUILayout.PropertyField(UniquesConsoleLogs);
+            EditorGUILayout.PropertyField(StorageConsoleLogs);
             EditorGUILayout.Space(10);
 
 

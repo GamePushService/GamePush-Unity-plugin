@@ -11,7 +11,7 @@ namespace GamePush
 {
     public class GP_Player : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Player);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Player);
 
         public static event UnityAction OnConnect;
         public static event UnityAction OnPlayerChange;

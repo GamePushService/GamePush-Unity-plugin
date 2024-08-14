@@ -6,7 +6,7 @@ namespace GamePush
 {
     public class GP_AvatarGenerator : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.AvatarGenerator);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.AvatarGenerator);
 
         public static event UnityAction<string> OnChange;
 

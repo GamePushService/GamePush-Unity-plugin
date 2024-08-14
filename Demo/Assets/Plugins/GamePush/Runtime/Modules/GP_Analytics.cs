@@ -5,7 +5,7 @@ namespace GamePush
 {
     public class GP_Analytics : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Analytics);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Analytics);
 
         [DllImport("__Internal")]
         private static extern void GP_Analytics_Hit(string url);

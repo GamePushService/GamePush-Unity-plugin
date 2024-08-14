@@ -5,7 +5,7 @@ namespace GamePush
 {
     public class GP_Platform : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Platform);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Platform);
 
         private static string YANDEX = "YANDEX";
         private static string VK = "VK";

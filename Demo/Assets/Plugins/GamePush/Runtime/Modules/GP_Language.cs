@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_Language : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Language);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Language);
 
         public static event UnityAction<Language> OnChangeLanguage;
         private static event Action<Language> _onChangeLanguage;

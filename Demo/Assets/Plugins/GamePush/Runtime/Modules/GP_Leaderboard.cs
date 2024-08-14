@@ -6,7 +6,7 @@ namespace GamePush
 {
     public class GP_Leaderboard : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Leaderboard);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Leaderboard);
 
         public static event UnityAction<string, GP_Data> OnFetchSuccess;
         public static event UnityAction<string, GP_Data> OnFetchTopPlayers;

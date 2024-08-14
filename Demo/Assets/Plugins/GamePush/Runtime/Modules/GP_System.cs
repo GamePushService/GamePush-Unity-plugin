@@ -4,7 +4,7 @@ namespace GamePush
 {
     public class GP_System : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.System);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.System);
 
         [DllImport("__Internal")]
         private static extern string GP_IsDev();

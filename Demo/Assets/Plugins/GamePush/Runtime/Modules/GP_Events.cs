@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Events : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Events);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Events);
 
         public static event UnityAction<PlayerEvents> OnEventJoin;
         public static event UnityAction<string> OnEventJoinError;

@@ -9,7 +9,7 @@ namespace GamePush
 {
     public class GP_Documents : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Documents);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Documents);
 
         public static event UnityAction OnDocumentsOpen;
         public static event UnityAction OnDocumentsClose;

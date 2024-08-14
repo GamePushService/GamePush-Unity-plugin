@@ -12,7 +12,7 @@ namespace GamePush
 
     public class GP_Storage : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Storage);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Storage);
 
         public static event UnityAction<StorageField> OnGetValue;
         public static event UnityAction<StorageField> OnSetValue;

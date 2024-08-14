@@ -9,7 +9,7 @@ namespace GamePush
 {
     public class GP_Custom : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Custom);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Custom);
 
         public static event UnityAction<string> OnCustomAsyncReturn;
         public static event UnityAction<string> OnCustomAsyncError;

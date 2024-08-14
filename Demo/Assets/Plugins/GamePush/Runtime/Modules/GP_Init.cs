@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Init : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Init);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Init);
 
         public static bool isReady = false;
 
@@ -18,9 +18,14 @@ namespace GamePush
         public static event Action OnReady;
         public static event Action OnError;
 
-        private void Awake()
+        private void OnEnable()
         {
             OnReady += GRA;
+        }
+
+        private void OnDisable()
+        {
+            OnReady -= GRA;
         }
 
         private void GRA() => StartCoroutine(GameReadyAutocall());
