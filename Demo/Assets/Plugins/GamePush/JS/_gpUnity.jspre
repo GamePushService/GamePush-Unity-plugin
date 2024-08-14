@@ -698,17 +698,21 @@ class GamePushUnityInner {
         });
 
         //Storage
-        this.gp.storage.on('get', ({ key, value }) => {
-            this.trigger('CallOnStorageGet', value);
+        this.gp.storage.on('get', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetValue', JSON.stringify(result));
         });
-        this.gp.storage.on('set', ({ key, value }) => {
-            this.trigger('CallOnStorageSet', value);
+        this.gp.storage.on('set', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetValue', JSON.stringify(result));
         });
-        this.gp.storage.on('get:global', ({ key, value }) => {
-            this.trigger('CallOnStorageGetGlobal', value);
+        this.gp.storage.on('get:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetGlobal', JSON.stringify(result));
         });
-        this.gp.storage.on('set:global', ({ key, value }) => {
-            this.trigger('CallOnStorageSetGlobal', value);
+        this.gp.storage.on('set:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
         });
     }
 
@@ -2702,14 +2706,33 @@ class GamePushUnityInner {
     }
     
     StorageGet(key) {
-        return this.toUnity(this.gp.storage.get(key));
+        this.gp.storage
+            .get(key)
+            .then(
+                (value) => 
+                {
+                    console.log(key + "|" + value);
+                }
+            );
     }
-    StorageSet(key, value) {
-        this.gp.storage.set({key: key, value: value});
+    async StorageSet(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+
+    async StorageSetString(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetNumber(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetBool(key, value) {
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        await this.gp.storage.set(key, value);
     }
 
     StorageGetGlobal(key) {
-        return this.toUnity(this.gp.storage.getGlobal(key));
+        this.gp.storage.getGlobal(key);
     }
     StorageSetGlobal(key, value) {
         this.gp.storage.setGlobal({key: key, value: value});

@@ -20,8 +20,10 @@ namespace GamePush
 
         private void Awake()
         {
-            StartCoroutine(GameReadyAutocall());
+            OnReady += GRA;
         }
+
+        private void GRA() => StartCoroutine(GameReadyAutocall());
 
         private void Start()
         {

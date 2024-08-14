@@ -264,20 +264,30 @@ namespace Examples.Player
         {
             ConsoleUI.Instance.Log($"\nSync player");
             
-            GP_Player.Sync((StorageType)_storage.value);
+            GP_Player.Sync((SyncStorageType)_storage.value);
         }
 
         public void AutosyncEnable()
         {
             int.TryParse(_value.text, out int value);
 
-            ConsoleUI.Instance.Log($"\nEnable AutoSync");
-            GP_Player.EnableAutoSync(value);
+            
+            if(value > 0)
+            {
+                ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
+                GP_Player.EnableAutoSync(value, (SyncStorageType)_storage.value);
+            }
+            else
+            {
+                ConsoleUI.Instance.Log($"\nEnable AutoSync, storage: {(SyncStorageType)_storage.value}");
+                GP_Player.EnableAutoSync(storage: (SyncStorageType)_storage.value);
+            }
+                
         }
         public void AutosyncDisable()
         {
-            ConsoleUI.Instance.Log($"\nDisable AutoSync");
-            GP_Player.DisableAutoSync();
+            ConsoleUI.Instance.Log($"\nDisable AutoSync, storage: {(SyncStorageType)_storage.value}");
+            GP_Player.DisableAutoSync((SyncStorageType)_storage.value);
         }
 
 

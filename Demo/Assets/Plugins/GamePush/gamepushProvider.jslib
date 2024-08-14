@@ -1126,14 +1126,20 @@ mergeInto(LibraryManager.library, {
     GP_StorageGet: function(key){
         _GP().StorageGet(UTF8ToString(key));
     },
-    GP_StorageSet: function(key, value){
-        _GP().StorageSetType(UTF8ToString(key), UTF8ToString(value));
+    GP_StorageSetString: function(key, value){
+        _GP().StorageSetString(UTF8ToString(key), UTF8ToString(value));
+    },
+    GP_StorageSetNumber: function(key, value){
+        _GP().StorageSetNumber(UTF8ToString(key), value);
+    },
+    GP_StorageSetBool: function(key, value){
+        _GP().StorageSetBool(UTF8ToString(key), UTF8ToString(value));
     },
     GP_StorageGetGlobal: function(key){
-        _GP().StorageSetType(UTF8ToString(key));
+        _GP().StorageGetGlobal(UTF8ToString(key));
     },
     GP_StorageSetGlobal: function(key, value){
-        _GP().StorageSetType(UTF8ToString(key), UTF8ToString(value));
+        _GP().StorageSetGlobal(UTF8ToString(key), UTF8ToString(value));
     },
     /* STORAGE */
 });

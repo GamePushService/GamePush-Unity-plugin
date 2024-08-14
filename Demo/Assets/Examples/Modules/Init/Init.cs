@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GamePush;
 
 namespace Examples.Init
@@ -21,6 +22,7 @@ namespace Examples.Init
         {
             await GP_Init.Ready;
             GP_Logger.SystemLog("Init Example: isReady {IsReady()}");
+            SceneManager.LoadScene(1);
         }
 
         private bool IsReady() => GP_Init.isReady;

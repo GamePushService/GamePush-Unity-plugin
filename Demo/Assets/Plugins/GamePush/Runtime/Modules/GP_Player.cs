@@ -444,7 +444,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Player_Sync(string storage = "local", bool forceOverride = false);
-        public static void Sync(StorageType storage = StorageType.local, bool forceOverride = false)
+        public static void Sync(SyncStorageType storage = SyncStorageType.local, bool forceOverride = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(storage.ToString(), forceOverride);
@@ -467,22 +467,22 @@ namespace GamePush
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Player_EnableAutoSync(int interval);
-        public static void EnableAutoSync(int interval)
+        private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
+        public static void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Player_EnableAutoSync(interval);
+            GP_Player_EnableAutoSync(interval, storage.ToString());
 #else
             ConsoleLog("AUTO SYNC: ON");
 #endif
         }
 
         [DllImport("__Internal")]
-        private static extern void GP_Player_DisableAutoSync();
-        public static void DisableAutoSync()
+        private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
+        public static void DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Player_DisableAutoSync();
+            GP_Player_DisableAutoSync(storage.ToString());
 #else
             ConsoleLog("AUTO SYNC: OFF");
 #endif
@@ -685,7 +685,7 @@ namespace GamePush
     }
 
     [System.Serializable]
-    public enum StorageType
+    public enum SyncStorageType
     {
         local,
         platform,

@@ -41,34 +41,33 @@ namespace Examples.Storage
 
         public void Get()
         {
-            ConsoleUI.Instance.Log($"Get {_keyInput.text}:");
-            GP_Storage.Get(_keyInput.text, OnGet);
+            ConsoleUI.Instance.Log($"Get: {_keyInput.text}");
+            GP_Storage.Get(_keyInput.text, OnGetValue);
         }
         public void Set()
         {
-            ConsoleUI.Instance.Log($"Set {_keyInput.text}:");
-            GP_Storage.Set(_keyInput.text, _valueInput.text, OnSet);
+            ConsoleUI.Instance.Log($"Set: {_keyInput.text}");
+            GP_Storage.Set(_keyInput.text, _valueInput.text, OnSetValue);
         }
         public void GetGlobal()
         {
-            ConsoleUI.Instance.Log($"Get Global {_keyInput.text}:");
-            GP_Storage.Get(_keyInput.text, OnGetGlobal);
+            ConsoleUI.Instance.Log($"Get Global: {_keyInput.text}");
+            GP_Storage.GetGlobal(_keyInput.text, OnGetGlobal);
         }
         public void SetGlobal()
         {
-            ConsoleUI.Instance.Log($"Set Global {_keyInput.text}:");
-            GP_Storage.Set(_keyInput.text, _valueInput.text, OnSetGlobal);
+            ConsoleUI.Instance.Log($"Set Global: {_keyInput.text}");
+            GP_Storage.SetGlobal(_keyInput.text, _valueInput.text, OnSetGlobal);
         }
 
         public void SetStorage()
         {
-            ConsoleUI.Instance.Log($"Set {_keyInput.text}:");
-            GP_Storage.SetStorage((GP_Storage.SaveStorage)_storage.value);
+            ConsoleUI.Instance.Log($"Set Storage: {(SaveStorageType)_storage.value}");
+            GP_Storage.SetStorage((SaveStorageType)_storage.value);
         }
-       
 
-        private void OnGet(object value) => ConsoleUI.Instance.Log("Get Value: " + value.ToString());
-        private void OnSet(object value) => ConsoleUI.Instance.Log("Set Value: " + value.ToString());
+        private void OnGetValue(object value) => ConsoleUI.Instance.Log($"Get Value: {value.ToString()}, Type: {value.GetType()}");
+        private void OnSetValue(StorageField storage) => ConsoleUI.Instance.Log($"Set string: Key: {storage.key}, Value: {storage.value}");
         private void OnGetGlobal(object value) => ConsoleUI.Instance.Log("Get Value: " + value.ToString());
         private void OnSetGlobal(object value) => ConsoleUI.Instance.Log("Set Value: " + value.ToString());
     }
