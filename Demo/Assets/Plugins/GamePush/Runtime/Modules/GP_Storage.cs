@@ -15,7 +15,7 @@ namespace GamePush
         private void OnValidate() => SetModuleName(ModuleName.Storage);
 
         private static event Action<object> _onGetValue;
-        private static event Action<StorageField> _onSetValue
+        private static event Action<StorageField> _onSetValue;
         private static event Action<string> _onGetGlobalValue;
         private static event Action<string> _onSetGlobalValue;
 
