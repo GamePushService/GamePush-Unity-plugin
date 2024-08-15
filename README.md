@@ -68,6 +68,7 @@ https://docs.gamepush.com/ru/docs/get-start/
 | [GP_Triggers](#GP_Triggers)                   |
 | [GP_Variables](#GP_Variables)                 |
 | [GP_Uniques](#GP_Uniques)                     |
+| [GP_Storage](#GP_Storage)                     |
 
 ## GP_Achievements
 
@@ -1842,3 +1843,35 @@ public class UniquesData
 }
 ```
 
+## GP_Storage
+
+[Storage documentation](https://docs.gamepush.com/docs/storage/)
+
+### Methods
+
+| Method name  | Method parameters                                                  | Return value |
+| ------------ | ------------------------------------------------------------------ | ------------ |
+| `SetStorage` | `SaveStorageType storage`                                          | void         |
+| `Get`        | `string key, Action<object> onGetValue`                            | void         |
+| `Set`        | `string key, object value, Action<StorageField> onSetValue = null` | void         |
+| `GetGlobal`  | `string key, Action<object> onGetValue`                            | void         |
+| `SetGlobal`  | `string key, object value, Action<StorageField> onSetValue = null` | void         |
+
+### Actions
+
+| Action name        | Return value   |
+| ------------------ | -------------- |
+| `OnGetValue`       | `StorageField` |
+| `OnSetValue`       | `StorageField` |
+| `OnGetGlobalValue` | `StorageField` |
+| `OnSetGlobalValue` | `StorageField` |
+
+### Data structures
+
+```c
+public class StorageField
+{
+    public string key;
+    public string value;
+}
+```
