@@ -42,11 +42,12 @@ namespace GamePush
         private static extern string GP_Platform_Tag();
         public static string Tag()
         {
+            if(Type() != Platform.CUSTOM)
+                return "";
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Tag();
 #else
 
-            ConsoleLog("TAG: Editor");
             return "Editor";
 #endif
         }
