@@ -13,7 +13,7 @@ namespace GamePushEditor
     {
         private const string SITE_URL = "https://gamepush.com";
 
-        private const string VERSION = "1.5.0";
+        private const string VERSION = GP_Data.SDK_VERSION;
 
         private static bool _isDataFetch;
 
@@ -116,6 +116,7 @@ namespace GamePushEditor
             file.WriteLine("{");
             file.WriteLine("    public static class ProjectData");
             file.WriteLine("    {");
+            file.WriteLine($"        public static string SDK_VERSION = \"{VERSION}\";");
             file.WriteLine($"        public static string ID = \"{_id}\";");
             file.WriteLine($"        public static string TOKEN = \"{_token}\";");
             file.WriteLine($"        public static bool GAMEREADY_AUTOCALL = {gameReadyBool};");

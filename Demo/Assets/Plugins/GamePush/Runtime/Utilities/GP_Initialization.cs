@@ -7,10 +7,10 @@ using System.Runtime.InteropServices;
 
 namespace GamePush.Initialization
 {
+    
     public class GP_Initialization
     {
-        static string VERSION = "v1.5.0";
-
+        public static string VERSION = GP_Data.SDK_VERSION;
 
         [DllImport("__Internal")]
         private static extern void GP_UnityReady();
@@ -33,7 +33,6 @@ namespace GamePush.Initialization
 
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
-
             
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
