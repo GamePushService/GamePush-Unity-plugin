@@ -1269,7 +1269,8 @@ public class FetchPlayerPurchases
 
 ## GP_Platform
 
-[Platform documentation](https://docs.gamepush.com/docs/get-start/platform/)
+[Platform documentation](https://docs.gamepush.com/docs/platforms/)
+
 
 ### Methods
 
