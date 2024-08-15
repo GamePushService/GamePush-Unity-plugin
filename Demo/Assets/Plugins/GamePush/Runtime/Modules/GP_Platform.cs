@@ -5,7 +5,7 @@ namespace GamePush
 {
     public class GP_Platform : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Platform);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Platform);
 
         private static string YANDEX = "YANDEX";
         private static string VK = "VK";
@@ -38,6 +38,19 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_Platform_Tag();
+        public static string Tag()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_Tag();
+#else
+
+            ConsoleLog("TAG: Editor");
+            return "Editor";
+#endif
+        }
+
         public static string TypeAsString()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -65,6 +78,20 @@ namespace GamePush
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern string GP_Platform_IsLogoutAvailable();
+        public static bool IsLogoutAvailable()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_IsLogoutAvailable() == "true";
+#else
+            bool value = GP_Settings.instance.GetFromPlatformSettings().IsLogoutAvailable;
+
+            ConsoleLog("Is Logout Available: " + value.ToString());
+            return value;
+#endif
+        }
+
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_IsExternalLinksAllowed();
@@ -77,6 +104,34 @@ namespace GamePush
 
             ConsoleLog("IS EXTERNAL LINKS ALLOWED: " + linkAllow.ToString());
             return linkAllow;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_Platform_IsSecretCodeAuthAvailable();
+        public static bool IsSecretCodeAuthAvailable()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_IsSecretCodeAuthAvailable() == "true";
+#else
+            bool value = GP_Settings.instance.GetFromPlatformSettings().IsSecretCodeAuthAvailable;
+
+            ConsoleLog("Is SecretCode Auth Available: " + value.ToString());
+            return value;
+#endif
+        }
+
+        [DllImport("__Internal")]
+        private static extern string GP_Platform_IsSupportsCloudSaves();
+        public static bool IsSupportsCloudSaves()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_IsSupportsCloudSaves() == "true";
+#else
+            bool value = GP_Settings.instance.GetFromPlatformSettings().IsSupportsCloudSaves;
+
+            ConsoleLog("Is Supports Cloud Saves: " + value.ToString());
+            return value;
 #endif
         }
 

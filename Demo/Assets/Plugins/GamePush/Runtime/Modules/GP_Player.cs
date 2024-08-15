@@ -11,7 +11,7 @@ namespace GamePush
 {
     public class GP_Player : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Player);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Player);
 
         public static event UnityAction OnConnect;
         public static event UnityAction OnPlayerChange;
@@ -440,21 +440,49 @@ namespace GamePush
 #endif
         }
 
-
-
         [DllImport("__Internal")]
-        private static extern void GP_Player_Sync(bool forceOverride = false);
-        public static void Sync(bool forceOverride = false)
+        private static extern void GP_Player_Sync(bool forceOverride = false, string storage = "preferred");
+        public static void Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Player_Sync(forceOverride);
+            GP_Player_Sync(forceOverride: forceOverride, storage: storage.ToString());
+#else
+
+            ConsoleLog($"SYNC: {storage.ToString()}");
+#endif
+        }
+
+        public static void Sync(bool forceOverride)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_Sync(forceOverride: forceOverride);
 #else
 
             ConsoleLog("SYNC");
 #endif
         }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
+        public static void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_EnableAutoSync(interval, storage.ToString());
+#else
+            ConsoleLog("AUTO SYNC: ON");
+#endif
+        }
 
+        [DllImport("__Internal")]
+        private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
+        public static void DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Player_DisableAutoSync(storage.ToString());
+#else
+            ConsoleLog("AUTO SYNC: OFF");
+#endif
+        }
 
         [DllImport("__Internal")]
         private static extern void GP_Player_Load();
@@ -650,6 +678,15 @@ namespace GamePush
             OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
         private void CallPlayerFieldIncrement(string field) =>
             OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+    }
+
+    [System.Serializable]
+    public enum SyncStorageType
+    {
+        preffered,
+        local,
+        platform,
+        cloud
     }
 
     [System.Serializable]

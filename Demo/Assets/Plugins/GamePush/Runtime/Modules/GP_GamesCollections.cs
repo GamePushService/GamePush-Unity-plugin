@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_GamesCollections : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.GamesCollections);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.GamesCollections);
 
         public static event UnityAction OnGamesCollectionsOpen;
         public static event UnityAction OnGamesCollectionsClose;

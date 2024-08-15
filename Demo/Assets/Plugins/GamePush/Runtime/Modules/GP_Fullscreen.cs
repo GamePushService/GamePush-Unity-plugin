@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_Fullscreen : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Custom);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Custom);
 
         public static event UnityAction OnFullscreenOpen;
         public static event UnityAction OnFullscreenClose;

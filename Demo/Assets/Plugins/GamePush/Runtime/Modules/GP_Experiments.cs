@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Experiments : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Experiments);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Experiments);
 
         [DllImport("__Internal")]
         private static extern string GP_Experiments_Map();

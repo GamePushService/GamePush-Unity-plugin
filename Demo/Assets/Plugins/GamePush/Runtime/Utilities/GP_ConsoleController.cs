@@ -38,6 +38,7 @@ namespace GamePush.ConsoleController
 
         [SerializeField] public bool TriggersConsoleLogs = true;
         [SerializeField] public bool UniquesConsoleLogs = true;
+        [SerializeField] public bool StorageConsoleLogs = true;
 
         public void SwitchAll(bool value)
         {
@@ -70,6 +71,10 @@ namespace GamePush.ConsoleController
             SocialsConsoleLogs = value;
             SystemConsoleLogs = value;
             VariablesConsoleLogs = value;
+
+            TriggersConsoleLogs = value;
+            UniquesConsoleLogs = value;
+            StorageConsoleLogs = value;
         }
 
         public bool IsModuleLogs(ModuleName name)
@@ -105,6 +110,12 @@ namespace GamePush.ConsoleController
                     return FullscreenConsoleLogs;
                 case ModuleName.Game:
                     return GameConsoleLogs;
+                case ModuleName.Triggers:
+                    return TriggersConsoleLogs;
+                case ModuleName.Uniques:
+                    return UniquesConsoleLogs;
+                case ModuleName.Storage:
+                    return StorageConsoleLogs;
             }
             return false;
         }

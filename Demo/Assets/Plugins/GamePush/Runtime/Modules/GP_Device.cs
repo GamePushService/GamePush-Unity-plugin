@@ -8,7 +8,7 @@ namespace GamePush
 {
     public class GP_Device : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Device);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Device);
 
         public static event UnityAction OnChangeOrientation;
         private void CallChangeOrientation() => OnChangeOrientation?.Invoke();

@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_Schedulers : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Schedulers);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Schedulers);
 
         public static event UnityAction<SchedulerInfo> OnSchedulerRegister;
         public static event UnityAction<string> OnSchedulerRegisterError;

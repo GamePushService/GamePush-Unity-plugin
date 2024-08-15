@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_App : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.App);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.App);
 
         public static event UnityAction<int> OnReviewResult;
         public static event UnityAction<string> OnReviewClose;

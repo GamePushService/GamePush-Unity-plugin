@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Init : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Init);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Init);
 
         public static bool isReady = false;
 
@@ -18,10 +18,17 @@ namespace GamePush
         public static event Action OnReady;
         public static event Action OnError;
 
-        private void Awake()
+        private void OnEnable()
         {
-            StartCoroutine(GameReadyAutocall());
+            OnReady += GRA;
         }
+
+        private void OnDisable()
+        {
+            OnReady -= GRA;
+        }
+
+        private void GRA() => StartCoroutine(GameReadyAutocall());
 
         private void Start()
         {
@@ -36,12 +43,6 @@ namespace GamePush
         {
             isReady = true;
             OnReady?.Invoke();
-
-            //if (ProjectData.GAMEREADY_AUTOCALL > 0)
-            //{
-            //    GP_Logger.Info("Autocall start");
-            //    StartCoroutine(GameReadyAutocall());
-            //}
         }
 
         private void CallOnSDKError()
@@ -55,9 +56,8 @@ namespace GamePush
             {
                 yield return null;
             }
-            if (ProjectData.GAMEREADY_AUTOCALL > 0)
+            if (ProjectData.GAMEREADY_AUTOCALL)
             {
-                GP_Logger.Info("Autocall", "GameReady");
                 GP_Game.GameReady();
             }
         }

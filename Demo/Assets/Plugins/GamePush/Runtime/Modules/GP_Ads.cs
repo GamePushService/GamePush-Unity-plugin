@@ -8,7 +8,7 @@ namespace GamePush
 {
     public class GP_Ads : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Ads);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Ads);
 
         public static event UnityAction OnAdsStart;
         public static event UnityAction<bool> OnAdsClose;

@@ -19,6 +19,7 @@ namespace Examples.Player
         [SerializeField] private TMP_InputField _value;
         [SerializeField] private TMP_InputField _key;
         [SerializeField] private Toggle _flag;
+        [SerializeField] private TMP_Dropdown _storage;
 
         [Space(15)]
         [SerializeField] private Button _getIDButton;
@@ -53,6 +54,9 @@ namespace Examples.Player
         [SerializeField] private Button _isStabButton;
 
         [SerializeField] private Button _fetchButton;
+        [Space(15)]
+        [SerializeField] private Button _autosyncOnButton;
+        [SerializeField] private Button _autosyncOffButton;
 
 
         private void OnEnable()
@@ -103,6 +107,9 @@ namespace Examples.Player
             _isStabButton.onClick.AddListener(IsStab);
 
             _fetchButton.onClick.AddListener(FetchFields);
+
+            _autosyncOnButton.onClick.AddListener(AutosyncEnable);
+            _autosyncOffButton.onClick.AddListener(AutosyncDisable);
         }
 
         private void OnDisable()
@@ -152,6 +159,9 @@ namespace Examples.Player
             _isStabButton.onClick.RemoveListener(IsStab);
 
             _fetchButton.onClick.RemoveListener(FetchFields);
+
+            _autosyncOnButton.onClick.RemoveListener(AutosyncEnable);
+            _autosyncOffButton.onClick.RemoveListener(AutosyncDisable);
         }
 
 
@@ -253,8 +263,32 @@ namespace Examples.Player
         public void Sync()
         {
             ConsoleUI.Instance.Log($"\nSync player");
-            GP_Player.Sync();
+            
+            GP_Player.Sync((SyncStorageType)_storage.value);
         }
+
+        public void AutosyncEnable()
+        {
+            int.TryParse(_value.text, out int value);
+
+            if(value > 0)
+            {
+                ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
+                GP_Player.EnableAutoSync(interval: value, storage: (SyncStorageType)_storage.value);
+            }
+            else
+            {
+                ConsoleUI.Instance.Log($"\nEnable AutoSync, storage: {(SyncStorageType)_storage.value}");
+                GP_Player.EnableAutoSync(storage: (SyncStorageType)_storage.value);
+            }
+                
+        }
+        public void AutosyncDisable()
+        {
+            ConsoleUI.Instance.Log($"\nDisable AutoSync, storage: {(SyncStorageType)_storage.value}");
+            GP_Player.DisableAutoSync((SyncStorageType)_storage.value);
+        }
+
 
         public void Load()
         {
@@ -367,5 +401,7 @@ namespace Examples.Player
         {
             ConsoleUI.Instance.Log($"Field {field.name} Increment");
         }
+
+
     }
 }

@@ -27,7 +27,6 @@ namespace Examples.Socials
         [SerializeField] private TMP_InputField _shareLinkField;
 
 
-
         private void OnEnable()
         {
             _shareButton.onClick.AddListener(Share);

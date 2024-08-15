@@ -9,19 +9,18 @@ namespace GamePush.Data
         public string token;
 
         public bool showPreAd;
-
-        public int gameReadyDelay;
+        public bool gameReadyAuto;
 
         public SavedProjectData(
             int id,
             string token,
             bool showPreAd = false,
-            int gameReadyDelay = 0)
+            bool gameReadyAuto = false)
         {
             this.id = id;
             this.token = token;
             this.showPreAd = showPreAd;
-            this.gameReadyDelay = gameReadyDelay;
+            this.gameReadyAuto = gameReadyAuto;
         }
     }
 

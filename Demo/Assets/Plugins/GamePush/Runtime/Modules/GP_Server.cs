@@ -5,7 +5,7 @@ namespace GamePush
 {
     public class GP_Server : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Server);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Server);
 
         [DllImport("__Internal")]
         private static extern string GP_ServerTime();

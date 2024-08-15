@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Players : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Players);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Players);
 
         private static event Action<GP_Data> _onFetchSuccess;
         private static event Action _onFetchError;

@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Files : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Files);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Files);
 
         public static event UnityAction<FileData> OnUploadSuccess;
         public static event UnityAction OnUploadError;

@@ -6,7 +6,7 @@ namespace GamePush
 {
     public class GP_Socials : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Socials);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Socials);
 
         public static event UnityAction<bool> OnShare;
         public static event UnityAction<bool> OnPost;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_Language : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Language);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Language);
 
         public static event UnityAction<Language> OnChangeLanguage;
         private static event Action<Language> _onChangeLanguage;
@@ -40,6 +40,17 @@ namespace GamePush
 #endif
         }
 
+        public static string CurrentISO()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Current_Language();
+#else
+
+            ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
+            return ConvertToString(GP_Settings.instance.GetLanguage());
+#endif
+        }
+
         [DllImport("__Internal")]
         private static extern void GP_ChangeLanguage(string lang);
         public static void Change(Language lang, Action<Language> onLanguageChange = null)
@@ -52,6 +63,19 @@ namespace GamePush
             ConsoleLog("CHANGE: " + lang.ToString());
             OnChangeLanguage?.Invoke(lang);
             _onChangeLanguage?.Invoke(lang);
+#endif
+        }
+
+        public static void Change(string lang, Action<Language> onLanguageChange = null)
+        {
+            _onChangeLanguage = onLanguageChange;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_ChangeLanguage(lang);
+#else
+
+            ConsoleLog("CHANGE: " + lang);
+            OnChangeLanguage?.Invoke(ConvertToEnum(lang));
+            _onChangeLanguage?.Invoke(ConvertToEnum(lang));
 #endif
         }
 

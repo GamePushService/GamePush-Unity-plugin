@@ -64,7 +64,7 @@ namespace GamePush
 #endif
         }
 
-        public static void ModuleLog(ModuleName name, string log)
+        public static void ModuleLog(string log, ModuleName name)
         {
             if (GP_ConsoleController.Instance.IsModuleLogs(name))
                 Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");

@@ -9,7 +9,7 @@ namespace GamePush
 {
     public class GP_Achievements : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Achievements);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Achievements);
 
         public static event UnityAction OnAchievementsOpen;
         public static event UnityAction OnAchievementsClose;

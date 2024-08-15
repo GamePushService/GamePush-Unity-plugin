@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Channels : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Channels);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Channels);
         #region Actions
 
         public static event UnityAction<CreateChannelData> OnCreateChannel;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-
+using System;
 
 namespace GamePush.Utilities
 {
@@ -137,6 +137,22 @@ namespace GamePush.Utilities
             return str.Replace("\"", "\\\"");
         }
     }
+
+    public class UtilityType
+    {
+        public static T ConvertValue<T>(object value)
+        {
+            try
+            {
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+    }
+    
 
     [System.Serializable]
     public class PlayersIdList

@@ -696,6 +696,24 @@ class GamePushUnityInner {
         this.gp.uniques.on('error:delete', (error) => {
             this.trigger('CallOnUniqueValueDeleteError', error);
         });
+
+        //Storage
+        this.gp.storage.on('get', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetValue', JSON.stringify(result));
+        });
+        this.gp.storage.on('set', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetValue', JSON.stringify(result));
+        });
+        this.gp.storage.on('get:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetGlobal', JSON.stringify(result));
+        });
+        this.gp.storage.on('set:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
+        });
     }
 
     async trigger(eventName, value) {
@@ -739,14 +757,27 @@ class GamePushUnityInner {
     AvatarGenerator() {
         return this.gp.avatarGenerator;
     }
+
     PlatformType() {
         return this.gp.platform.type;
+    }
+    PlatformTag() {
+        return this.gp.platform.tag;
     }
     PlatformHasIntegratedAuth() {
         return this.toUnity(this.gp.platform.hasIntegratedAuth);
     }
+    PlatformIsLogoutAvailable() {
+        return this.toUnity(this.gp.platform.isLogoutAvailable);
+    }
     PlatformIsExternalLinksAllowed() {
         return this.toUnity(this.gp.platform.isExternalLinksAllowed);
+    }
+    PlatformIsSecretCodeAuthAvailable() {
+        return this.toUnity(this.gp.platform.isSecretCodeAuthAvailable);
+    }
+    PlatformIsSupportsCloudSaves() {
+        return this.toUnity(this.gp.platform.isSupportsCloudSaves);
     }
 
     AppTitle() {
@@ -879,9 +910,20 @@ class GamePushUnityInner {
     PlayerRemove() {
         this.gp.player.remove();
     }
-    PlayerSync(override = false) {
-        return this.gp.player.sync({ override: Boolean(override) });
+    //Sync
+    PlayerSync(storage, override) {
+        if (override == 'True') override = true;
+        else if (override == 'False') override = false;
+        this.gp.player.sync({ storage: storage, override: Boolean(override) });
     }
+    //AutoSync
+    PlayerEnableAutoSync(interval, storage) {
+        this.gp.player.enableAutoSync({ interval: interval, storage: storage});
+    }
+    PlayerDisableAutoSync(storage) {
+        this.gp.player.disableAutoSync({ storage: storage});
+    }
+
     PlayerLoad() {
         return this.gp.player.load();
     }
@@ -2659,6 +2701,47 @@ class GamePushUnityInner {
         
     }
     //Uniques
+
+    //Storage
+    StorageSetType(type = "platform") {
+        this.gp.storage.setStorage({ type: type});
+    }
+    
+    async StorageGet(key) {
+        await this.gp.storage.get(key);
+    }
+    async StorageSet(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+
+    async StorageSetString(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetNumber(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetBool(key, value) {
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        await this.gp.storage.set(key, value);
+    }
+
+    async StorageGetGlobal(key) {
+        await this.gp.storage.getGlobal(key);
+    }
+
+    async StorageSetGlobalString(key, value) {
+        await this.gp.storage.setGlobal(key, value);
+    }
+    async StorageSetGlobalNumber(key, value) {
+        await this.gp.storage.setGlobal(key, value);
+    }
+    async StorageSetGlobalBool(key, value) {
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        await this.gp.storage.setGlobal(key, value);
+    }
+    //Storage
 }
 
 function formatCustomValue(value) {

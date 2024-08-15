@@ -39,6 +39,7 @@ namespace GamePush
         System,
         Variables,
         Triggers,
-        Uniques
+        Uniques,
+        Storage
     }
 }

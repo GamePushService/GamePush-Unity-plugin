@@ -8,7 +8,7 @@ namespace GamePush
 {
     public class GP_Triggers : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Triggers);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Triggers);
 
         public static event UnityAction<TriggerData> OnTriggerActivate;
         public static event UnityAction<TriggerData> OnTriggerClaim;

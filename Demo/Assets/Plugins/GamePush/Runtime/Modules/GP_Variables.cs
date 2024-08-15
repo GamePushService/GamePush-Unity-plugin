@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Variables : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Variables);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Variables);
 
         public static event UnityAction<List<VariablesData>> OnFetchSuccess;
         public static event UnityAction OnFetchError;

@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Payments : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Payments);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Payments);
 
         public static event UnityAction<List<FetchProducts>> OnFetchProducts;
         public static event UnityAction OnFetchProductsError;

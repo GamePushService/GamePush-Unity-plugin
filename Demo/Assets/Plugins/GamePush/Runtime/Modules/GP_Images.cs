@@ -10,7 +10,7 @@ namespace GamePush
 {
     public class GP_Images : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Images);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Images);
 
         public static event UnityAction<List<ImageData>> OnImagesFetchSuccess;
         public static event UnityAction<string> OnImagesFetchError;

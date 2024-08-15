@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using System;
 using UnityEngine.Events;
@@ -9,7 +9,7 @@ namespace GamePush
 {
     public class GP_Uniques : GP_Module
     {
-        private void OnValidate() => SetModuleName(ModuleName.Uniques);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Uniques);
 
         public static event UnityAction<UniquesData> OnUniqueValueRegister;
         public static event UnityAction<string> OnUniqueValueRegisterError;
