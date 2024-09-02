@@ -3,6 +3,16 @@ using Newtonsoft.Json;
 
 namespace GamePush.Data
 {
+
+    [System.Serializable]
+    public enum SyncStorageType
+    {
+        preffered,
+        local,
+        platform,
+        cloud
+    }
+
     [System.Serializable]
     public class PlayerStats
     {

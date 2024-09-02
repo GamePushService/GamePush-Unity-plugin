@@ -96,10 +96,26 @@ namespace GamePush.Core
             }
         }
 
-        public async void PlayerSync(bool forceOverride = false) => await Sync(forceOverride);
+        public async void PlayerSync(bool forceOverride) => await Sync(forceOverride);
+        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false) => await Sync(storage, forceOverride);
+
         public async void PlayerLoad() => await Load();
 
-        public async Task Sync(bool forceOverride = false)
+        public async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+        {
+            SyncPlayerInput playerInput = new SyncPlayerInput();
+            playerInput.playerState = GetPlayerState();
+
+            playerInput.isFirstRequest = _isFirstRequest;
+            playerInput.Override = forceOverride;
+
+            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+            SetPlayerData(resultObject);
+
+            OnSyncComplete?.Invoke();
+        }
+
+        public async Task Sync(bool forceOverride)
         {
             SyncPlayerInput playerInput = new SyncPlayerInput();
             playerInput.playerState = GetPlayerState();
