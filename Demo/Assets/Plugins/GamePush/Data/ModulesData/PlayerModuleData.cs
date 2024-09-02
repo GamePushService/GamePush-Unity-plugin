@@ -78,9 +78,9 @@ namespace GamePush.Data
         public string defaultValue; // string | bool | number
         public bool important;
         public bool isPublic;
+        public PlayerFieldVariant[] variants;
         public PlayerFieldIncrement intervalIncrement;
         public PlayerFieldLimits limits;
-        public PlayerFieldVariant[] variants;
     }
 
 
@@ -94,6 +94,8 @@ namespace GamePush.Data
         public bool important;
         public bool @public;
         public List<PlayerFieldVariant> variants;
+        public PlayerFieldLimits limits;
+        public PlayerFieldIncrement intervalIncrement;
     }
 
     [System.Serializable]
