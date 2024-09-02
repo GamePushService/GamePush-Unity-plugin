@@ -12,10 +12,10 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Variables);
 
-        public static event UnityAction<List<VariablesData>> OnFetchSuccess;
+        public static event UnityAction<List<FetchGameVariable>> OnFetchSuccess;
         public static event UnityAction OnFetchError;
 
-        private static event Action<List<VariablesData>> _onSuccess;
+        private static event Action<List<FetchGameVariable>> _onSuccess;
         private static event Action _onError;
 
         public static event UnityAction<Dictionary<string, string>> OnPlatformFetchSuccess;
@@ -26,7 +26,7 @@ namespace GamePush
 
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
-        public static void Fetch(Action<List<VariablesData>> onFetchSuccess = null, Action onFetchError = null)
+        public static void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
             _onSuccess = onFetchSuccess;
             _onError = onFetchError;
@@ -219,7 +219,7 @@ namespace GamePush
 
         private void CallVariablesFetchSuccess(string data)
         {
-            var variablesData = UtilityJSON.GetList<VariablesData>(data);
+            var variablesData = UtilityJSON.GetList<FetchGameVariable>(data);
             _onSuccess?.Invoke(variablesData);
             OnFetchSuccess?.Invoke(variablesData);
         }
@@ -265,18 +265,5 @@ namespace GamePush
         }
 
     }
-    [System.Serializable]
-    public class PlatformFetchVariables
-    {
-        public string clientParams;
-    }
-
-
-    [System.Serializable]
-    public class VariablesData
-    {
-        public string key;
-        public string type;
-        public string value;
-    }
+    
 }

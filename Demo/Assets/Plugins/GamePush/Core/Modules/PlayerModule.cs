@@ -480,6 +480,50 @@ namespace GamePush.Core
             return GetValue<T>(key);
         }
 
+        public float GetMaxValue(string key)
+        {
+            if (playerDataFields.TryGetValue(key, out PlayerField field))
+            {
+                if (field.limits != null)
+                    return Get<float>($"{key}:max");
+                else
+                {
+                    string err = $"maxValue not exists on field \"{key}\"";
+                    Logger.Error("GET MAX VALUE", err);
+                    throw new Exception(err);
+                }
+
+            }
+            else
+            {
+                string err = $"field \"{key}\" does not exists";
+                Logger.Error("GET MAX VALUE", err);
+                throw new Exception(err);
+            }
+        }
+
+        public float GetMinValue(string key)
+        {
+            if (playerDataFields.TryGetValue(key, out PlayerField field))
+            {
+                if (field.limits != null)
+                    return Get<float>($"{key}:min");
+                else
+                {
+                    string err = $"minValue not exists on field \"{key}\"";
+                    Logger.Error("GET MIN VALUE", err);
+                    throw new Exception(err);
+                }
+
+            }
+            else
+            {
+                string err = $"field \"{key}\" does not exists";
+                Logger.Error("GET MIN VALUE", err);
+                throw new Exception(err);
+            }
+        }
+
         public int GetActiveDays()
         {
             return playerStats.activeDays;

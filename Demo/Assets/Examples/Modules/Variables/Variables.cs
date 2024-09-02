@@ -81,7 +81,7 @@ namespace Examples.Variables
             return dict;
         }
 
-        private void OnFetchSuccess(List<VariablesData> variables)
+        private void OnFetchSuccess(List<FetchGameVariable> variables)
         {
             for (int i = 0; i < variables.Count; i++)
             {

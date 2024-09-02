@@ -249,9 +249,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetMaxValue(key);
 #else
-
             ConsoleLog("GET MAX: KEY: " + key);
-            return 0;
+            return CoreSDK.player.GetMaxValue(key);
 #endif
         }
 
@@ -264,7 +263,7 @@ namespace GamePush
 #else
 
             ConsoleLog("GET MIN: KEY: " + key);
-            return 0;
+            return CoreSDK.player.GetMinValue(key);
 #endif
         }
 

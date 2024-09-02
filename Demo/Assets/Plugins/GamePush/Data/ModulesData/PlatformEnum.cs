@@ -18,6 +18,7 @@ namespace GamePush
         KONGREGATE = 12,
         GOOGLE_PLAY = 13,
         PLAYDECK = 14,
-        CUSTOM = 15
+        CUSTOM = 15,
+        TELEGRAM
     }
 }
