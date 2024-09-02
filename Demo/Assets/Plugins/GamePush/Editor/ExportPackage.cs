@@ -12,7 +12,10 @@ namespace GamePushEditor
             string fileName = "GP_plugin.unitypackage";
             string[] paths = {
             "Assets/WebGLTemplates",
-            "Assets/Plugins/GamePush"
+            "Assets/Plugins/GamePush",
+            "Packages/com.unity.nuget.newtonsoft-json",
+            "Packages/com.lastabyss.simplegraphql"
+
         };
 
             AssetDatabase.ExportPackage(
