@@ -34,7 +34,7 @@ namespace GamePushEditor
 
         private static SavedDataSO DataLinker => Resources.Load<SavedDataSO>("GP_DataLinker");
 
-        [MenuItem("Tools/GamePush")]
+        [MenuItem("Tools/GamePush/SetUp")]
         private static void ShowWindow()
         {
             var window = GetWindow<GP_LoginWindow>();
