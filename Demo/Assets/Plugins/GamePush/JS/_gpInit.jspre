@@ -80,7 +80,13 @@ setTimeout(() => {
     ((g, a, m, e) => {
         let o = () => {
             let p = document.createElement('script');
-            (p.src = `${a[0]}?projectId=${m}&publicToken=${e}`),
+            let url = a[0];
+
+            if (window.__GS_BOOT_CFG__ && window.__GS_BOOT_CFG__.sdkSrc){
+                url = window.__GS_BOOT_CFG__.sdkSrc;
+            }
+               
+            (p.src = `${url}?projectId=${m}&publicToken=${e}`),
                 (p.onerror = () => {
                     a.shift(),
                         a.length > 0
