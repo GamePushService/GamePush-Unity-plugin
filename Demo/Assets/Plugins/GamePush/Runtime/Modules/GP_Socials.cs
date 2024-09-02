@@ -2,12 +2,12 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+using GamePush.Tools;
+
 namespace GamePush
 {
-    public class GP_Socials : GP_Module
+    public class GP_Socials : MonoBehaviour
     {
-        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Socials);
-
         public static event UnityAction<bool> OnShare;
         public static event UnityAction<bool> OnPost;
         public static event UnityAction<bool> OnInvite;
@@ -20,7 +20,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Share(text, url, image);
 #else
-            ConsoleLog("SHARE");
+            GP_Logger.Log("SOCIALS: ", "SHARE");
             OnShare?.Invoke(true);
 #endif
         }
@@ -33,7 +33,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Post(text, url, image);
 #else
-            ConsoleLog("POST");
+            GP_Logger.Log("SOCIALS: ", "POST");
             OnPost?.Invoke(true);
 #endif
         }
@@ -47,8 +47,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Invite(text, url, image);
 #else
-
-            ConsoleLog("INVITE");
+            GP_Logger.Log("SOCIALS: ", "INVITE");
             OnInvite?.Invoke(true);
 #endif
         }
@@ -61,8 +60,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_JoinCommunity();
 #else
-
-            ConsoleLog("JOIN COMMUNITY");
+            GP_Logger.Log("SOCIALS: ", "JOIN COMMUNITY");
             OnJoinCommunity?.Invoke(true);
 #endif
         }
@@ -76,8 +74,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_CommunityLink();
 #else
-
-            ConsoleLog("COMMUNITY LINK");
+            GP_Logger.Log("SOCIALS: ", "COMMUNITY LINK");
             return "GP_LINK";
 #endif
         }
@@ -92,9 +89,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsShare() == "true";
 #else
-
-            Console.Log("SOCIALS: IS SUPPORTS SHARE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSupportsShare;
+            GP_Logger.Log("SOCIALS: IS SUPPORTS SHARE: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -105,9 +101,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeShare() == "true";
 #else
-
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE SHARE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeShare;
+            GP_Logger.Log("SOCIALS: IS SUPPORTS NATIVE SHARE: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -120,9 +115,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativePosts() == "true";
 #else
-
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE POSTS: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativePosts;
+            GP_Logger.Log("SOCIALS: IS SUPPORTS NATIVE POSTS: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -135,9 +129,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeInvite() == "true";
 #else
-
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE INVITE: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeInvite;
+            GP_Logger.Log("SOCIALS: IS SUPPORTS NATIVE INVITE: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -150,9 +143,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_CanJoinCommunity() == "true";
 #else
-
-            Console.Log("SOCIALS: CAN JOIN COMMUNITY: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().CanJoinCommunity;
+            GP_Logger.Log("SOCIALS: CAN JOIN COMMUNITY: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -165,9 +157,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeCommunityJoin() == "true";
 #else
-
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE COMMUNITY JOIN: ", "TRUE");
-            return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeCommunityJoin;
+            GP_Logger.Log("SOCIALS: IS SUPPORTS NATIVE COMMUNITY JOIN: ", "TRUE");
+            return true;
 #endif
         }
 
@@ -178,8 +169,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_MakeShareLink(content);
 #else
-
-            ConsoleLog("SHARE LINK");
+            GP_Logger.Log("SOCIALS: ", "SHARE LINK");
             return "GP_LINK";
 #endif
         }
@@ -191,9 +181,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_GetSharePlayerID();
 #else
-
-            ConsoleLog("SHARE PLAYER ID");
-            return GP_Player.GetID();
+            GP_Logger.Log("SOCIALS: ", "SHARE PLAYER ID");
+            return 0;// GP_Player.GetID();
 #endif
         }
 
@@ -204,8 +193,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_GetShareContent();
 #else
-
-            ConsoleLog("SHARE CONTENT");
+            GP_Logger.Log("SOCIALS: ", "SHARE CONTENT");
             return "GP_LINK";
 #endif
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-using GamePush.Utilities;
+using GamePush.Tools;
 
 namespace GamePush
 {

@@ -354,7 +354,7 @@ namespace Examples.Player
             ConsoleUI.Instance.Log($"Field name: {field.name}");
             ConsoleUI.Instance.Log($"Field type: {field.type}");
             ConsoleUI.Instance.Log($"Field important: {field.important}");
-            ConsoleUI.Instance.Log($"Field public: {field.@public}");
+            ConsoleUI.Instance.Log($"Field public: {field.isPublic}");
             ConsoleUI.Instance.Log($"Default value: {field.defaultValue}");
 
             if (field.intervalIncrement != null)

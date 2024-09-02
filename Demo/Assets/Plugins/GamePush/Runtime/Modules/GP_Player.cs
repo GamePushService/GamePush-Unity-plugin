@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-using GamePush.Utilities;
+using GamePush.Data;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -689,39 +690,39 @@ namespace GamePush
         cloud
     }
 
-    [System.Serializable]
-    public class PlayerFetchFieldsData
-    {
-        public string name;
-        public string key;
-        public string type;
-        public string defaultValue; // string | bool | number
-        public bool important;
-        public bool @public;
-        public PlayerFieldIncrement intervalIncrement;
-        public PlayerFieldLimits limits;
-        public PlayerFieldVariant[] variants;
-    }
+    //[System.Serializable]
+    //public class PlayerFetchFieldsData
+    //{
+    //    public string name;
+    //    public string key;
+    //    public string type;
+    //    public string defaultValue; // string | bool | number
+    //    public bool important;
+    //    public bool @public;
+    //    public PlayerFieldIncrement intervalIncrement;
+    //    public PlayerFieldLimits limits;
+    //    public PlayerFieldVariant[] variants;
+    //}
 
-    [System.Serializable]
-    public class PlayerFieldIncrement
-    {
-        public float interval;
-        public float increment;
-    }
+    //[System.Serializable]
+    //public class PlayerFieldIncrement
+    //{
+    //    public float interval;
+    //    public float increment;
+    //}
 
-    [System.Serializable]
-    public class PlayerFieldLimits
-    {
-        public float min;
-        public float max;
-        public bool couldGoOverLimit;
-    }
+    //[System.Serializable]
+    //public class PlayerFieldLimits
+    //{
+    //    public float min;
+    //    public float max;
+    //    public bool couldGoOverLimit;
+    //}
 
-    [System.Serializable]
-    public class PlayerFieldVariant
-    {
-        public string value; // string | number
-        public string name;
-    }
+    //[System.Serializable]
+    //public class PlayerFieldVariant
+    //{
+    //    public string value; // string | number
+    //    public string name;
+    //}
 }

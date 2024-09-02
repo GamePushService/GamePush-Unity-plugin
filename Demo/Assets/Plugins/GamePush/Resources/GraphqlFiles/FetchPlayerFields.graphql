@@ -1,0 +1,23 @@
+
+fragment PLAYER_FIELD on ModelField {
+    name(lang: $lang)
+    key
+    type
+    default
+    important
+    public
+    variants {
+        value
+        name(lang: $lang)
+    }
+}
+
+query result($lang: Lang) {
+    result: FetchPlayerFields {
+        __typename
+        ... on Problem { message }
+        ... on ModelFieldsList {
+            items { ...PLAYER_FIELD }
+        }
+    }
+}

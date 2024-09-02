@@ -1,11 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Examples.Console;
 using UnityEngine.UI;
 using TMPro;
 using GamePush;
-using GamePush.Utilities;
+using GamePush.Tools;
 
 namespace Examples.Images
 {
