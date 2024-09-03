@@ -39,14 +39,7 @@ namespace GamePush.Data
         }
     }
 
-    [System.Serializable]
-    public static class ProgressSaveFormat
-    {
-        public const string Local = "LOCAL";
-        public const string Platform = "PLATFORM";
-        public const string Cloud = "CLOUD";
-    }
-
+    
     [System.Serializable]
     public class PlayerState
     {

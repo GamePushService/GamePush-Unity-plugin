@@ -63,14 +63,12 @@ namespace GamePush.Core
             //    Debug.Log($"{key} , {playerState[key]}");
             //}
 
-
             SetStartTime(playerData["sessionStart"].ToString());
 
             if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
             {
                 _token = token.ToString();
             }
-
 
             //Debug.Log($"TOKEN {_token}");
 
@@ -100,9 +98,12 @@ namespace GamePush.Core
 
         private async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
+            if(storage == SyncStorageType.preffered)
+                storage = CoreSDK.platform.prefferedSyncType;
+
+            Logger.Log($"Sync {storage}");
             switch (storage)
             {
-                case SyncStorageType.preffered:
                 case SyncStorageType.cloud:
                     await CloudSync(forceOverride);
                     break;
@@ -111,7 +112,6 @@ namespace GamePush.Core
                     LocalSync();
                     break;
             }
-            
         }
 
         private void LocalSync()
@@ -139,9 +139,13 @@ namespace GamePush.Core
             OnSyncComplete?.Invoke();
         }
 
-        private async Task Sync(bool forceOverride) => await Sync(forceOverride: forceOverride);
-        public async void PlayerSync(bool forceOverride) => await Sync(forceOverride);
-        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false) => await Sync(storage, forceOverride);
+        private async Task Sync(bool forceOverride)
+            => await Sync(forceOverride: forceOverride);
+
+        public async void PlayerSync(bool forceOverride)
+            => await Sync(forceOverride);
+        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+            => await Sync(storage, forceOverride);
 
         public async void PlayerLoad() => await Load();
 
@@ -350,6 +354,8 @@ namespace GamePush.Core
 
         protected List<PlayerField> dataFields;
         private Dictionary<string, PlayerField> playerDataFields;
+        private Dictionary<string, PlayerField> limitsFields;
+
         private Dictionary<string, object> defaultState;
         private Dictionary<string, string> typeState = new Dictionary<string, string>
         {
@@ -367,12 +373,21 @@ namespace GamePush.Core
             dataFields = playerFields;
 
             playerDataFields = new Dictionary<string, PlayerField>();
+            limitsFields = new Dictionary<string, PlayerField>();
             defaultState = new Dictionary<string, object>();
 
             foreach (PlayerField field in dataFields)
             {
+                Logger.Log(field.key, field.@default);
                 playerDataFields.Add(field.key, field);
                 typeState.TryAdd(field.key, field.type);
+
+                if(field.limits != null)
+                {
+                    limitsFields.Add(field.key, field);
+                    PrintPlayerField(field);
+                }
+                    
 
                 switch (field.type)
                 {
@@ -475,7 +490,6 @@ namespace GamePush.Core
         #endregion
 
         #region Getters
-
 
         public T GetValue<T>(string key)
         {
@@ -798,7 +812,7 @@ namespace GamePush.Core
 
         #endregion
 
-        #region EveryTick
+        #region TickMethods
 
         private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
         private DateTime localLastSyncTime;
@@ -837,15 +851,14 @@ namespace GamePush.Core
 
         public void IncrementFields()
         {
-            foreach (string keyField in playerState.Keys)
+            foreach (string key in limitsFields.Keys)
             {
-                if (typeState[keyField] == "service" || typeState[keyField] == "accounts")
-                    return;
+                if (typeState[key] == "service" || typeState[key] == "accounts")
+                    continue;
 
-                if (playerDataFields[keyField].intervalIncrement != null)
+                if (limitsFields[key].intervalIncrement != null)
                 {
-                    Logger.Log($"IncrementField {keyField}");
-                    IncrementField(playerDataFields[keyField]);
+                    IncrementField(playerDataFields[key]);
                 }
             }
         }
@@ -858,26 +871,37 @@ namespace GamePush.Core
             int incrementInterval = Get<int>($"{field.key}:incrementInterval");
             float incrementValue = Get<float>($"{field.key}:incrementValue");
 
+            //bool overLimit = field.limits.couldGoOverLimit;
+
             DateTime now = CoreSDK.GetServerTime();
             DateTime timestamp;
-            if(!DateTime.TryParse(Get<string>($"{field.key}:timestamp"), out timestamp))
-            {
-                timestamp = now;
-            }
 
-            TimeSpan elapsed = (now - timestamp) / 1000;
+            if (Get<string>($"{field.key}:timestamp") == "")
+                timestamp = now;
+            else
+                DateTime.TryParse(Get<string>($"{field.key}:timestamp"), out timestamp);
+
+
+            TimeSpan elapsed = (now - timestamp);
+            Logger.Log("elapsed", elapsed.ToString());
+
             int elapsedInterval = elapsed.Seconds;
             int increments = Mathf.FloorToInt(elapsedInterval / incrementInterval);
+
+            //Logger.Log(elapsedInterval.ToString(), increments.ToString());
 
             if (increments > 0 && ((incrementValue > 0 && oldValue < max) || (incrementValue < 0 && oldValue > min)))
             {
                 float newValue = oldValue + increments * incrementValue;
+
+                //if(!overLimit)
                 newValue = Mathf.Min(Math.Max(newValue, min), max);
 
                 //TODO event emit field increment
+                Logger.Log(field.key, newValue.ToString());
                 Set(field.key, newValue);
 
-                DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments * 1000);
+                DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments);
                 SetStateValue($"{field.key}:timestamp", newTimestamp.ToString());
             }
         }
@@ -886,32 +910,34 @@ namespace GamePush.Core
 
         private void PrintPlayerField(PlayerField field)
         {
-            Logger.Log($"\nField key: {field.key}");
-            Logger.Log($"Field name: {field.name}");
-            Logger.Log($"Field type: {field.type}");
-            Logger.Log($"Field important: {field.important}");
-            Logger.Log($"Field public: {field.@public}");
-            Logger.Log($"Default value: {field.@default}");
+            string log = "";
+            log += $"\nField key: {field.key}";
+            log += $"\nField name: {field.name}";
+            log += $"\nField type: {field.type}";
+            log += $"\nField important: {field.important}";
+            log += $"\nField public: {field.@public}";
+            log += $"\nDefault value: {field.@default}";
 
             if (field.intervalIncrement != null)
             {
-                Logger.Log($"Interval: {field.intervalIncrement.interval}");
-                Logger.Log($"Increment: {field.intervalIncrement.increment}");
+                log += $"\n\n Interval: {field.intervalIncrement.interval}";
+                log += $"\n Increment: {field.intervalIncrement.increment}";
             }
 
             if (field.limits != null)
             {
-                Logger.Log($"Min value: {field.limits.min}");
-                Logger.Log($"Max value: {field.limits.max}");
-                Logger.Log($"Could Go Over Limit: {field.limits.couldGoOverLimit}");
+                log += $"\n\n Min value: {field.limits.min}";
+                log += $"\n Max value: {field.limits.max}";
+                log += $"\n Could Go Over Limit: {field.limits.couldGoOverLimit}";
             }
 
             foreach (PlayerFieldVariant variant in field.variants)
             {
-                Logger.Log($" variant:");
-                Logger.Log($"  name: {variant.name}");
-                Logger.Log($"  value: {variant.value}");
+                log += $"\n\n variant:";
+                log += $"\n  name: {variant.name}";
+                log += $"\n  value: {variant.value}";
             }
+            Debug.Log(log);
         }
 
     }

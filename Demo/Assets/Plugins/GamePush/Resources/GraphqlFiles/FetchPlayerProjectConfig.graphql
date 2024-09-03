@@ -77,6 +77,15 @@ query result($lang: Lang) {
                     value
                     name(lang: $lang)
                 }
+                intervalIncrement {
+                    interval
+                    increment
+                }
+                limits {
+                    min
+                    max
+                    couldGoOverLimit
+                }
             }
             serverTime
             gameVariables {

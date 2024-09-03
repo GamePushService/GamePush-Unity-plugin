@@ -14,13 +14,19 @@ namespace GamePush.Services
 
         private void Start()
         {
-            StartCoroutine(PlayTimeCounter());
-            StartCoroutine(Ping());
+            CoreSDK.OnInit += StartCounters;
         }
 
         private void OnDisable()
         {
+            CoreSDK.OnInit -= StartCounters;
             StopAllCoroutines();
+        }
+
+        private void StartCounters()
+        {
+            StartCoroutine(PlayTimeCounter());
+            StartCoroutine(Ping());
         }
 
         private void Update()

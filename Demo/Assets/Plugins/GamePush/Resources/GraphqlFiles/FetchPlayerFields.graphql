@@ -11,22 +11,14 @@ fragment PLAYER_FIELD on ModelField {
         name(lang: $lang)
     }
     intervalIncrement {
-        ...fieldIntervalIncrement
+        interval
+        increment
     }
     limits {
-        ...fieldLimits
+        min
+        max
+        couldGoOverLimit
     }
-}
-
-fragment fieldIntervalIncrement on FieldIntervalIncrement {
-    interval
-    increment
-}
-
-fragment fieldLimits on FieldLimits{
-    min
-    max
-    couldGoOverLimit
 }
 
 query result($lang: Lang) {

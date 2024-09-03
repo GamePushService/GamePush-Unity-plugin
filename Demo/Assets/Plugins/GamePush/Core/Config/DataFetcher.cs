@@ -40,11 +40,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //Debug.Log(resultObject.ToString());
-            //Debug.Log(resultObject["serverTime"].ToString());
-            Logger.Log(resultObject["config"].ToString());
-            Logger.Log(resultObject["playerFields"].ToString());
-
+            //Logger.Log(resultObject["playerFields"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -78,7 +74,7 @@ namespace GamePush.Core
             if (results == "" || results == null) return null;
 
             JObject root = JObject.Parse(results);
-            Debug.Log(root.ToString());
+            //Debug.Log(root.ToString());
             JObject resultObject = (JObject)root["data"]["result"];
 
             //Debug.Log(resultObject.ToString());

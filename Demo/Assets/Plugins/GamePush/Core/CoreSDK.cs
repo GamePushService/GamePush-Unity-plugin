@@ -18,6 +18,7 @@ namespace GamePush
 
         public static GameModule game;
         public static PlayerModule player;
+        public static PlatformModule platform;
         public static GameVariables variables;
 
         #region ServerTime
@@ -91,6 +92,7 @@ namespace GamePush
             game = new GameModule();
             player = new PlayerModule();
             variables = new GameVariables();
+            platform = new PlatformModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
@@ -133,6 +135,7 @@ namespace GamePush
 
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
+            platform.Init(configData.platformConfig);
         }
 
         public static AllConfigData GetConfig()

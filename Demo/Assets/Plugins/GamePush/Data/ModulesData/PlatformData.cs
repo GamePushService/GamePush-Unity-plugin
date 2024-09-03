@@ -1,6 +1,14 @@
 
 namespace GamePush
 {
+    [System.Serializable]
+    public static class ProgressSaveFormat
+    {
+        public const string Local = "LOCAL";
+        public const string Platform = "PLATFORM";
+        public const string Cloud = "CLOUD";
+    }
+
     public enum Platform : byte
     {
         None = 0,
