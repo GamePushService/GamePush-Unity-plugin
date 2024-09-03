@@ -161,6 +161,8 @@ namespace GamePush.Data
         public string tag;
         public string appId;
         public string gameLink;
+        public string progressSaveFormat;
+        public bool alwaysSyncPublicFields;
         public Translations communityLinks;
         public List<Banner> banners;
     }

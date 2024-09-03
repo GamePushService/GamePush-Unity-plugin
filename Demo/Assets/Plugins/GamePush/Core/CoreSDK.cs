@@ -39,6 +39,11 @@ namespace GamePush
             return dateTime.ToString();
         }
 
+        private static async Task HandleSync()
+        {
+            await Task.Yield();
+        }
+
         public static DateTime ConvertToDateTime(string time)
         {
             DateTime dateTime;
@@ -123,6 +128,8 @@ namespace GamePush
             configData = allData;
 
             SetServerTime(allData.serverTime);
+
+
 
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);

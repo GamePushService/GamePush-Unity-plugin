@@ -14,6 +14,61 @@ namespace GamePush.Data
     }
 
     [System.Serializable]
+    public class AutoSyncData
+    {
+        public bool isEnable;
+        public SyncStorageType storage;
+        public int interval;
+        public bool @override;
+
+        public string lastSync;
+
+        public AutoSyncData(
+            bool isEnableSync,
+            SyncStorageType storageType,
+            int syncInterval = 0,
+            bool isOverride = false,
+            string lastSyncTime = ""
+            )
+        {
+            isEnable = isEnableSync;
+            storage = storageType;
+            interval = syncInterval;
+            @override = isOverride;
+            lastSync = lastSyncTime;
+        }
+    }
+
+    [System.Serializable]
+    public static class ProgressSaveFormat
+    {
+        public const string Local = "LOCAL";
+        public const string Platform = "PLATFORM";
+        public const string Cloud = "CLOUD";
+    }
+
+    [System.Serializable]
+    public class PlayerState
+    {
+        int id;
+        bool active;
+        bool removed;
+        bool test;
+        string name;
+        string avatar;
+        int score;
+        string secretCode;
+        StateValue[] stateValues;
+    }
+
+    [System.Serializable]
+    public class StateValue
+    {
+        string key;
+        object value;
+    }
+
+    [System.Serializable]
     public class PlayerStats
     {
         public int playtimeAll;
@@ -44,8 +99,8 @@ namespace GamePush.Data
     {
         public object playerState;
 
-        [JsonProperty("override")]
-        public bool Override;
+        //[JsonProperty("override")]
+        public bool @override;
 
         public bool isFirstRequest;
 
@@ -119,4 +174,6 @@ namespace GamePush.Data
         public string value; // string | number
         public string name;
     }
+
+    
 }

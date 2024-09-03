@@ -363,9 +363,12 @@ namespace Examples.Player
                 ConsoleUI.Instance.Log($"Increment: {field.intervalIncrement.increment}");
             }
 
-            ConsoleUI.Instance.Log($"Min value: {field.limits.min}");
-            ConsoleUI.Instance.Log($"Max value: {field.limits.max}");
-            ConsoleUI.Instance.Log($"Could Go Over Limit: {field.limits.couldGoOverLimit}");
+            if(field.limits != null)
+            {
+                ConsoleUI.Instance.Log($"Min value: {field.limits.min}");
+                ConsoleUI.Instance.Log($"Max value: {field.limits.max}");
+                ConsoleUI.Instance.Log($"Could Go Over Limit: {field.limits.couldGoOverLimit}");
+            }
 
             foreach (PlayerFieldVariant variant in field.variants)
             {

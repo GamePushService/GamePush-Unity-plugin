@@ -26,8 +26,13 @@ namespace GamePush.Services
         private void Update()
         {
             CheckGameFocus();
-            if (Input.GetKeyDown(KeyCode.P))
-                Debug.Log(CoreSDK.TestConvert());
+
+            TickHandle();
+        }
+
+        private void TickHandle()
+        {
+
         }
 
         IEnumerator Ping()

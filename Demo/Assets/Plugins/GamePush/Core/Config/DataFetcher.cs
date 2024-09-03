@@ -39,7 +39,10 @@ namespace GamePush.Core
             JObject resultObject = (JObject)root["data"]["result"];
 
             //Debug.Log(resultObject.ToString());
-            Debug.Log(resultObject["serverTime"].ToString());
+            //Debug.Log(resultObject["serverTime"].ToString());
+            Debug.Log(resultObject["config"].ToString());
+            Debug.Log(resultObject["project"].ToString());
+
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -71,12 +74,12 @@ namespace GamePush.Core
             );
 
             JObject root = JObject.Parse(results);
+            Debug.Log(root.ToString());
             JObject resultObject = (JObject)root["data"]["result"];
 
-            Debug.Log(resultObject.ToString());
+            //Debug.Log(resultObject.ToString());
 
             return resultObject;
-            //CoreSDK.player.SetPlayerData(resultObject);
         }
 
         public static async Task<JObject> SyncPlayer(SyncPlayerInput input, bool withToken)
@@ -133,7 +136,7 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            //Debug.Log(results);
+            Debug.Log(results);
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];

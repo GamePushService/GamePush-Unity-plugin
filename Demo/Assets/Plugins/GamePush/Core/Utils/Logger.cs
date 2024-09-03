@@ -17,7 +17,7 @@ namespace GamePush.Core
         private static void RedMessage(string title, string text) =>
             ColorMessage("CE342A", "ERR", title, text);
         private static void LogMessage(string title, string text) =>
-            Debug.Log($" GP: {title}: {text}");
+            Debug.Log($"{title}: {text}");
 
 
         public static void Info(string title = "", string text = null) => GreenMessage(title, text);

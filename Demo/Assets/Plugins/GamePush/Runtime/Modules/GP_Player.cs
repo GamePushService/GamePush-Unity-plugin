@@ -483,6 +483,7 @@ namespace GamePush
 #else
 
             ConsoleLog("LOAD");
+            CoreSDK.player.PlayerLoad();
 #endif
         }
 
@@ -497,6 +498,7 @@ namespace GamePush
 #else
 
             ConsoleLog("LOGIN");
+            CoreSDK.player.Login();
 #endif
         }
 
@@ -509,6 +511,7 @@ namespace GamePush
 #else
 
             ConsoleLog("LOGOUT");
+            CoreSDK.player.Logout();
 #endif
         }
 
@@ -525,6 +528,7 @@ namespace GamePush
 #else
 
             ConsoleLog("FETCH FIELDS");
+            CoreSDK.player.FetchFields(onFetchFields);
 #endif
         }
 

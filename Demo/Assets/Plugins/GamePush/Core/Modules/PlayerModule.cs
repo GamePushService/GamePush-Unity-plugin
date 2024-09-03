@@ -21,9 +21,14 @@ namespace GamePush.Core
         public event Action OnLoginComplete;
         public event Action OnLoginError;
 
+        public event Action OnLogoutComplete;
+        public event Action OnLogoutError;
+
         private bool _isFirstRequest = true;
         private string _secretCode;
         private string _token;
+
+        private DateTime playerUpdateTime;
 
         #region PlayerInit
 
@@ -35,15 +40,12 @@ namespace GamePush.Core
         public void Init(List<PlayerField> playerFields)
         {
             SetDataFields(playerFields);
+
             foreach (string key in defaultState.Keys)
             {
                 playerState.TryAdd(key, defaultState[key]);
             }
 
-            //foreach (string key in playerState.Keys)
-            //{
-            //    Debug.Log(key + " " + playerState[key].ToString());
-            //}
         }
 
         public void SetPlayerData(JObject playerData)
@@ -96,40 +98,47 @@ namespace GamePush.Core
             }
         }
 
+        private async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+        {
+            switch (storage)
+            {
+                case SyncStorageType.cloud:
+                    await CloudSync(forceOverride);
+                    break;
+                case SyncStorageType.local:
+                case SyncStorageType.platform:
+                    LocalSync();
+                    break;
+            }
+            
+        }
+
+        private void LocalSync()
+        {
+            SavePlayerStateToPrefs();
+        }
+
+        private async Task CloudSync(bool forceOverride = false)
+        {
+            SyncPlayerInput playerInput = new SyncPlayerInput();
+            playerInput.playerState = GetPlayerState();
+
+            playerInput.isFirstRequest = _isFirstRequest;
+            playerInput.@override = forceOverride;
+
+            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+            SetPlayerData(resultObject);
+
+            OnSyncComplete?.Invoke();
+        }
+
+        private async Task Sync(bool forceOverride) => await Sync(forceOverride: forceOverride);
         public async void PlayerSync(bool forceOverride) => await Sync(forceOverride);
         public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false) => await Sync(storage, forceOverride);
 
         public async void PlayerLoad() => await Load();
 
-        public async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
-        {
-            SyncPlayerInput playerInput = new SyncPlayerInput();
-            playerInput.playerState = GetPlayerState();
-
-            playerInput.isFirstRequest = _isFirstRequest;
-            playerInput.Override = forceOverride;
-
-            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
-            SetPlayerData(resultObject);
-
-            OnSyncComplete?.Invoke();
-        }
-
-        public async Task Sync(bool forceOverride)
-        {
-            SyncPlayerInput playerInput = new SyncPlayerInput();
-            playerInput.playerState = GetPlayerState();
-
-            playerInput.isFirstRequest = _isFirstRequest;
-            playerInput.Override = forceOverride;
-
-            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
-            SetPlayerData(resultObject);
-
-            OnSyncComplete?.Invoke();
-        }
-
-        public async Task Load()
+        private async Task Load()
         {
             GetPlayerInput playerInput = new GetPlayerInput();
             GetPlayerStateFromPrefs();
@@ -173,6 +182,54 @@ namespace GamePush.Core
         }
 
         public void Ping() => DataFetcher.Ping(_token);
+
+        public void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.preffered, bool isOverride = false)
+        {
+            if(autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
+            {
+                if (autoSyncData.isEnable)
+                {
+                    Logger.Error($"AutoSync for {storage} storage already enabled. Call DisableAutoSync() before re-enabling.");
+                    return;
+                }
+                else
+                {
+                    autoSyncData.isEnable = true;
+                    autoSyncData.interval = interval;
+                    return;
+                }
+            }
+
+            string lastSyncTime = (CoreSDK.GetServerTime().AddSeconds(-interval)).ToString();
+
+            AutoSyncData data = new AutoSyncData(true, storage, interval, isOverride, lastSyncTime);
+            autoSyncList.Add(storage, data);
+            AutoSync();
+        }
+
+        public void DisableAutoSync(SyncStorageType storage = SyncStorageType.preffered)
+        {
+            if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
+            {
+                if (autoSyncData.isEnable)
+                {
+                    Logger.Error($"AutoSync for {storage} storage already disabled");
+                    return;
+                }
+                else
+                {
+                    autoSyncData.isEnable = false;
+                    return;
+                }
+                
+            }
+            else
+            {
+                AutoSyncData data = new AutoSyncData(false, storage);
+                autoSyncList.Add(storage, data);
+                Logger.Error($"AutoSync for {storage} storage already disabled");
+            }
+        }
 
         #endregion
 
@@ -360,6 +417,8 @@ namespace GamePush.Core
 
             playerState[key] = value;
             OnPlayerChange?.Invoke();
+
+            playerUpdateTime = CoreSDK.GetServerTime();
         }
 
         public void Reset()
@@ -484,7 +543,7 @@ namespace GamePush.Core
         {
             if (playerDataFields.TryGetValue(key, out PlayerField field))
             {
-                if (field.limits != null)
+                if (playerState.TryGetValue($"{key}:max", out object value))
                     return Get<float>($"{key}:max");
                 else
                 {
@@ -506,7 +565,7 @@ namespace GamePush.Core
         {
             if (playerDataFields.TryGetValue(key, out PlayerField field))
             {
-                if (field.limits != null)
+                if (playerState.TryGetValue($"{key}:min", out object value))
                     return Get<float>($"{key}:min");
                 else
                 {
@@ -666,7 +725,29 @@ namespace GamePush.Core
         }
         #endregion
 
-        #region TimeSpan
+        #region Account
+
+        public void Login()
+        {
+            if (_token != null)
+                OnLoginError?.Invoke();
+            else
+                OnLoginComplete?.Invoke();
+
+        }
+
+        public void Logout()
+        {
+            if (_token != null)
+                OnLogoutError?.Invoke();
+            else
+                OnLogoutComplete?.Invoke();
+
+        }
+
+        #endregion
+
+        #region PlayTime
 
         private double _playTimeAll;
         private double _playTimeToday;
@@ -679,7 +760,7 @@ namespace GamePush.Core
 
         private void SetStartTime(string sessionStart)
         {
-            Debug.Log($"ServerTime string {CoreSDK.GetConfig().serverTime}"); 
+            Debug.Log($"ServerTime string {CoreSDK.GetConfig().serverTime}");
             //Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
             //Debug.Log($"SessionStart {sessionStart}");
 
@@ -704,14 +785,120 @@ namespace GamePush.Core
 
         #endregion
 
-        public void Login()
-        {
-            if (_token != null)
-                OnLoginError?.Invoke();
-            else
-                OnLoginComplete?.Invoke();
+        #region EveryTick
 
-            //OnLoginComplete?.Invoke();
+        private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
+        private DateTime localLastSyncTime;
+
+        public void EveryTickHandler()
+        {
+            AutoSync();
+            IncrementFields();
+        }
+
+        private void AutoSync()
+        {
+            Logger.Log(playerUpdateTime.ToString());
+            foreach(SyncStorageType storage in autoSyncList.Keys)
+            {
+                if (autoSyncList[storage].isEnable)
+                {
+                    int interval = autoSyncList[storage].interval;
+                    Logger.Log($"autosync of {storage} storage");
+                    DateTime currentTime = CoreSDK.GetServerTime();
+                    DateTime lastSyncTime;
+                    if(DateTime.TryParse(autoSyncList[storage].lastSync, out lastSyncTime))
+                    {
+                        Logger.Warn(lastSyncTime.ToString());
+                        if ((currentTime - lastSyncTime).TotalSeconds >= interval)
+                        {
+                            bool isNeedToSync = playerUpdateTime > localLastSyncTime;
+                            if (isNeedToSync)
+                            {
+                                localLastSyncTime = DateTime.Now;
+                                PlayerSync(storage, autoSyncList[storage].@override);
+                            }
+                        }
+                    }
+                    Logger.Error("Cant parse last sync time");
+                    
+                }
+            }
+        }
+
+        private void IncrementFields()
+        {
+            foreach (string keyField in playerState.Keys)
+            {
+                if (playerDataFields[keyField].intervalIncrement != null)
+                {
+                    IncrementField(playerDataFields[keyField]);
+                }
+            }
+        }
+
+        private void IncrementField(PlayerField field)
+        {
+            float oldValue = Get<float>(field.key);
+            float max = Get<float>($"{field.key}:max");
+            float min = Get<float>($"{field.key}:min");
+            int incrementInterval = Get<int>($"{field.key}:incrementInterval");
+            float incrementValue = Get<float>($"{field.key}:incrementValue");
+
+            DateTime now = CoreSDK.GetServerTime();
+            DateTime timestamp;
+            if(!DateTime.TryParse(Get<string>($"{field.key}:timestamp"), out timestamp))
+            {
+                timestamp = now;
+            }
+
+            TimeSpan elapsed = (now - timestamp) / 1000;
+            int elapsedInterval = elapsed.Seconds;
+            int increments = Mathf.FloorToInt(elapsedInterval / incrementInterval);
+
+            if (increments > 0 && ((incrementValue > 0 && oldValue < max) || (incrementValue < 0 && oldValue > min)))
+            {
+                float newValue = oldValue + increments * incrementValue;
+                newValue = Mathf.Min(Math.Max(newValue, min), max);
+
+                //TODO event emit field increment
+                Set(field.key, newValue);
+
+                DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments * 1000);
+                SetStateValue($"{field.key}:timestamp", newTimestamp.ToString());
+            }
+        }
+        #endregion
+
+
+        private void PrintPlayerField(PlayerField field)
+        {
+            Logger.Log($"\nField key: {field.key}");
+            Logger.Log($"Field name: {field.name}");
+            Logger.Log($"Field type: {field.type}");
+            Logger.Log($"Field important: {field.important}");
+            Logger.Log($"Field public: {field.@public}");
+            Logger.Log($"Default value: {field.@default}");
+
+            if (field.intervalIncrement != null)
+            {
+                Logger.Log($"Interval: {field.intervalIncrement.interval}");
+                Logger.Log($"Increment: {field.intervalIncrement.increment}");
+            }
+
+            if (field.limits != null)
+            {
+                Logger.Log($"Min value: {field.limits.min}");
+                Logger.Log($"Max value: {field.limits.max}");
+                Logger.Log($"Could Go Over Limit: {field.limits.couldGoOverLimit}");
+            }
+
+            foreach (PlayerFieldVariant variant in field.variants)
+            {
+                Logger.Log($" variant:");
+                Logger.Log($"  name: {variant.name}");
+                Logger.Log($"  value: {variant.value}");
+            }
         }
 
     }
