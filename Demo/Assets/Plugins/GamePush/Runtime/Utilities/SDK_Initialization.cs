@@ -2,8 +2,8 @@ using UnityEngine;
 using GamePush;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
-using System;
 using System.Runtime.InteropServices;
+using GamePush.Services;
 
 namespace GamePush.Initialization
 {
@@ -69,6 +69,8 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Custom>();
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
+
+            SDK.AddComponent<GameStateService>();
 
             EndInit();
         }

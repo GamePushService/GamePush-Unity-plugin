@@ -102,6 +102,7 @@ namespace GamePush.Core
         {
             switch (storage)
             {
+                case SyncStorageType.preffered:
                 case SyncStorageType.cloud:
                     await CloudSync(forceOverride);
                     break;
@@ -127,8 +128,14 @@ namespace GamePush.Core
             playerInput.@override = forceOverride;
 
             JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
-            SetPlayerData(resultObject);
 
+            if(resultObject == null)
+            {
+                OnSyncError?.Invoke();
+                return;
+            }
+
+            SetPlayerData(resultObject);
             OnSyncComplete?.Invoke();
         }
 
@@ -146,8 +153,14 @@ namespace GamePush.Core
             playerInput.isFirstRequest = _isFirstRequest;
 
             JObject resultObject = await DataFetcher.GetPlayer(playerInput, _isFirstRequest);
-            SetPlayerData(resultObject);
 
+            if (resultObject == null)
+            {
+                OnLoadError?.Invoke();
+                return;
+            }
+
+            SetPlayerData(resultObject);
             OnLoadComplete?.Invoke();
         }
 
@@ -790,48 +803,48 @@ namespace GamePush.Core
         private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
         private DateTime localLastSyncTime;
 
-        public void EveryTickHandler()
+        public void AutoSync()
         {
-            AutoSync();
-            IncrementFields();
-        }
-
-        private void AutoSync()
-        {
-            Logger.Log(playerUpdateTime.ToString());
             foreach(SyncStorageType storage in autoSyncList.Keys)
             {
                 if (autoSyncList[storage].isEnable)
                 {
                     int interval = autoSyncList[storage].interval;
-                    Logger.Log($"autosync of {storage} storage");
+                    
                     DateTime currentTime = CoreSDK.GetServerTime();
                     DateTime lastSyncTime;
                     if(DateTime.TryParse(autoSyncList[storage].lastSync, out lastSyncTime))
                     {
-                        Logger.Warn(lastSyncTime.ToString());
                         if ((currentTime - lastSyncTime).TotalSeconds >= interval)
                         {
                             bool isNeedToSync = playerUpdateTime > localLastSyncTime;
                             if (isNeedToSync)
                             {
                                 localLastSyncTime = DateTime.Now;
+                                Logger.Log("Autosync", $"{storage} storage");
                                 PlayerSync(storage, autoSyncList[storage].@override);
                             }
                         }
                     }
-                    Logger.Error("Cant parse last sync time");
+                    else
+                    {
+                        Logger.Error("Cant parse last sync time");
+                    }
                     
                 }
             }
         }
 
-        private void IncrementFields()
+        public void IncrementFields()
         {
             foreach (string keyField in playerState.Keys)
             {
+                if (typeState[keyField] == "service" || typeState[keyField] == "accounts")
+                    return;
+
                 if (playerDataFields[keyField].intervalIncrement != null)
                 {
+                    Logger.Log($"IncrementField {keyField}");
                     IncrementField(playerDataFields[keyField]);
                 }
             }

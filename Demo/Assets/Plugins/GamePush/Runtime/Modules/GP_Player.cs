@@ -423,7 +423,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Remove();
 #else
-
             ConsoleLog("REMOVE");
             CoreSDK.player.Remove();
 #endif
@@ -446,7 +445,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride: forceOverride);
 #else
-
             ConsoleLog("SYNC");
             CoreSDK.player.PlayerSync(forceOverride);
 #endif
@@ -460,6 +458,7 @@ namespace GamePush
             GP_Player_EnableAutoSync(interval, storage.ToString());
 #else
             ConsoleLog("AUTO SYNC: ON");
+            CoreSDK.player.EnableAutoSync(interval, storage);
 #endif
         }
 
@@ -471,6 +470,7 @@ namespace GamePush
             GP_Player_DisableAutoSync(storage.ToString());
 #else
             ConsoleLog("AUTO SYNC: OFF");
+            CoreSDK.player.DisableAutoSync(storage);
 #endif
         }
 

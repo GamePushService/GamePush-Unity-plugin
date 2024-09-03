@@ -46,6 +46,8 @@ query result($lang: Lang) {
                 tag
                 appId
                 gameLink
+                progressSaveFormat
+                alwaysSyncPublicFields
                 communityLinks {
                     ...translations
                 }
@@ -56,6 +58,14 @@ query result($lang: Lang) {
                 customAdsConfig {
                     ...customAdsConfig
                 }
+                # paymentsConfig {
+                #     ...paymentsConfig
+                # }
+                # paymentsConfigId
+                # authConfig {
+                #     ...authConfig
+                # }
+                # authConfigId
             }
             playerFields {
                 name(lang: $lang)
@@ -276,6 +286,38 @@ fragment customAdsConfig on AdsConfig {
         }
     }
 }
+
+# fragment paymentsConfig on PaymentsConfig {
+#     id
+#     name
+#     description
+#     sandbox
+#     configs {
+#         web {
+#             ...activeService
+#         }
+#         android {
+#             ...activeService
+#         }
+#     }
+# }
+
+# fragment authConfig on AuthConfig {
+#     id
+#     name
+#     description
+#     xsollaConfig {
+#         loginProjectId
+#     }
+#     configs {
+#         web {
+#             ...activeService
+#         }
+#         android {
+#             ...activeService
+#         }
+#     }
+# }
 
 fragment banner on Banner {
     type

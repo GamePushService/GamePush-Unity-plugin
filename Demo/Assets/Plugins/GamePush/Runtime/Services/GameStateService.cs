@@ -25,14 +25,12 @@ namespace GamePush.Services
 
         private void Update()
         {
-            CheckGameFocus();
-
             TickHandle();
         }
 
         private void TickHandle()
         {
-
+            CoreSDK.player.AutoSync();
         }
 
         IEnumerator Ping()
@@ -48,26 +46,28 @@ namespace GamePush.Services
         {
             yield return new WaitForSecondsRealtime(counterWaitTime);
             CoreSDK.AddPlayTime(counterWaitTime);
+            CoreSDK.player.IncrementFields();
 
             StartCoroutine(PlayTimeCounter());
         }
 
-        void CheckGameFocus()
+        private void OnApplicationFocus(bool focus)
         {
             if (!CoreSDK.isInit) return;
 
-            if (!Application.isFocused && isFocus)
+            if (!focus && isFocus)
             {
                 isFocus = false;
                 OnFocusChange?.Invoke(isFocus);
                 CoreSDK.game.SetAutoPause(true);
             }
-            else if (Application.isFocused && !isFocus)
+            else if (focus && !isFocus)
             {
                 isFocus = true;
                 OnFocusChange?.Invoke(isFocus);
                 CoreSDK.game.SetAutoPause(false);
             }
         }
+
     }
 }
