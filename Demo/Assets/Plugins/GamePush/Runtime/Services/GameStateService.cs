@@ -10,7 +10,7 @@ namespace GamePush.Services
     {
         private bool isFocus;
         public event Action<bool> OnFocusChange;
-        private float counterWaitTime = 1f;
+        private float tickTime = 0.5f;
 
         private void Start()
         {
@@ -25,18 +25,20 @@ namespace GamePush.Services
 
         private void StartCounters()
         {
-            StartCoroutine(PlayTimeCounter());
             StartCoroutine(Ping());
+            StartCoroutine(Tick());
         }
 
-        private void Update()
-        {
-            TickHandle();
-        }
 
-        private void TickHandle()
+        IEnumerator Tick()
         {
+            yield return new WaitForSecondsRealtime(tickTime);
+
+            CoreSDK.AddPlayTime(tickTime);
+            CoreSDK.player.IncrementFields();
             CoreSDK.player.AutoSync();
+
+            StartCoroutine(Tick());
         }
 
         IEnumerator Ping()
@@ -46,15 +48,6 @@ namespace GamePush.Services
 
             //Debug.Log(CoreSDK.player.GetPlaytimeToday());
             StartCoroutine(Ping());
-        }
-
-        IEnumerator PlayTimeCounter()
-        {
-            yield return new WaitForSecondsRealtime(counterWaitTime);
-            CoreSDK.AddPlayTime(counterWaitTime);
-            CoreSDK.player.IncrementFields();
-
-            StartCoroutine(PlayTimeCounter());
         }
 
         private void OnApplicationFocus(bool focus)

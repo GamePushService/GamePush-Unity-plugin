@@ -7,75 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>{{{ PRODUCT_NAME }}}</title>
   <link rel="stylesheet" href="TemplateData/style.css">
-  <script src="TemplateData/gamepush-unity.js"></script>
 
   <script>
-    const projectId = "{{{ PROJECT_ID.replace(/ /g, '') }}}";
-    const publicToken = "{{{ TOKEN.replace(/ /g, '') }}}";
-    const showPreloaderAd = "{{{ SHOW_PRELOADER_AD.replace(/ /g, '') }}}";
     const overlayBackgroundColor = "{{{ OVERLAY_BACKGROUND_COLOR.replace(/ /g, '') }}}";
     const progressBarFillColor = "{{{ PROGRESS_BAR_FILL_COLOR.replace(/ /g, '') }}}";
     const progressBarBackgroundColor = "{{{ PROGRESS_BAR_BACKGROUND_COLOR.replace(/ /g, '') }}}";
     const progressBarBorderColor = "{{{ PROGRESS_BAR_BORDER_COLOR.replace(/ /g, '') }}}";
-
-    const autocallGameReady = "{{{ GAMEREADY_AUTOCALL_DELAY.replace(/ /g, '') }}}";
-  </script>
-
-  <script>
-    var _unityAwaiter = {};
-    _unityAwaiter.ready = new Promise((resolve, reject) => {
-      _unityAwaiter.done = resolve;
-      _unityAwaiter.abort = reject;
-    });
-
-    var _gpAwaiter = {};
-    _gpAwaiter.ready = new Promise((resolve) => {
-      _gpAwaiter.done = resolve;
-    });
-
-    window.unityInstance = null;
-    window.onGPError = () => {
-      _gpAwaiter.done();
-      await _unityAwaiter.ready;
-      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKError');
-    }
-
-    window.onGPInit = async (gp) => {
-      if (showPreloaderAd == "True" || showPreloaderAd == "1") {
-        gp.ads.showPreloader();
-      }
-
-      window.GamePush = new GamePushUnity(gp);
-      gp.player.ready.finally(_gpAwaiter.done);
-
-      console.info("GamePush initialization in index.html deprecated!!!")
-      await _unityAwaiter.ready;
-      await _gpAwaiter.done;
-      window.unityInstance.SendMessage('GamePushSDK', 'CallOnSDKReady');
-
-      if (autocallGameReady != null && parseFloat(autocallGameReady) > 0) {
-        setTimeout(() => gp.gameStart(), parseFloat(autocallGameReady));
-      }
-    };
-  </script>
-
-  <script>
-    ((g, a, m, e) => { 
-      let o = () => { 
-        let p = document.createElement("script"); 
-        p.src = `${a[0]}?projectId=${m}&publicToken=${e}`, 
-        p.onerror = () => { 
-          a.shift(), 
-          a.length > 0 ? (o(), 
-          p.remove()) : "onGPError" in g && g.onGPError() }, 
-          document.head.appendChild(p) 
-        }; 
-        o() 
-      })(window, ["https://gs.eponesh.com/sdk/gamepush.js", 
-      "https://s3.eponesh.com/files/gs/sdk/gamepush.js", 
-      "TemplateData/gp_bundle/gamepush.js"], 
-      projectId, 
-      publicToken);
   </script>
 
 </head>
@@ -145,17 +82,17 @@
     const unityLoader = document.createElement("script");
     unityLoader.src = loaderUrl;
     unityLoader.onload = async () => {
-      await _gpAwaiter.ready;
+      //await _gpAwaiter.ready;
       createUnityInstance(canvas, config, (progress) => {
         spinner.style.display = "none";
         progressBarEmpty.style.display = "";
         progressBarFull.style.width = `${100 * progress}%`;
       }).then((unityInstance) => {
         window.unityInstance = unityInstance;
-        _unityAwaiter.done(unityInstance);
+        //_unityAwaiter.done(unityInstance);
         loadingCover.style.display = "none";
       }).catch((message) => {
-        _unityAwaiter.abort(message);
+        //_unityAwaiter.abort(message);
         alert(message);
       });
     };

@@ -54,7 +54,7 @@ namespace GamePush.Core
 
         public void SetPlayerData(JObject playerData)
         {
-            Debug.Log(playerData.ToString());
+            //Debug.Log(playerData.ToString());
 
             JObject statsObject = (JObject)playerData["stats"];
             playerStats = statsObject.ToObject<PlayerStats>();
@@ -895,16 +895,18 @@ namespace GamePush.Core
 
         public void AutoSync()
         {
-            foreach(SyncStorageType storage in autoSyncList.Keys)
+            foreach (SyncStorageType storage in autoSyncList.Keys)
             {
                 if (autoSyncList[storage].isEnable)
                 {
+                    //Logger.Log("Autosync", $"{storage} isEnable");
                     int interval = autoSyncList[storage].interval;
                     
                     DateTime currentTime = CoreSDK.GetServerTime();
                     DateTime lastSyncTime;
                     if(DateTime.TryParse(autoSyncList[storage].lastSync, out lastSyncTime))
                     {
+                        //Logger.Log("lastSyncTime", lastSyncTime.ToString());
                         if ((currentTime - lastSyncTime).TotalSeconds >= interval)
                         {
                             bool isNeedToSync = playerUpdateTime > localLastSyncTime;

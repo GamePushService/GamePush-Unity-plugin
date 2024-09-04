@@ -9,8 +9,13 @@
         "GUID:f17684ff5f4df460bb8a252c1b1548d7"
     ],
     "includePlatforms": [
+        "Android",
         "Editor",
-        "WebGL"
+        "macOSStandalone",
+        "WSA",
+        "WebGL",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
