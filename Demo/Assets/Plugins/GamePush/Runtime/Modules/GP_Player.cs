@@ -30,11 +30,15 @@ namespace GamePush
         public static event UnityAction<List<PlayerFetchFieldsData>> OnPlayerFetchFieldsComplete;
         public static event UnityAction OnPlayerFetchFieldsError;
 
+        private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
+
         public static event UnityAction<PlayerFetchFieldsData> OnFieldMaximum;
         public static event UnityAction<PlayerFetchFieldsData> OnFieldMinimum;
         public static event UnityAction<PlayerFetchFieldsData> OnFieldIncrement;
 
-        private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
+        private void FieldMaximum(PlayerFetchFieldsData data) => OnFieldMaximum?.Invoke(data);
+        private void FieldMinimum(PlayerFetchFieldsData data) => OnFieldMinimum?.Invoke(data);
+        private void FieldIncrement(PlayerFetchFieldsData data) => OnFieldIncrement?.Invoke(data);
 
         private void OnEnable()
         {
@@ -51,6 +55,10 @@ namespace GamePush
 
             CoreSDK.player.OnLogoutComplete += CallPlayerLoginComplete;
             CoreSDK.player.OnLogoutError += CallPlayerLoginError;
+
+            CoreSDK.player.OnFieldMaximum += FieldMaximum;
+            CoreSDK.player.OnFieldMinimum += FieldMinimum;
+            CoreSDK.player.OnFieldIncrement += FieldIncrement;
         }
 
         private void OnDisable()
@@ -68,6 +76,10 @@ namespace GamePush
 
             CoreSDK.player.OnLogoutComplete -= CallPlayerLoginComplete;
             CoreSDK.player.OnLogoutError -= CallPlayerLoginError;
+
+            CoreSDK.player.OnFieldMaximum -= FieldMaximum;
+            CoreSDK.player.OnFieldMinimum -= FieldMinimum;
+            CoreSDK.player.OnFieldIncrement -= FieldIncrement;
         }
 
         [DllImport("__Internal")]

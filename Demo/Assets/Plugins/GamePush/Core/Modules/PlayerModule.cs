@@ -210,7 +210,7 @@ namespace GamePush.Core
             {
                 if (autoSyncData.isEnable)
                 {
-                    Logger.Error($"AutoSync for {storage} storage already enabled. Call DisableAutoSync() before re-enabling.");
+                    Logger.Warn($"AutoSync for {storage} storage already enabled. Call DisableAutoSync() before re-enabling.");
                     return;
                 }
                 else
@@ -234,7 +234,7 @@ namespace GamePush.Core
             {
                 if (autoSyncData.isEnable)
                 {
-                    Logger.Error($"AutoSync for {storage} storage already disabled");
+                    Logger.Warn($"AutoSync for {storage} storage already disabled");
                     return;
                 }
                 else
@@ -248,7 +248,7 @@ namespace GamePush.Core
             {
                 AutoSyncData data = new AutoSyncData(false, storage);
                 autoSyncList.Add(storage, data);
-                Logger.Error($"AutoSync for {storage} storage already disabled");
+                Logger.Warn($"AutoSync for {storage} storage already disabled");
             }
         }
 
@@ -382,7 +382,7 @@ namespace GamePush.Core
 
             foreach (PlayerField field in dataFields)
             {
-                PrintPlayerField(field);
+                //PrintPlayerField(field);
 
                 playerDataFields.Add(field.key, field);
                 typeState.TryAdd(field.key, field.type);
@@ -452,11 +452,16 @@ namespace GamePush.Core
 
             if (playerDataFields[key].limits != null)
             {
+                if(int.TryParse(value.ToString(), out int intValue))
+                {
+                    playerState[key] = intValue;
+                }
+                
+                Logger.Log("Set limit value", key);
                 LimitStateUpdate(playerDataFields[key]);
             }
 
             OnPlayerChange?.Invoke();
-            
         }
 
         private void LimitStateUpdate(PlayerField field)
@@ -476,6 +481,7 @@ namespace GamePush.Core
                     playerState[field.key] = max.ToString();
                 }
 
+                Logger.Log("Max value", field.key);
                 OnFieldMaximum?.Invoke(FieldToFetchField(field));
 
                 if (field.intervalIncrement != null && incrementValue > 0)
@@ -489,6 +495,7 @@ namespace GamePush.Core
             {
                 playerState[field.key] = min.ToString();
 
+                Logger.Log("Min value", field.key);
                 OnFieldMinimum?.Invoke(FieldToFetchField(field));
 
                 if (field.intervalIncrement != null && incrementValue > 0)
@@ -496,15 +503,25 @@ namespace GamePush.Core
                     timestampKey = "";
                 }
             }
+
             bool hasTimestamp = playerState.TryGetValue(timestampKey, out object timestamp);
+            if (hasTimestamp) hasTimestamp = !string.IsNullOrEmpty(timestamp.ToString());
+
+            Logger.Log("hasTimestamp", hasTimestamp.ToString());
 
             // Проверка на необходимость обновления таймстампа
             if (field.intervalIncrement != null &&
                 !hasTimestamp &&
                 ((incrementValue > 0 && currentValue < max) || (incrementValue < 0 && currentValue > min)))
             {
-                Logger.Log("New timestamp", CoreSDK.GetServerTime().ToString());
-                playerState.TryAdd($"{field.key}:timestamp", CoreSDK.GetServerTime().ToString());
+
+                string newTimestamp = CoreSDK.GetServerTime().ToString();
+                //Logger.Log("New timestamp", newTimestamp);
+
+                if (!playerState.TryAdd($"{field.key}:timestamp", newTimestamp))
+                    playerState[$"{field.key}:timestamp"] = newTimestamp;
+
+                Logger.Log($"{field.key}:timestamp", Get<string>($"{field.key}:timestamp"));
             }
         }
 
@@ -933,18 +950,20 @@ namespace GamePush.Core
             DateTime now = CoreSDK.GetServerTime();
             DateTime timestamp;
 
+            //Logger.Log(field.key, Get<string>($"{field.key}:timestamp"));
+
             if (Get<string>($"{field.key}:timestamp") == "")
                 timestamp = now;
             else
                 DateTime.TryParse(Get<string>($"{field.key}:timestamp"), out timestamp);
 
-
+            //Logger.Log(field.key, timestamp.ToString());
             TimeSpan elapsed = now - timestamp;
-            Logger.Log(field.key, elapsed.ToString());
+            //Logger.Log(field.key, elapsed.ToString());
 
             int elapsedInterval = (int)elapsed.TotalSeconds;
 
-            Logger.Log(elapsedInterval.ToString(), incrementInterval.ToString());
+            //Logger.Log(elapsedInterval.ToString(), incrementInterval.ToString());
 
             int increments = Mathf.FloorToInt(elapsedInterval / incrementInterval);
 
@@ -956,11 +975,11 @@ namespace GamePush.Core
 
                 OnFieldIncrement?.Invoke(FieldToFetchField(field));
 
+                DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments);
+                playerState[$"{field.key}:timestamp"] = newTimestamp.ToString();
+
                 Logger.Warn(field.key, newValue.ToString());
                 Set(field.key, newValue);
-
-                DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments);
-                SetStateValue($"{field.key}:timestamp", newTimestamp.ToString());
             }
         }
         #endregion

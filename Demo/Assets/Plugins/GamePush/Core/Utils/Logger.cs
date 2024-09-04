@@ -6,16 +6,22 @@ namespace GamePush.Core
 {
     public class Logger : MonoBehaviour
     {
-        private static void ColorMessage(string color, string type, string title, string text) =>
+        private static void ColorLog(string color, string type, string title, string text) =>
             Debug.Log($"<color=#{color}> {type}: </color> {title}: {text}");
+
+        private static void ColorLogWarning(string color, string type, string title, string text) =>
+            Debug.LogWarning($"<color=#{color}> {type}: </color> {title}: {text}");
+
+        private static void ColorLogError(string color, string type, string title, string text) =>
+            Debug.LogError($"<color=#{color}> {type}: </color> {title}: {text}");
 
 
         private static void GreenMessage(string title, string text) =>
-            ColorMessage("4CA57D", "INFO", title, text);
+            ColorLog("4CA57D", "INFO", title, text);
         private static void OrangeMessage(string title, string text) =>
-            ColorMessage("D16A31", "WARN", title, text);
+            ColorLogWarning("D16A31", "WARN", title, text);
         private static void RedMessage(string title, string text) =>
-            ColorMessage("CE342A", "ERR", title, text);
+            ColorLogError("CE342A", "ERR", title, text);
         private static void LogMessage(string title, string text) =>
             Debug.Log($"{title}: {text}");
 
