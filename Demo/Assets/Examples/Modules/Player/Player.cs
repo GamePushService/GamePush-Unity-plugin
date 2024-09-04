@@ -65,6 +65,8 @@ namespace Examples.Player
             GP_Player.OnLoadComplete += OnLoad;
             GP_Player.OnSyncComplete += OnSync;
 
+            GP_Player.OnSyncComplete += Get_Player_Data;
+
             GP_Player.OnLoginComplete += OnLoginComplete;
             GP_Player.OnLoginError += OnLoginError;
 
@@ -117,6 +119,9 @@ namespace Examples.Player
             GP_Player.OnConnect -= OnConnect;
             GP_Player.OnLoadComplete -= OnLoad;
             GP_Player.OnSyncComplete -= OnSync;
+
+            GP_Player.OnSyncComplete -= Get_Player_Data;
+
             GP_Player.OnLoginComplete -= OnLoginComplete;
             GP_Player.OnLoginError -= OnLoginError;
 
