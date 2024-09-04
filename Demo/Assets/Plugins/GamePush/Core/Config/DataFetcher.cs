@@ -40,6 +40,9 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
+            //Logger.Log(resultObject["config"].ToString());
+            //Logger.Log(resultObject["project"].ToString());
+            //Logger.Log(resultObject["platformConfig"].ToString());
             //Logger.Log(resultObject["playerFields"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();

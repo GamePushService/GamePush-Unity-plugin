@@ -24,6 +24,10 @@ namespace GamePush.Core
         public event Action OnLogoutComplete;
         public event Action OnLogoutError;
 
+        public event Action<PlayerFetchFieldsData> OnFieldMaximum;
+        public event Action<PlayerFetchFieldsData> OnFieldMinimum;
+        public event Action<PlayerFetchFieldsData> OnFieldIncrement;
+
         private bool _isFirstRequest = true;
         private string _secretCode;
         private string _token;
@@ -378,16 +382,15 @@ namespace GamePush.Core
 
             foreach (PlayerField field in dataFields)
             {
-                Logger.Log(field.key, field.@default);
+                PrintPlayerField(field);
+
                 playerDataFields.Add(field.key, field);
                 typeState.TryAdd(field.key, field.type);
 
                 if(field.limits != null)
                 {
                     limitsFields.Add(field.key, field);
-                    PrintPlayerField(field);
                 }
-                    
 
                 switch (field.type)
                 {
@@ -443,10 +446,66 @@ namespace GamePush.Core
                 if (variantQuery.Count() == 0) return;
             }
 
-            playerState[key] = value;
-            OnPlayerChange?.Invoke();
-
             playerUpdateTime = CoreSDK.GetServerTime();
+
+            playerState[key] = value;
+
+            if (playerDataFields[key].limits != null)
+            {
+                LimitStateUpdate(playerDataFields[key]);
+            }
+
+            OnPlayerChange?.Invoke();
+            
+        }
+
+        private void LimitStateUpdate(PlayerField field)
+        {
+            float max = Get<float>($"{field.key}:max");
+            float min = Get<float>($"{field.key}:min");
+            float incrementValue = Get<float>($"{field.key}:incrementValue");
+
+            float currentValue = Get<float>(field.key);
+            string timestampKey = $"{field.key}:timestamp";
+
+            // Обработка достижения максимума
+            if (currentValue >= max)
+            {
+                if (!field.limits.couldGoOverLimit)
+                {
+                    playerState[field.key] = max.ToString();
+                }
+
+                OnFieldMaximum?.Invoke(FieldToFetchField(field));
+
+                if (field.intervalIncrement != null && incrementValue > 0)
+                {
+                    timestampKey = "";
+                }
+            }
+
+            // Обработка достижения минимума
+            else if (currentValue <= min)
+            {
+                playerState[field.key] = min.ToString();
+
+                OnFieldMinimum?.Invoke(FieldToFetchField(field));
+
+                if (field.intervalIncrement != null && incrementValue > 0)
+                {
+                    timestampKey = "";
+                }
+            }
+            bool hasTimestamp = playerState.TryGetValue(timestampKey, out object timestamp);
+
+            // Проверка на необходимость обновления таймстампа
+            if (field.intervalIncrement != null &&
+                !hasTimestamp &&
+                ((incrementValue > 0 && currentValue < max) || (incrementValue < 0 && currentValue > min)))
+            {
+                Logger.Log("New timestamp", CoreSDK.GetServerTime().ToString());
+                playerState.TryAdd($"{field.key}:timestamp", CoreSDK.GetServerTime().ToString());
+            }
         }
 
         public void Reset()
@@ -871,8 +930,6 @@ namespace GamePush.Core
             int incrementInterval = Get<int>($"{field.key}:incrementInterval");
             float incrementValue = Get<float>($"{field.key}:incrementValue");
 
-            //bool overLimit = field.limits.couldGoOverLimit;
-
             DateTime now = CoreSDK.GetServerTime();
             DateTime timestamp;
 
@@ -882,23 +939,24 @@ namespace GamePush.Core
                 DateTime.TryParse(Get<string>($"{field.key}:timestamp"), out timestamp);
 
 
-            TimeSpan elapsed = (now - timestamp);
-            Logger.Log("elapsed", elapsed.ToString());
+            TimeSpan elapsed = now - timestamp;
+            Logger.Log(field.key, elapsed.ToString());
 
-            int elapsedInterval = elapsed.Seconds;
+            int elapsedInterval = (int)elapsed.TotalSeconds;
+
+            Logger.Log(elapsedInterval.ToString(), incrementInterval.ToString());
+
             int increments = Mathf.FloorToInt(elapsedInterval / incrementInterval);
-
-            //Logger.Log(elapsedInterval.ToString(), increments.ToString());
 
             if (increments > 0 && ((incrementValue > 0 && oldValue < max) || (incrementValue < 0 && oldValue > min)))
             {
                 float newValue = oldValue + increments * incrementValue;
 
-                //if(!overLimit)
                 newValue = Mathf.Min(Math.Max(newValue, min), max);
 
-                //TODO event emit field increment
-                Logger.Log(field.key, newValue.ToString());
+                OnFieldIncrement?.Invoke(FieldToFetchField(field));
+
+                Logger.Warn(field.key, newValue.ToString());
                 Set(field.key, newValue);
 
                 DateTime newTimestamp = timestamp.AddSeconds(incrementInterval * increments);

@@ -36,6 +36,39 @@ namespace GamePush
 
         private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
 
+        private void OnEnable()
+        {
+            CoreSDK.player.OnPlayerChange += CallPlayerChange;
+
+            CoreSDK.player.OnSyncComplete += CallPlayerSyncComplete;
+            CoreSDK.player.OnSyncError += CallPlayerSyncError;
+
+            CoreSDK.player.OnLoadComplete += CallPlayerLoadComplete;
+            CoreSDK.player.OnLoadError += CallPlayerLoadError;
+
+            CoreSDK.player.OnLoginComplete += CallPlayerLoginComplete;
+            CoreSDK.player.OnLoginError += CallPlayerLoginError;
+
+            CoreSDK.player.OnLogoutComplete += CallPlayerLoginComplete;
+            CoreSDK.player.OnLogoutError += CallPlayerLoginError;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.player.OnPlayerChange -= CallPlayerChange;
+
+            CoreSDK.player.OnSyncComplete -= CallPlayerSyncComplete;
+            CoreSDK.player.OnSyncError -= CallPlayerSyncError;
+
+            CoreSDK.player.OnLoadComplete -= CallPlayerLoadComplete;
+            CoreSDK.player.OnLoadError -= CallPlayerLoadError;
+
+            CoreSDK.player.OnLoginComplete -= CallPlayerLoginComplete;
+            CoreSDK.player.OnLoginError -= CallPlayerLoginError;
+
+            CoreSDK.player.OnLogoutComplete -= CallPlayerLoginComplete;
+            CoreSDK.player.OnLogoutError -= CallPlayerLoginError;
+        }
 
         [DllImport("__Internal")]
         private static extern int GP_Player_GetID();
