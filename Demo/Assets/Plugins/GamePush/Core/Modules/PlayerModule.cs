@@ -204,15 +204,14 @@ namespace GamePush.Core
 
         public void Ping() => DataFetcher.Ping(_token);
 
-        public void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.preffered, bool isOverride = false)
+        public bool EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.preffered, bool isOverride = false)
         {
-           
             if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
             {
                 if (autoSyncData.isEnable)
                 {
                     Logger.Warn($"AutoSync for {storage} storage already enabled. Call DisableAutoSync() before re-enabling.");
-                    return;
+                    return false;
                 }
                 else
                 {
@@ -221,7 +220,7 @@ namespace GamePush.Core
                     autoSyncData.@override = isOverride;
                     Logger.Log($"AutoSync for {storage} storage enabled",$"{interval}");
                     AutoSync();
-                    return;
+                    return true;
                 }
             }
 
@@ -231,22 +230,23 @@ namespace GamePush.Core
             autoSyncList.Add(storage, data);
             Logger.Log($"AutoSync for {storage} storage enabled, interval: {interval}");
             AutoSync();
+            return true;
         }
 
-        public void DisableAutoSync(SyncStorageType storage = SyncStorageType.preffered)
+        public bool DisableAutoSync(SyncStorageType storage = SyncStorageType.preffered)
         {
             if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
             {
                 if (!autoSyncData.isEnable)
                 {
                     Logger.Warn($"AutoSync for {storage} storage already disabled");
-                    return;
+                    return false;
                 }
                 else
                 {
                     autoSyncData.isEnable = false;
                     Logger.Log($"AutoSync for {storage} storage disabled");
-                    return;
+                    return true;
                 }
                 
             }
@@ -255,6 +255,7 @@ namespace GamePush.Core
                 AutoSyncData data = new AutoSyncData(false, storage);
                 autoSyncList.Add(storage, data);
                 Logger.Warn($"AutoSync for {storage} storage already disabled");
+                return false;
             }
         }
 
@@ -658,7 +659,8 @@ namespace GamePush.Core
                 {
                     string err = $"maxValue not exists on field \"{key}\"";
                     Logger.Error("GET MAX VALUE", err);
-                    throw new Exception(err);
+                    //throw new Exception(err);
+                    return Get<float>($"{key}");
                 }
 
             }
@@ -666,8 +668,10 @@ namespace GamePush.Core
             {
                 string err = $"field \"{key}\" does not exists";
                 Logger.Error("GET MAX VALUE", err);
-                throw new Exception(err);
+                //throw new Exception(err);
+                return default(float);
             }
+
         }
 
         public float GetMinValue(string key)
@@ -680,7 +684,8 @@ namespace GamePush.Core
                 {
                     string err = $"minValue not exists on field \"{key}\"";
                     Logger.Error("GET MIN VALUE", err);
-                    throw new Exception(err);
+                    //throw new Exception(err);
+                    return Get<float>($"{key}");
                 }
 
             }
@@ -688,8 +693,11 @@ namespace GamePush.Core
             {
                 string err = $"field \"{key}\" does not exists";
                 Logger.Error("GET MIN VALUE", err);
-                throw new Exception(err);
+                //throw new Exception(err);
+                return default(float);
             }
+
+            
         }
 
 

@@ -294,7 +294,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetMaxValue(key);
 #else
-            ConsoleLog("GET MAX: KEY: " + key);
+            
             return CoreSDK.player.GetMaxValue(key);
 #endif
         }
@@ -307,7 +307,6 @@ namespace GamePush
             return GP_Player_GetMinValue(key);
 #else
 
-            ConsoleLog("GET MIN: KEY: " + key);
             return CoreSDK.player.GetMinValue(key);
 #endif
         }
@@ -338,7 +337,6 @@ namespace GamePush
             return GP_Player_GetString(key);
 #else
 
-            ConsoleLog("GET STRING: KEY: " + key);
             return CoreSDK.player.Get<string>(key);
 #endif
         }
@@ -353,7 +351,6 @@ namespace GamePush
             return GP_Player_GetBool(key) == "true";
 #else
 
-            ConsoleLog("GET BOOL: KEY: " + key + " -> TRUE");
             return CoreSDK.player.Get<bool>(key);
 #endif
         }
@@ -372,7 +369,6 @@ namespace GamePush
             GP_Player_Set_String(key, value);
 #else
 
-            ConsoleLog("SET: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Set(key, value);
 #endif
         }
@@ -381,8 +377,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_Number(key, value);
 #else
-
-            ConsoleLog("SET: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Set(key, value);
 #endif
         }
@@ -392,7 +386,6 @@ namespace GamePush
             GP_Player_Set_Bool(key, value.ToString());
 #else
 
-            ConsoleLog("SET: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Set(key, value);
 #endif
         }
@@ -402,7 +395,6 @@ namespace GamePush
             GP_Player_Set_Number(key, value);
 #else
 
-            ConsoleLog("SET: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Set(key, value);
 #endif
         }
@@ -416,8 +408,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetFlag(key, value);
 #else
-
-            ConsoleLog("SET FLAG: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Set(key, value);
 #endif
         }
@@ -432,7 +422,6 @@ namespace GamePush
             GP_Player_Add(key, value.ToString());
 #else
 
-            ConsoleLog("ADD: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Add(key, value);
 #endif
         }
@@ -441,8 +430,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
-
-            ConsoleLog("ADD: KEY: " + key + " VALUE: " + value);
             CoreSDK.player.Add(key, value);
 #endif
         }
@@ -456,8 +443,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Toggle(key);
 #else
-
-            ConsoleLog("TOGGLE: KEY: " + key);
             CoreSDK.player.Toggle(key);
 #endif
         }
@@ -472,7 +457,6 @@ namespace GamePush
             GP_Player_Reset();
 #else
 
-            ConsoleLog("RESET");
             CoreSDK.player.Reset();
 #endif
         }
@@ -486,7 +470,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Remove();
 #else
-            ConsoleLog("REMOVE");
+           
             CoreSDK.player.Remove();
 #endif
         }
@@ -498,7 +482,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride: forceOverride, storage: storage.ToString());
 #else
-            ConsoleLog($"SYNC: {storage.ToString()}");
+            
             CoreSDK.player.PlayerSync(storage, forceOverride);
 #endif
         }
@@ -508,32 +492,32 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride: forceOverride);
 #else
-            ConsoleLog("SYNC");
+            
             CoreSDK.player.PlayerSync(forceOverride);
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
-        public static void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
+        public static bool EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_EnableAutoSync(interval, storage.ToString());
+            return true;
 #else
-            ConsoleLog("AUTO SYNC: ON");
-            CoreSDK.player.EnableAutoSync(interval, storage);
+            return CoreSDK.player.EnableAutoSync(interval, storage);
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
-        public static void DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
+        public static bool DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_DisableAutoSync(storage.ToString());
+            return true;
 #else
-            ConsoleLog("AUTO SYNC: OFF");
-            CoreSDK.player.DisableAutoSync(storage);
+            return CoreSDK.player.DisableAutoSync(storage);
 #endif
         }
 
@@ -544,8 +528,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Load();
 #else
-
-            ConsoleLog("LOAD");
             CoreSDK.player.PlayerLoad();
 #endif
         }
@@ -560,7 +542,6 @@ namespace GamePush
             GP_Player_Login();
 #else
 
-            ConsoleLog("LOGIN");
             CoreSDK.player.Login();
 #endif
         }
@@ -573,7 +554,6 @@ namespace GamePush
             GP_Player_Logout();
 #else
 
-            ConsoleLog("LOGOUT");
             CoreSDK.player.Logout();
 #endif
         }

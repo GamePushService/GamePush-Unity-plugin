@@ -297,20 +297,27 @@ namespace Examples.Player
 
             if(value > 0)
             {
-                ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
-                GP_Player.EnableAutoSync(interval: value, storage: (SyncStorageType)_storage.value);
+                if (GP_Player.EnableAutoSync(interval: value, storage: (SyncStorageType)_storage.value))
+                    ConsoleUI.Instance.Log($"\nEnable AutoSync, interval: {value}, storage: {(SyncStorageType)_storage.value}");
+                else
+                    ConsoleUI.Instance.Log($"\nCan't enable AutoSync");
+
             }
             else
             {
-                ConsoleUI.Instance.Log($"\nEnable AutoSync, storage: {(SyncStorageType)_storage.value}");
-                GP_Player.EnableAutoSync(storage: (SyncStorageType)_storage.value);
+                if (GP_Player.EnableAutoSync(storage: (SyncStorageType)_storage.value))
+                    ConsoleUI.Instance.Log($"\nEnable AutoSync, storage: {(SyncStorageType)_storage.value}");
+                else
+                    ConsoleUI.Instance.Log($"\nCan't enable AutoSync");
             }
                 
         }
         public void AutosyncDisable()
         {
-            ConsoleUI.Instance.Log($"\nDisable AutoSync, storage: {(SyncStorageType)_storage.value}");
-            GP_Player.DisableAutoSync((SyncStorageType)_storage.value);
+            if (GP_Player.DisableAutoSync((SyncStorageType)_storage.value))
+                ConsoleUI.Instance.Log($"\nDisable AutoSync, storage: {(SyncStorageType)_storage.value}");
+            else
+                ConsoleUI.Instance.Log($"\nCan't disable AutoSync");
         }
 
 
