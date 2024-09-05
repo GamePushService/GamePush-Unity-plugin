@@ -36,6 +36,8 @@ namespace Examples.Player
         [SerializeField] private Button _getStringButton;
         [SerializeField] private Button _getMaxButton;
         [SerializeField] private Button _getMinButton;
+        [SerializeField] private Button _getSecondsLeftButton;
+        [SerializeField] private Button _getSecondsLeftTotalButton;
 
         [Space(15)]
         [SerializeField] private Button _setButton;
@@ -94,6 +96,9 @@ namespace Examples.Player
             _getMaxButton.onClick.AddListener(GetMax);
             _getMinButton.onClick.AddListener(GetMin);
 
+            _getSecondsLeftButton.onClick.AddListener(GetSecondsLeft);
+            _getSecondsLeftTotalButton.onClick.AddListener(GetSecondsLeftTotal);
+
             _addButton.onClick.AddListener(Add);
             _setButton.onClick.AddListener(Set);
             _hasButton.onClick.AddListener(Has);
@@ -148,6 +153,9 @@ namespace Examples.Player
 
             _getMaxButton.onClick.RemoveListener(GetMax);
             _getMinButton.onClick.RemoveListener(GetMin);
+
+            _getSecondsLeftButton.onClick.RemoveListener(GetSecondsLeft);
+            _getSecondsLeftTotalButton.onClick.RemoveListener(GetSecondsLeftTotal);
 
             _addButton.onClick.RemoveListener(Add);
             _setButton.onClick.RemoveListener(Set);
@@ -232,6 +240,17 @@ namespace Examples.Player
             ConsoleUI.Instance.Log($"\nGet min value {_key.text}: {value}");
         }
 
+        public void GetSecondsLeft()
+        {
+            float value = GP_Player.GetSecondsLeft(_key.text);
+            ConsoleUI.Instance.Log($"\nGet seconds left {_key.text}: {value}");
+        }
+
+        public void GetSecondsLeftTotal()
+        {
+            float value = GP_Player.GetSecondsLeftTotal(_key.text);
+            ConsoleUI.Instance.Log($"\nGet seconds left total {_key.text}: {value}");
+        }
 
         public void Set()
         {

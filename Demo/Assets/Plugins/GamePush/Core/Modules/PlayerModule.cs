@@ -206,7 +206,8 @@ namespace GamePush.Core
 
         public void EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.preffered, bool isOverride = false)
         {
-            if(autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
+           
+            if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
             {
                 if (autoSyncData.isEnable)
                 {
@@ -217,6 +218,9 @@ namespace GamePush.Core
                 {
                     autoSyncData.isEnable = true;
                     autoSyncData.interval = interval;
+                    autoSyncData.@override = isOverride;
+                    Logger.Log($"AutoSync for {storage} storage enabled",$"{interval}");
+                    AutoSync();
                     return;
                 }
             }
@@ -225,6 +229,7 @@ namespace GamePush.Core
 
             AutoSyncData data = new AutoSyncData(true, storage, interval, isOverride, lastSyncTime);
             autoSyncList.Add(storage, data);
+            Logger.Log($"AutoSync for {storage} storage enabled, interval: {interval}");
             AutoSync();
         }
 
@@ -232,7 +237,7 @@ namespace GamePush.Core
         {
             if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
             {
-                if (autoSyncData.isEnable)
+                if (!autoSyncData.isEnable)
                 {
                     Logger.Warn($"AutoSync for {storage} storage already disabled");
                     return;
@@ -240,6 +245,7 @@ namespace GamePush.Core
                 else
                 {
                     autoSyncData.isEnable = false;
+                    Logger.Log($"AutoSync for {storage} storage disabled");
                     return;
                 }
                 
@@ -686,6 +692,106 @@ namespace GamePush.Core
             }
         }
 
+
+        public int GetSecondsLeft(string key)
+        {
+            if (playerDataFields.TryGetValue(key, out PlayerField field))
+            {
+                if (field.intervalIncrement == null)
+                {
+                    string err = $"Increment of field \"{key}\" does not exists";
+                    Logger.Error("Get Seconds Left", err);
+                    throw new Exception(err);
+                }
+
+                if (playerState.TryGetValue($"{key}:incrementValue", out object increment))
+                {
+                    int.TryParse(increment.ToString(), out int incrementValue);
+                    bool isDecrement = incrementValue < 0;
+
+                    float.TryParse(playerState[key].ToString(), out float current);
+
+                    float boundValue = isDecrement ? Get<float>($"{key}:min") : Get<float>($"{key}:max");
+
+                    if (isDecrement && current <= boundValue) return 0;
+                    if (!isDecrement && current >= boundValue) return 0;
+
+                    object timestamp;
+
+                    if (playerState.TryGetValue($"{key}:timestamp", out timestamp))
+                    {
+                        if (timestamp.ToString() == "") return 0;
+                    }
+                    else return 0;
+
+                    if (DateTime.TryParse(timestamp.ToString(), out DateTime prevUpd))
+                    {
+                        int diff = (int)(CoreSDK.GetServerTime() - prevUpd).TotalSeconds;
+
+                        int.TryParse(playerState[$"{key}:incrementInterval"].ToString(), out int interval);
+                        int left = Mathf.CeilToInt(interval - diff);
+
+                        return left >= 0 ? left : 0;
+                    }
+                }
+
+                return 0;
+            }
+            else
+            {
+                string err = $"field \"{key}\" does not exists";
+                Logger.Error("Get Seconds Left", err);
+                throw new Exception(err);
+            }
+        }
+
+        public int GetSecondsLeftTotal(string key)
+        {
+            if (playerDataFields.TryGetValue(key, out PlayerField field))
+            {
+                if (field.intervalIncrement == null)
+                {
+                    string err = $"Increment of field \"{key}\" does not exists";
+                    Logger.Error("Get Seconds Left Total", err);
+                    throw new Exception(err);
+                }
+
+                if (playerState.TryGetValue($"{key}:incrementValue", out object increment))
+                {
+                    int.TryParse(increment.ToString(), out int incrementValue);
+                    bool isDecrement = incrementValue < 0;
+
+                    float.TryParse(playerState[key].ToString(), out float current);
+                    float boundValue = isDecrement ? Get<float>($"{key}:min") : Get<float>($"{key}:max");
+
+                    if (isDecrement && current <= boundValue) return 0;
+                    if (!isDecrement && current >= boundValue) return 0;
+
+                    int.TryParse(playerState[$"{key}:incrementInterval"].ToString(), out int incrementInterval);
+
+                    // Сколько энергии осталось восполнить (для инкремента) или уменьшить (для декремента)
+                    float energyLeft = isDecrement ? current - boundValue : boundValue - current;
+                    // Полные циклы (корректируем количество итераций в зависимости от знака incrementValue)
+                    int iterationsCount = Mathf.CeilToInt(energyLeft / Math.Abs(incrementValue));
+                    // Сколько секунд осталось до полного восстановления/уменьшения
+                    int fullSecondsLeft = iterationsCount * incrementInterval;
+                    // Один из оставшихся отсчетов уже запущен, вычтем сколько ему осталось (пример выше)
+                    int left = fullSecondsLeft - (incrementInterval - GetSecondsLeft(key));
+
+                    return left >= 0 ? left : 0;
+                }
+
+                return 0;
+            }
+            else
+            {
+                string err = $"field \"{key}\" does not exists";
+                Logger.Error("Get Seconds Left Total", err);
+                throw new Exception(err);
+            }
+        }
+
+
         public int GetActiveDays()
         {
             return playerStats.activeDays;
@@ -897,22 +1003,27 @@ namespace GamePush.Core
         {
             foreach (SyncStorageType storage in autoSyncList.Keys)
             {
+                Logger.Log("Autosync", $"{storage} check {autoSyncList[storage].isEnable}");
                 if (autoSyncList[storage].isEnable)
                 {
-                    //Logger.Log("Autosync", $"{storage} isEnable");
                     int interval = autoSyncList[storage].interval;
-                    
+                    Logger.Log("interval", interval.ToString());
                     DateTime currentTime = CoreSDK.GetServerTime();
                     DateTime lastSyncTime;
                     if(DateTime.TryParse(autoSyncList[storage].lastSync, out lastSyncTime))
                     {
-                        //Logger.Log("lastSyncTime", lastSyncTime.ToString());
+                        Logger.Log("TimeGap", (currentTime - lastSyncTime).TotalSeconds.ToString());
+                        
+
                         if ((currentTime - lastSyncTime).TotalSeconds >= interval)
                         {
+                            Logger.Log("playerUpdateTime", playerUpdateTime.ToString());
+                            Logger.Log("localLastSyncTime", localLastSyncTime.ToString());
                             bool isNeedToSync = playerUpdateTime > localLastSyncTime;
+                            Logger.Log("isNeedToSync", isNeedToSync.ToString());
                             if (isNeedToSync)
                             {
-                                localLastSyncTime = DateTime.Now;
+                                localLastSyncTime = CoreSDK.GetServerTime();
                                 Logger.Log("Autosync", $"{storage} storage");
                                 PlayerSync(storage, autoSyncList[storage].@override);
                             }

@@ -312,6 +312,24 @@ namespace GamePush
 #endif
         }
 
+        public static float GetSecondsLeft(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetNumberInt($"{key}:secondsLeft");
+#else
+            return CoreSDK.player.GetSecondsLeft(key);
+#endif
+        }
+
+        public static float GetSecondsLeftTotal(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Player_GetNumberInt($"{key}:secondsLeftTotal");
+#else
+            return CoreSDK.player.GetSecondsLeftTotal(key);
+#endif
+        }
+
         [DllImport("__Internal")]
         private static extern string GP_Player_GetString(string key);
         public static string GetString(string key)
