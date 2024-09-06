@@ -29,10 +29,14 @@ namespace GamePush.Core
         public event Action<PlayerFetchFieldsData> OnFieldIncrement;
 
         private bool _isFirstRequest = true;
-        private string _secretCode;
         private string _token;
 
-        private DateTime playerUpdateTime;
+        private DateTime _playerUpdateTime;
+
+        private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
+        private Dictionary<SyncStorageType, DateTime> lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
+
+        private string _lastSyncResult;
 
         #region PlayerInit
 
@@ -50,37 +54,21 @@ namespace GamePush.Core
                 playerState.TryAdd(key, defaultState[key]);
             }
 
+            SyncTimeListInit();
         }
 
-        public void SetPlayerData(JObject playerData)
+        private void SyncTimeListInit()
         {
-            //Debug.Log(playerData.ToString());
+            
+            lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
 
-            JObject statsObject = (JObject)playerData["stats"];
-            playerStats = statsObject.ToObject<PlayerStats>();
+            DateTime now = CoreSDK.GetServerTime();
+            lastSyncTimeList.Add(SyncStorageType.preffered, now);
+            lastSyncTimeList.Add(SyncStorageType.cloud, now);
+            lastSyncTimeList.Add(SyncStorageType.local, now);
+            lastSyncTimeList.Add(SyncStorageType.platform, now);
 
-            JObject stateObject = (JObject)playerData["state"];
-            playerState = stateObject.ToObject<Dictionary<string, object>>();
-
-            //foreach (string key in playerState.Keys.ToList())
-            //{
-            //    Debug.Log($"{key} , {playerState[key]}");
-            //}
-
-            SetStartTime(playerData["sessionStart"].ToString());
-
-            if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
-            {
-                _token = token.ToString();
-            }
-
-            //Debug.Log($"TOKEN {_token}");
-
-            _isFirstRequest = false;
-
-            SetPlayerDataCode(Get<string>(SECRETCODE_STATE_KEY));
-
-            SavePlayerStateToPrefs();
+            _playerUpdateTime = now;
         }
         #endregion
 
@@ -90,7 +78,7 @@ namespace GamePush.Core
         {
             SetPlayerDataCode(GetPlayerSavedDataCode());
 
-            if (_secretCode == "")
+            if (DataHolder.GetSecretCode() == "")
             {
                 await Sync();
             }
@@ -98,78 +86,6 @@ namespace GamePush.Core
             {
                 await Load();
             }
-        }
-
-        private async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
-        {
-            if(storage == SyncStorageType.preffered)
-                storage = CoreSDK.platform.prefferedSyncType;
-
-            Logger.Log($"Sync {storage}");
-            switch (storage)
-            {
-                case SyncStorageType.cloud:
-                    await CloudSync(forceOverride);
-                    break;
-                case SyncStorageType.local:
-                case SyncStorageType.platform:
-                    LocalSync();
-                    break;
-            }
-        }
-
-        private void LocalSync()
-        {
-            SavePlayerStateToPrefs();
-        }
-
-        private async Task CloudSync(bool forceOverride = false)
-        {
-            SyncPlayerInput playerInput = new SyncPlayerInput();
-            playerInput.playerState = GetPlayerState();
-
-            playerInput.isFirstRequest = _isFirstRequest;
-            playerInput.@override = forceOverride;
-
-            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
-
-            if(resultObject == null)
-            {
-                OnSyncError?.Invoke();
-                return;
-            }
-
-            SetPlayerData(resultObject);
-            OnSyncComplete?.Invoke();
-        }
-
-        private async Task Sync(bool forceOverride)
-            => await Sync(forceOverride: forceOverride);
-
-        public async void PlayerSync(bool forceOverride)
-            => await Sync(forceOverride);
-        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
-            => await Sync(storage, forceOverride);
-
-        public async void PlayerLoad() => await Load();
-
-        private async Task Load()
-        {
-            GetPlayerInput playerInput = new GetPlayerInput();
-            GetPlayerStateFromPrefs();
-
-            playerInput.isFirstRequest = _isFirstRequest;
-
-            JObject resultObject = await DataFetcher.GetPlayer(playerInput, _isFirstRequest);
-
-            if (resultObject == null)
-            {
-                OnLoadError?.Invoke();
-                return;
-            }
-
-            SetPlayerData(resultObject);
-            OnLoadComplete?.Invoke();
         }
 
         public async void FetchFields(Action<List<PlayerFetchFieldsData>> onFetchFields = null)
@@ -204,6 +120,165 @@ namespace GamePush.Core
 
         public void Ping() => DataFetcher.Ping(_token);
 
+        #endregion
+
+        #region Sync/Load
+
+        private async Task Sync(bool forceOverride)
+            => await Sync(forceOverride: forceOverride);
+
+        public async void PlayerSync(bool forceOverride)
+            => await Sync(forceOverride);
+        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+            => await Sync(storage, forceOverride);
+
+        private async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+        {
+            if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
+                autoSyncData.lastSync = CoreSDK.GetServerTime().ToString();
+
+            if (storage == SyncStorageType.preffered)
+                storage = CoreSDK.platform.prefferedSyncType;
+
+
+            Logger.Log($"Sync {storage}");
+            switch (storage)
+            {
+                case SyncStorageType.cloud:
+                    await CloudSync(forceOverride);
+                    break;
+                case SyncStorageType.local:
+                case SyncStorageType.platform:
+                    LocalSync(storage);
+                    break;
+            }
+
+            OnSyncComplete?.Invoke();
+        }
+
+        private void LocalSync(SyncStorageType storageType)
+        {
+            if (_playerUpdateTime > lastSyncTimeList[storageType])
+            {
+                SavePlayerStateToPrefs();
+            }
+            else
+            {
+                GetPlayerStateFromPrefs();
+            }
+
+            Logger.Log("_lastSyncResult", _lastSyncResult.ToString());
+
+            var obj = JsonConvert.DeserializeObject<JObject>(_lastSyncResult);
+            var lastResult = new JObject(obj.Properties().OrderBy(p => p.Name));
+            lastResult["state"] = GetPlayerState();
+            lastResult["stats"] = GetPlayerStats();
+
+            HandleSync(lastResult, SyncStorageType.local);
+
+            lastSyncTimeList[storageType] = CoreSDK.GetServerTime();
+        }
+
+        private async Task CloudSync(bool forceOverride = false)
+        {
+            SyncPlayerInput playerInput = new SyncPlayerInput();
+            playerInput.playerState = GetPlayerState();
+
+            playerInput.isFirstRequest = _isFirstRequest;
+            playerInput.@override = forceOverride;
+
+            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+
+            if (resultObject == null)
+            {
+                OnSyncError?.Invoke();
+                return;
+            }
+            _lastSyncResult = resultObject.ToString();
+
+            HandleSync(resultObject, SyncStorageType.cloud);
+        }
+
+        private void HandleSync(JObject playerData, SyncStorageType syncStorage)
+        {
+            //Debug.Log(playerData.ToString());
+            SetPlayerStats(playerData);
+            SetStartTime(playerData["sessionStart"].ToString());
+
+            if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
+            {
+                _token = token.ToString();
+            }
+
+
+            bool isServerHasNewProgress = false;
+
+            DateTime newModifTime;
+            if(DateTime.TryParse(playerData["state"][MODIFIED_AT_KEY].ToString(), out newModifTime))
+            {
+                if (playerState.TryGetValue("modifiedAt", out object oldModifTime))
+                {
+                    isServerHasNewProgress =
+                        (DateTime.Parse(newModifTime.ToString()) - DateTime.Parse(oldModifTime.ToString())).TotalSeconds > 4; 
+                }
+
+            }
+
+
+
+            string secretCode = DataHolder.GetSecretCode();
+            bool isNeedToLoadFromServer =
+            //(this.credentials && this.credentials !== result.state.credentials) ||
+            GetID() == 0 ||
+            (secretCode != "" && secretCode != playerData["state"]["secretCode"].ToString()) ||
+            syncStorage == SyncStorageType.cloud;
+
+            if (isNeedToLoadFromServer)
+            {
+                if (CoreSDK.platform.alwaysSyncPublicFields && syncStorage != SyncStorageType.cloud && !_isFirstRequest)
+                {
+                    UpdatePublicFields(playerData);
+                }
+                else
+                {
+                    SetPlayerState(playerData);
+                }
+            }
+            else
+            {
+                if (CoreSDK.platform.alwaysSyncPublicFields)
+                {
+                    UpdatePublicFields(playerData);
+                }
+                else if(isServerHasNewProgress)
+                {
+                    SetPlayerState(playerData);
+                }
+            }
+            
+
+            _isFirstRequest = false;
+
+            SetPlayerDataCode(Get<string>(SECRETCODE_STATE_KEY));
+
+            _playerUpdateTime = CoreSDK.GetServerTime();
+            SavePlayerStateToPrefs();
+        }
+
+        private void UpdatePublicFields(JObject playerData)
+        {
+            JObject stateObject = (JObject)playerData["state"];
+            Dictionary<string, object> tempState = stateObject.ToObject<Dictionary<string, object>>();
+
+            foreach (PlayerField playerField in dataFields)
+            {
+                if (playerField.@public)
+                {
+                    playerState[playerField.key] = tempState[playerField.key];
+                }
+            }
+        }
+
         public bool EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.preffered, bool isOverride = false)
         {
             if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
@@ -218,7 +293,7 @@ namespace GamePush.Core
                     autoSyncData.isEnable = true;
                     autoSyncData.interval = interval;
                     autoSyncData.@override = isOverride;
-                    Logger.Log($"AutoSync for {storage} storage enabled",$"{interval}");
+                    Logger.Log($"AutoSync for {storage} storage enabled", $"{interval}");
                     AutoSync();
                     return true;
                 }
@@ -248,7 +323,7 @@ namespace GamePush.Core
                     Logger.Log($"AutoSync for {storage} storage disabled");
                     return true;
                 }
-                
+
             }
             else
             {
@@ -257,6 +332,29 @@ namespace GamePush.Core
                 Logger.Warn($"AutoSync for {storage} storage already disabled");
                 return false;
             }
+        }
+
+        public async void PlayerLoad() => await Load();
+
+        private async Task Load()
+        {
+            GetPlayerInput playerInput = new GetPlayerInput();
+            GetPlayerStateFromPrefs();
+
+            playerInput.isFirstRequest = _isFirstRequest;
+
+            JObject resultObject = await DataFetcher.GetPlayer(playerInput, _isFirstRequest);
+
+            if (resultObject == null)
+            {
+                OnLoadError?.Invoke();
+                return;
+            }
+            //Logger.Log(resultObject.ToString());
+            _lastSyncResult = resultObject.ToString();
+
+            HandleSync(resultObject, CoreSDK.platform.prefferedSyncType);
+            OnLoadComplete?.Invoke();
         }
 
         #endregion
@@ -270,6 +368,8 @@ namespace GamePush.Core
         private static string SCORE_STATE_KEY = "score";
         private static string NAME_STATE_KEY = "name";
         private static string AVATAR_STATE_KEY = "avatar";
+
+        private static string MODIFIED_AT_KEY = "modifiedAt";
 
         private static List<string> IGNORE_FOR_STAB
             = new List<string>(){
@@ -291,8 +391,19 @@ namespace GamePush.Core
             { AVATAR_STATE_KEY, "" }
         };
 
+        private void SetPlayerState(JObject playerData)
+        {
+            JObject stateObject = (JObject)playerData["state"];
+            playerState = stateObject.ToObject<Dictionary<string, object>>();
+        }
+
         private JObject GetPlayerState()
         {
+            if(!playerState.TryAdd(MODIFIED_AT_KEY, CoreSDK.GetServerTime()))
+            {
+                playerState[MODIFIED_AT_KEY] = CoreSDK.GetServerTime();
+            }
+
             string json = JsonConvert.SerializeObject(playerState);
             var obj = JsonConvert.DeserializeObject<JObject>(json);
             var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
@@ -344,9 +455,19 @@ namespace GamePush.Core
 
         private PlayerStats playerStats;
 
-        public void SetPlayerStats()
+        private void SetPlayerStats(JObject playerData)
         {
+            JObject statsObject = (JObject)playerData["stats"];
+            playerStats = statsObject.ToObject<PlayerStats>();
+        }
 
+        private JObject GetPlayerStats()
+        {
+            string json = JsonConvert.SerializeObject(playerStats);
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
+            var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
+
+            return sortedObj;
         }
 
         #endregion
@@ -453,7 +574,7 @@ namespace GamePush.Core
                 if (variantQuery.Count() == 0) return;
             }
 
-            playerUpdateTime = CoreSDK.GetServerTime();
+            _playerUpdateTime = CoreSDK.GetServerTime();
 
             playerState[key] = value;
 
@@ -977,7 +1098,7 @@ namespace GamePush.Core
 
         private void SetStartTime(string sessionStart)
         {
-            Debug.Log($"ServerTime string {CoreSDK.GetConfig().serverTime}");
+            Debug.Log($"ServerTime {CoreSDK.GetConfig().serverTime}");
             //Debug.Log($"ServerTime {CoreSDK.GetServerTime()}");
             //Debug.Log($"SessionStart {sessionStart}");
 
@@ -1004,9 +1125,6 @@ namespace GamePush.Core
 
         #region TickMethods
 
-        private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
-        private DateTime localLastSyncTime;
-
         public void AutoSync()
         {
             foreach (SyncStorageType storage in autoSyncList.Keys)
@@ -1021,17 +1139,16 @@ namespace GamePush.Core
                     if(DateTime.TryParse(autoSyncList[storage].lastSync, out lastSyncTime))
                     {
                         Logger.Log("TimeGap", (currentTime - lastSyncTime).TotalSeconds.ToString());
-                        
 
                         if ((currentTime - lastSyncTime).TotalSeconds >= interval)
                         {
-                            Logger.Log("playerUpdateTime", playerUpdateTime.ToString());
-                            Logger.Log("localLastSyncTime", localLastSyncTime.ToString());
-                            bool isNeedToSync = playerUpdateTime > localLastSyncTime;
+                            Logger.Log("_playerUpdateTime", _playerUpdateTime.ToString());
+                            Logger.Log("localLastSyncTime", lastSyncTimeList[storage].ToString());
+                            bool isNeedToSync = _playerUpdateTime > lastSyncTimeList[storage];
                             Logger.Log("isNeedToSync", isNeedToSync.ToString());
                             if (isNeedToSync)
                             {
-                                localLastSyncTime = CoreSDK.GetServerTime();
+                                lastSyncTimeList[storage] = CoreSDK.GetServerTime();
                                 Logger.Log("Autosync", $"{storage} storage");
                                 PlayerSync(storage, autoSyncList[storage].@override);
                             }

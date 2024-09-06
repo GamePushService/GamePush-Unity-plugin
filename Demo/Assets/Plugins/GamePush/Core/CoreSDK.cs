@@ -131,8 +131,6 @@ namespace GamePush
 
             SetServerTime(allData.serverTime);
 
-
-
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
             platform.Init(configData.platformConfig);
