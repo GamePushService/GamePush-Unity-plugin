@@ -36,7 +36,7 @@ namespace GamePush.Core
         private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
         private Dictionary<SyncStorageType, DateTime> lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
 
-        private string _lastSyncResult;
+        private string _lastSyncResult = "";
 
         #region PlayerInit
 
@@ -161,18 +161,24 @@ namespace GamePush.Core
             if (_playerUpdateTime > lastSyncTimeList[storageType])
             {
                 SavePlayerStateToPrefs();
+                SavePlayerStatsToPrefs();
             }
             else
             {
                 GetPlayerStateFromPrefs();
+                GetPlayerStatsFromPrefs();
             }
 
-            Logger.Log("_lastSyncResult", _lastSyncResult.ToString());
-
-            var obj = JsonConvert.DeserializeObject<JObject>(_lastSyncResult);
-            var lastResult = new JObject(obj.Properties().OrderBy(p => p.Name));
+            var lastResult = new JObject();
+            if (_lastSyncResult != "")
+            {
+                var obj = JsonConvert.DeserializeObject<JObject>(_lastSyncResult);
+                lastResult = new JObject(obj.Properties().OrderBy(p => p.Name));
+            }
+            
             lastResult["state"] = GetPlayerState();
             lastResult["stats"] = GetPlayerStats();
+            lastResult["sessionStart"] = CoreSDK.GetServerTime();
 
             HandleSync(lastResult, SyncStorageType.local);
 
@@ -194,6 +200,7 @@ namespace GamePush.Core
                 OnSyncError?.Invoke();
                 return;
             }
+
             _lastSyncResult = resultObject.ToString();
 
             HandleSync(resultObject, SyncStorageType.cloud);
@@ -378,7 +385,8 @@ namespace GamePush.Core
             };
 
         private static string SECRETCODE_STATE_KEY = "secretCode";
-        private static string SAVE_MODIFICATOR = "xSaveState_";
+        private static string SAVE_STATE_MODIFICATOR = "xSaveState_";
+        private static string SAVE_STATS_MODIFICATOR = "xSaveStats_";
 
         private Dictionary<string, object> playerState = new Dictionary<string, object>
         {
@@ -417,16 +425,16 @@ namespace GamePush.Core
 
             foreach (string key in playerState.Keys.ToList())
             {
-                if (PlayerPrefs.HasKey(SAVE_MODIFICATOR + key))
-                    playerState[key] = PlayerPrefs.GetString(SAVE_MODIFICATOR + key);
+                if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + key))
+                    playerState[key] = PlayerPrefs.GetString(SAVE_STATE_MODIFICATOR + key);
             }
 
-            if (PlayerPrefs.HasKey(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY))
+            if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + SECRETCODE_STATE_KEY))
             {
                 //Debug.Log("Secret code from prefs: " + PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY));
 
                 playerState.TryAdd(SECRETCODE_STATE_KEY, "");
-                playerState[SECRETCODE_STATE_KEY] = PlayerPrefs.GetString(SAVE_MODIFICATOR + SECRETCODE_STATE_KEY);
+                playerState[SECRETCODE_STATE_KEY] = PlayerPrefs.GetString(SAVE_STATE_MODIFICATOR + SECRETCODE_STATE_KEY);
             }
 
         }
@@ -439,7 +447,7 @@ namespace GamePush.Core
             {
                 CheckNilState(key);
 
-                PlayerPrefs.SetString(SAVE_MODIFICATOR + key, playerState[key].ToString());
+                PlayerPrefs.SetString(SAVE_STATE_MODIFICATOR + key, playerState[key].ToString());
             }
         }
 
@@ -453,7 +461,7 @@ namespace GamePush.Core
 
         #region PlayerStats
 
-        private PlayerStats playerStats;
+        private PlayerStats playerStats ;
 
         private void SetPlayerStats(JObject playerData)
         {
@@ -470,11 +478,41 @@ namespace GamePush.Core
             return sortedObj;
         }
 
+        private void GetPlayerStatsFromPrefs()
+        {
+            Debug.Log("Get stats from prefs");
+
+            playerStats = new PlayerStats();
+
+            if (PlayerPrefs.HasKey(SAVE_STATS_MODIFICATOR + "playtimeAll"))
+                playerStats.playtimeAll = PlayerPrefs.GetInt(SAVE_STATS_MODIFICATOR + "playtimeAll");
+
+            if (PlayerPrefs.HasKey(SAVE_STATS_MODIFICATOR + "playtimeToday"))
+                playerStats.playtimeToday = PlayerPrefs.GetInt(SAVE_STATS_MODIFICATOR + "playtimeToday");
+
+            if (PlayerPrefs.HasKey(SAVE_STATS_MODIFICATOR + "activeDays"))
+                playerStats.activeDays = PlayerPrefs.GetInt(SAVE_STATS_MODIFICATOR + "activeDays");
+
+            if (PlayerPrefs.HasKey(SAVE_STATS_MODIFICATOR + "activeDaysConsecutive"))
+                playerStats.activeDaysConsecutive = PlayerPrefs.GetInt(SAVE_STATS_MODIFICATOR + "activeDaysConsecutive");
+
+        }
+
+        private void SavePlayerStatsToPrefs()
+        {
+            Debug.Log("Save stats to prefs");
+
+            PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "playtimeAll", playerStats.playtimeAll);
+            PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "playtimeToday", playerStats.playtimeToday);
+            PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "activeDays", playerStats.activeDays);
+            PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "activeDaysConsecutive", playerStats.activeDaysConsecutive);
+        }
+
         #endregion
 
         #region SecretCode
 
-        private static string SECRETCODE_SAVE_KEY = SAVE_MODIFICATOR + SECRETCODE_STATE_KEY;
+        private static string SECRETCODE_SAVE_KEY = SAVE_STATE_MODIFICATOR + SECRETCODE_STATE_KEY;
 
         public static string GetPlayerSavedDataCode() => DataHolder.GetSavedSecretCode();
 
