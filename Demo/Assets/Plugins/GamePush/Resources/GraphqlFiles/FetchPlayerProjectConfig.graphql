@@ -73,6 +73,7 @@ query result($lang: Lang) {
                 type
                 default
                 important
+                public
                 variants {
                     value
                     name(lang: $lang)

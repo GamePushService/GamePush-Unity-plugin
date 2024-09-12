@@ -31,10 +31,16 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Platform_Type());
 #else
-            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
+            return ConvertToEnum(CoreSDK.platform.type);
+#endif
+        }
 
-            ConsoleLog("TYPE: " + platform.ToString());
-            return platform;
+        public static string TypeAsString()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Platform_Type();
+#else
+            return CoreSDK.platform.type;
 #endif
         }
 
@@ -48,19 +54,7 @@ namespace GamePush
             return GP_Platform_Tag();
 #else
 
-            return "Editor";
-#endif
-        }
-
-        public static string TypeAsString()
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_Platform_Type();
-#else
-            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
-
-            ConsoleLog("TYPE: " + platform.ToString());
-            return platform.ToString();
+            return CoreSDK.platform.tag;
 #endif
         }
 
@@ -72,7 +66,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
-            bool auth = GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
+            bool auth = false;
 
             ConsoleLog("HAS INTEGRATED AUTH: " + auth.ToString());
             return auth;
@@ -86,7 +80,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsLogoutAvailable() == "true";
 #else
-            bool value = GP_Settings.instance.GetFromPlatformSettings().IsLogoutAvailable;
+            //bool value = GP_Settings.instance.GetFromPlatformSettings().IsLogoutAvailable;
+            bool value = false;
 
             ConsoleLog("Is Logout Available: " + value.ToString());
             return value;

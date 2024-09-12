@@ -37,6 +37,7 @@ namespace GamePush.Core
         private Dictionary<SyncStorageType, DateTime> lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
 
         private string _lastSyncResult = "";
+        private bool _isPublicFieldsDirty = false;
 
         #region PlayerInit
 
@@ -80,7 +81,7 @@ namespace GamePush.Core
 
             if (DataHolder.GetSecretCode() == "")
             {
-                await Sync();
+                await Sync(SyncStorageType.cloud);
             }
             else
             {
@@ -140,18 +141,40 @@ namespace GamePush.Core
             if (storage == SyncStorageType.preffered)
                 storage = CoreSDK.platform.prefferedSyncType;
 
+            Logger.Log($"Sync", $"{storage}");
+            bool isCloudSave = storage == SyncStorageType.cloud;
 
-            Logger.Log($"Sync {storage}");
-            switch (storage)
+            bool isNeedSyncPublicFields = CoreSDK.platform.alwaysSyncPublicFields && _isPublicFieldsDirty;
+            bool isNeedToSyncWithServer =
+                 isNeedSyncPublicFields ||
+                 isCloudSave ||
+                _isFirstRequest;
+
+            if (isNeedToSyncWithServer)
             {
-                case SyncStorageType.cloud:
-                    await CloudSync(forceOverride);
-                    break;
-                case SyncStorageType.local:
-                case SyncStorageType.platform:
-                    LocalSync(storage);
-                    break;
+                Dictionary<string, object> secondState = playerState;
+
+                bool isNeedToSyncOnlyPublicFields = !isCloudSave && isNeedSyncPublicFields;
+
+                if (isNeedToSyncOnlyPublicFields)
+                {
+                    foreach(string key in playerDataFields.Keys)
+                    {
+                        if (!playerDataFields[key].@public)
+                            secondState.Remove(key);
+                    }
+                }
+
+                JObject playerStateData = GetJObjectPlayerState(secondState);
+                await CloudSync(playerStateData, forceOverride);
             }
+            else if(!isCloudSave)
+            {
+                LocalSync(storage);
+            }
+
+            _isFirstRequest = false;
+            _isPublicFieldsDirty = false;
 
             OnSyncComplete?.Invoke();
         }
@@ -176,7 +199,7 @@ namespace GamePush.Core
                 lastResult = new JObject(obj.Properties().OrderBy(p => p.Name));
             }
             
-            lastResult["state"] = GetPlayerState();
+            lastResult["state"] = GetJObjectPlayerState(playerState);
             lastResult["stats"] = GetPlayerStats();
             lastResult["sessionStart"] = CoreSDK.GetServerTime();
 
@@ -185,10 +208,10 @@ namespace GamePush.Core
             lastSyncTimeList[storageType] = CoreSDK.GetServerTime();
         }
 
-        private async Task CloudSync(bool forceOverride = false)
+        private async Task CloudSync(JObject playerState, bool forceOverride = false)
         {
             SyncPlayerInput playerInput = new SyncPlayerInput();
-            playerInput.playerState = GetPlayerState();
+            playerInput.playerState = playerState;
 
             playerInput.isFirstRequest = _isFirstRequest;
             playerInput.@override = forceOverride;
@@ -204,6 +227,8 @@ namespace GamePush.Core
             _lastSyncResult = resultObject.ToString();
 
             HandleSync(resultObject, SyncStorageType.cloud);
+
+            lastSyncTimeList[SyncStorageType.cloud] = CoreSDK.GetServerTime();
         }
 
         private void HandleSync(JObject playerData, SyncStorageType syncStorage)
@@ -264,7 +289,6 @@ namespace GamePush.Core
             }
             
 
-            _isFirstRequest = false;
 
             SetPlayerDataCode(Get<string>(SECRETCODE_STATE_KEY));
 
@@ -405,14 +429,14 @@ namespace GamePush.Core
             playerState = stateObject.ToObject<Dictionary<string, object>>();
         }
 
-        private JObject GetPlayerState()
+        private JObject GetJObjectPlayerState(Dictionary<string, object> playerData)
         {
-            if(!playerState.TryAdd(MODIFIED_AT_KEY, CoreSDK.GetServerTime()))
+            if(!playerData.TryAdd(MODIFIED_AT_KEY, CoreSDK.GetServerTime()))
             {
-                playerState[MODIFIED_AT_KEY] = CoreSDK.GetServerTime();
+                playerData[MODIFIED_AT_KEY] = CoreSDK.GetServerTime();
             }
 
-            string json = JsonConvert.SerializeObject(playerState);
+            string json = JsonConvert.SerializeObject(playerData);
             var obj = JsonConvert.DeserializeObject<JObject>(json);
             var sortedObj = new JObject(obj.Properties().OrderBy(p => p.Name));
 
@@ -425,6 +449,8 @@ namespace GamePush.Core
 
             foreach (string key in playerState.Keys.ToList())
             {
+                if (typeState[key] == "service") continue;
+
                 if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + key))
                     playerState[key] = PlayerPrefs.GetString(SAVE_STATE_MODIFICATOR + key);
             }
@@ -601,6 +627,14 @@ namespace GamePush.Core
             if (typeState[key] == "service" || typeState[key] == "accounts") return;
             //Check change of state
             if (playerState[key] == value) return;
+
+            Logger.Log("Check", playerDataFields[key].name);
+            Logger.Log("Check", playerDataFields[key].@public.ToString());
+            if (playerDataFields[key].@public)
+            {
+                _isPublicFieldsDirty = true;
+            }
+                
 
             if (playerDataFields[key].variants.Count > 0)
             {
@@ -868,7 +902,8 @@ namespace GamePush.Core
                 {
                     string err = $"Increment of field \"{key}\" does not exists";
                     Logger.Error("Get Seconds Left", err);
-                    throw new Exception(err);
+                    //throw new Exception(err);
+                    return 0;
                 }
 
                 if (playerState.TryGetValue($"{key}:incrementValue", out object increment))
@@ -908,7 +943,8 @@ namespace GamePush.Core
             {
                 string err = $"field \"{key}\" does not exists";
                 Logger.Error("Get Seconds Left", err);
-                throw new Exception(err);
+                //throw new Exception(err);
+                return 0;
             }
         }
 
@@ -1154,7 +1190,7 @@ namespace GamePush.Core
                 timeFromStart = tempServer - tempSession;
             }
 
-            Debug.Log($"timeFromStart {timeFromStart.TotalSeconds}");
+            //Debug.Log($"timeFromStart {timeFromStart.TotalSeconds}");
             _playTimeAll = playerStats.playtimeAll + timeFromStart.TotalSeconds;
             _playTimeToday = playerStats.playtimeToday + timeFromStart.TotalSeconds;
         }

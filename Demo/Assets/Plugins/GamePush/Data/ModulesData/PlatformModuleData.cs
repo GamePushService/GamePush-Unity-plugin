@@ -1,6 +1,7 @@
 
 namespace GamePush
 {
+
     [System.Serializable]
     public static class ProgressSaveFormat
     {

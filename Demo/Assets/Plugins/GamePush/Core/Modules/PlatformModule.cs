@@ -7,15 +7,26 @@ namespace GamePush.Core
 {
     public class PlatformModule
     {
+        public string type;
+        public string tag;
+        public string appId;
+        public string gameLink;
+
         public SyncStorageType prefferedSyncType;
         public bool alwaysSyncPublicFields;
 
 
         public void Init(PlatformConfig config)
         {
+            type = config.type;
+            tag = config.tag;
+            appId = config.appId;
+            gameLink = config.gameLink;
+
             SetPrefferedSync(config.progressSaveFormat);
             alwaysSyncPublicFields = config.alwaysSyncPublicFields;
         }
+
 
         private void SetPrefferedSync(string type)
         {

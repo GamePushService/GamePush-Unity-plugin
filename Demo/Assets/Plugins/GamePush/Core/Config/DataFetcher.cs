@@ -42,7 +42,7 @@ namespace GamePush.Core
 
             //Logger.Log(resultObject["config"].ToString());
             //Logger.Log(resultObject["project"].ToString());
-            //Logger.Log(resultObject["platformConfig"].ToString());
+            Logger.Log(resultObject["platformConfig"].ToString());
             //Logger.Log(resultObject["playerFields"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
@@ -100,7 +100,7 @@ namespace GamePush.Core
             variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
 
-            Debug.Log(queryTuple.Item2);
+            //Debug.Log(queryTuple.Item2);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),

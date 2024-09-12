@@ -140,6 +140,7 @@ namespace GamePush.Data
         public string type;
         public string @default;
         public bool important;
+        //[JsonProperty("public")]
         public bool @public;
         public List<PlayerFieldVariant> variants;
         public PlayerFieldLimits limits;
