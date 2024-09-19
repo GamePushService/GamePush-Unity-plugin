@@ -93,7 +93,7 @@ namespace GamePush
             return GP_Socials_IsSupportsShare() == "true";
 #else
 
-            Console.Log("SOCIALS: IS SUPPORTS SHARE: ", "TRUE");
+            ConsoleLog("SOCIALS: IS SUPPORTS SHARE: " + GP_Settings.instance.GetPlatformSettings().IsSupportsShare);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsShare;
 #endif
         }
@@ -106,7 +106,7 @@ namespace GamePush
             return GP_Socials_IsSupportsNativeShare() == "true";
 #else
 
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE SHARE: ", "TRUE");
+            ConsoleLog("SOCIALS: IS SUPPORTS NATIVE SHARE: " + GP_Settings.instance.GetPlatformSettings().IsSupportsNativeShare);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeShare;
 #endif
         }
@@ -121,7 +121,7 @@ namespace GamePush
             return GP_Socials_IsSupportsNativePosts() == "true";
 #else
 
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE POSTS: ", "TRUE");
+            ConsoleLog("SOCIALS: IS SUPPORTS NATIVE POSTS: " + GP_Settings.instance.GetPlatformSettings().IsSupportsNativePosts);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativePosts;
 #endif
         }
@@ -136,7 +136,7 @@ namespace GamePush
             return GP_Socials_IsSupportsNativeInvite() == "true";
 #else
 
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE INVITE: ", "TRUE");
+            ConsoleLog("SOCIALS: IS SUPPORTS NATIVE INVITE: " + GP_Settings.instance.GetPlatformSettings().IsSupportsNativeInvite);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeInvite;
 #endif
         }
@@ -151,7 +151,7 @@ namespace GamePush
             return GP_Socials_CanJoinCommunity() == "true";
 #else
 
-            Console.Log("SOCIALS: CAN JOIN COMMUNITY: ", "TRUE");
+            ConsoleLog("SOCIALS: CAN JOIN COMMUNITY: " + GP_Settings.instance.GetPlatformSettings().CanJoinCommunity);
             return GP_Settings.instance.GetPlatformSettings().CanJoinCommunity;
 #endif
         }
@@ -166,7 +166,7 @@ namespace GamePush
             return GP_Socials_IsSupportsNativeCommunityJoin() == "true";
 #else
 
-            Console.Log("SOCIALS: IS SUPPORTS NATIVE COMMUNITY JOIN: ", "TRUE");
+            ConsoleLog("SOCIALS: IS SUPPORTS NATIVE COMMUNITY JOIN: " + GP_Settings.instance.GetPlatformSettings().IsSupportsNativeCommunityJoin);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeCommunityJoin;
 #endif
         }

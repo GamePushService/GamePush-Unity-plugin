@@ -22,6 +22,15 @@ namespace GamePush
         private static string GOOGLE_PLAY = "GOOGLE_PLAY";
         private static string PLAYDECK = "PLAYDECK";
         private static string CUSTOM = "CUSTOM";
+        private static string BEELINE = "BEELINE";
+        private static string APP_GALLERY = "APP_GALLERY";
+        private static string GALAXY_STORE = "GALAXY_STORE";
+        private static string ONE_STORE = "ONE_STORE";
+        private static string AMAZON_APPSTORE = "AMAZON_APPSTORE";
+        private static string XIAOMI_GETAPPS = "XIAOMI_GETAPPS";
+        private static string APTOIDE = "APTOIDE";
+        private static string RUSTORE = "RUSTORE";
+        private static string ANDROID = "ANDROID";
 
 
         [DllImport("__Internal")]
@@ -138,6 +147,7 @@ namespace GamePush
 
         private static Platform ConvertToEnum(string platform)
         {
+
             if (platform == YANDEX)
                 return Platform.YANDEX;
 
@@ -183,6 +193,36 @@ namespace GamePush
             if (platform == CUSTOM)
                 return Platform.CUSTOM;
 
+            if (platform == BEELINE)
+                return Platform.BEELINE;
+
+            if (platform == APP_GALLERY)
+                return Platform.APP_GALLERY;
+
+            if (platform == GALAXY_STORE)
+                return Platform.GALAXY_STORE;
+
+            if (platform == ONE_STORE)
+                return Platform.ONE_STORE;
+
+            if (platform == AMAZON_APPSTORE)
+                return Platform.AMAZON_APPSTORE;
+
+            if (platform == XIAOMI_GETAPPS)
+                return Platform.XIAOMI_GETAPPS;
+
+            if (platform == XIAOMI_GETAPPS)
+                return Platform.XIAOMI_GETAPPS;
+
+            if (platform == APTOIDE)
+                return Platform.APTOIDE;
+
+            if (platform == RUSTORE)
+                return Platform.RUSTORE;
+
+            if (platform == ANDROID)
+                return Platform.ANDROID;
+
             return Platform.None;
         }
 
@@ -205,7 +245,16 @@ namespace GamePush
         KONGREGATE = 12,
         GOOGLE_PLAY = 13,
         PLAYDECK = 14,
-        CUSTOM = 15
+        CUSTOM = 15,
+        BEELINE = 16,
+        APP_GALLERY = 17,
+        GALAXY_STORE = 18,
+        ONE_STORE = 19,
+        AMAZON_APPSTORE = 20,
+        XIAOMI_GETAPPS = 21,
+        APTOIDE = 22,
+        RUSTORE = 23,
+        ANDROID = 24
     }
 }
 
