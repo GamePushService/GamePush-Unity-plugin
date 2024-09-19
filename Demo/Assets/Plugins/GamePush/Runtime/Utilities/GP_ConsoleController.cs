@@ -82,42 +82,27 @@ namespace GamePush.ConsoleController
             if (!GP_Settings.instance.viewLogs)
                 return false;
 
-            switch (name)
+            return name switch
             {
-                case ModuleName.Achievements:
-                    return AchievementsConsoleLogs;
-                case ModuleName.Ads:
-                    return AdsConsoleLogs;
-                case ModuleName.Analytics:
-                    return AnalyticsConsoleLogs;
-                case ModuleName.App:
-                    return AppConsoleLogs;
-                case ModuleName.AvatarGenerator:
-                    return AvatarGeneratorConsoleLogs;
-                case ModuleName.Channels:
-                    return ChannelsConsoleLogs;
-                case ModuleName.Device:
-                    return DeviceConsoleLogs;
-                case ModuleName.Documents:
-                    return DocumentsConsoleLogs;
-                case ModuleName.Events:
-                    return EventsConsoleLogs;
-                case ModuleName.Experiments:
-                    return ExperimentsConsoleLogs;
-                case ModuleName.Files:
-                    return FilesConsoleLogs;
-                case ModuleName.Fullscreen:
-                    return FullscreenConsoleLogs;
-                case ModuleName.Game:
-                    return GameConsoleLogs;
-                case ModuleName.Triggers:
-                    return TriggersConsoleLogs;
-                case ModuleName.Uniques:
-                    return UniquesConsoleLogs;
-                case ModuleName.Storage:
-                    return StorageConsoleLogs;
-            }
-            return false;
+                ModuleName.Achievements => AchievementsConsoleLogs,
+                ModuleName.Ads => AdsConsoleLogs,
+                ModuleName.Analytics => AnalyticsConsoleLogs,
+                ModuleName.App => AppConsoleLogs,
+                ModuleName.AvatarGenerator => AvatarGeneratorConsoleLogs,
+                ModuleName.Channels => ChannelsConsoleLogs,
+                ModuleName.Device => DeviceConsoleLogs,
+                ModuleName.Documents => DocumentsConsoleLogs,
+                ModuleName.Events => EventsConsoleLogs,
+                ModuleName.Experiments => ExperimentsConsoleLogs,
+                ModuleName.Files => FilesConsoleLogs,
+                ModuleName.Fullscreen => FullscreenConsoleLogs,
+                ModuleName.Game => GameConsoleLogs,
+                ModuleName.Triggers => TriggersConsoleLogs,
+                ModuleName.Uniques => UniquesConsoleLogs,
+                ModuleName.Storage => StorageConsoleLogs,
+                ModuleName.Socials => SocialsConsoleLogs,
+                _ => false
+            };
         }
     }
 
