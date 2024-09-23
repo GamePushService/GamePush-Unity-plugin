@@ -1,28 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEngine;
+using GamePush.Data;
 
 namespace GamePush
 {
     public class GP_Platform : GP_Module
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Platform);
-
-        private static string YANDEX = "YANDEX";
-        private static string VK = "VK";
-        private static string CRAZY_GAMES = "CRAZY_GAMES";
-        private static string GAME_DISTRIBUTION = "GAME_DISTRIBUTION";
-        private static string GAME_MONETIZE = "GAME_MONETIZE";
-        private static string OK = "OK";
-        private static string SMARTMARKET = "SMARTMARKET";
-        private static string GAMEPIX = "GAMEPIX";
-        private static string POKI = "POKI";
-        private static string VK_PLAY = "VK_PLAY";
-        private static string WG_PLAYGROUND = "WG_PLAYGROUND";
-        private static string KONGREGATE = "KONGREGATE";
-        private static string GOOGLE_PLAY = "GOOGLE_PLAY";
-        private static string PLAYDECK = "PLAYDECK";
-        private static string CUSTOM = "CUSTOM";
-
 
         [DllImport("__Internal")]
         private static extern string GP_Platform_Type();
@@ -56,6 +40,16 @@ namespace GamePush
 
             return CoreSDK.platform.tag;
 #endif
+        }
+
+        public static string ProgressSaveFormat()
+        {
+            return CoreSDK.platform.progressSaveFormat;
+        }
+
+        public static SyncStorageType PrefferedSyncType()
+        {
+            return CoreSDK.platform.prefferedSyncType;
         }
 
 
@@ -131,54 +125,65 @@ namespace GamePush
 #endif
         }
 
+        public static bool IsAlwaysSyncPublicFields()
+        {
+            return CoreSDK.platform.alwaysSyncPublicFields;
+        }
+
         private static Platform ConvertToEnum(string platform)
         {
-            if (platform == YANDEX)
+            if (platform == PlatformTypes.YANDEX)
                 return Platform.YANDEX;
 
-            if (platform == VK)
+            if (platform == PlatformTypes.VK)
                 return Platform.VK;
 
-            if (platform == CRAZY_GAMES)
+            if (platform == PlatformTypes.CRAZY_GAMES)
                 return Platform.CRAZY_GAMES;
 
-            if (platform == GAME_DISTRIBUTION)
+            if (platform == PlatformTypes.GAME_DISTRIBUTION)
                 return Platform.GAME_DISTRIBUTION;
 
-            if (platform == GAME_MONETIZE)
+            if (platform == PlatformTypes.GAME_MONETIZE)
                 return Platform.GAME_MONETIZE;
 
-            if (platform == OK)
+            if (platform == PlatformTypes.OK)
                 return Platform.OK;
 
-            if (platform == SMARTMARKET)
+            if (platform == PlatformTypes.SMARTMARKET)
                 return Platform.SMARTMARKET;
 
-            if (platform == GAMEPIX)
+            if (platform == PlatformTypes.GAMEPIX)
                 return Platform.GAMEPIX;
 
-            if (platform == POKI)
+            if (platform == PlatformTypes.POKI)
                 return Platform.POKI;
 
-            if (platform == VK_PLAY)
+            if (platform == PlatformTypes.VK_PLAY)
                 return Platform.VK_PLAY;
 
-            if (platform == WG_PLAYGROUND)
+            if (platform == PlatformTypes.WG_PLAYGROUND)
                 return Platform.WG_PLAYGROUND;
 
-            if (platform == KONGREGATE)
+            if (platform == PlatformTypes.KONGREGATE)
                 return Platform.KONGREGATE;
 
-            if (platform == GOOGLE_PLAY)
+            if (platform == PlatformTypes.GOOGLE_PLAY)
                 return Platform.GOOGLE_PLAY;
 
-            if (platform == PLAYDECK)
+            if (platform == PlatformTypes.PLAYDECK)
                 return Platform.PLAYDECK;
 
-            if (platform == CUSTOM)
+            if (platform == PlatformTypes.CUSTOM)
                 return Platform.CUSTOM;
 
             return Platform.None;
+
+            //return platform switch
+            //{
+            //    PlatformTypes.YANDEX => Platform.YANDEX,
+            //    _ => Platform.None
+            //};
         }
 
     }

@@ -22,8 +22,14 @@ namespace GamePush.Core
             ColorLogWarning("D16A31", "WARN", title, text);
         private static void RedMessage(string title, string text) =>
             ColorLogError("CE342A", "ERR", title, text);
-        private static void LogMessage(string title, string text) =>
-            Debug.Log($"{title}: {text}");
+        private static void LogMessage(string title, string text)
+        {
+            if(text != null)
+                Debug.Log($"{title}: {text}");
+            else
+                Debug.Log($"{title}");
+        }
+            
 
 
         public static void Info(string title = "", string text = null) => GreenMessage(title, text);
@@ -31,7 +37,11 @@ namespace GamePush.Core
 
         public static void Error(string title = "", string text = null) => RedMessage(title, text);
 
-        public static void Log(string title = "", string text = null) => LogMessage(title, text);
+        public static void Log(string title = "", object text = null) =>
+            LogMessage(title, text?.ToString());
+        
+        public static void Log(object value) =>
+            LogMessage(value.ToString(), null);
 
         public static void ModuleLog(string log, ModuleName name) =>
                 Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");

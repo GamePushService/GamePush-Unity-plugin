@@ -28,7 +28,7 @@ namespace GamePush.Core
         public event Action<PlayerFetchFieldsData> OnFieldMinimum;
         public event Action<PlayerFetchFieldsData> OnFieldIncrement;
 
-        private bool _isFirstRequest = true;
+        private bool _isFirstRequest = false;
         private string _token;
 
         private DateTime _playerUpdateTime;
@@ -55,7 +55,10 @@ namespace GamePush.Core
                 playerState.TryAdd(key, defaultState[key]);
             }
 
+
             SyncTimeListInit();
+
+            _isFirstRequest = true;
         }
 
         private void SyncTimeListInit()
@@ -141,15 +144,20 @@ namespace GamePush.Core
             if (storage == SyncStorageType.preffered)
                 storage = CoreSDK.platform.prefferedSyncType;
 
-            Logger.Log($"Sync", $"{storage}");
+            Logger.Log($"Sync storage", $"{storage}");
             bool isCloudSave = storage == SyncStorageType.cloud;
 
             bool isNeedSyncPublicFields = CoreSDK.platform.alwaysSyncPublicFields && _isPublicFieldsDirty;
+
+            //Logger.Log("isNeedSyncPublicFields", isNeedSyncPublicFields);
+            //Logger.Log("isCloudSave", isCloudSave);
+            //Logger.Log("isFirstRequest", _isFirstRequest);
             bool isNeedToSyncWithServer =
                  isNeedSyncPublicFields ||
                  isCloudSave ||
                 _isFirstRequest;
 
+            Logger.Log("Need to server sync", isNeedToSyncWithServer);
             if (isNeedToSyncWithServer)
             {
                 Dictionary<string, object> secondState = playerState;
@@ -210,6 +218,7 @@ namespace GamePush.Core
 
         private async Task CloudSync(JObject playerState, bool forceOverride = false)
         {
+            
             SyncPlayerInput playerInput = new SyncPlayerInput();
             playerInput.playerState = playerState;
 
@@ -233,7 +242,9 @@ namespace GamePush.Core
 
         private void HandleSync(JObject playerData, SyncStorageType syncStorage)
         {
-            //Debug.Log(playerData.ToString());
+            Logger.Log("Handle Sync", syncStorage);
+            //Logger.Log("Sync Data", playerData);
+            
             SetPlayerStats(playerData);
             SetStartTime(playerData["sessionStart"].ToString());
 
@@ -253,17 +264,23 @@ namespace GamePush.Core
                     isServerHasNewProgress =
                         (DateTime.Parse(newModifTime.ToString()) - DateTime.Parse(oldModifTime.ToString())).TotalSeconds > 4; 
                 }
-
             }
 
+            Logger.Log("isServerHasNewProgress", isServerHasNewProgress);
 
+            string secretCode = GetPlayerSavedDataCode();
+            int playerID = GetPlayerSavedID();
 
-            string secretCode = DataHolder.GetSecretCode();
+            Logger.Log("secretCode", secretCode);
+            Logger.Log("player ID", playerID);
+
             bool isNeedToLoadFromServer =
             //(this.credentials && this.credentials !== result.state.credentials) ||
-            GetID() == 0 ||
+            playerID == 0 ||
             (secretCode != "" && secretCode != playerData["state"]["secretCode"].ToString()) ||
             syncStorage == SyncStorageType.cloud;
+
+            Logger.Log("isNeedToLoadFromServer", isNeedToLoadFromServer);
 
             if (isNeedToLoadFromServer)
             {
@@ -288,9 +305,8 @@ namespace GamePush.Core
                 }
             }
             
-
-
             SetPlayerDataCode(Get<string>(SECRETCODE_STATE_KEY));
+            SetPlayerSavedID();
 
             _playerUpdateTime = CoreSDK.GetServerTime();
             SavePlayerStateToPrefs();
@@ -379,12 +395,15 @@ namespace GamePush.Core
             if (resultObject == null)
             {
                 OnLoadError?.Invoke();
+                _isFirstRequest = false;
                 return;
             }
             //Logger.Log(resultObject.ToString());
             _lastSyncResult = resultObject.ToString();
 
             HandleSync(resultObject, CoreSDK.platform.prefferedSyncType);
+            _isFirstRequest = false;
+
             OnLoadComplete?.Invoke();
         }
 
@@ -393,6 +412,7 @@ namespace GamePush.Core
         #region PlayerState
 
         private static string ID_STATE_KEY = "id";
+        private static string CREDS_STATE_KEY = "credentials";
         private static string ACTIVE_STATE_KEY = "active";
         private static string REMOVED_STATE_KEY = "removed";
         private static string TEST_STATE_KEY = "test";
@@ -401,6 +421,8 @@ namespace GamePush.Core
         private static string AVATAR_STATE_KEY = "avatar";
 
         private static string MODIFIED_AT_KEY = "modifiedAt";
+        private static string PLATFORM_TYPE_KEY = "platformType";
+        private static string PROJECT_ID_KEY = "projectId";
 
         private static List<string> IGNORE_FOR_STAB
             = new List<string>(){
@@ -426,6 +448,7 @@ namespace GamePush.Core
         private void SetPlayerState(JObject playerData)
         {
             JObject stateObject = (JObject)playerData["state"];
+            //Logger.Log("Set player state", stateObject);
             playerState = stateObject.ToObject<Dictionary<string, object>>();
         }
 
@@ -445,10 +468,11 @@ namespace GamePush.Core
 
         private void GetPlayerStateFromPrefs()
         {
-            Debug.Log("Get state from prefs");
+            Logger.Log("Get state from prefs");
 
             foreach (string key in playerState.Keys.ToList())
             {
+                //Logger.Log(key);
                 if (typeState[key] == "service") continue;
 
                 if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + key))
@@ -467,7 +491,7 @@ namespace GamePush.Core
 
         private void SavePlayerStateToPrefs()
         {
-            Debug.Log("Save state to prefs");
+            Logger.Log("Save state to prefs");
 
             foreach (string key in playerState.Keys.ToList())
             {
@@ -506,7 +530,7 @@ namespace GamePush.Core
 
         private void GetPlayerStatsFromPrefs()
         {
-            Debug.Log("Get stats from prefs");
+            Logger.Log("Get stats from prefs");
 
             playerStats = new PlayerStats();
 
@@ -526,7 +550,7 @@ namespace GamePush.Core
 
         private void SavePlayerStatsToPrefs()
         {
-            Debug.Log("Save stats to prefs");
+            Logger.Log("Save stats to prefs");
 
             PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "playtimeAll", playerStats.playtimeAll);
             PlayerPrefs.SetInt(SAVE_STATS_MODIFICATOR + "playtimeToday", playerStats.playtimeToday);
@@ -536,13 +560,22 @@ namespace GamePush.Core
 
         #endregion
 
-        #region SecretCode
+        #region DataHolder
 
-        private static string SECRETCODE_SAVE_KEY = SAVE_STATE_MODIFICATOR + SECRETCODE_STATE_KEY;
-
-        public static string GetPlayerSavedDataCode() => DataHolder.GetSavedSecretCode();
-
+        public string GetPlayerSavedDataCode() => DataHolder.GetSavedSecretCode();
         public void SetPlayerDataCode(string code) => DataHolder.SetSecretCode(code);
+
+        public int GetPlayerSavedID() => DataHolder.GetPlayerID();
+        public void SetPlayerSavedID()
+        {
+            int id = GetID();
+            if (id == 0)
+            {
+                id = DataHolder.GetPlayerID();
+                playerState[ID_STATE_KEY] = id;
+            }
+            DataHolder.SetPlayerID(id);
+        }
 
         #endregion
 
@@ -556,9 +589,14 @@ namespace GamePush.Core
         private Dictionary<string, string> typeState = new Dictionary<string, string>
         {
             { ID_STATE_KEY, "service" },
+            { CREDS_STATE_KEY, "service" },
             { ACTIVE_STATE_KEY, "service" },
             { REMOVED_STATE_KEY, "service" },
             { TEST_STATE_KEY, "service" },
+            { MODIFIED_AT_KEY, "service" },
+            { PLATFORM_TYPE_KEY, "service" },
+            { SECRETCODE_STATE_KEY, "service" },
+            { PROJECT_ID_KEY, "service" },
             { SCORE_STATE_KEY, "stats" },
             { NAME_STATE_KEY, "data" },
             { AVATAR_STATE_KEY, "data" }
@@ -1066,8 +1104,8 @@ namespace GamePush.Core
         public void Add(string key, int value)
         {
             int oldValue = Get<int>(key);
-            Debug.Log(oldValue);
-            Debug.Log(oldValue + value);
+            Logger.Log(oldValue);
+            Logger.Log(oldValue + value);
             int newValue = oldValue + value;
             SetStateValue(key, newValue);
         }
@@ -1075,8 +1113,8 @@ namespace GamePush.Core
         public void Add(string key, float value)
         {
             float oldValue = Get<float>(key);
-            Debug.Log(oldValue);
-            Debug.Log(oldValue + value);
+            Logger.Log(oldValue);
+            Logger.Log(oldValue + value);
             float newValue = oldValue + value;
             SetStateValue(key, newValue);
         }
@@ -1125,7 +1163,7 @@ namespace GamePush.Core
         {
             foreach (string key in defaultState.Keys)
             {
-                Debug.Log($"{key}, {playerState[key]}, {defaultState[key]}");
+                Logger.Log($"{key}, {playerState[key]}, {defaultState[key]}");
                 if (key == NAME_STATE_KEY || key == AVATAR_STATE_KEY) continue;
 
                 if (playerState[key].ToString() != defaultState[key].ToString())
@@ -1296,6 +1334,11 @@ namespace GamePush.Core
         }
         #endregion
 
+        private void PrintPlayerFields(List<PlayerField> fields)
+        {
+            foreach (PlayerField field in fields)
+                PrintPlayerField(field);
+        }
 
         private void PrintPlayerField(PlayerField field)
         {
@@ -1326,7 +1369,7 @@ namespace GamePush.Core
                 log += $"\n  name: {variant.name}";
                 log += $"\n  value: {variant.value}";
             }
-            Debug.Log(log);
+            Logger.Log(log);
         }
 
     }

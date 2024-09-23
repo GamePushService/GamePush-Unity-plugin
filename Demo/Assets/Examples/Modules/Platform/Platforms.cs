@@ -25,7 +25,9 @@ namespace Examples.Platforms
         {
             ConsoleUI.Instance.Log(Type());
             ConsoleUI.Instance.Log(Tag());
-            ConsoleUI.Instance.Log("Has Integrated Auth: " + GP_Platform.HasIntegratedAuth().ToString());
+            ConsoleUI.Instance.Log("Save Format: " + GP_Platform.ProgressSaveFormat());
+            ConsoleUI.Instance.Log("Sync public fields: " + GP_Platform.IsAlwaysSyncPublicFields());
+            ConsoleUI.Instance.Log("\nHas Integrated Auth: " + GP_Platform.HasIntegratedAuth().ToString());
             ConsoleUI.Instance.Log("Is External Links Allowed: " + GP_Platform.IsExternalLinksAllowed().ToString());
             ConsoleUI.Instance.Log("Is Logout Available: " + GP_Platform.IsLogoutAvailable().ToString());
             ConsoleUI.Instance.Log("Is SecretCode Auth Available: " + GP_Platform.IsSecretCodeAuthAvailable().ToString());

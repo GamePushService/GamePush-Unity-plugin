@@ -11,6 +11,7 @@ namespace GamePush.Core
         public string tag;
         public string appId;
         public string gameLink;
+        public string progressSaveFormat;
 
         public SyncStorageType prefferedSyncType;
         public bool alwaysSyncPublicFields;
@@ -22,6 +23,7 @@ namespace GamePush.Core
             tag = config.tag;
             appId = config.appId;
             gameLink = config.gameLink;
+            progressSaveFormat = config.progressSaveFormat;
 
             SetPrefferedSync(config.progressSaveFormat);
             alwaysSyncPublicFields = config.alwaysSyncPublicFields;
