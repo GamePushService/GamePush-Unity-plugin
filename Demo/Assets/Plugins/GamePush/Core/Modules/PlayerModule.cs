@@ -269,15 +269,17 @@ namespace GamePush.Core
             Logger.Log("isServerHasNewProgress", isServerHasNewProgress);
 
             string secretCode = GetPlayerSavedDataCode();
-            int playerID = GetPlayerSavedID();
+            string credentials = Get<string>("credentials");
+            int playerID = GetID();
 
             Logger.Log("secretCode", secretCode);
+            Logger.Log("credentials", credentials);
             Logger.Log("player ID", playerID);
 
             bool isNeedToLoadFromServer =
-            //(this.credentials && this.credentials !== result.state.credentials) ||
-            playerID == 0 ||
+            (credentials != null && credentials != "" && credentials != playerData["state"]["credentials"].ToString()) ||
             (secretCode != "" && secretCode != playerData["state"]["secretCode"].ToString()) ||
+            playerID == 0 ||
             syncStorage == SyncStorageType.cloud;
 
             Logger.Log("isNeedToLoadFromServer", isNeedToLoadFromServer);
@@ -473,7 +475,7 @@ namespace GamePush.Core
             foreach (string key in playerState.Keys.ToList())
             {
                 //Logger.Log(key);
-                if (typeState[key] == "service") continue;
+                //if (typeState[key] == "service") continue;
 
                 if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + key))
                     playerState[key] = PlayerPrefs.GetString(SAVE_STATE_MODIFICATOR + key);
