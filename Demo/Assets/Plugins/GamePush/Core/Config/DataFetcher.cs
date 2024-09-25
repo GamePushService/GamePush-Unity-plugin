@@ -109,9 +109,13 @@ namespace GamePush.Core
             );
 
             JObject root = JObject.Parse(results);
+            Debug.Log(root.ToString());
+            if((JObject)root["data"].ToObject<object>() == null)
+            {
+                string error = root["errors"][0]["message"].ToObject<string>();
+                throw new Exception(error);
+            }
             JObject resultObject = (JObject)root["data"]["result"];
-
-            //Debug.Log(resultObject.ToString());
 
             return resultObject;
         }
