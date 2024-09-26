@@ -1,5 +1,3 @@
-// ExportPackage.cs
-using UnityEngine;
 using UnityEditor;
 
 namespace GamePushEditor

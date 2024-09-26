@@ -23,7 +23,7 @@ namespace GamePush.Core
 
         public static async Task<AllConfigData> GetConfig()
         {
-            Debug.Log("Get config");
+            //Debug.Log("Get config");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchConfigQueryName, "result", OperationType.Query);
@@ -40,20 +40,14 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //Logger.Log(resultObject["config"].ToString());
-            //Logger.Log(resultObject["project"].ToString());
-            //Logger.Log(resultObject["platformConfig"].ToString());
-            //Logger.Log(resultObject["playerFields"].ToString());
-
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
             return configData;
-            //CoreSDK.SetConfig(configData);
         }
 
         public static async Task<JObject> GetPlayer(GetPlayerInput input, bool withToken)
         {
-            Debug.Log("Get player");
+            //Debug.Log("Get player");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_getPlayerQueryName, "result", OperationType.Query);
@@ -61,8 +55,6 @@ namespace GamePush.Core
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
 
             Dictionary<string, object> variables = new Dictionary<string, object>();
-
-            //Debug.Log(queryTuple.Item2);
 
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", "EN");
@@ -77,17 +69,14 @@ namespace GamePush.Core
             if (results == "" || results == null) return null;
 
             JObject root = JObject.Parse(results);
-            //Debug.Log(root.ToString());
             JObject resultObject = (JObject)root["data"]["result"];
-
-            //Debug.Log(resultObject.ToString());
 
             return resultObject;
         }
 
         public static async Task<JObject> SyncPlayer(SyncPlayerInput input, bool withToken)
         {
-            Debug.Log("Sync player");
+            //Debug.Log("Sync player");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_syncPlayerQueryName, "result", OperationType.Mutation);
@@ -99,8 +88,6 @@ namespace GamePush.Core
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
-
-            //Debug.Log(queryTuple.Item2);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -122,7 +109,7 @@ namespace GamePush.Core
 
         public static async Task<List<PlayerField>> FetchPlayerFields(bool withToken)
         {
-            Debug.Log("Fetch Player Fields");
+            //Debug.Log("Fetch Player Fields");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchPlayerFieldsQueryName, "result", OperationType.Query);
@@ -135,15 +122,12 @@ namespace GamePush.Core
             variables.Add("lang", "EN");
             variables.Add("withToken", withToken);
 
-            //Debug.Log(queryTuple.Item2);
-
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            Debug.Log(results);
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
