@@ -4,10 +4,10 @@ namespace GamePushEditor
 {
     public class GP_ExportPackage
     {
-        [MenuItem("Tools/GamePush/Export package")]
+        [MenuItem("Tools/GamePush/Export plugin")]
         static void export()
         {
-            string fileName = "Test_GP_plugin.unitypackage";
+            string fileName = "GP_plugin.unitypackage";
             string[] paths = {
             "Assets/WebGLTemplates",
             "Assets/Examples",
