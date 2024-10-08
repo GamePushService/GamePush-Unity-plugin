@@ -35,7 +35,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Scoped_Open(
             string idOrTag = "",
             string variant = "",
@@ -59,7 +59,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Scoped_Fetch(
             string idOrTag = "",
             string variant = "",
@@ -82,7 +82,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Scoped_PublishRecord(
             string idOrTag = "",
             string variant = "",
@@ -117,7 +117,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Scoped_FetchPlayerRating(string idOrTag = "", string variant = "", string includeFields = "");
         public static void FetchPlayerRating(string idOrTag = "", string variant = "some_variant", string includeFields = "")
         {

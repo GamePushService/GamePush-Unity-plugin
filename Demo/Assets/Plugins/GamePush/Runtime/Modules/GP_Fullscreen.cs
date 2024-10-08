@@ -17,7 +17,7 @@ namespace GamePush
         private static event Action _onFullscreenClose;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Fullscreen_Open();
         public static void Open(Action onFullscreenOpen = null)
         {
@@ -34,7 +34,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Fullscreen_Close();
         public static void Close(Action onFullscreenClose = null)
         {
@@ -51,7 +51,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Fullscreen_Toggle();
         public static void Toggle()
         {

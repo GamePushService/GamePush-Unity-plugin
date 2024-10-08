@@ -24,7 +24,7 @@ namespace GamePush
         private string _gamesCollectionsFetchTag;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_GamesCollections_Open(string idOrTag);
         public static void Open(string idOrTag, Action onGamesCollectionsOpen = null, Action onGamesCollectionsClose = null)
         {
@@ -40,7 +40,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_GamesCollections_Fetch(string idOrTag);
         public static void Fetch(string idOrTag, Action<string, GamesCollectionsFetchData> onFetchSuccess = null, Action onFetchError = null)
         {

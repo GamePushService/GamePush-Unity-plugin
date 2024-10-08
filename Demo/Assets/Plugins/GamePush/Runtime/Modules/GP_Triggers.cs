@@ -18,7 +18,7 @@ namespace GamePush
         private void CallOnTriggerClaim(string trigger) { OnTriggerClaim?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaimError(string error) { OnTriggerClaimError?.Invoke(error); }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Triggers_Claim(string idOrTag);
         public static void Claim(string idOrTag)
         {
@@ -30,7 +30,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Triggers_List();
         public static TriggerData[] List()
         {
@@ -45,7 +45,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Triggers_ActivatedList();
         public static TriggerActive[] ActivatedList()
         {
@@ -60,7 +60,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Triggers_GetTrigger(string idOrTag);
         public static TriggerAllData GetTrigger(string idOrTag)
         {
@@ -75,7 +75,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Triggers_IsActivated(string idOrTag);
         public static bool IsActivated(string idOrTag)
         {
@@ -87,7 +87,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Triggers_IsClaimed(string idOrTag);
         public static bool IsClaimed(string idOrTag)
         {

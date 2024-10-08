@@ -13,7 +13,7 @@ namespace GamePush
         public static event UnityAction OnChangeOrientation;
         private void CallChangeOrientation() => OnChangeOrientation?.Invoke();
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_IsMobile();
         public static bool IsMobile()
         {
@@ -38,7 +38,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_IsPortrait();
         public static bool IsPortrait()
         {

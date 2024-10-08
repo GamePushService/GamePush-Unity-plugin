@@ -24,7 +24,7 @@ namespace GamePush
         private static event Action<Dictionary<string, string>> _onPlatformSuccess;
         private static event Action<string> _onPlatformError;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Variables_Fetch();
         public static void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
@@ -39,7 +39,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_Has(string key);
         public static bool Has(string key)
         {
@@ -52,7 +52,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Variables_GetNumberInt(string key);
         public static int GetInt(string key)
         {
@@ -65,7 +65,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern float GP_Variables_GetFloat(string key);
         public static float GetFloat(string key)
         {
@@ -78,7 +78,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_GetString(string key);
         public static string GetString(string key)
         {
@@ -91,7 +91,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_GetBool(string key);
         public static bool GetBool(string key)
         {
@@ -105,7 +105,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_GetImage(string key);
         public static string GetImage(string key)
         {
@@ -118,7 +118,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_GetFile(string key);
         public static string GetFile(string key)
         {
@@ -131,7 +131,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Variables_IsPlatformVariablesAvailable();
         public static bool IsPlatformVariablesAvailable()
         {
@@ -144,7 +144,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Variables_FetchPlatformVariables(string options = null);
 
         public static void FetchPlatformVariables(Dictionary<string, string> optionsDict, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)

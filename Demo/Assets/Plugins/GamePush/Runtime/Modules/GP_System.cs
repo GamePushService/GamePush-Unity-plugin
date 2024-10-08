@@ -6,7 +6,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.System);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_IsDev();
         public static bool IsDev()
         {
@@ -19,7 +19,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_IsAllowedOrigin();
         public static bool IsAllowedOrigin()
         {

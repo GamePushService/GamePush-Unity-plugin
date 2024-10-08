@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -17,20 +17,20 @@ namespace YandexMobileAds.Platforms.iOS
     internal class InterstitialAdLoaderBridge
     {
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateInterstitialAdLoader(IntPtr clientRef);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnitySetInterstitialAdLoaderCallbacks(
             string objectId,
             InterstitialAdLoaderClient.YMAUnityInterstitialDidLoadAdCallback didLoadAdCallback,
             InterstitialAdLoaderClient.YMAUnityInterstitialDidFailToLoadAdCallback didFailToLoadAdCallback);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityLoadInterstitialAd(
             string objectId, string adRequestConfigurationId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityCancelLoadingInterstitialAd(string objectId);
 
     }

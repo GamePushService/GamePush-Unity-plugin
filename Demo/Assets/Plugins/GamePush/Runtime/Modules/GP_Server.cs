@@ -7,7 +7,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Server);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_ServerTime();
 
         public static DateTime Time()

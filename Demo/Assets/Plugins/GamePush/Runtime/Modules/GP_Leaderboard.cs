@@ -25,7 +25,7 @@ namespace GamePush
         private string _leaderboardPlayerFetchTag;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Open(
                 string orderBy = "score",
                 // DESC | ASC
@@ -51,7 +51,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_Fetch(
             string tag = "",
             string orderBy = "score",
@@ -76,7 +76,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Leaderboard_FetchPlayerRating(
             string tag = "",
             string orderBy = "score",

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using GamePush;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace GamePush.Initialization
     {
         public static string VERSION = GP_Data.SDK_VERSION;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_UnityReady();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]

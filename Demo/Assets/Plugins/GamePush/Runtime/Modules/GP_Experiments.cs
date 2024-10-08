@@ -12,7 +12,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Experiments);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Experiments_Map();
         public static string Map()
         {
@@ -27,7 +27,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Experiments_Has(string tag, string cohort);
         public static bool Has(string tag, string cohort)
         {

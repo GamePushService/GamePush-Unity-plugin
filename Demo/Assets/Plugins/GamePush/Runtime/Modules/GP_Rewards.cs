@@ -21,7 +21,7 @@ namespace GamePush
         private void CallOnRewardsAcceptError(string error) { OnRewardsAcceptError?.Invoke(error); }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Rewards_Give(string idOrTag, bool lazy);
         public static void Give(string idOrTag, bool lazy = false)
         {
@@ -33,7 +33,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Rewards_Accept(string idOrTag);
         public static void Accept(string idOrTag)
         {
@@ -45,7 +45,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_List();
         public static RewardData[] List()
         {
@@ -60,7 +60,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_GivenList();
         public static PlayerReward[] GivenList()
         {
@@ -75,7 +75,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_GetReward(string idOrTag);
         public static AllRewardData GetReward(string idOrTag)
         {
@@ -90,7 +90,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_Has(string idOrTag);
         public static bool Has(string idOrTag)
         {
@@ -104,7 +104,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_HasAccepted(string idOrTag);
         public static bool HasAccepted(string idOrTag)
         {
@@ -118,7 +118,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Rewards_HasUnaccepted(string idOrTag);
         public static bool HasUnaccepted(string idOrTag)
         {

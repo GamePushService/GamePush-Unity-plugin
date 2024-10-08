@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -15,7 +15,7 @@ namespace YandexMobileAds.Platforms.iOS
 
     internal class AdRequestBridge
     {
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateAdRequest(
             string locationId,
             string contextQuery,
@@ -24,7 +24,7 @@ namespace YandexMobileAds.Platforms.iOS
             string age,
             string gender);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateAdRequestConfiguration(string adUnitId,
             string locationId,
             string contextQuery,

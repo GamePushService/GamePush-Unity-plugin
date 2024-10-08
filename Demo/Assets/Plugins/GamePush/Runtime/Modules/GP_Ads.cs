@@ -34,7 +34,7 @@ namespace GamePush
         private static event Action<bool> _onRewardedClose;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowFullscreen();
         public static void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
@@ -49,7 +49,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowRewarded(string idOrTag);
         public static void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
@@ -68,7 +68,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowPreloader();
         public static void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
@@ -83,7 +83,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowSticky();
         public static void ShowSticky()
         {
@@ -95,7 +95,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_CloseSticky();
         public static void CloseSticky()
         {
@@ -107,7 +107,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_RefreshSticky();
         public static void RefreshSticky()
         {
@@ -119,7 +119,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsAdblockEnabled();
         public static bool IsAdblockEnabled()
         {
@@ -132,7 +132,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsStickyAvailable();
         public static bool IsStickyAvailable()
         {
@@ -145,7 +145,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsFullscreenAvailable();
         public static bool IsFullscreenAvailable()
         {
@@ -158,7 +158,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsRewardedAvailable();
         public static bool IsRewardedAvailable()
         {
@@ -171,7 +171,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsPreloaderAvailable();
         public static bool IsPreloaderAvailable()
         {
@@ -184,7 +184,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsStickyPlaying();
         public static bool IsStickyPlaying()
         {
@@ -196,7 +196,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsFullscreenPlaying();
         public static bool IsFullscreenPlaying()
         {
@@ -208,7 +208,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsRewardedPlaying();
         public static bool IsRewardPlaying()
         {
@@ -220,7 +220,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsPreloaderPlaying();
         public static bool IsPreloaderPlaying()
         {
@@ -232,7 +232,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsCountdownOverlayEnabled();
         public static bool IsCountdownOverlayEnabled()
         {
@@ -244,7 +244,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_IsRewardedFailedOverlayEnabled();
         public static bool IsRewardedFailedOverlayEnabled()
         {
@@ -256,7 +256,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Ads_CanShowFullscreenBeforeGamePlay();
         public static bool CanShowFullscreenBeforeGamePlay()
         {

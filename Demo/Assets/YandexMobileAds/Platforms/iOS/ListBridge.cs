@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -15,10 +15,10 @@ namespace YandexMobileAds.Platforms.iOS
 
     internal class ListBridge
     {
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateList();
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityAddToList(
             string objectId, string value);
     }

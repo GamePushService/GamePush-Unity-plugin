@@ -36,7 +36,7 @@ namespace GamePush
         private static event Action _onAchievementsProgressError;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Achievements_Open();
         public static void Open(Action onOpen = null, Action onClose = null)
         {
@@ -53,7 +53,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Achievements_Fetch();
         public static void Fetch()
         {
@@ -65,7 +65,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Achievements_Unlock(string idOrTag);
         public static void Unlock(string idOrTag, Action<string> onUnlock = null, Action<string> onUnlockError = null)
         {
@@ -82,7 +82,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Achievements_SetProgress(string idOrTag, int progress);
         public static void SetProgress(string idOrTag, int progress, Action<string> onProgress = null, Action onProgressError = null)
         {
@@ -100,7 +100,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Achievements_Has(string idOrTag);
         public static bool Has(string idOrTag)
         {
@@ -113,7 +113,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Achievements_GetProgress(string idOrTag);
         public static int GetProgress(string idOrTag)
         {

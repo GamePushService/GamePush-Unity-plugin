@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -17,20 +17,20 @@ namespace YandexMobileAds.Platforms.iOS
     internal class RewardedAdLoaderBridge
     {
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateRewardedAdLoader(IntPtr clientRef);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnitySetRewardedAdLoaderCallbacks(
             string objectId,
             RewardedAdLoaderClient.YMAUnityRewardedDidLoadAdCallback rewardedDidLoadAdCallback,
             RewardedAdLoaderClient.YMAUnityRewardedDidFailToLoadAdCallback rewardedDidFailToLoadAdCallback);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityLoadRewardedAd(
             string objectId, string adRequestConfigurationId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityCancelLoadingRewardedAd(string objectId);
 
     }

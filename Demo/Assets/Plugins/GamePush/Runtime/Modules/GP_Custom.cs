@@ -18,7 +18,7 @@ namespace GamePush
         public static event Action<string> _onCustomAsyncError;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_CustomCall(string name, string args);
         public static void Call(string name, string args = null)
         {
@@ -31,7 +31,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_CustomGetValue(string path);
         public static string Value(string path)
         {
@@ -45,7 +45,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_CustomReturn(string name, string args);
         public static string Return(string name, string args = null)
         {
@@ -59,7 +59,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_CustomAsyncReturn(string name, string args);
         public static void AsyncReturn(string name, string args = null, Action<string> onCustomAsyncReturn = null, Action<string> onCustomAsyncError = null)
         {

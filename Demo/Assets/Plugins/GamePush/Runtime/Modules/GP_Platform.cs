@@ -8,7 +8,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Platform);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_Type();
         public static Platform Type()
         {
@@ -28,7 +28,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_Tag();
         public static string Tag()
         {
@@ -53,7 +53,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_HasIntegratedAuth();
         public static bool HasIntegratedAuth()
         {
@@ -67,7 +67,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_IsLogoutAvailable();
         public static bool IsLogoutAvailable()
         {
@@ -83,7 +83,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_IsExternalLinksAllowed();
         public static bool IsExternalLinksAllowed()
         {
@@ -97,7 +97,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_IsSecretCodeAuthAvailable();
         public static bool IsSecretCodeAuthAvailable()
         {
@@ -111,7 +111,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_IsSupportsCloudSaves();
         public static bool IsSupportsCloudSaves()
         {

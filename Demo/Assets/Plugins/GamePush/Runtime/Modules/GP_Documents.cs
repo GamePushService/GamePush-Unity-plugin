@@ -24,7 +24,7 @@ namespace GamePush
         private static event Action _onDocumentsClose;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Documents_Open();
         public static void Open(Action onDocumentsOpen = null, Action onDocumentsClose = null)
         {
@@ -39,7 +39,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Documents_Fetch();
         public static void Fetch(Action<string> onFetchSuccess = null, Action onFetchError = null)
         {

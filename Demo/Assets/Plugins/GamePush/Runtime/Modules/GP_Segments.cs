@@ -15,7 +15,7 @@ namespace GamePush
         private void CallOnSegmentEnter(string tag) { OnSegmentEnter?.Invoke(tag); }
         private void CallOnSegmentLeave(string tag) { OnSegmentLeave?.Invoke(tag); }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Segments_List();
         public static string List()
         {
@@ -29,7 +29,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Segments_Has(string tag);
         public static bool Has(string tag)
         {

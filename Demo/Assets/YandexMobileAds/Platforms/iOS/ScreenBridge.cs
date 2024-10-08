@@ -15,7 +15,7 @@ namespace YandexMobileAds.Platforms.iOS
 
     internal class ScreenBridge
     {
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern float YMAUnityScreenScale();
     }
 

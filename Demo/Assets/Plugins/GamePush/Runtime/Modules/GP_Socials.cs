@@ -13,7 +13,7 @@ namespace GamePush
         public static event UnityAction<bool> OnInvite;
         public static event UnityAction<bool> OnJoinCommunity;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Socials_Share(string text, string url, string image);
         public static void Share(string text = "", string url = "", string image = "")
         {
@@ -26,7 +26,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Socials_Post(string text, string url, string image);
         public static void Post(string text = "", string url = "", string image = "")
         {
@@ -40,7 +40,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Socials_Invite(string text, string url, string image);
         public static void Invite(string text = "", string url = "", string image = "")
         {
@@ -54,7 +54,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Socials_JoinCommunity();
         public static void JoinCommunity()
         {
@@ -69,7 +69,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_CommunityLink();
         public static string CommunityLink()
         {
@@ -85,7 +85,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_IsSupportsShare();
         public static bool IsSupportsShare()
         {
@@ -98,7 +98,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_IsSupportsNativeShare();
         public static bool IsSupportsNativeShare()
         {
@@ -113,7 +113,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_IsSupportsNativePosts();
         public static bool IsSupportsNativePosts()
         {
@@ -128,7 +128,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_IsSupportsNativeInvite();
         public static bool IsSupportsNativeInvite()
         {
@@ -143,7 +143,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_CanJoinCommunity();
         public static bool CanJoinCommunity()
         {
@@ -158,7 +158,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_IsSupportsNativeCommunityJoin();
         public static bool IsSupportsNativeCommunityJoin()
         {
@@ -171,7 +171,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_MakeShareLink(string content);
         public static string MakeShareLink(string content = "")
         {
@@ -184,7 +184,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Socials_GetSharePlayerID();
         public static int GetSharePlayerID()
         {
@@ -197,7 +197,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Socials_GetShareContent();
         public static string GetShareContent()
         {

@@ -20,7 +20,7 @@ namespace GamePush
         private static event Action<string> _onReviewClose;
         private static event Action<bool> _onAddShortcut;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_Title();
         public static string Title()
         {
@@ -34,7 +34,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_Description();
         public static string Description()
         {
@@ -49,7 +49,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_Image();
 
         public async static void GetImage(Image image)
@@ -70,7 +70,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_Url();
         public static string Url()
         {
@@ -83,7 +83,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_ReviewRequest();
         public static void ReviewRequest(Action<int> onReviewResult = null, Action<string> onReviewClose = null)
         {
@@ -98,7 +98,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_IsAlreadyReviewed();
         public static bool IsAlreadyReviewed()
         {
@@ -113,7 +113,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_CanReview();
         public static bool CanReview()
         {
@@ -130,7 +130,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_AddShortcut();
         public static void AddShortcut(Action<bool> onAddShortcut = null)
         {
@@ -144,7 +144,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_App_CanAddShortcut();
         public static bool CanAddShortcut()
         {

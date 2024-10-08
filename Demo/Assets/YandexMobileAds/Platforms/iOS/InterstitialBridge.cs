@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -16,17 +16,17 @@ namespace YandexMobileAds.Platforms.iOS
 
     internal class InterstitialBridge
     {
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateInterstitialAd(
             IntPtr clientRef, string interstitialAdObjectId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityGetInterstitialInfo(string interstitialAdObjectId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityShowInterstitialAd(string objectId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnitySetInterstitialAdCallbacks(
             string objectId,
             InterstitialClient.YMAUnityInterstitialAdDidFailToShowCallback interstitialFailedToShowCallback,
@@ -35,7 +35,7 @@ namespace YandexMobileAds.Platforms.iOS
             InterstitialClient.YMAUnityInterstitialAdDidClickCallback interstitialDidClickCallback,
             InterstitialClient.YMAUnityInterstitialAdDidTrackImpressionCallback interstitialDidImpressionTracked);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityDestroyInterstitialAd(string objectId);
     }
 

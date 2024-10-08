@@ -27,7 +27,7 @@ namespace GamePush
         private static string Hindi = "hi";
         private static string Indonesian = "id";
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Current_Language();
         public static Language Current()
         {
@@ -51,7 +51,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_ChangeLanguage(string lang);
         public static void Change(Language lang, Action<Language> onLanguageChange = null)
         {

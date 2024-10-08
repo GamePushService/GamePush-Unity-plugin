@@ -18,7 +18,7 @@ namespace GamePush
         public static event UnityAction<GP_Data> OnFetchSuccess;
         public static event UnityAction OnFetchError;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Players_Fetch(string value);
 
         public static void Fetch(int playerId, Action<GP_Data> onFetchSuccess = null, Action onFetchError = null)

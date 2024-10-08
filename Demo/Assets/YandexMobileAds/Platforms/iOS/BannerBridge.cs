@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is a part of the Yandex Advertising Network
  *
  * Version for iOS (C) 2023 YANDEX
@@ -16,21 +16,21 @@ namespace YandexMobileAds.Platforms.iOS
 
     internal class BannerBridge
     {
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern string YMAUnityCreateBannerView(IntPtr clientRef,
             string adUnitId, string adSizeId, int position);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityLoadBannerView(string objectId,
                                                            string adRequestId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityShowBannerView(string objectId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnityHideBannerView(string objectId);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         internal static extern void YMAUnitySetBannerCallbacks(
             string objectId,
             BannerClient.YMAUnityAdViewDidReceiveAdCallback adReceivedCallback,

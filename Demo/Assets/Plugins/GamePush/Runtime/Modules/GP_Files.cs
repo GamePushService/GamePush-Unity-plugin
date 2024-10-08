@@ -55,7 +55,7 @@ namespace GamePush
         private static event Action<List<FileData>, bool> _onFetchMore;
         private static event Action _onFetchMoreError;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_Upload(string tags);
         public static void Upload(string tags, Action<FileData> onUpload = null, Action onUploadError = null)
         {
@@ -71,7 +71,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_UploadUrl(string url, string filename, string tags);
         public static void UploadUrl(string url, string filename = "", string tags = "", Action<FileData> onUploadUrl = null, Action onUploadUrlError = null)
         {
@@ -87,7 +87,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_UploadContent(string content, string filename, string tags);
         public static void UploadContent(string content, string filename, string tags, Action<FileData> onUploadContent = null, Action onUploadContentError = null)
         {
@@ -103,7 +103,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_LoadContent(string url);
         public static void LoadContent(string url, Action<string> onLoadContent = null, Action onLoadContentError = null)
         {
@@ -119,7 +119,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_ChooseFile(string type);
         public static void ChooseFile(string type, Action<string> onFileChoose = null, Action onFileChooseError = null)
         {
@@ -135,7 +135,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_Fetch(string filter);
         public static void Fetch(FilesFetchFilter filter = null, Action<List<FileData>, bool> onFetch = null, Action onFetchError = null)
         {
@@ -154,7 +154,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Files_FetchMore(string filter);
         public static void FetchMore(FilesFetchMoreFilter filter = null, Action<List<FileData>, bool> onFetchMore = null, Action onFetchMoreError = null)
         {

@@ -11,7 +11,7 @@ namespace GamePush
         public static event UnityAction<string> OnChange;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Current_AvatarGenerator();
         public static string Current()
         {
@@ -25,7 +25,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Change_AvatarGenerator(string generator);
         public static void Change(GeneratorType generator)
         {

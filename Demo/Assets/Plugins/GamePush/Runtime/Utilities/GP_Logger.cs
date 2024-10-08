@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using GamePush.ConsoleController;
 
@@ -20,7 +20,7 @@ namespace GamePush
             Debug.Log($" GP: {title}: {text}");
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_LoggerInfo(string title, string text);
         public static void Info(string title = "", string text = null)
         {
@@ -31,7 +31,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_LoggerWarn(string title, string text);
         public static void Warn(string title = "", string text = null)
         {
@@ -42,7 +42,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_LoggerError(string title, string text);
         public static void Error(string title = "", string text = null)
         {
@@ -53,7 +53,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_LoggerLog(string title, string text);
         public static void Log(string title = "", string text = null)
         {

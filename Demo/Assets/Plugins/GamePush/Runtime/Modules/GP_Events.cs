@@ -18,7 +18,7 @@ namespace GamePush
         private void CallOnEventJoin(string eventData) { OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData)); }
         private void CallOnEventJoinError(string error) { OnEventJoinError?.Invoke(error); }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Events_Join(string idOrTag);
         public static void Join(string idOrTag)
         {
@@ -30,7 +30,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Events_List();
         public static EventData[] List()
         {
@@ -45,7 +45,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Events_ActiveList();
         public static PlayerEvents[] ActiveList()
         {
@@ -60,7 +60,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Events_GetEvent(string idOrTag);
         public static EventData GetEvent(string idOrTag)
         {
@@ -75,7 +75,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Events_IsActive(string idOrTag);
         public static bool IsActive(string idOrTag)
         {
@@ -87,7 +87,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Events_IsJoined(string idOrTag);
         public static bool IsJoined(string idOrTag)
         {

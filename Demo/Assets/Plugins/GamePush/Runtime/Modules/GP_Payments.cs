@@ -41,7 +41,7 @@ namespace GamePush
         private static event Action _onUnsubscribeError;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Payments_FetchProducts();
         public static void Fetch()
         {
@@ -56,7 +56,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Payments_Purchase(string idOrTag);
         public static void Purchase(string idOrTag, Action<string> onPurchaseSuccess = null, Action onPurchaseError = null)
         {
@@ -75,7 +75,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Payments_Consume(string idOrTag);
         public static void Consume(string idOrTag, Action<string> onConsumeSuccess = null, Action onConsumeError = null)
         {
@@ -93,7 +93,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Payments_IsAvailable();
         public static bool IsPaymentsAvailable()
         {
@@ -107,7 +107,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Payments_IsSubscriptionsAvailable();
         public static bool IsSubscriptionsAvailable()
         {
@@ -121,7 +121,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Payments_Subscribe(string idOrTag);
         public static void Subscribe(string idOrTag, Action<string> onSubscribeSuccess = null, Action onSubscribeError = null)
         {
@@ -140,7 +140,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Payments_Unsubscribe(string idOrTag);
         public static void Unsubscribe(string idOrTag, Action<string> onUnsubscribeSuccess = null, Action onUnsubscribeError = null)
         {

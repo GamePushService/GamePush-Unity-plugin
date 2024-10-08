@@ -159,9 +159,9 @@ namespace GamePush
 
         #endregion
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_OpenChat(int channel_ID);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
 
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
@@ -220,7 +220,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
         public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
@@ -236,7 +236,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
         public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
@@ -252,7 +252,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Channels_IsMainChatEnabled();
         public static bool IsMainChatEnabled()
         {
@@ -266,7 +266,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Channels_MainChatId();
         public static int MainChatId()
         {
@@ -280,7 +280,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_Join(int channel_ID, string password);
         public static void Join(int channel_ID)
         {
@@ -301,7 +301,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_CancelJoin(int channel_ID);
         public static void CancelJoin(int channel_ID)
         {
@@ -313,7 +313,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_Leave(int channel_ID);
         public static void Leave(int channel_ID)
         {
@@ -325,7 +325,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_Kick(int channel_ID, int player_ID);
         public static void Kick(int channel_ID, int player_ID)
         {
@@ -337,7 +337,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_Mute_Seconds(int channel_ID, int player_ID, int seconds);
         public static void Mute(int channel_ID, int player_ID, int seconds)
         {
@@ -349,7 +349,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_Mute_UnmuteAt(int channel_ID, int player_ID, string unmuteAt);
         public static void Mute(int channel_ID, int player_ID, string unmuteAT)
         {
@@ -361,7 +361,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_UnMute(int channel_ID, int player_ID);
         public static void UnMute(int channel_ID, int player_ID)
         {
@@ -373,7 +373,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_SendInvite(int channel_ID, int player_ID);
         public static void SendInvite(int channel_ID, int player_ID)
         {
@@ -385,7 +385,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_CancelInvite(int channel_ID, int player_ID);
         public static void CancelInvite(int channel_ID, int player_ID)
         {
@@ -397,7 +397,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_AcceptInvite(int channel_ID);
         public static void AcceptInvite(int channel_ID)
         {
@@ -409,7 +409,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_RejectInvite(int channel_ID);
         public static void RejectInvite(int channel_ID)
         {
@@ -421,7 +421,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchInvites(int limit, int offset);
         public static void FetchInvites(int limit = 50, int offset = 0)
         {
@@ -433,7 +433,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreInvites(int limit);
         public static void FetchMoreInvites(int limit = 50)
         {
@@ -445,7 +445,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchChannelInvites(int channel_ID, int limit, int offset);
         public static void FetchChannelInvites(int channel_ID, int limit = 50, int offset = 0)
         {
@@ -457,7 +457,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreChannelInvites(int channel_ID, int limit);
         public static void FetchMoreChannelInvites(int channel_ID, int limit = 50)
         {
@@ -469,7 +469,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchSentInvites(int channel_ID, int limit, int offset);
         public static void FetchSentInvites(int channel_ID, int limit = 50, int offset = 0)
         {
@@ -481,7 +481,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreSentInvites(int channel_ID, int limit);
         public static void FetchMoreSentInvites(int channel_ID, int limit = 50)
         {
@@ -493,7 +493,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_AcceptJoinRequest(int channel_ID, int player_ID);
         public static void AcceptJoinRequest(int channel_ID, int player_ID)
         {
@@ -505,7 +505,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_RejectJoinRequest(int channel_ID, int player_ID);
         public static void RejectJoinRequest(int channel_ID, int player_ID)
         {
@@ -517,7 +517,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchJoinRequests(int channel_ID, int limit, int offset);
         public static void FetchJoinRequests(int channel_ID, int limit = 50, int offset = 0)
         {
@@ -529,7 +529,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreJoinRequests(int channel_ID, int limit);
         public static void FetchMoreJoinRequests(int channel_ID, int limit = 50)
         {
@@ -541,7 +541,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
         public static void FetchSentJoinRequests(int limit = 50, int offset = 0)
         {
@@ -553,7 +553,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
         public static void FetchMoreSentJoinRequests(int limit = 50)
         {
@@ -565,7 +565,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_SendMessage(int channel_ID, string text, string tags);
         public static void SendMessage(int channel_ID, string text, string tags = "")
         {
@@ -577,7 +577,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_SendPersonalMessage(int player_ID, string text, string tags);
         public static void SendPersonalMessage(int player_ID, string text, string tags = "")
         {
@@ -589,7 +589,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_SendFeedMessage(int player_ID, string text, string tags);
         public static void SendFeedMessage(int player_ID, string text, string tags = "")
         {
@@ -601,7 +601,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_EditMessage(string message_ID, string text);
         public static void EditMessage(string message_ID, string text)
         {
@@ -613,7 +613,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_DeleteMessage(string message_ID);
         public static void DeleteMessage(string message_ID)
         {
@@ -625,7 +625,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMessages(int channel_ID, string tags, int limit, int offset);
         public static void FetchMessages(int channel_ID, string tags, int limit = 50, int offset = 0)
         {
@@ -637,7 +637,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchPersonalMessages(int player_ID, string tags, int limit, int offset);
         public static void FetchPersonalMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
@@ -649,7 +649,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchFeedMessages(int player_ID, string tags, int limit, int offset);
         public static void FetchFeedMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
@@ -661,7 +661,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreMessages(int channel_ID, string tags, int limit);
         public static void FetchMoreMessages(int channel_ID, string tags, int limit = 50)
         {
@@ -673,7 +673,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMorePersonalMessages(int player_ID, string tags, int limit);
         public static void FetchMorePersonalMessages(int player_ID, string tags, int limit = 50)
         {
@@ -685,7 +685,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreFeedMessages(int player_ID, string tags, int limit);
         public static void FetchMoreFeedMessages(int player_ID, string tags, int limit = 50)
         {
@@ -698,7 +698,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_DeleteChannel(int channel_ID);
         public static void DeleteChannel(int channel_ID)
         {
@@ -710,7 +710,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchChannel(int channel_ID);
         public static void FetchChannel(int channel_ID)
         {
@@ -723,7 +723,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_CreateChannel(string filter);
         public static void CreateChannel(CreateChannelFilter filter)
         {
@@ -736,7 +736,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_UpdateChannel(string filter);
         public static void UpdateChannel(UpdateChannelFilter filter)
         {
@@ -748,7 +748,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchChannels(string filter);
         public static void FetchChannels(FetchChannelsFilter filter)
         {
@@ -760,7 +760,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreChannels(string filter);
         public static void FetchMoreChannels(FetchMoreChannelsFilter filter)
         {
@@ -772,7 +772,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMembers(string filter);
         public static void FetchMembers(FetchMembersFilter filter)
         {
@@ -784,7 +784,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_FetchMoreMembers(string filter);
         public static void FetchMoreMembers(FetchMoreMembersFilter filter)
         {

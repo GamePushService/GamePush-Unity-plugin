@@ -43,7 +43,7 @@ namespace GamePush
         public static event Action<string> _onImagesResize;
         public static event Action<string> _onImagesResizeError;
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_Choose();
         public static void Choose(Action<string> onImagesChooseFile = null, Action<string> onImagesChooseError = null)
         {
@@ -58,7 +58,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_Upload(string tags);
         public static void Upload(string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
@@ -73,7 +73,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_UploadUrl(string url, string tags);
         public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadUrlSuccess = null, Action<string> onImagesUploadUrlError = null)
         {
@@ -89,7 +89,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_Fetch(string filter);
         public static void Fetch(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
@@ -107,7 +107,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_FetchMore(string filter);
         public static void FetchMore(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
@@ -125,7 +125,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Images_Resize(string filter);
         public static void Resize(ImageResizeData resizeData = null, Action<string> onImagesResize = null, Action<string> onImagesResizeError = null)
         {

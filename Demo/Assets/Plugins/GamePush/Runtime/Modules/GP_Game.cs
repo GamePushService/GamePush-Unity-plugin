@@ -16,7 +16,7 @@ namespace GamePush
         private static event Action _onResume;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_IsPaused();
         public static bool IsPaused()
         {
@@ -29,7 +29,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Pause();
         public static void Pause(Action onPause = null)
         {
@@ -45,7 +45,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Resume();
         public static void Resume(Action onResume = null)
         {
@@ -62,7 +62,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_GameplayStart();
         public static void GameplayStart()
         {
@@ -74,7 +74,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_GameplayStop();
         public static void GameplayStop()
         {
@@ -86,7 +86,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_GameReady();
         public static void GameReady()
         {
@@ -98,7 +98,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_HappyTime();
         public static void HappyTime()
         {

@@ -26,7 +26,7 @@ namespace GamePush
         private static event Action<string> _onUniqueValueDeleteError;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_UniquesRegister(string tag, string value);
         public static void Register(
             string tag,
@@ -44,7 +44,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_UniquesGet(string tag);
         public static string Get(string tag)
         {
@@ -59,7 +59,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_UniquesList();
         public static UniquesData[] List()
         {
@@ -72,7 +72,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_UniquesCheck(string tag, string value);
         public static void Check(
             string tag,
@@ -90,7 +90,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_UniquesDelete(string tag);
         public static void Delete(
             string tag,

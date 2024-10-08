@@ -82,7 +82,7 @@ namespace GamePush
             CoreSDK.player.OnFieldIncrement -= FieldIncrement;
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetID();
         public static int GetID()
         {
@@ -95,7 +95,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern float GP_Player_GetScore();
         public static float GetScore()
         {
@@ -107,7 +107,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetName();
         public static string GetName()
         {
@@ -120,7 +120,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetAvatar();
         public static string GetAvatarUrl()
         {
@@ -140,7 +140,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetFieldName(string key);
         public static string GetFieldName(string key)
         {
@@ -153,7 +153,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetFieldVariantName(string key, string value);
         public static string GetFieldVariantName(string key, string value)
         {
@@ -166,7 +166,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetFieldVariantAt(string key, string index);
         public static string GetFieldVariantAt(string key, int index)
         {
@@ -179,7 +179,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetFieldVariantIndex(string key, string value);
         public static string GetFieldVariantIndex(string key, string value)
         {
@@ -192,7 +192,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_SetName(string name);
         public static void SetName(string name)
         {
@@ -205,7 +205,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_SetAvatar(string src);
         public static void SetAvatar(string src)
         {
@@ -218,7 +218,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_SetScore(float score);
         public static void SetScore(float score)
         {
@@ -239,7 +239,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_AddScore(float score);
         public static void AddScore(float score)
         {
@@ -263,7 +263,7 @@ namespace GamePush
             return CoreSDK.player.Get<T>(key);
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetNumberInt(string key);
         public static int GetInt(string key)
         {
@@ -276,7 +276,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern float GP_Player_GetNumberFloat(string key);
         public static float GetFloat(string key)
         {
@@ -287,7 +287,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern float GP_Player_GetMaxValue(string key);
         public static float GetMaxValue(string key)
         {
@@ -299,7 +299,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern float GP_Player_GetMinValue(string key);
         public static float GetMinValue(string key)
         {
@@ -329,7 +329,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetString(string key);
         public static string GetString(string key)
         {
@@ -343,7 +343,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_GetBool(string key);
         public static bool GetBool(string key)
         {
@@ -356,11 +356,11 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Set_Number(string key, float value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Set_Bool(string key, string value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Set_String(string key, string value);
 
         public static void Set(string key, string value)
@@ -401,7 +401,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_SetFlag(string key, bool value);
         public static void SetFlag(string key, bool value)
         {
@@ -414,7 +414,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Add(string key, string value);
         public static void Add(string key, float value)
         {
@@ -436,7 +436,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Toggle(string key);
         public static void Toggle(string key)
         {
@@ -449,7 +449,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Reset();
         public static void ResetPlayer()
         {
@@ -463,7 +463,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Remove();
         public static void Remove()
         {
@@ -475,7 +475,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Sync(bool forceOverride = false, string storage = "preferred");
         public static void Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
@@ -497,7 +497,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
         public static bool EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
         {
@@ -509,7 +509,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
         public static bool DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
         {
@@ -521,7 +521,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Load();
         public static void Load()
         {
@@ -534,7 +534,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Login();
         public static void Login()
         {
@@ -546,7 +546,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_Logout();
         public static void Logout()
         {
@@ -560,7 +560,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Player_FetchFields();
         public static void FetchFields(Action<List<PlayerFetchFieldsData>> onFetchFields = null)
         {
@@ -577,7 +577,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_Has(string key);
         public static bool Has(string key)
         {
@@ -592,7 +592,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_IsLoggedIn();
         public static bool IsLoggedIn()
         {
@@ -607,7 +607,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_HasAnyCredentials();
         public static bool HasAnyCredentials()
         {
@@ -622,7 +622,7 @@ namespace GamePush
 
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_Player_IsStub();
         public static bool IsStub()
         {
@@ -635,7 +635,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetActiveDays();
         public static int GetActiveDays()
         {
@@ -648,7 +648,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetActiveDaysConsecutive();
         public static int GetActiveDaysConsecutive()
         {
@@ -661,7 +661,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetPlaytimeToday();
         public static int GetPlaytimeToday()
         {
@@ -674,7 +674,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern int GP_Player_GetPlaytimeAll();
         public static int GetPlaytimeAll()
         {

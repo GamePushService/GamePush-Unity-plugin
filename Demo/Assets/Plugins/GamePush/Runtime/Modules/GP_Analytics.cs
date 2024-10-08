@@ -7,7 +7,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Analytics);
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Analytics_Hit(string url);
         public static void Hit(string url)
         {
@@ -20,7 +20,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_Analytics_Goal(string eventName, string value);
         public static void Goal(string eventName, string value)
         {

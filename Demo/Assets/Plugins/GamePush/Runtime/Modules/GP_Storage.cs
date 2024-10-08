@@ -25,7 +25,7 @@ namespace GamePush
         private static event Action<StorageField> _onSetGlobalValue;
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern void GP_StorageSetType(string key);
         public static void SetStorage(SaveStorageType storage)
         {
@@ -36,7 +36,7 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageGet(string key);
         public static void Get(string key, Action<object> onGetValue)
         {
@@ -49,11 +49,11 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetString(string key, string value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetNumber(string key, float value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetBool(string key, bool value);
 
         public static void Set(string key, object value, Action<StorageField> onSetValue = null)
@@ -95,7 +95,7 @@ namespace GamePush
         }
 
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageGetGlobal(string key);
         public static void GetGlobal(string key, Action<object> onGetGlobalValue)
         {
@@ -109,11 +109,11 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetGlobalString(string key, string value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetGlobalNumber(string key, float value);
-        [DllImport("__Internal")]
+        [DllImport("libARWrapper.so")]
         private static extern string GP_StorageSetGlobalBool(string key, bool value);
 
         public static void SetGlobal(string key, object value, Action<StorageField> onSetGlobalValue = null)
