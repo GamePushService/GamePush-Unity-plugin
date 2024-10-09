@@ -39,9 +39,9 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-
+            Debug.Log(resultObject.ToString());
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
-
+            
             return configData;
         }
 
@@ -70,7 +70,7 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-
+            
             return resultObject;
         }
 

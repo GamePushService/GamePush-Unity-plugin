@@ -33,6 +33,17 @@ namespace GamePush
         private static event Action _onRewardedStart;
         private static event Action<bool> _onRewardedClose;
 
+        private void OnEnable()
+        {
+            CoreSDK.ads.OnAdsStart += CallAdsStart;
+            CoreSDK.ads.OnAdsClose += CallAdsCloseBool;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.ads.OnAdsStart -= CallAdsStart;
+            CoreSDK.ads.OnAdsClose -= CallAdsCloseBool;
+        }
 
         [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowFullscreen();
@@ -90,7 +101,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "SHOW");
+            CoreSDK.ads.ShowSticky();
 #endif
         }
 
@@ -102,7 +113,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_CloseSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "CLOSE");
+            CoreSDK.ads.CloseSticky();
 #endif
         }
 
@@ -114,7 +125,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_RefreshSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "REFRESH");
+            CoreSDK.ads.RefreshSticky();
 #endif
         }
 
@@ -271,6 +282,7 @@ namespace GamePush
 
         private void CallAdsStart() => OnAdsStart?.Invoke();
         private void CallAdsClose(string success) => OnAdsClose?.Invoke(success == "true");
+        private void CallAdsCloseBool(bool success) => OnAdsClose?.Invoke(success);
 
         private void CallAdsFullscreenStart()
         {

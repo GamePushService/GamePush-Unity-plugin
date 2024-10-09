@@ -18,6 +18,7 @@ namespace GamePush.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
 #endif

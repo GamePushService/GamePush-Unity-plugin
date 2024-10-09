@@ -20,6 +20,7 @@ namespace GamePush
         public static PlayerModule player;
         public static PlatformModule platform;
         public static GameVariables variables;
+        public static AdsModule ads;
 
         #region ServerTime
 
@@ -93,6 +94,7 @@ namespace GamePush
             player = new PlayerModule();
             variables = new GameVariables();
             platform = new PlatformModule();
+            ads = new AdsModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
