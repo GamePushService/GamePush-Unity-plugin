@@ -10,7 +10,7 @@ namespace GamePush.Initialization
     
     public class GP_Initialization
     {
-        public static string VERSION = GP_Data.SDK_VERSION;
+        public static string VERSION = PluginData.SDK_VERSION;
 
         [DllImport("__Internal")]
         private static extern void GP_UnityReady();
