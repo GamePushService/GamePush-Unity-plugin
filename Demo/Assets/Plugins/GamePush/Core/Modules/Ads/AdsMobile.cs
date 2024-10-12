@@ -4,103 +4,111 @@ using YandexMobileAds;
 using YandexMobileAds.Base;
 
 using GamePush.Core;
+using GamePush.Data;
 
 namespace GamePush.Mobile
 {
     public class AdsMobile
     {
-        private Banner banner;
+        private List<AdBanner> banners;
 
-        public void ShowBanner() => RequestBanner();
-        public void RefreshBanner() => banner.LoadAd(CreateAdRequest());
-        public void CloseBanner() => banner.Destroy();
-        
+        private StickyMobile sticky;
+        private InterstitialMobile fullscreen;
+        private RewardedMobile rewarded;
+        private PreloaderMobile preloader;
 
-        #region Banner methods
-        private void RequestBanner()
+        public void Init(BannersList bannersList)
         {
-
-            //Sets COPPA restriction for user age under 13
-            MobileAds.SetAgeRestrictedUser(true);
-
-            // Replace demo Unit ID 'demo-banner-yandex' with actual Ad Unit ID
-            string adUnitId = "R-M-12294861-1";
-
-            if (this.banner != null)
+            banners = bannersList.banners;
+            foreach(AdBanner banner in bannersList.banners)
             {
-                this.banner.Destroy();
+                Enum.TryParse(banner.type, out BannerType type);
+
+                switch (type)
+                {
+                    case BannerType.PRELOADER:
+                        //Logger.Log("Type PRELOADER");
+                        preloader = new PreloaderMobile(banner);
+                        break;
+                    case BannerType.FULLSCREEN:
+                        //Logger.Log("Type FULLSCREEN");
+                        fullscreen = new InterstitialMobile(banner);
+                        break;
+                    case BannerType.REWARDED:
+                        //Logger.Log("Type REWARDED");
+                        rewarded = new RewardedMobile(banner);
+                        break;
+                    case BannerType.STICKY:
+                        //Logger.Log("Type STICKY");
+                        sticky = new StickyMobile(banner);
+                        break;
+                }
             }
-            // Set sticky banner width
-            BannerAdSize bannerSize = BannerAdSize.StickySize(GetScreenWidthDp());
-            // Or set inline banner maximum width and height
-            // BannerAdSize bannerSize = BannerAdSize.InlineSize(GetScreenWidthDp(), 300);
-            this.banner = new Banner(adUnitId, bannerSize, AdPosition.BottomCenter);
-
-            this.banner.OnAdLoaded += this.HandleAdLoaded;
-            this.banner.OnAdFailedToLoad += this.HandleAdFailedToLoad;
-            this.banner.OnReturnedToApplication += this.HandleReturnedToApplication;
-            this.banner.OnLeftApplication += this.HandleLeftApplication;
-            this.banner.OnAdClicked += this.HandleAdClicked;
-            this.banner.OnImpression += this.HandleImpression;
-
-            this.banner.LoadAd(this.CreateAdRequest());
-            Logger.Log("Banner is requested");
         }
 
-        // Example how to get screen width for request
-        private int GetScreenWidthDp()
+        public void ShowSticky() => sticky.ShowBanner();
+        public void RefreshSticky() => sticky.RefreshBanner();
+        public void CloseSticky() => sticky.CloseBanner();
+
+        public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
-            int screenWidth = (int)UnityEngine.Screen.safeArea.width;
-            return ScreenUtils.ConvertPixelsToDp(screenWidth);
+            fullscreen.ShowInterstitial(onFullscreenStart, onFullscreenClose);
         }
 
-        private AdRequest CreateAdRequest()
+        public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
-            return new AdRequest.Builder().Build();
+            rewarded.ShowRewardedAd(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
         }
 
-        #endregion
-
-        #region Banner callback handlers
-
-        public void HandleAdLoaded(object sender, EventArgs args)
+        public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
-            Logger.Log("HandleAdLoaded event received");
-            this.banner.Show();
+            preloader.ShowAppOpenAd(onPreloaderStart, onPreloaderClose);
         }
 
-        public void HandleAdFailedToLoad(object sender, AdFailureEventArgs args)
+        public bool IsAdblockEnabled()
         {
-            Logger.Log("HandleAdFailedToLoad event received with message: " + args.Message);
+            return false;
         }
 
-        public void HandleLeftApplication(object sender, EventArgs args)
+        public bool IsStickyAvailable()
         {
-            Logger.Log("HandleLeftApplication event received");
+            return false;
         }
 
-        public void HandleReturnedToApplication(object sender, EventArgs args)
+        public bool IsFullscreenAvailable()
         {
-            Logger.Log("HandleReturnedToApplication event received");
+            return false;
         }
 
-        public void HandleAdLeftApplication(object sender, EventArgs args)
+        public bool IsRewardedAvailable()
         {
-            Logger.Log("HandleAdLeftApplication event received");
+            return false;
         }
 
-        public void HandleAdClicked(object sender, EventArgs args)
+        public bool IsPreloaderAvailable()
         {
-            Logger.Log("HandleAdClicked event received");
+            return false;
         }
 
-        public void HandleImpression(object sender, ImpressionData impressionData)
+        public bool IsStickyPlaying()
         {
-            var data = impressionData == null ? "null" : impressionData.rawData;
-            Logger.Log("HandleImpression event received with data: " + data);
+            return sticky.IsPlaying();
         }
 
-        #endregion
+        public bool IsFullscreenPlaying()
+        {
+            return fullscreen.IsPlaying();
+        }
+
+        public bool IsRewardPlaying()
+        {
+            return rewarded.IsPlaying();
+        }
+
+        public bool IsPreloaderPlaying()
+        {
+            return preloader.IsPlaying();
+        }
     }
 
 }

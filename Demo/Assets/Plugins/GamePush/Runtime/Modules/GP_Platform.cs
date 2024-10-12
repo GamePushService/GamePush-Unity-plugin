@@ -52,7 +52,6 @@ namespace GamePush
             return CoreSDK.platform.prefferedSyncType;
         }
 
-
         [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_HasIntegratedAuth();
         public static bool HasIntegratedAuth()

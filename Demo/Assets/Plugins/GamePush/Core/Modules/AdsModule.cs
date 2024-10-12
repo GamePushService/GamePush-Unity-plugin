@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+using GamePush.Data;
 using GamePush.Mobile;
 
 namespace GamePush.Core
@@ -11,11 +12,25 @@ namespace GamePush.Core
         public event Action OnAdsStart;
         public event Action<bool> OnAdsClose;
         
-        public AdsMobile adsMobile;
+        private AdsMobile adsMobile;
+
+        private AdsConfig adsConfig;
+        private List<AdBanner> banners;
+        private CustomAdsConfig customAds;
 
         public AdsModule()
         {
             adsMobile = new AdsMobile();
+        }
+
+        public void Init(AdsConfig config, PlatformConfig platformConfig)
+        {
+            adsConfig = config;
+            banners = platformConfig.banners;
+            customAds = platformConfig.customAdsConfig;
+
+            adsMobile = new AdsMobile();
+            adsMobile.Init(customAds.configs.android);
         }
 
         #region FullScreen Ads
@@ -23,18 +38,27 @@ namespace GamePush.Core
         public event Action OnFullscreenStart;
         public event Action<bool> OnFullscreenClose;
 
-        private event Action _onFullscreenStart;
-        private event Action<bool> _onFullscreenClose;
-
         public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
-            _onFullscreenStart = onFullscreenStart;
-            _onFullscreenClose = onFullscreenClose;
+            Action combinedStart = () =>
+            {
+                OnFullscreenStart?.Invoke();
+                onFullscreenStart?.Invoke();
+            };
 
-#if !UNITY_EDITOR && UNITY_WEBGL
-             GP_Ads_ShowFullscreen();
+            Action<bool> combinedClose = (bool success) =>
+            {
+                OnFullscreenClose?.Invoke(success); 
+                onFullscreenClose?.Invoke(success); 
+            };
+
+
+#if UNITY_ANDROID
+            adsMobile.ShowFullscreen(combinedStart, combinedClose);
 #else
             Logger.Log("FULL SCREEN AD ", "SHOW");
+            onFullscreenStart?.Invoke();
+            onFullscreenClose?.Invoke(true);
 #endif
         }
 
@@ -46,18 +70,29 @@ namespace GamePush.Core
         public event Action<bool> OnRewardedClose;
         public event Action<string> OnRewardedReward;
 
-        private event Action<string> _onRewardedReward;
-        private event Action _onRewardedStart;
-        private event Action<bool> _onRewardedClose;
-
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
-            _onRewardedReward = onRewardedReward;
-            _onRewardedStart = onRewardedStart;
-            _onRewardedClose = onRewardedClose;
+            Action combinedStart = () =>
+            {
+                OnRewardedStart?.Invoke();
+                onRewardedStart?.Invoke();
+            };
 
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Ads_ShowRewarded(idOrTag);
+            Action<bool> combinedClose = (bool success) =>
+            {
+                OnRewardedClose?.Invoke(success);
+                onRewardedClose?.Invoke(success);
+            };
+
+            Action<string> combinedReward = (string tag) =>
+            {
+                OnRewardedReward?.Invoke(tag);
+                onRewardedReward?.Invoke(tag);
+            };
+
+
+#if UNITY_ANDROID
+            adsMobile.ShowRewarded(idOrTag, combinedReward, combinedStart, combinedClose);
 #else
             Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
 
@@ -78,7 +113,7 @@ namespace GamePush.Core
         public void ShowSticky()
         {
 #if UNITY_ANDROID
-            adsMobile.ShowBanner();
+            adsMobile.ShowSticky();
 #else
             Logger.Log("STICKY BANNER AD: ", "SHOW");
 #endif
@@ -88,7 +123,7 @@ namespace GamePush.Core
         public void CloseSticky()
         {
 #if UNITY_ANDROID
-            adsMobile.CloseBanner();
+            adsMobile.CloseSticky();
 #else
             Logger.Log("STICKY BANNER AD: ", "CLOSE");
 #endif
@@ -97,7 +132,7 @@ namespace GamePush.Core
         public void RefreshSticky()
         {
 #if UNITY_ANDROID
-            adsMobile.RefreshBanner();
+            adsMobile.RefreshSticky();
 #else
             Logger.Log("STICKY BANNER AD: ", "REFRESH");
 #endif
@@ -110,15 +145,23 @@ namespace GamePush.Core
         public event Action OnPreloaderStart;
         public event Action<bool> OnPreloaderClose;
 
-        private event Action _onPreloaderStart;
-        private event Action<bool> _onPreloaderClose;
 
         public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
-            _onPreloaderStart = onPreloaderStart;
-            _onPreloaderClose = onPreloaderClose;
-#if UNITY_ANDROID
+            Action combinedStart = () =>
+            {
+                OnPreloaderStart?.Invoke();
+                onPreloaderStart?.Invoke();
+            };
 
+            Action<bool> combinedClose = (bool success) =>
+            {
+                OnPreloaderClose?.Invoke(success);
+                onPreloaderClose?.Invoke(success);
+            };
+
+#if UNITY_ANDROID
+            adsMobile.ShowPreloader(combinedStart, combinedClose);
 #else
             Logger.Log("PRELOADER AD: ", "SHOW");
 #endif
@@ -130,82 +173,98 @@ namespace GamePush.Core
 
         public bool IsAdblockEnabled()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsAdblockEnabled();
+#else
             Logger.Log("IS ADBLOCK ENABLED: ", "FALSE");
             return false;
-
+#endif
         }
 
         public bool IsStickyAvailable()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsStickyAvailable();
+#else
+       
             Logger.Log("IS STICKY BANNER AD AVAILABLE: ", "TRUE");
             return false;
-
+#endif
         }
 
         public bool IsFullscreenAvailable()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsFullscreenAvailable();
+#else
             Logger.Log("IS FULL SCREEN AD AVAILABLE: ", "TRUE");
             return false;
-
+#endif
         }
 
-        public static bool IsRewardedAvailable()
+        public bool IsRewardedAvailable()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsRewardedAvailable();
+#else
             Logger.Log("IS REWARD AD AVAILABLE: ", "TRUE");
             return false;
-
+#endif
         }
 
-        public static bool IsPreloaderAvailable()
+        public bool IsPreloaderAvailable()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsPreloaderAvailable();
+#else
             Logger.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
             return false;
-
+#endif
         }
 
-        public static bool IsStickyPlaying()
+        public bool IsStickyPlaying()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsStickyPlaying();
+#else
             Logger.Log("IS STICKY PLAYING: ", "FALSE");
             return false;
-
+#endif
         }
 
-        public static bool IsFullscreenPlaying()
+        public bool IsFullscreenPlaying()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsFullscreenPlaying();
+#else
             Logger.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
             return false;
-
+#endif
         }
 
-        public static bool IsRewardPlaying()
+        public bool IsRewardPlaying()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsRewardPlaying();
+#else
             Logger.Log("IS REWARDED AD PLAYING: ", "FALSE");
             return false;
-
+#endif
         }
 
-        public static bool IsPreloaderPlaying()
+        public bool IsPreloaderPlaying()
         {
-
+#if UNITY_ANDROID
+            return adsMobile.IsPreloaderPlaying();
+#else
             Logger.Log("IS PRELOADER AD PLAYING: ", "FALSE");
             return false;
-
+#endif
         }
 
-        public static bool IsCountdownOverlayEnabled()
+        public bool IsCountdownOverlayEnabled()
         {
-
-            Logger.Log("Is Countdown Overlay Enabled: ", "FALSE");
-            return false;
-
+            return adsConfig.showCountdownOverlay;
         }
 
         #endregion

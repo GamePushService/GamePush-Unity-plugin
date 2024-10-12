@@ -13,7 +13,6 @@ namespace GamePush.Core
             X_Language = "X-Language",
             X_Player_Data = "X-Player-Data";
 
-
         public static Dictionary<string, string> GetHeaders(string hash)
         {
             string base64 = GetBase64();
@@ -21,7 +20,7 @@ namespace GamePush.Core
             return new Dictionary<string, string>()
             {
             { X_Transaction_Token, hash},
-            { X_Platform, "NONE" },
+            { X_Platform, "ANDROID" },
             { X_Platform_Key, "" },
             { X_Project_ID, CoreSDK.projectId.ToString() },
             { X_Project_Token, CoreSDK.projectToken.ToString() },

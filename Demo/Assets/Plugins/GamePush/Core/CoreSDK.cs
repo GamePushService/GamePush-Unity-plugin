@@ -136,6 +136,7 @@ namespace GamePush
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
             platform.Init(configData.platformConfig);
+            ads.Init(configData.project.ads, configData.platformConfig);
         }
 
         public static AllConfigData GetConfig()
