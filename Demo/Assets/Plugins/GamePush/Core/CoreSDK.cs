@@ -13,6 +13,8 @@ namespace GamePush
 
         public static int projectId { get; private set; }
         public static string projectToken { get; private set; }
+        public static Platform platformType { get; private set; }
+        public static string platformKey { get; private set; }
 
         private static AllConfigData configData = new AllConfigData();
 

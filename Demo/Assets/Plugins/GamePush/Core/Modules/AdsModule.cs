@@ -267,6 +267,16 @@ namespace GamePush.Core
             return adsConfig.showCountdownOverlay;
         }
 
+        public bool IsRewardedFailedOverlayEnabled()
+        {
+            return adsConfig.showRewardedFailedOverlay;
+        }
+
+        public bool CanShowFullscreenBeforeGamePlay()
+        {
+            return false;
+        }
+
         #endregion
     }
 }

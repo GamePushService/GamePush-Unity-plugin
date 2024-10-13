@@ -228,8 +228,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedAvailable() == "true";
 #else
-            GP_Logger.Log("IS REWARD AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsRewardedAvailable();
 #endif
         }
 
@@ -238,8 +237,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderAvailable() == "true";
 #else
-            GP_Logger.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsPreloaderAvailable();
 #endif
         }
 
@@ -248,8 +246,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyPlaying() == "true";
 #else
-            GP_Logger.Log("IS STICKY PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsStickyPlaying();
 #endif
         }
 
@@ -258,8 +255,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenPlaying() == "true";
 #else
-            GP_Logger.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsFullscreenPlaying();
 #endif
         }
 
@@ -268,8 +264,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedPlaying() == "true";
 #else
-            GP_Logger.Log("IS REWARDED AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsRewardPlaying();
 #endif
         }
 
@@ -278,8 +273,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderPlaying() == "true";
 #else
-            GP_Logger.Log("IS PRELOADER AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsPreloaderPlaying();
 #endif
         }
 
@@ -288,8 +282,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsCountdownOverlayEnabled() == "true";
 #else
-            GP_Logger.Log("Is Countdown Overlay Enabled: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsCountdownOverlayEnabled();
 #endif
         }
 
@@ -298,8 +291,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedFailedOverlayEnabled() == "true";
 #else
-            GP_Logger.Log("Is Rewarded Failed Overlay Enabled: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsRewardedFailedOverlayEnabled();
 #endif
         }
 
@@ -308,8 +300,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_CanShowFullscreenBeforeGamePlay() == "true";
 #else
-            GP_Logger.Log("Can Show Fullscreen Before Gameplay: ", "FALSE");
-            return false;
+            return CoreSDK.ads.CanShowFullscreenBeforeGamePlay();
 #endif
         }
 

@@ -20,13 +20,22 @@ namespace GamePush.Core
             return new Dictionary<string, string>()
             {
             { X_Transaction_Token, hash},
-            { X_Platform, "ANDROID" },
+            { X_Platform, GetPlatform() },
             { X_Platform_Key, "" },
             { X_Project_ID, CoreSDK.projectId.ToString() },
             { X_Project_Token, CoreSDK.projectToken.ToString() },
             { X_Language, "EN" },
             { X_Player_Data, base64 },
             };
+        }
+
+        private static string GetPlatform()
+        {
+#if UNITY_ANDROID
+            return PlatformTypes.ANDROID;
+#else
+            return PlatformTypes.CUSTOM;
+#endif
         }
 
         private static string GetEncodeString(string secret) => $"{{\"secretCode\":\"{secret}\"}}";

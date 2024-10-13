@@ -12,7 +12,7 @@ namespace GamePush
 
     public enum Platform : byte
     {
-        None = 0,
+        NONE = 0,
         YANDEX = 1,
         VK = 2,
         CRAZY_GAMES = 3,
@@ -28,7 +28,8 @@ namespace GamePush
         GOOGLE_PLAY = 13,
         PLAYDECK = 14,
         CUSTOM = 15,
-        TELEGRAM
+        TELEGRAM = 16,
+        ANDROID = 17,
     }
 
     public static class PlatformTypes
@@ -48,5 +49,7 @@ namespace GamePush
         public const string GOOGLE_PLAY = "GOOGLE_PLAY";
         public const string PLAYDECK = "PLAYDECK";
         public const string CUSTOM = "CUSTOM";
+        public const string TELEGRAM = "TELEGRAM";
+        public const string ANDROID = "ANDROID";
     }
 }
