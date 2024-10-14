@@ -46,7 +46,12 @@ namespace GamePush.Mobile
             }
         }
 
-        public void ShowSticky() => sticky.ShowBanner();
+        public void ShowSticky(
+            Action onStickyStart = null,
+            Action<bool> onStickyClose = null,
+            Action onStickyRefresh = null)
+            => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh);
+
         public void RefreshSticky() => sticky.RefreshBanner();
         public void CloseSticky() => sticky.CloseBanner();
 

@@ -19,7 +19,7 @@ namespace GamePush
         public static event UnityAction<bool> OnRewardedClose;
         public static event UnityAction<string> OnRewardedReward;
         public static event UnityAction OnStickyStart;
-        public static event UnityAction OnStickyClose;
+        public static event UnityAction<bool> OnStickyClose;
         public static event UnityAction OnStickyRefresh;
         public static event UnityAction OnStickyRender;
 
@@ -46,7 +46,7 @@ namespace GamePush
             CoreSDK.ads.OnRewardedClose += CallAdsRewardedCloseBool;
 
             CoreSDK.ads.OnStickyStart += CallAdsStickyStart;
-            CoreSDK.ads.OnStickyClose += CallAdsStickyClose;
+            CoreSDK.ads.OnStickyClose += CallAdsStickyCloseBool;
             CoreSDK.ads.OnStickyRefresh += CallAdsStickyRefresh;
 
             CoreSDK.ads.OnPreloaderStart += CallAdsPreloaderStart;
@@ -66,7 +66,7 @@ namespace GamePush
             CoreSDK.ads.OnRewardedClose -= CallAdsRewardedCloseBool;
 
             CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
-            CoreSDK.ads.OnStickyClose -= CallAdsStickyClose;
+            CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
             CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
 
             CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
@@ -259,12 +259,12 @@ namespace GamePush
 #endif
         }
 
-        public static bool IsRewardPlaying()
+        public static bool IsRewardedPlaying()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedPlaying() == "true";
 #else
-            return CoreSDK.ads.IsRewardPlaying();
+            return CoreSDK.ads.IsRewardedPlaying();
 #endif
         }
 
@@ -354,7 +354,8 @@ namespace GamePush
         }
 
         private void CallAdsStickyStart() => OnStickyStart?.Invoke();
-        private void CallAdsStickyClose() => OnStickyClose?.Invoke();
+        private void CallAdsStickyClose() => OnStickyClose?.Invoke(true);
+        private void CallAdsStickyCloseBool(bool success) => OnStickyClose?.Invoke(success);
         private void CallAdsStickyRefresh() => OnStickyRefresh?.Invoke();
         private void CallAdsStickyRender() => OnStickyRender?.Invoke();
 

@@ -26,11 +26,29 @@ namespace GamePush.Mobile
 
         public bool IsPlaying() => isPlaying;
 
-        public void ShowBanner() => RequestBanner();
-        public void RefreshBanner() => banner.LoadAd(CreateAdRequest());
-        public void CloseBanner() => DestroyBanner();
+        private event Action OnStickyStart;
+        private event Action<bool> OnStickyClose;
+        private event Action OnStickyRefresh;
 
-       
+        public void ShowBanner(
+            Action onStickyStart = null,
+            Action<bool> onStickyClose = null,
+            Action onStickyRefresh = null)
+        {
+            OnStickyStart = onStickyStart;
+            OnStickyClose = onStickyClose;
+            OnStickyRefresh = onStickyRefresh;
+            RequestBanner();
+        }
+        
+        public void CloseBanner() => DestroyBanner();
+        public void RefreshBanner()
+        {
+            banner.LoadAd(CreateAdRequest());
+            OnStickyRefresh?.Invoke();
+        }
+
+
         #region Banner methods
 
         private void RequestBanner()
@@ -78,6 +96,7 @@ namespace GamePush.Mobile
         {
             banner.Destroy();
             SetPlaying(false);
+            OnStickyClose?.Invoke(true);
         }
 
         #endregion
@@ -123,6 +142,7 @@ namespace GamePush.Mobile
         {
             var data = impressionData == null ? "null" : impressionData.rawData;
             Logger.Log("HandleImpression event received with data: " + data);
+            OnStickyStart?.Invoke();
         }
 
         #endregion

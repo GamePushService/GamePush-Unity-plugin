@@ -51,7 +51,6 @@ namespace GamePush.Mobile
 
             string adUnitId = bannerData.bannerId;
 
-
             rewardedAdLoader.LoadAd(CreateAdRequest(adUnitId));
             Logger.Log("Rewarded Ad is requested");
         }

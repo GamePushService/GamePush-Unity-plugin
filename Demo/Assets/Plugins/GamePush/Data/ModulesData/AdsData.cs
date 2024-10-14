@@ -12,7 +12,37 @@ namespace GamePush.Data
         STICKY
     }
 
-    [System.Serializable]
+    [Serializable]
+    public class AdTimestamp
+    {
+        public string timestamp;
+        public int count;
+    }
+
+    [Serializable]
+    public class BannerLimitInfo
+    {
+        public AdTimestamp hour;
+        public AdTimestamp day;
+        public AdTimestamp session;
+    }
+
+    [Serializable]
+    public class PlayerAdsInfo
+    {
+        public Dictionary<BannerType, BannerLimitInfo> limits;
+
+        public PlayerAdsInfo()
+        {
+            limits = new Dictionary<BannerType, BannerLimitInfo>();
+            limits.Add(BannerType.PRELOADER, new BannerLimitInfo());
+            limits.Add(BannerType.FULLSCREEN, new BannerLimitInfo());
+            limits.Add(BannerType.REWARDED, new BannerLimitInfo());
+            limits.Add(BannerType.STICKY, new BannerLimitInfo());
+        }
+    }
+
+    [Serializable]
     public class AdsConfig
     {
         public bool showCountdownOverlay;
@@ -40,12 +70,12 @@ namespace GamePush.Data
         public string desktopMaxHeightDimension;
         public bool fitCanvas;
         public string position;
-        public Limits limits;
+        public BannerLimits limits;
         public bool useNative;
     }
 
     [System.Serializable]
-    public class Limits
+    public class BannerLimits
     {
         public int hour;
         public int day;
