@@ -15,8 +15,14 @@ namespace GamePush.Data
     [Serializable]
     public class AdTimestamp
     {
-        public string timestamp;
+        public long timestamp;
         public int count;
+
+        public AdTimestamp()
+        {
+            timestamp = 0;
+            count = 0;
+        }
     }
 
     [Serializable]
@@ -25,6 +31,13 @@ namespace GamePush.Data
         public AdTimestamp hour;
         public AdTimestamp day;
         public AdTimestamp session;
+
+        public BannerLimitInfo()
+        {
+            hour = new AdTimestamp();
+            day = new AdTimestamp();
+            session = new AdTimestamp();
+        }
     }
 
     [Serializable]

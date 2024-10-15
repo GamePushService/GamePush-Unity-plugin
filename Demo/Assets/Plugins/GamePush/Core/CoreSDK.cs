@@ -18,6 +18,8 @@ namespace GamePush
 
         private static AllConfigData configData = new AllConfigData();
 
+        public static PlatformConfig platformConfig;
+
         public static GameModule game;
         public static PlayerModule player;
         public static PlatformModule platform;
@@ -41,11 +43,6 @@ namespace GamePush
 
             //return dateTime.ToString();
             return dateTime.ToString();
-        }
-
-        private static async Task HandleSync()
-        {
-            await Task.Yield();
         }
 
         public static DateTime ConvertToDateTime(string time)
@@ -121,6 +118,7 @@ namespace GamePush
         {
             AllConfigData data = await DataFetcher.GetConfig();
             configData = data;
+            platformConfig = configData.platformConfig;
         }
 
         public static async Task FetchCoreConfig()

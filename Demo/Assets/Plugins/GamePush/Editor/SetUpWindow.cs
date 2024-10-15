@@ -198,7 +198,7 @@ namespace GamePushEditor
 
             GUILayout.Space(25);
 
-            if (GUILayout.Button("Save", GUILayout.Height(30)))
+            if (GUILayout.Button("Save and Sync", GUILayout.Height(30)))
                 SaveConfig();
         }
 
@@ -243,7 +243,24 @@ namespace GamePushEditor
             GP_Logger.SystemLog("Data saved");
 
             await CoreSDK.FetchEditorConfig();
+
+            CheckCustromAds();
+
             GP_Logger.SystemLog("Config fetched");
+        }
+
+        private static void CheckCustromAds()
+        {
+            if (CoreSDK.platformConfig.customAdsConfigId == "")
+            {
+                GP_Logger.Log("Remove Define Symbols");
+                DefineSymbolsManager.RemoveScriptingDefineSymbol("CUSTOM_ADS_MOBILE");
+            }
+            else
+            {
+                GP_Logger.Log("Add Define Symbols");
+                DefineSymbolsManager.AddScriptingDefineSymbol("CUSTOM_ADS_MOBILE");
+            }
         }
 
         private static bool ValidateToken(string input)

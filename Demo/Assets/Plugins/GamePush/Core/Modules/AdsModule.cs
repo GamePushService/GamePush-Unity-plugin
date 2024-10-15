@@ -22,19 +22,27 @@ namespace GamePush.Core
 
         public AdsModule()
         {
-            adsMobile = new AdsMobile();
+            adsInfo = LoadAdsInfo();
         }
+
+        //public event Action<Action, Action<bool>> OnShowFullscreen;
+        //public event Action<string, Action<string>, Action, Action<bool>> OnShowRewarded;
 
         public void Init(AdsConfig config, PlatformConfig platformConfig)
         {
             adsConfig = config;
             banners = platformConfig.banners;
             customAds = platformConfig.customAdsConfig;
+            CheckLimitsExpired(true);
+        }
 
+        public void LateInit()
+        {
+
+#if UNITY_ANDROID
             adsMobile = new AdsMobile();
             adsMobile.Init(customAds.configs.android);
-
-            adsInfo = new PlayerAdsInfo();
+#endif
         }
 
         private AdBanner GetBanner(BannerType type)
@@ -77,8 +85,9 @@ namespace GamePush.Core
                 return;
             }
 
-#if UNITY_ANDROID
-            adsMobile.ShowFullscreen(combinedStart, combinedClose);
+#if UNITY_ANDROID 
+            //OnShowFullscreen?.Invoke(combinedStart, combinedClose);
+            adsMobile?.ShowFullscreen(combinedStart, combinedClose);
 #else
             Logger.Log("FULL SCREEN AD ", "SHOW");
             onFullscreenStart?.Invoke();
@@ -125,9 +134,11 @@ namespace GamePush.Core
                 return;
             }
 
-
+            Logger.Log("Reward in ads module");
 #if UNITY_ANDROID
-            adsMobile.ShowRewarded(idOrTag, combinedReward, combinedStart, combinedClose);
+
+            //OnShowRewarded?.Invoke(idOrTag, combinedReward, combinedStart, combinedClose);
+            adsMobile?.ShowRewarded(idOrTag, combinedReward, combinedStart, combinedClose);
 #else
             Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
 
@@ -169,7 +180,7 @@ namespace GamePush.Core
             }
 
 #if UNITY_ANDROID
-            adsMobile.ShowSticky(combinedStart, combinedClose, OnStickyRefresh);
+            adsMobile?.ShowSticky(combinedStart, combinedClose, OnStickyRefresh);
 #else
             Logger.Log("STICKY BANNER AD: ", "SHOW");
 #endif
@@ -179,7 +190,7 @@ namespace GamePush.Core
         public void CloseSticky()
         {
 #if UNITY_ANDROID
-            adsMobile.CloseSticky();
+            adsMobile?.CloseSticky();
 #else
             Logger.Log("STICKY BANNER AD: ", "CLOSE");
 #endif
@@ -188,7 +199,7 @@ namespace GamePush.Core
         public void RefreshSticky()
         {
 #if UNITY_ANDROID
-            adsMobile.RefreshSticky();
+            adsMobile?.RefreshSticky();
 #else
             Logger.Log("STICKY BANNER AD: ", "REFRESH");
 #endif
@@ -227,7 +238,7 @@ namespace GamePush.Core
             }
 
 #if UNITY_ANDROID
-            adsMobile.ShowPreloader(combinedStart, combinedClose);
+            adsMobile?.ShowPreloader(combinedStart, combinedClose);
 #else
             Logger.Log("PRELOADER AD: ", "SHOW");
 #endif
@@ -240,7 +251,8 @@ namespace GamePush.Core
         public bool IsAdblockEnabled()
         {
 #if UNITY_ANDROID
-            return adsMobile.IsAdblockEnabled();
+
+            return adsMobile == null ? false : adsMobile.IsAdblockEnabled();
 #else
             Logger.Log("IS ADBLOCK ENABLED: ", "FALSE");
             return false;
@@ -249,6 +261,8 @@ namespace GamePush.Core
 
         public bool IsStickyAvailable()
         {
+            ShowLimits(BannerType.STICKY);
+
             return
             //this.adapter.isStickyAvailable &&
             GetBanner(BannerType.STICKY).enabled &&
@@ -265,6 +279,8 @@ namespace GamePush.Core
 
         public bool IsFullscreenAvailable()
         {
+            ShowLimits(BannerType.FULLSCREEN);
+
             return
             !IsFullscreenPlaying() &&
             !IsRewardedPlaying() &&
@@ -284,6 +300,8 @@ namespace GamePush.Core
 
         public bool IsRewardedAvailable()
         {
+            ShowLimits(BannerType.REWARDED);
+
             return
             !IsFullscreenPlaying() &&
             !IsRewardedPlaying() &&
@@ -302,6 +320,8 @@ namespace GamePush.Core
 
         public bool IsPreloaderAvailable()
         {
+            ShowLimits(BannerType.PRELOADER);
+
             return
             !IsFullscreenPlaying() &&
             !IsRewardedPlaying() &&
@@ -321,7 +341,8 @@ namespace GamePush.Core
         public bool IsStickyPlaying()
         {
 #if UNITY_ANDROID
-            return adsMobile.IsStickyPlaying();
+
+            return adsMobile == null ? false : adsMobile.IsStickyPlaying();
 #else
             Logger.Log("IS STICKY PLAYING: ", "FALSE");
             return false;
@@ -331,7 +352,7 @@ namespace GamePush.Core
         public bool IsFullscreenPlaying()
         {
 #if UNITY_ANDROID
-            return adsMobile.IsFullscreenPlaying();
+            return adsMobile == null ? false : adsMobile.IsFullscreenPlaying();
 #else
             Logger.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
             return false;
@@ -341,7 +362,7 @@ namespace GamePush.Core
         public bool IsRewardedPlaying()
         {
 #if UNITY_ANDROID
-            return adsMobile.IsRewardPlaying();
+            return adsMobile == null ? false : adsMobile.IsRewardPlaying();
 #else
             Logger.Log("IS REWARDED AD PLAYING: ", "FALSE");
             return false;
@@ -351,7 +372,7 @@ namespace GamePush.Core
         public bool IsPreloaderPlaying()
         {
 #if UNITY_ANDROID
-            return adsMobile.IsPreloaderPlaying();
+            return adsMobile == null ? false : adsMobile.IsPreloaderPlaying();
 #else
             Logger.Log("IS PRELOADER AD PLAYING: ", "FALSE");
             return false;
@@ -390,6 +411,20 @@ namespace GamePush.Core
             return hourLimits || dayLimits || sessionLimits;
         }
 
+        #endregion
+
+        #region Limits Info
+
+        public void ShowLimits(BannerType bannerType)
+        {
+            AdBanner adBanner = GetBanner(bannerType);
+
+            Logger.Log(bannerType.ToString() + " limits:");
+            Logger.Log(" Hour: " + adBanner.limits.hour);
+            Logger.Log(" Day: " + adBanner.limits.day);
+            Logger.Log(" Session: " + adBanner.limits.session);
+        }
+
         private void TrackBannerDisplay(BannerType bannerType)
         {
             BannerLimitInfo limits = adsInfo.limits[bannerType];
@@ -397,16 +432,17 @@ namespace GamePush.Core
             limits.day.count += 1;
             limits.session.count += 1;
 
-            if (limits.day.timestamp == null || limits.day.timestamp == "")
+            if (limits.day.timestamp == 0)
             {
-                limits.day.timestamp = DateTime.Now.ToString();
+                limits.day.timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             }
-            if (limits.hour.timestamp == null || limits.hour.timestamp == "")
+            if (limits.hour.timestamp == 0)
             {
-                limits.hour.timestamp = DateTime.Now.ToString();
+                limits.hour.timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             }
 
-            SaveAdsInfo(adsInfo);
+            adsInfo.limits[bannerType] = limits;
+            SaveAdsInfo();
         }
 
         public PlayerAdsInfo LoadAdsInfo()
@@ -422,17 +458,17 @@ namespace GamePush.Core
             }
             catch (System.Exception ex)
             {
-                Debug.LogWarning($"Warning: {ex.Message}");
+                Logger.Warn($"Warning: {ex.Message}");
                 //_tempAdsInfo = _adsInfoStub;
                 return new PlayerAdsInfo();
             }
         }
 
-        public void SaveAdsInfo(PlayerAdsInfo info)
+        public void SaveAdsInfo()
         {
             try
             {
-                var json = JsonUtility.ToJson(info);
+                var json = JsonUtility.ToJson(adsInfo);
                 PlayerPrefs.SetString("adsInfo", json);
                 PlayerPrefs.Save();
             }
@@ -442,8 +478,49 @@ namespace GamePush.Core
             }
         }
 
-        
+        private bool IsTimestampExpired(long timestamp, long range)
+        {
+            var msDiff = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - timestamp;
+            return msDiff > range;
+        }
 
-        #endregion
-    }
+        private const long HOUR = 3600000; // 1 час в миллисекундах
+        private const long DAY = 86400000; // 1 день в миллисекундах
+
+        public Dictionary<string, BannerLimitInfo> AdsInfoLimits { get; private set; } = new Dictionary<string, BannerLimitInfo>();
+
+        public void CheckLimitsExpired(bool isInit)
+        {
+            bool hasChanges = false;
+
+            foreach (var info in AdsInfoLimits.Values)
+            {
+                if (isInit)
+                {
+                    info.session.count = 0;
+                }
+
+                if (IsTimestampExpired(info.hour.timestamp, HOUR))
+                {
+                    info.hour.timestamp = 0;
+                    info.hour.count = 0;
+                    hasChanges = true;
+                }
+
+                if (IsTimestampExpired(info.day.timestamp, DAY))
+                {
+                    info.day.timestamp = 0;
+                    info.day.count = 0;
+                    hasChanges = true;
+                }
+            }
+
+            if (hasChanges)
+            {
+                SaveAdsInfo();
+            }
+        }
+
+            #endregion
+        }
 }

@@ -101,7 +101,7 @@ namespace GamePush.Mobile
         {
             if (!args.IsInBackground && bannerData.enabled)
             {
-                ShowAppOpenAd();
+                //ShowAppOpenAd();
             }
         }
 
@@ -119,7 +119,7 @@ namespace GamePush.Mobile
 
             if (!isAdShowOnColdStart)
             {
-                ShowAppOpenAd();
+                //ShowAppOpenAd();
                 isAdShowOnColdStart = true;
             }
         }

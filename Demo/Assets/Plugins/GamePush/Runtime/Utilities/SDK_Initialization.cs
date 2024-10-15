@@ -73,6 +73,10 @@ namespace GamePush.Initialization
 
             SDK.AddComponent<GameStateService>();
 
+#if CUSTOM_ADS_MOBILE
+            SDK.AddComponent<MobileAdsService>();
+#endif
+
             EndInit();
         }
 

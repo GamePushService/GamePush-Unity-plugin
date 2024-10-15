@@ -62,6 +62,7 @@ namespace GamePush.Mobile
 
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
+            Logger.Log("Reward in ads mobile");
             rewarded.ShowRewardedAd(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
         }
 
@@ -71,26 +72,6 @@ namespace GamePush.Mobile
         }
 
         public bool IsAdblockEnabled()
-        {
-            return false;
-        }
-
-        public bool IsStickyAvailable()
-        {
-            return false;
-        }
-
-        public bool IsFullscreenAvailable()
-        {
-            return false;
-        }
-
-        public bool IsRewardedAvailable()
-        {
-            return false;
-        }
-
-        public bool IsPreloaderAvailable()
         {
             return false;
         }

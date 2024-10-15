@@ -63,6 +63,8 @@ namespace GamePush.Mobile
             Action<bool> onRewardedClose = null
             )
         {
+            Logger.Log("Reward in rewarded mobile");
+
             if (rewardedAd == null)
             {
                 Logger.Log("RewardedAd is not ready yet");

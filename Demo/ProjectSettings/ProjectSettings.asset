@@ -417,7 +417,7 @@ PlayerSettings:
     PROGRESS_BAR_BORDER_COLOR: 
     PROGRESS_BAR_FILL_COLOR: 
     PROJECT_ID: 5815
-    SHOW_PRELOADER_AD: True
+    SHOW_PRELOADER_AD: False
     TOKEN: BL5y2Oqp3Wl622MDcOAWrd55hJJF08SD
     X_SHOW_PRELOADER_AD: 
   mobileMTRendering:
@@ -698,7 +698,8 @@ PlayerSettings:
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: YA_ADS_MOBILE;CUSTOM_ADS_MOBILE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
