@@ -52,6 +52,8 @@ namespace GamePush.Core
         public event Action OnFullscreenStart;
         public event Action<bool> OnFullscreenClose;
 
+        private void TrackFullscreen() => TrackBannerDisplay(BannerType.FULLSCREEN);
+
         public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
             Action combinedStart = () =>
@@ -59,6 +61,7 @@ namespace GamePush.Core
                 OnAdsStart?.Invoke();
                 OnFullscreenStart?.Invoke();
                 onFullscreenStart?.Invoke();
+                TrackFullscreen();
             };
 
             Action<bool> combinedClose = (bool success) =>
@@ -91,6 +94,8 @@ namespace GamePush.Core
         public event Action<bool> OnRewardedClose;
         public event Action<string> OnRewardedReward;
 
+        private void TrackRewarded() => TrackBannerDisplay(BannerType.REWARDED);
+
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
             Action combinedStart = () =>
@@ -98,6 +103,7 @@ namespace GamePush.Core
                 OnAdsStart?.Invoke();
                 OnRewardedStart?.Invoke();
                 onRewardedStart?.Invoke();
+                TrackRewarded();
             };
 
             Action<bool> combinedClose = (bool success) =>
@@ -139,12 +145,15 @@ namespace GamePush.Core
         public event Action OnStickyRefresh;
         //public event Action OnStickyRender;
 
+        private void TrackSticky() => TrackBannerDisplay(BannerType.STICKY);
+
         public void ShowSticky()
         {
             Action combinedStart = () =>
             {
                 OnAdsStart?.Invoke();
                 OnStickyStart?.Invoke();
+                TrackSticky();
             };
 
             Action<bool> combinedClose = (bool success) =>
@@ -192,6 +201,7 @@ namespace GamePush.Core
         public event Action OnPreloaderStart;
         public event Action<bool> OnPreloaderClose;
 
+        private void TrackPreload() => TrackBannerDisplay(BannerType.PRELOADER);
 
         public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
@@ -200,6 +210,7 @@ namespace GamePush.Core
                 OnAdsStart?.Invoke();
                 OnPreloaderStart?.Invoke();
                 onPreloaderStart?.Invoke();
+                TrackPreload();
             };
 
             Action<bool> combinedClose = (bool success) =>

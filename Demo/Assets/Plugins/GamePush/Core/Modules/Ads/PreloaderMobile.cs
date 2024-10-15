@@ -27,7 +27,7 @@ namespace GamePush.Mobile
             bannerData = banner;
 
             SetUp();
-            //RequestInterstitial();
+            RequestAppOpenAd();
         }
 
         public void SetUp()
@@ -99,7 +99,7 @@ namespace GamePush.Mobile
 
         public void HandleAppStateChanged(object sender, AppStateChangedEventArgs args)
         {
-            if (appOpenAd != null && args.IsInBackground == false)
+            if (!args.IsInBackground && bannerData.enabled)
             {
                 ShowAppOpenAd();
             }
