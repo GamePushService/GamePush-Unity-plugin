@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 using YandexMobileAds;
 using YandexMobileAds.Base;
 using GamePush.Core;
@@ -11,24 +12,24 @@ namespace GamePush.Mobile
         private InterstitialAdLoader interstitialAdLoader;
         private Interstitial interstitial;
 
-        private AdBanner bannerData;
+        private AdBanner _bannerData;
 
-        private bool isPlaying;
-        private void SetPlaying(bool isPlay) => isPlaying = isPlay;
-        public bool IsPlaying() => isPlaying;
-
+        private bool _isPlaying;
+        private void SetPlaying(bool isPlay) => _isPlaying = isPlay;
+        public bool IsPlaying() => _isPlaying;
+        
         private event Action OnFullscreenStart;
         private event Action<bool> OnFullscreenClose;
 
         public InterstitialMobile(AdBanner banner)
         {
-            bannerData = banner;
+            _bannerData = banner;
 
-            SetUp();
+            SetUpLoader();
             RequestInterstitial();
         }
 
-        public void SetUp()
+        public void SetUpLoader()
         {
             interstitialAdLoader = new InterstitialAdLoader();
             interstitialAdLoader.OnAdLoaded += HandleAdLoaded;
@@ -40,7 +41,7 @@ namespace GamePush.Mobile
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
-            string adUnitId = bannerData.bannerId;
+            string adUnitId = _bannerData.bannerId;
 
             if (interstitial != null)
             {
@@ -131,6 +132,7 @@ namespace GamePush.Mobile
             Logger.Log($"HandleImpression event received with data: {data}");
 
             DestroyBanner(true);
+            RequestInterstitial();
         }
 
         public void HandleAdFailedToShow(object sender, AdFailureEventArgs args)

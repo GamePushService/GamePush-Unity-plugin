@@ -20,8 +20,35 @@ namespace GamePush
         private static event Action<string> _onReviewClose;
         private static event Action<bool> _onAddShortcut;
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("libARWrapper.so")]
         private static extern string GP_App_Title();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_Description();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_Image();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_Url();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_ReviewRequest();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_IsAlreadyReviewed();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_CanReview();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_AddShortcut();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_App_CanAddShortcut();
+#endif
+
         public static string Title()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -34,8 +61,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_Description();
         public static string Description()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -47,14 +72,13 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_Image();
-
         public async static void GetImage(Image image)
         {
+            string cover = "";
+
+#if !UNITY_EDITOR && UNITY_WEBGL
             string cover = GP_App_Image();
+#endif
             if (cover == null || cover == "") return;
             await UtilityImage.DownloadImageAsync(cover, image);
         }
@@ -70,8 +94,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_Url();
         public static string Url()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -83,8 +105,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_ReviewRequest();
         public static void ReviewRequest(Action<int> onReviewResult = null, Action<string> onReviewClose = null)
         {
             _onReviewResult = onReviewResult;
@@ -98,8 +118,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_IsAlreadyReviewed();
         public static bool IsAlreadyReviewed()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -113,8 +131,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_CanReview();
         public static bool CanReview()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -128,10 +144,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_AddShortcut();
         public static void AddShortcut(Action<bool> onAddShortcut = null)
         {
             _onAddShortcut = onAddShortcut;
@@ -144,8 +156,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_App_CanAddShortcut();
         public static bool CanAddShortcut()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

@@ -164,6 +164,8 @@ namespace GamePush
         [DllImport("libARWrapper.so")]
         private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
 
+
+
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;

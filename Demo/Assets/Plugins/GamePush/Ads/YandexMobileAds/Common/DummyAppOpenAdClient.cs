@@ -18,7 +18,6 @@ namespace YandexMobileAds.Common
     {
         private const string TAG = "Dummy AppOpenAd ";
 
-
         public event EventHandler<AdFailureEventArgs> OnAdFailedToShow;
         public event EventHandler<EventArgs> OnAdShown;
         public event EventHandler<EventArgs> OnAdDismissed;

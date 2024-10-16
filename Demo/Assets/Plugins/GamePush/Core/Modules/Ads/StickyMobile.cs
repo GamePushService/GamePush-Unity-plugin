@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 using YandexMobileAds;
 using YandexMobileAds.Base;
 using GamePush.Core;
@@ -8,27 +9,28 @@ namespace GamePush.Mobile
 {
     public class StickyMobile
     {
-        private Banner banner;
+        private Banner _banner;
 
-        private AdBanner bannerData;
+        private AdBanner _bannerData;
 
-        public StickyMobile(AdBanner banner)
-        {
-            bannerData = banner;
-            //if (bannerData.enabled)
-            //{
-            //    ShowBanner();
-            //}
-        }
+        private bool _isPlaying;
+        private void SetPlaying(bool isPlay) => _isPlaying = isPlay;
 
-        private bool isPlaying;
-        private void SetPlaying(bool isPlay) => isPlaying = isPlay;
-
-        public bool IsPlaying() => isPlaying;
+        public bool IsPlaying() => _isPlaying;
 
         private event Action OnStickyStart;
         private event Action<bool> OnStickyClose;
         private event Action OnStickyRefresh;
+
+        private Timer _stickyRefreshTimer;
+        private int _refreshIntervalSeconds;
+
+        public StickyMobile(AdBanner banner)
+        {
+            _bannerData = banner;
+            _refreshIntervalSeconds = _bannerData.refreshInterval;
+        }
+
 
         public void ShowBanner(
             Action onStickyStart = null,
@@ -39,13 +41,50 @@ namespace GamePush.Mobile
             OnStickyClose = onStickyClose;
             OnStickyRefresh = onStickyRefresh;
             RequestBanner();
+            StartStickyRefresh();
         }
-        
-        public void CloseBanner() => DestroyBanner();
+
+        public void CloseBanner()
+        {
+            DestroyBanner();
+            StopStickyRefresh();
+        }
+
         public void RefreshBanner()
         {
-            banner.LoadAd(CreateAdRequest());
+            StopStickyRefresh();
+            RefreshSticky();
+            StartStickyRefresh();
+        }
+
+        private void RefreshSticky()
+        {
+            RequestBanner();
             OnStickyRefresh?.Invoke();
+        }
+
+        public void StartStickyRefresh()
+        {
+            if (_stickyRefreshTimer == null && _refreshIntervalSeconds > 0)
+            {
+                Logger.Log("Start Sticky Refresh Timer: " + _refreshIntervalSeconds);
+                _stickyRefreshTimer = new Timer(_refreshIntervalSeconds * 1000);
+                _stickyRefreshTimer.Elapsed += (sender, e) => RefreshSticky();
+
+                _stickyRefreshTimer.AutoReset = true; // Повторное выполнение
+                _stickyRefreshTimer.Enabled = true;   // Запуск таймера
+            }
+        }
+
+        public void StopStickyRefresh()
+        {
+            if (_stickyRefreshTimer != null)
+            {
+                Logger.Log("Stop Sticky Refresh Timer");
+                _stickyRefreshTimer.Stop();
+                _stickyRefreshTimer.Dispose();
+                _stickyRefreshTimer = null;
+            }
         }
 
 
@@ -56,9 +95,9 @@ namespace GamePush.Mobile
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
-            string adUnitId = bannerData.bannerId;
+            string adUnitId = _bannerData.bannerId;
 
-            if (banner != null)
+            if (_banner != null)
             {
                 DestroyBanner();
             }
@@ -66,16 +105,16 @@ namespace GamePush.Mobile
             BannerAdSize bannerSize = BannerAdSize.StickySize(GetScreenWidthDp());
             // Or set inline banner maximum width and height
             // BannerAdSize bannerSize = BannerAdSize.InlineSize(GetScreenWidthDp(), 300);
-            banner = new Banner(adUnitId, bannerSize, AdPosition.BottomCenter);
+            _banner = new Banner(adUnitId, bannerSize, AdPosition.BottomCenter);
 
-            banner.OnAdLoaded += HandleAdLoaded;
-            banner.OnAdFailedToLoad += HandleAdFailedToLoad;
-            banner.OnReturnedToApplication += HandleReturnedToApplication;
-            banner.OnLeftApplication += HandleLeftApplication;
-            banner.OnAdClicked += HandleAdClicked;
-            banner.OnImpression += HandleImpression;
+            _banner.OnAdLoaded += HandleAdLoaded;
+            _banner.OnAdFailedToLoad += HandleAdFailedToLoad;
+            _banner.OnReturnedToApplication += HandleReturnedToApplication;
+            _banner.OnLeftApplication += HandleLeftApplication;
+            _banner.OnAdClicked += HandleAdClicked;
+            _banner.OnImpression += HandleImpression;
 
-            banner.LoadAd(CreateAdRequest());
+            _banner.LoadAd(CreateAdRequest());
             
             Logger.Log("Banner is requested");
         }
@@ -94,7 +133,7 @@ namespace GamePush.Mobile
 
         private void DestroyBanner()
         {
-            banner.Destroy();
+            _banner.Destroy();
             SetPlaying(false);
             OnStickyClose?.Invoke(true);
         }
@@ -107,7 +146,7 @@ namespace GamePush.Mobile
         {
             Logger.Log("HandleAdLoaded event received");
             SetPlaying(true);
-            banner.Show();
+            _banner.Show();
         }
 
         public void HandleAdFailedToLoad(object sender, AdFailureEventArgs args)

@@ -11,13 +11,13 @@ namespace GamePush.Mobile
         private RewardedAdLoader rewardedAdLoader;
         private RewardedAd rewardedAd;
 
-        private AdBanner bannerData;
+        private AdBanner _bannerData;
 
-        private string rewardTag;
-        private bool isPlaying;
-        private void SetPlaying(bool isPlay) => isPlaying = isPlay;
+        private string _rewardTag;
+        private bool _isPlaying;
+        private void SetPlaying(bool isPlay) => _isPlaying = isPlay;
 
-        public bool IsPlaying() => isPlaying;
+        public bool IsPlaying() => _isPlaying;
 
         public event Action<string> OnRewardedReward;
         public event Action OnRewardedStart;
@@ -25,13 +25,13 @@ namespace GamePush.Mobile
 
         public RewardedMobile(AdBanner banner)
         {
-            bannerData = banner;
+            _bannerData = banner;
 
-            SetUp();
+            SetUpLoader();
             RequestRewardedAd();
         }
 
-        public void SetUp()
+        public void SetUpLoader()
         {
             rewardedAdLoader = new RewardedAdLoader();
             rewardedAdLoader.OnAdLoaded += HandleAdLoaded;
@@ -49,7 +49,7 @@ namespace GamePush.Mobile
                 rewardedAd.Destroy();
             }
 
-            string adUnitId = bannerData.bannerId;
+            string adUnitId = _bannerData.bannerId;
 
             rewardedAdLoader.LoadAd(CreateAdRequest(adUnitId));
             Logger.Log("Rewarded Ad is requested");
@@ -72,7 +72,7 @@ namespace GamePush.Mobile
                 return;
             }
 
-            rewardTag = idOrTag;
+            _rewardTag = idOrTag;
 
             OnRewardedReward = onRewardedReward;
             OnRewardedStart = onRewardedStart;
@@ -150,7 +150,7 @@ namespace GamePush.Mobile
         public void HandleRewarded(object sender, Reward args)
         {
             Logger.Log($"HandleRewarded event received: amout = {args.amount}, type = {args.type}");
-            OnRewardedReward?.Invoke(rewardTag);
+            OnRewardedReward?.Invoke(_rewardTag);
         }
 
         public void HandleAdFailedToShow(object sender, AdFailureEventArgs args)

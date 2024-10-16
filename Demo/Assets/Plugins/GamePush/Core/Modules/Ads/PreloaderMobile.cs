@@ -11,26 +11,26 @@ namespace GamePush.Mobile
         private AppOpenAdLoader appOpenAdLoader;
         private AppOpenAd appOpenAd;
 
-        private AdBanner bannerData;
+        private AdBanner _bannerData;
 
-        private bool isPlaying;
-        private bool isAdShowOnColdStart;
+        private bool _isPlaying;
+        private bool _isAdShowOnColdStart;
 
-        private void SetPlaying(bool isPlay) => isPlaying = isPlay;
-        public bool IsPlaying() => isPlaying;
+        private void SetPlaying(bool isPlay) => _isPlaying = isPlay;
+        public bool IsPlaying() => _isPlaying;
 
         private event Action OnPreloaderStart;
         private event Action<bool> OnPreloaderClose;
 
         public PreloaderMobile(AdBanner banner)
         {
-            bannerData = banner;
+            _bannerData = banner;
 
-            SetUp();
+            SetUpLoader();
             RequestAppOpenAd();
         }
 
-        public void SetUp()
+        public void SetUpLoader()
         {
             appOpenAdLoader = new AppOpenAdLoader();
             appOpenAdLoader.OnAdLoaded += HandleAdLoaded;
@@ -52,7 +52,7 @@ namespace GamePush.Mobile
             MobileAds.SetAgeRestrictedUser(true);
 
             // Replace demo Unit ID 'demo-appOpenAd-yandex' with actual Ad Unit ID
-            string adUnitId = bannerData.bannerId;
+            string adUnitId = _bannerData.bannerId;
 
             if (appOpenAd != null)
             {
@@ -99,7 +99,7 @@ namespace GamePush.Mobile
 
         public void HandleAppStateChanged(object sender, AppStateChangedEventArgs args)
         {
-            if (!args.IsInBackground && bannerData.enabled)
+            if (!args.IsInBackground && _bannerData.enabled)
             {
                 //ShowAppOpenAd();
             }
@@ -117,10 +117,10 @@ namespace GamePush.Mobile
             appOpenAd.OnAdImpression += HandleImpression;
             appOpenAd.OnAdDismissed += HandleAdDismissed;
 
-            if (!isAdShowOnColdStart)
+            if (!_isAdShowOnColdStart)
             {
                 //ShowAppOpenAd();
-                isAdShowOnColdStart = true;
+                _isAdShowOnColdStart = true;
             }
         }
 

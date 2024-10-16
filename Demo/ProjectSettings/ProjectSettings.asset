@@ -141,7 +141,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.7.0
+  bundleVersion: 2.0.2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -699,7 +699,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: YA_ADS_MOBILE;CUSTOM_ADS_MOBILE
+    Android: CUSTOM_ADS_MOBILE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

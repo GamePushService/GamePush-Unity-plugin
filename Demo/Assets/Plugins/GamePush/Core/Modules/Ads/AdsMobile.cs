@@ -10,7 +10,8 @@ namespace GamePush.Mobile
 {
     public class AdsMobile
     {
-        private List<AdBanner> banners;
+
+#if UNITY_ANDROID && CUSTOM_ADS_MOBILE
 
         private StickyMobile sticky;
         private InterstitialMobile fullscreen;
@@ -19,8 +20,7 @@ namespace GamePush.Mobile
 
         public void Init(BannersList bannersList)
         {
-            banners = bannersList.banners;
-            foreach(AdBanner banner in bannersList.banners)
+            foreach (AdBanner banner in bannersList.banners)
             {
                 Enum.TryParse(banner.type, out BannerType type);
 
@@ -47,10 +47,10 @@ namespace GamePush.Mobile
         }
 
         public void ShowSticky(
-            Action onStickyStart = null,
-            Action<bool> onStickyClose = null,
-            Action onStickyRefresh = null)
-            => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh);
+           Action onStickyStart = null,
+           Action<bool> onStickyClose = null,
+           Action onStickyRefresh = null)
+           => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh);
 
         public void RefreshSticky() => sticky.RefreshBanner();
         public void CloseSticky() => sticky.CloseBanner();
@@ -62,7 +62,6 @@ namespace GamePush.Mobile
 
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
-            Logger.Log("Reward in ads mobile");
             rewarded.ShowRewardedAd(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
         }
 
@@ -71,10 +70,6 @@ namespace GamePush.Mobile
             preloader.ShowAppOpenAd(onPreloaderStart, onPreloaderClose);
         }
 
-        public bool IsAdblockEnabled()
-        {
-            return false;
-        }
 
         public bool IsStickyPlaying()
         {
@@ -95,6 +90,51 @@ namespace GamePush.Mobile
         {
             return preloader.IsPlaying();
         }
+
+
+#else
+        public void ShowSticky(
+           Action onStickyStart = null,
+           Action<bool> onStickyClose = null,
+           Action onStickyRefresh = null)
+        {
+            onStickyStart?.Invoke();
+            onStickyClose?.Invoke(false);
+        }
+
+        public void RefreshSticky(){}
+        public void CloseSticky(){}
+
+        public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
+        {
+            onFullscreenStart?.Invoke();
+            onFullscreenClose?.Invoke(false);
+        }
+
+        public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
+        {
+            onRewardedStart?.Invoke();
+            onRewardedClose?.Invoke(false);
+        }
+
+        public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
+        {
+            onPreloaderStart?.Invoke();
+            onPreloaderClose?.Invoke(false);
+        }
+
+        public bool IsFullScreenAvailable() => false;
+        public bool IsStickyPlaying() => false;
+        public bool IsFullscreenPlaying() => false;
+        public bool IsRewardPlaying() => false;
+        public bool IsPreloaderPlaying() => false;
+        
+#endif
+        public bool IsAdblockEnabled()
+        {
+            return false;
+        }
+
     }
 
 }

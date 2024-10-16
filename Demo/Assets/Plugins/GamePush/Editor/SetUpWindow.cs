@@ -235,6 +235,11 @@ namespace GamePushEditor
 
             if (!ValidateToken(_token)) return;
             CoreSDK.SetProjectData(_id, _token);
+
+            await CoreSDK.FetchEditorConfig();
+            GP_Logger.SystemLog("Config fetched");
+            CheckCustromAds();
+
             SaveProjectData();
 
             SetProjectDataToWebTemplate();
@@ -242,23 +247,18 @@ namespace GamePushEditor
 
             GP_Logger.SystemLog("Data saved");
 
-            await CoreSDK.FetchEditorConfig();
-
-            CheckCustromAds();
-
-            GP_Logger.SystemLog("Config fetched");
         }
 
         private static void CheckCustromAds()
         {
             if (CoreSDK.platformConfig.customAdsConfigId == "")
             {
-                GP_Logger.Log("Remove Define Symbols");
+                GP_Logger.SystemLog("Remove Define Symbols");
                 DefineSymbolsManager.RemoveScriptingDefineSymbol("CUSTOM_ADS_MOBILE");
             }
             else
             {
-                GP_Logger.Log("Add Define Symbols");
+                GP_Logger.SystemLog("Add Define Symbols");
                 DefineSymbolsManager.AddScriptingDefineSymbol("CUSTOM_ADS_MOBILE");
             }
         }

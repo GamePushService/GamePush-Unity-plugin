@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,9 +40,10 @@ namespace GamePush.Core
         public void LateInit()
         {
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && CUSTOM_ADS_MOBILE
             adsMobile = new AdsMobile();
             adsMobile.Init(customAds.configs.android);
+            SetUpTimer();
 #endif
         }
 
@@ -70,13 +72,17 @@ namespace GamePush.Core
                 OnFullscreenStart?.Invoke();
                 onFullscreenStart?.Invoke();
                 TrackFullscreen();
+
+                StopFrequencyTimer();
             };
 
             Action<bool> combinedClose = (bool success) =>
             {
                 OnAdsClose?.Invoke(success);
                 OnFullscreenClose?.Invoke(success); 
-                onFullscreenClose?.Invoke(success); 
+                onFullscreenClose?.Invoke(success);
+
+                StartFrequencyTimer();
             };
 
             if (!IsFullscreenAvailable())
@@ -90,8 +96,8 @@ namespace GamePush.Core
             adsMobile?.ShowFullscreen(combinedStart, combinedClose);
 #else
             Logger.Log("FULL SCREEN AD ", "SHOW");
-            onFullscreenStart?.Invoke();
-            onFullscreenClose?.Invoke(true);
+            combinedStart?.Invoke();
+            combinedClose?.Invoke(true);
 #endif
         }
 
@@ -142,8 +148,9 @@ namespace GamePush.Core
 #else
             Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
 
-            OnRewardedReward?.Invoke(idOrTag);
-            _onRewardedReward?.Invoke(idOrTag);
+            combinedStart.Invoke()
+            combinedReward.Invoke(idOrTag);
+            combinedClose.Invoke(close);
 #endif
         }
 
@@ -183,6 +190,7 @@ namespace GamePush.Core
             adsMobile?.ShowSticky(combinedStart, combinedClose, OnStickyRefresh);
 #else
             Logger.Log("STICKY BANNER AD: ", "SHOW");
+            combinedStart?.Invoke();
 #endif
 
         }
@@ -241,6 +249,8 @@ namespace GamePush.Core
             adsMobile?.ShowPreloader(combinedStart, combinedClose);
 #else
             Logger.Log("PRELOADER AD: ", "SHOW");
+            combinedStart?.Invoke();
+            combinedClose?.Invoke(true);
 #endif
         }
 
@@ -250,8 +260,8 @@ namespace GamePush.Core
 
         public bool IsAdblockEnabled()
         {
-#if UNITY_ANDROID
 
+#if UNITY_ANDROID
             return adsMobile == null ? false : adsMobile.IsAdblockEnabled();
 #else
             Logger.Log("IS ADBLOCK ENABLED: ", "FALSE");
@@ -287,7 +297,7 @@ namespace GamePush.Core
             !IsPreloaderPlaying() &&
             //this.adapter.isFullscreenAvailable &&
             GetBanner(BannerType.FULLSCREEN).enabled &&
-            //!this.fullscreenDisplayIntervalId &&
+            IsFullsceenTimer() &&
             !IsBannerLimitReached(BannerType.FULLSCREEN);
 
 //#if UNITY_ANDROID
@@ -413,6 +423,42 @@ namespace GamePush.Core
 
         #endregion
 
+        #region Fullscreen frequency
+
+        private Timer _frequencyTimer;
+        private int _frequencyInterval;
+
+        public bool IsFullsceenTimer() => _frequencyTimer == null;
+
+        private void SetUpTimer()
+        {
+            AdBanner adBanner = GetBanner(BannerType.FULLSCREEN);
+            _frequencyInterval = adBanner.frequency;
+        }
+
+        public void StartFrequencyTimer()
+        {
+            if (_frequencyTimer == null && _frequencyInterval > 0)
+            {
+                Logger.Log("Start Frequency Timer: " + _frequencyInterval);
+                _frequencyTimer = new Timer(_frequencyInterval * 1000);
+                _frequencyTimer.Elapsed += (sender, e) => StopFrequencyTimer();
+            }
+        }
+
+        public void StopFrequencyTimer()
+        {
+            if (_frequencyTimer != null)
+            {
+                Logger.Log("Stop Frequency Timer");
+                _frequencyTimer.Stop();
+                _frequencyTimer.Dispose();
+                _frequencyTimer = null;
+            }
+        }
+
+        #endregion
+
         #region Limits Info
 
         public void ShowLimits(BannerType bannerType)
@@ -440,6 +486,11 @@ namespace GamePush.Core
             {
                 limits.hour.timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             }
+
+            Logger.Log(bannerType.ToString() + " counts:");
+            Logger.Log(" Hour: " + limits.hour.count);
+            Logger.Log(" Day: " + limits.day.count);
+            Logger.Log(" Session: " + limits.session.count);
 
             adsInfo.limits[bannerType] = limits;
             SaveAdsInfo();
