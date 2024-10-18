@@ -285,11 +285,14 @@ namespace GamePushEditor
             ChangeDefineSymbols("CUSTOM_ADS_MOBILE", customAd);
 
             bool isYAMON = false;
-            foreach (AdBanner adBanner in CoreSDK.platformConfig.customAdsConfig.configs.android.banners)
+            if (customAd)
             {
-                if(adBanner.adServer.ToString() == AdServerType.YandexSimpleMonetization.ToString())
+                foreach (AdBanner adBanner in CoreSDK.platformConfig.customAdsConfig.configs.android.banners)
                 {
-                    isYAMON = true;
+                    if (adBanner.adServer.ToString() == AdServerType.YandexSimpleMonetization.ToString())
+                    {
+                        isYAMON = true;
+                    }
                 }
             }
 
