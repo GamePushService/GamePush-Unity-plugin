@@ -48,6 +48,7 @@ namespace GamePush
             CoreSDK.ads.OnStickyStart += CallAdsStickyStart;
             CoreSDK.ads.OnStickyClose += CallAdsStickyCloseBool;
             CoreSDK.ads.OnStickyRefresh += CallAdsStickyRefresh;
+            CoreSDK.ads.OnStickyRender += CallAdsStickyRender;
 
             CoreSDK.ads.OnPreloaderStart += CallAdsPreloaderStart;
             CoreSDK.ads.OnPreloaderClose += CallAdsPreloaderCloseBool;
@@ -68,6 +69,7 @@ namespace GamePush
             CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
             CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
             CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
+            CoreSDK.ads.OnStickyRender -= CallAdsStickyRender;
 
             CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
             CoreSDK.ads.OnPreloaderClose -= CallAdsPreloaderCloseBool;

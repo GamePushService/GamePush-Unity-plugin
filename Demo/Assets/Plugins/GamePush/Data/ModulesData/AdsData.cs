@@ -13,6 +13,12 @@ namespace GamePush.Data
     }
 
     [Serializable]
+    public enum AdServerType
+    {
+        YandexSimpleMonetization
+    }
+
+    [Serializable]
     public class AdTimestamp
     {
         public long timestamp;
@@ -43,15 +49,41 @@ namespace GamePush.Data
     [Serializable]
     public class PlayerAdsInfo
     {
-        public Dictionary<BannerType, BannerLimitInfo> limits;
+        public BannerLimitInfo PRELOADER;
+        public BannerLimitInfo FULLSCREEN;
+        public BannerLimitInfo REWARDED;
+        public BannerLimitInfo STICKY;
 
         public PlayerAdsInfo()
         {
-            limits = new Dictionary<BannerType, BannerLimitInfo>();
-            limits.Add(BannerType.PRELOADER, new BannerLimitInfo());
-            limits.Add(BannerType.FULLSCREEN, new BannerLimitInfo());
-            limits.Add(BannerType.REWARDED, new BannerLimitInfo());
-            limits.Add(BannerType.STICKY, new BannerLimitInfo());
+            PRELOADER = new BannerLimitInfo();
+            FULLSCREEN = new BannerLimitInfo();
+            REWARDED = new BannerLimitInfo();
+            STICKY = new BannerLimitInfo();
+        }
+
+        public BannerLimitInfo GetBanner(BannerType type)
+        {
+            return type switch
+            {
+                BannerType.PRELOADER => PRELOADER,
+                BannerType.FULLSCREEN => FULLSCREEN,
+                BannerType.REWARDED => REWARDED,
+                BannerType.STICKY => STICKY,
+                _ => new BannerLimitInfo()
+            };
+        }
+
+        public void SetBanner(BannerType type, BannerLimitInfo info)
+        {
+            _ = type switch
+            {
+                BannerType.PRELOADER => PRELOADER = info,
+                BannerType.FULLSCREEN => FULLSCREEN = info,
+                BannerType.REWARDED => REWARDED = info,
+                BannerType.STICKY => STICKY = info,
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 

@@ -49,8 +49,9 @@ namespace GamePush.Mobile
         public void ShowSticky(
            Action onStickyStart = null,
            Action<bool> onStickyClose = null,
-           Action onStickyRefresh = null)
-           => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh);
+           Action onStickyRefresh = null,
+           Action onStickyRender = null)
+           => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh, onStickyRender);
 
         public void RefreshSticky() => sticky.RefreshBanner();
         public void CloseSticky() => sticky.CloseBanner();
@@ -69,7 +70,6 @@ namespace GamePush.Mobile
         {
             preloader.ShowAppOpenAd(onPreloaderStart, onPreloaderClose);
         }
-
 
         public bool IsStickyPlaying()
         {

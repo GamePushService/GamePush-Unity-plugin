@@ -129,7 +129,7 @@ namespace GamePush.Mobile
         public void HandleImpression(object sender, ImpressionData impressionData)
         {
             var data = impressionData == null ? "null" : impressionData.rawData;
-            Logger.Log($"HandleImpression event received with data: {data}");
+            //Logger.Log($"HandleImpression event received with data: {data}");
 
             DestroyBanner(true);
             RequestInterstitial();

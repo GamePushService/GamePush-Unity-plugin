@@ -27,7 +27,7 @@ namespace YandexMobileAds.Common
 
         public DummyBannerClient()
         {
-            Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
+            //Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
         }
 
         public void LoadAd(AdRequest request)

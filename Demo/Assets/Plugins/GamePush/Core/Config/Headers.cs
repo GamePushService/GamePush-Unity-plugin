@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GamePush.Data;
 
 namespace GamePush.Core
 {
@@ -32,7 +33,7 @@ namespace GamePush.Core
         private static string GetPlatform()
         {
 #if UNITY_ANDROID
-            return PlatformTypes.ANDROID;
+            return ProjectData.BUILD_PLATFORM;
 #else
             return PlatformTypes.CUSTOM;
 #endif

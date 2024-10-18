@@ -1,97 +1,198 @@
 using System;
-using System.Timers;
-using YandexMobileAds;
-using YandexMobileAds.Base;
+using System.Threading.Tasks;
+
 using GamePush.Core;
 using GamePush.Data;
+
+#if YANDEX_SIMPLE_MONETIZATION
+using YandexMobileAds;
+using YandexMobileAds.Base;
+#endif
 
 namespace GamePush.Mobile
 {
     public class StickyMobile
     {
+
+#if YANDEX_SIMPLE_MONETIZATION
         private Banner _banner;
+        private BannerAdSize _stickyAdSize;
+        private AdPosition _stickyPosition;
+#endif
 
         private AdBanner _bannerData;
 
-        private bool _isPlaying;
-        private void SetPlaying(bool isPlay) => _isPlaying = isPlay;
+        public enum Position { top, bottom }
+        public enum Dimention { PX, PERCENT }
 
-        public bool IsPlaying() => _isPlaying;
+        private bool _isPlaying;
+        private void SetPlaying(bool isPlay)
+            => _isPlaying = isPlay;
+        public bool IsPlaying()
+            => _isPlaying;
 
         private event Action OnStickyStart;
         private event Action<bool> OnStickyClose;
         private event Action OnStickyRefresh;
+        private event Action OnStickyRender;
 
-        private Timer _stickyRefreshTimer;
-        private int _refreshIntervalSeconds;
+        //private Task _stickyRefreshTimer;
+        //private int _refreshIntervalSeconds;
+        //private bool _isRefresh;
 
         public StickyMobile(AdBanner banner)
         {
             _bannerData = banner;
-            _refreshIntervalSeconds = _bannerData.refreshInterval;
+            //_refreshIntervalSeconds = _bannerData.refreshInterval;
+            SetUpBannerSize();
         }
 
+        private void SetUpBannerSize()
+        {
+            if (_bannerData.position == Position.top.ToString())
+                _stickyPosition = AdPosition.TopCenter;
+            else if (_bannerData.position == Position.bottom.ToString())
+                _stickyPosition = AdPosition.BottomCenter;
+            else
+                _stickyPosition = AdPosition.BottomCenter;
+
+            int screenWidth = (int)UnityEngine.Screen.safeArea.width;
+            int screenHeight = (int)UnityEngine.Screen.safeArea.height;
+
+            int screenWidthDp = ScreenUtils.ConvertPixelsToDp(screenWidth);
+            //int screenHeightDp = ScreenUtils.ConvertPixelsToDp(screenHeight);
+
+            if (_bannerData.maxWidth == 0 && _bannerData.maxHeight == 0)
+            {
+                _stickyAdSize = BannerAdSize.StickySize(screenWidthDp);
+                return;
+            }
+
+            if (_bannerData.maxWidthDimension == Dimention.PERCENT.ToString())
+            {
+                float bannerWidth = _bannerData.maxWidth * screenWidth * 0.01f;
+                _bannerData.maxWidth = (int)Math.Clamp(bannerWidth, 1, screenWidth);
+            }
+            else if (_bannerData.maxWidth > screenWidth)
+                _bannerData.maxWidth = screenWidth;
+
+
+            if (_bannerData.maxHeightDimension == Dimention.PERCENT.ToString())
+            {
+                float bannerHeight = _bannerData.maxHeight * screenHeight * 0.01f;
+                _bannerData.maxHeight = (int)Math.Clamp(bannerHeight, 1, screenHeight);
+            }
+            if (_bannerData.maxHeightDimension == Dimention.PX.ToString() && _bannerData.maxHeight > screenHeight)
+                _bannerData.maxHeight = screenHeight;
+
+            
+            int bannerWidthDp = ScreenUtils.ConvertPixelsToDp(_bannerData.maxWidth);
+            int bannerHeightDp = ScreenUtils.ConvertPixelsToDp(_bannerData.maxHeight);
+
+
+            if (_bannerData.maxHeight == 0)
+            {
+                _stickyAdSize = BannerAdSize.StickySize(bannerWidthDp);
+                return;
+            }
+            if(_bannerData.maxWidth == 0)
+            {
+                _stickyAdSize = BannerAdSize.InlineSize(screenWidthDp, bannerHeightDp);
+                return;
+            }
+
+            _stickyAdSize = BannerAdSize.InlineSize(bannerWidthDp, bannerHeightDp);
+        }
+
+        
 
         public void ShowBanner(
             Action onStickyStart = null,
             Action<bool> onStickyClose = null,
-            Action onStickyRefresh = null)
+            Action onStickyRefresh = null,
+            Action onStickyRender = null)
         {
             OnStickyStart = onStickyStart;
             OnStickyClose = onStickyClose;
             OnStickyRefresh = onStickyRefresh;
+            OnStickyRender = onStickyRender;
+
             RequestBanner();
-            StartStickyRefresh();
+            //StartStickyRefresh();
+
+            OnStickyStart?.Invoke();
         }
 
         public void CloseBanner()
         {
             DestroyBanner();
-            StopStickyRefresh();
+            //StopStickyRefresh();
+            OnStickyClose?.Invoke(true);
         }
 
         public void RefreshBanner()
         {
-            StopStickyRefresh();
+            //StopStickyRefresh();
             RefreshSticky();
-            StartStickyRefresh();
+            //StartStickyRefresh();
         }
 
         private void RefreshSticky()
         {
-            RequestBanner();
+            Logger.Log("Refresh Sticky");
             OnStickyRefresh?.Invoke();
+            RequestBanner();
         }
 
-        public void StartStickyRefresh()
-        {
-            if (_stickyRefreshTimer == null && _refreshIntervalSeconds > 0)
-            {
-                Logger.Log("Start Sticky Refresh Timer: " + _refreshIntervalSeconds);
-                _stickyRefreshTimer = new Timer(_refreshIntervalSeconds * 1000);
-                _stickyRefreshTimer.Elapsed += (sender, e) => RefreshSticky();
+        //public async void StartStickyRefresh()
+        //{
+        //    if (_refreshIntervalSeconds > 0)
+        //        //if (_stickyRefreshTimer == null && _refreshIntervalSeconds > 0)
+        //    {
+        //        _isRefresh = true;
 
-                _stickyRefreshTimer.AutoReset = true; // Повторное выполнение
-                _stickyRefreshTimer.Enabled = true;   // Запуск таймера
-            }
-        }
+        //        Logger.Log("Start Sticky Refresh Timer: " + _refreshIntervalSeconds);
+                
+        //        int interval = _refreshIntervalSeconds * 1000;
 
-        public void StopStickyRefresh()
-        {
-            if (_stickyRefreshTimer != null)
-            {
-                Logger.Log("Stop Sticky Refresh Timer");
-                _stickyRefreshTimer.Stop();
-                _stickyRefreshTimer.Dispose();
-                _stickyRefreshTimer = null;
-            }
-        }
+        //        _stickyRefreshTimer = Task.Delay(interval);
+        //        await _stickyRefreshTimer;
+                
+        //        if (_isRefresh)
+        //        {
+        //            RefreshSticky();
+        //            StartStickyRefresh();
+        //        }
+                   
+        //        //_stickyRefreshTimer = new Timer(
+        //        //    _ => RefreshSticky(),
+        //        //    null,
+        //        //    interval,
+        //        //    interval);
+        //    }
+        //}
+
+        //public async void StopStickyRefresh()
+        //{
+        //    if (_stickyRefreshTimer != null)
+        //    {
+        //        _isRefresh = false;
+
+        //        Logger.Log("Stop Sticky Refresh Timer");
+        //        await _stickyRefreshTimer;
+
+        //        _stickyRefreshTimer.Dispose();
+        //        _stickyRefreshTimer = null;
+        //    }
+        //}
+
 
 
         #region Banner methods
 
         private void RequestBanner()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
@@ -101,11 +202,8 @@ namespace GamePush.Mobile
             {
                 DestroyBanner();
             }
-            // Set sticky banner width
-            BannerAdSize bannerSize = BannerAdSize.StickySize(GetScreenWidthDp());
-            // Or set inline banner maximum width and height
-            // BannerAdSize bannerSize = BannerAdSize.InlineSize(GetScreenWidthDp(), 300);
-            _banner = new Banner(adUnitId, bannerSize, AdPosition.BottomCenter);
+
+            _banner = new Banner(adUnitId, _stickyAdSize, _stickyPosition);
 
             _banner.OnAdLoaded += HandleAdLoaded;
             _banner.OnAdFailedToLoad += HandleAdFailedToLoad;
@@ -115,15 +213,8 @@ namespace GamePush.Mobile
             _banner.OnImpression += HandleImpression;
 
             _banner.LoadAd(CreateAdRequest());
-            
+#endif
             Logger.Log("Banner is requested");
-        }
-
-        // Example how to get screen width for request
-        private int GetScreenWidthDp()
-        {
-            int screenWidth = (int)UnityEngine.Screen.safeArea.width;
-            return ScreenUtils.ConvertPixelsToDp(screenWidth);
         }
 
         private AdRequest CreateAdRequest()
@@ -133,15 +224,15 @@ namespace GamePush.Mobile
 
         private void DestroyBanner()
         {
-            _banner.Destroy();
             SetPlaying(false);
-            OnStickyClose?.Invoke(true);
+            _banner.Destroy();
         }
 
         #endregion
 
         #region Banner callback handlers
 
+#if YANDEX_SIMPLE_MONETIZATION
         public void HandleAdLoaded(object sender, EventArgs args)
         {
             Logger.Log("HandleAdLoaded event received");
@@ -180,10 +271,10 @@ namespace GamePush.Mobile
         public void HandleImpression(object sender, ImpressionData impressionData)
         {
             var data = impressionData == null ? "null" : impressionData.rawData;
-            Logger.Log("HandleImpression event received with data: " + data);
-            OnStickyStart?.Invoke();
+            //Logger.Log("HandleImpression event received with data: " + data);
+            OnStickyRender?.Invoke();
         }
-
-        #endregion
+#endif
+#endregion
     }
 }

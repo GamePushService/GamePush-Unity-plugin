@@ -11,7 +11,7 @@ namespace GamePushEditor
             string[] paths = {
             "Assets/WebGLTemplates",
             "Assets/Examples",
-            "Assets/Plugins/GamePush",
+            "Assets/Plugins",
             "Assets/TextMesh Pro",
             "Packages/com.unity.nuget.newtonsoft-json",
             "Packages/com.lastabyss.simplegraphql"

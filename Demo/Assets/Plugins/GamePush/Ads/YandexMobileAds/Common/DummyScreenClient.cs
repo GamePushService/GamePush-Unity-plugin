@@ -18,7 +18,7 @@ namespace YandexMobileAds.Common
 
         public float GetScreenScale()
         {
-            Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
+            //Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
             return 1;
         }
     }

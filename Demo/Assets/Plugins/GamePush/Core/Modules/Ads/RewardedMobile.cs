@@ -79,7 +79,6 @@ namespace GamePush.Mobile
             OnRewardedClose = onRewardedClose;
 
             rewardedAd.Show();
-            onRewardedStart?.Invoke();
             SetPlaying(true);
         }
 
@@ -142,9 +141,10 @@ namespace GamePush.Mobile
         public void HandleImpression(object sender, ImpressionData impressionData)
         {
             var data = impressionData == null ? "null" : impressionData.rawData;
-            Logger.Log($"HandleImpression event received with data: {data}");
+            //Logger.Log($"HandleImpression event received with data: {data}");
 
             DestroyBanner(true);
+            RequestRewardedAd();
         }
 
         public void HandleRewarded(object sender, Reward args)

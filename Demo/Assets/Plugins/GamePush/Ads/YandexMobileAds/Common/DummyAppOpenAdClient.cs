@@ -28,7 +28,7 @@ namespace YandexMobileAds.Common
 
         internal DummyAppOpenAdClient(AdRequestConfiguration configuration)
         {
-            Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
+            //Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
 
             adInfo = new AdInfo(configuration.AdUnitId, new AdSize(0, 0));
         }

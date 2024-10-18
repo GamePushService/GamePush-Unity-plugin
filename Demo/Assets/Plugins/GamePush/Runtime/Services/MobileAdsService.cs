@@ -21,20 +21,24 @@ namespace GamePush.Services
             StopTimer();
         }
 
-
         public void StartTimer()
         {
-            // Создание таймера с интервалом 1 секунда (1000 миллисекунд)
-            _timer = new Timer(1000);
-            _timer.Elapsed += (sender, e) => CoreSDK.ads.CheckLimitsExpired(false);
+            StopTimer();
+            _timer = new Timer(3000);
+            _timer.Elapsed += (sender, e) => CoreSDK.ads.CheckLimitsExpired();
             _timer.AutoReset = true; // Повторное выполнение таймера
             _timer.Enabled = true;   // Запуск таймера
         }
 
         public void StopTimer()
         {
-            _timer.Stop();
-            _timer.Dispose();
+            if(_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+                _timer = null;
+            }
+           
         }
 
     }

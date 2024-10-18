@@ -24,7 +24,7 @@ namespace YandexMobileAds.Common
 
         public DummyAppOpenAdLoaderClient()
         {
-            Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
+            //Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
         }
 
         public void CancelLoading()

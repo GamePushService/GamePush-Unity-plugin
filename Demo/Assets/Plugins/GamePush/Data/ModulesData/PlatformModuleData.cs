@@ -10,6 +10,27 @@ namespace GamePush
         public const string Cloud = "CLOUD";
     }
 
+    public static class PlatformTypes
+    {
+        public const string YANDEX = "YANDEX";
+        public const string VK = "VK";
+        public const string CRAZY_GAMES = "CRAZY_GAMES";
+        public const string GAME_DISTRIBUTION = "GAME_DISTRIBUTION";
+        public const string GAME_MONETIZE = "GAME_MONETIZE";
+        public const string OK = "OK";
+        public const string SMARTMARKET = "SMARTMARKET";
+        public const string GAMEPIX = "GAMEPIX";
+        public const string POKI = "POKI";
+        public const string VK_PLAY = "VK_PLAY";
+        public const string WG_PLAYGROUND = "WG_PLAYGROUND";
+        public const string KONGREGATE = "KONGREGATE";
+        public const string GOOGLE_PLAY = "GOOGLE_PLAY";
+        public const string PLAYDECK = "PLAYDECK";
+        public const string CUSTOM = "CUSTOM";
+        public const string TELEGRAM = "TELEGRAM";
+        public const string ANDROID = "ANDROID";
+    }
+
     public enum Platform : byte
     {
         NONE = 0,
@@ -30,26 +51,5 @@ namespace GamePush
         CUSTOM = 15,
         TELEGRAM = 16,
         ANDROID = 17,
-    }
-
-    public static class PlatformTypes
-    {
-        public const string YANDEX = "YANDEX";
-        public const string VK = "VK";
-        public const string CRAZY_GAMES = "CRAZY_GAMES";
-        public const string GAME_DISTRIBUTION = "GAME_DISTRIBUTION";
-        public const string GAME_MONETIZE = "GAME_MONETIZE";
-        public const string OK = "OK";
-        public const string SMARTMARKET = "SMARTMARKET";
-        public const string GAMEPIX = "GAMEPIX";
-        public const string POKI = "POKI";
-        public const string VK_PLAY = "VK_PLAY";
-        public const string WG_PLAYGROUND = "WG_PLAYGROUND";
-        public const string KONGREGATE = "KONGREGATE";
-        public const string GOOGLE_PLAY = "GOOGLE_PLAY";
-        public const string PLAYDECK = "PLAYDECK";
-        public const string CUSTOM = "CUSTOM";
-        public const string TELEGRAM = "TELEGRAM";
-        public const string ANDROID = "ANDROID";
     }
 }

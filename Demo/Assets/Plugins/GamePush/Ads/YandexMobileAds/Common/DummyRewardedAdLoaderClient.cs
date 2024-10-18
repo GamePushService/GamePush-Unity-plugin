@@ -23,7 +23,7 @@ namespace YandexMobileAds.Common
 
         public DummyRewardedAdLoaderClient()
         {
-            Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
+            //Debug.Log(TAG + MethodBase.GetCurrentMethod().Name);
         }
 
         public void LoadAd(AdRequestConfiguration configuration)
