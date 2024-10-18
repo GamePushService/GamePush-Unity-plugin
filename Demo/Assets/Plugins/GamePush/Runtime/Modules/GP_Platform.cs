@@ -52,7 +52,6 @@ namespace GamePush
             return CoreSDK.platform.prefferedSyncType;
         }
 
-
         [DllImport("libARWrapper.so")]
         private static extern string GP_Platform_HasIntegratedAuth();
         public static bool HasIntegratedAuth()
@@ -132,6 +131,7 @@ namespace GamePush
 
         private static Platform ConvertToEnum(string platform)
         {
+           
             if (platform == PlatformTypes.YANDEX)
                 return Platform.YANDEX;
 
@@ -177,7 +177,13 @@ namespace GamePush
             if (platform == PlatformTypes.CUSTOM)
                 return Platform.CUSTOM;
 
-            return Platform.None;
+            if (platform == PlatformTypes.TELEGRAM)
+                return Platform.TELEGRAM;
+
+            if (platform == PlatformTypes.ANDROID)
+                return Platform.ANDROID;
+
+            return Platform.NONE;
 
             //return platform switch
             //{

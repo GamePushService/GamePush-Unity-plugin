@@ -10,27 +10,6 @@ namespace GamePush
         public const string Cloud = "CLOUD";
     }
 
-    public enum Platform : byte
-    {
-        None = 0,
-        YANDEX = 1,
-        VK = 2,
-        CRAZY_GAMES = 3,
-        GAME_DISTRIBUTION = 4,
-        GAME_MONETIZE = 5,
-        OK = 6,
-        SMARTMARKET = 7,
-        GAMEPIX = 8,
-        POKI = 9,
-        VK_PLAY = 10,
-        WG_PLAYGROUND = 11,
-        KONGREGATE = 12,
-        GOOGLE_PLAY = 13,
-        PLAYDECK = 14,
-        CUSTOM = 15,
-        TELEGRAM
-    }
-
     public static class PlatformTypes
     {
         public const string YANDEX = "YANDEX";
@@ -48,5 +27,29 @@ namespace GamePush
         public const string GOOGLE_PLAY = "GOOGLE_PLAY";
         public const string PLAYDECK = "PLAYDECK";
         public const string CUSTOM = "CUSTOM";
+        public const string TELEGRAM = "TELEGRAM";
+        public const string ANDROID = "ANDROID";
+    }
+
+    public enum Platform : byte
+    {
+        NONE = 0,
+        YANDEX = 1,
+        VK = 2,
+        CRAZY_GAMES = 3,
+        GAME_DISTRIBUTION = 4,
+        GAME_MONETIZE = 5,
+        OK = 6,
+        SMARTMARKET = 7,
+        GAMEPIX = 8,
+        POKI = 9,
+        VK_PLAY = 10,
+        WG_PLAYGROUND = 11,
+        KONGREGATE = 12,
+        GOOGLE_PLAY = 13,
+        PLAYDECK = 14,
+        CUSTOM = 15,
+        TELEGRAM = 16,
+        ANDROID = 17,
     }
 }

@@ -13,13 +13,19 @@ namespace GamePush
 
         public static int projectId { get; private set; }
         public static string projectToken { get; private set; }
+        public static string androidPlatform { get; private set; }
+        public static Platform platformType { get; private set; }
+        public static string platformKey { get; private set; }
 
         private static AllConfigData configData = new AllConfigData();
+
+        public static PlatformConfig platformConfig;
 
         public static GameModule game;
         public static PlayerModule player;
         public static PlatformModule platform;
         public static GameVariables variables;
+        public static AdsModule ads;
 
         #region ServerTime
 
@@ -38,11 +44,6 @@ namespace GamePush
 
             //return dateTime.ToString();
             return dateTime.ToString();
-        }
-
-        private static async Task HandleSync()
-        {
-            await Task.Yield();
         }
 
         public static DateTime ConvertToDateTime(string time)
@@ -93,6 +94,7 @@ namespace GamePush
             player = new PlayerModule();
             variables = new GameVariables();
             platform = new PlatformModule();
+            ads = new AdsModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
@@ -107,6 +109,9 @@ namespace GamePush
             projectToken = token;
         }
 
+        public static void SetAndroidPlatform(string platform)
+            => androidPlatform = platform;
+
         public static async Task InitFetch()
         {
             await FetchCoreConfig();
@@ -117,6 +122,7 @@ namespace GamePush
         {
             AllConfigData data = await DataFetcher.GetConfig();
             configData = data;
+            platformConfig = configData.platformConfig;
         }
 
         public static async Task FetchCoreConfig()
@@ -134,6 +140,7 @@ namespace GamePush
             player.Init(configData.playerFields);
             variables.SetVariablesData(configData.gameVariables);
             platform.Init(configData.platformConfig);
+            ads.Init(configData.project.ads, configData.platformConfig);
         }
 
         public static AllConfigData GetConfig()

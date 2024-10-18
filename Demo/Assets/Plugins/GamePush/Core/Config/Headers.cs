@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GamePush.Data;
 
 namespace GamePush.Core
 {
@@ -13,7 +14,6 @@ namespace GamePush.Core
             X_Language = "X-Language",
             X_Player_Data = "X-Player-Data";
 
-
         public static Dictionary<string, string> GetHeaders(string hash)
         {
             string base64 = GetBase64();
@@ -21,13 +21,22 @@ namespace GamePush.Core
             return new Dictionary<string, string>()
             {
             { X_Transaction_Token, hash},
-            { X_Platform, "NONE" },
+            { X_Platform, GetPlatform() },
             { X_Platform_Key, "" },
             { X_Project_ID, CoreSDK.projectId.ToString() },
             { X_Project_Token, CoreSDK.projectToken.ToString() },
             { X_Language, "EN" },
             { X_Player_Data, base64 },
             };
+        }
+
+        private static string GetPlatform()
+        {
+#if UNITY_ANDROID
+            return ProjectData.BUILD_PLATFORM;
+#else
+            return PlatformTypes.CUSTOM;
+#endif
         }
 
         private static string GetEncodeString(string secret) => $"{{\"secretCode\":\"{secret}\"}}";

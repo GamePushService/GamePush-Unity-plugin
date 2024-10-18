@@ -35,9 +35,27 @@ namespace GamePush
         private static event Action<string> _onAchievementsProgress;
         private static event Action _onAchievementsProgressError;
 
-
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("libARWrapper.so")]
         private static extern void GP_Achievements_Open();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Achievements_Fetch();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Achievements_Unlock(string idOrTag);
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Achievements_SetProgress(string idOrTag, int progress);
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Achievements_Has(string idOrTag);
+
+        [DllImport("libARWrapper.so")]
+        private static extern int GP_Achievements_GetProgress(string idOrTag);
+
+#endif
+
         public static void Open(Action onOpen = null, Action onClose = null)
         {
             _onAchievementsOpen = onOpen;
@@ -53,8 +71,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Achievements_Fetch();
         public static void Fetch()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -65,8 +81,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Achievements_Unlock(string idOrTag);
         public static void Unlock(string idOrTag, Action<string> onUnlock = null, Action<string> onUnlockError = null)
         {
             _onAchievementsUnlock = onUnlock;
@@ -81,9 +95,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Achievements_SetProgress(string idOrTag, int progress);
         public static void SetProgress(string idOrTag, int progress, Action<string> onProgress = null, Action onProgressError = null)
         {
             _onAchievementsProgress = onProgress;
@@ -100,8 +111,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Achievements_Has(string idOrTag);
         public static bool Has(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -112,9 +121,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Achievements_GetProgress(string idOrTag);
         public static int GetProgress(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

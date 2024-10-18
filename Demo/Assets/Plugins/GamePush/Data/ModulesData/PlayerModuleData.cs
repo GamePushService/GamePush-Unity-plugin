@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace GamePush.Data
 {
 
-    [System.Serializable]
+    [Serializable]
     public enum SyncStorageType
     {
         preffered,
@@ -13,7 +14,7 @@ namespace GamePush.Data
         cloud
     }
 
-    [System.Serializable]
+    [Serializable]
     public class AutoSyncData
     {
         public bool isEnable;
@@ -40,7 +41,7 @@ namespace GamePush.Data
     }
 
     
-    [System.Serializable]
+    [Serializable]
     public class PlayerState
     {
         int id;
@@ -54,14 +55,14 @@ namespace GamePush.Data
         StateValue[] stateValues;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class StateValue
     {
         string key;
         object value;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerStats
     {
         public int playtimeAll;
@@ -70,13 +71,13 @@ namespace GamePush.Data
         public int activeDaysConsecutive;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class GetPlayerInput
     {
         public bool isFirstRequest;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class RewardData
     {
         public object[] activatedTriggersNow = { };
@@ -87,7 +88,7 @@ namespace GamePush.Data
         public object[] givenProducts = { };
     }
 
-    [System.Serializable]
+    [Serializable]
     public class SyncPlayerInput
     {
         public object playerState;
@@ -103,21 +104,21 @@ namespace GamePush.Data
         public ClaimSchedulerDayInput[] claimedSchedulersDays = { };
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ClaimSchedulerDayInput
     {
         public int schedulerId;
         public int day;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class RewardToIncrement
     {
         public int id;
         public int count;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerFetchFieldsData
     {
         public string name;
@@ -132,7 +133,7 @@ namespace GamePush.Data
     }
 
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerField
     {
         public string name;
@@ -147,14 +148,14 @@ namespace GamePush.Data
         public PlayerFieldIncrement intervalIncrement;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerFieldIncrement
     {
         public float interval;
         public float increment;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerFieldLimits
     {
         public float min;
@@ -162,7 +163,7 @@ namespace GamePush.Data
         public bool couldGoOverLimit;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerFieldVariant
     {
         public string value; // string | number

@@ -19,7 +19,7 @@ namespace GamePush
         public static event UnityAction<bool> OnRewardedClose;
         public static event UnityAction<string> OnRewardedReward;
         public static event UnityAction OnStickyStart;
-        public static event UnityAction OnStickyClose;
+        public static event UnityAction<bool> OnStickyClose;
         public static event UnityAction OnStickyRefresh;
         public static event UnityAction OnStickyRender;
 
@@ -33,24 +33,117 @@ namespace GamePush
         private static event Action _onRewardedStart;
         private static event Action<bool> _onRewardedClose;
 
+        private void OnEnable()
+        {
+            CoreSDK.ads.OnAdsStart += CallAdsStart;
+            CoreSDK.ads.OnAdsClose += CallAdsCloseBool;
 
+            CoreSDK.ads.OnFullscreenStart += CallAdsFullscreenStart;
+            CoreSDK.ads.OnFullscreenClose += CallAdsFullscreenCloseBool;
+
+            CoreSDK.ads.OnRewardedReward += CallAdsRewardedReward;
+            CoreSDK.ads.OnRewardedStart += CallAdsRewardedStart;
+            CoreSDK.ads.OnRewardedClose += CallAdsRewardedCloseBool;
+
+            CoreSDK.ads.OnStickyStart += CallAdsStickyStart;
+            CoreSDK.ads.OnStickyClose += CallAdsStickyCloseBool;
+            CoreSDK.ads.OnStickyRefresh += CallAdsStickyRefresh;
+            CoreSDK.ads.OnStickyRender += CallAdsStickyRender;
+
+            CoreSDK.ads.OnPreloaderStart += CallAdsPreloaderStart;
+            CoreSDK.ads.OnPreloaderClose += CallAdsPreloaderCloseBool;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.ads.OnAdsStart -= CallAdsStart;
+            CoreSDK.ads.OnAdsClose -= CallAdsCloseBool;
+
+            CoreSDK.ads.OnFullscreenStart -= CallAdsFullscreenStart;
+            CoreSDK.ads.OnFullscreenClose -= CallAdsFullscreenCloseBool;
+
+            CoreSDK.ads.OnRewardedReward -= CallAdsRewardedReward;
+            CoreSDK.ads.OnRewardedStart -= CallAdsRewardedStart;
+            CoreSDK.ads.OnRewardedClose -= CallAdsRewardedCloseBool;
+
+            CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
+            CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
+            CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
+            CoreSDK.ads.OnStickyRender -= CallAdsStickyRender;
+
+            CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
+            CoreSDK.ads.OnPreloaderClose -= CallAdsPreloaderCloseBool;
+        }
+
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("libARWrapper.so")]
         private static extern void GP_Ads_ShowFullscreen();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Ads_ShowRewarded(string idOrTag);
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Ads_ShowPreloader();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Ads_ShowSticky();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Ads_CloseSticky();
+
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Ads_RefreshSticky();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsStickyAvailable();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsFullscreenAvailable();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsAdblockEnabled();
+        
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsRewardedAvailable();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsPreloaderAvailable();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsStickyPlaying();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsFullscreenPlaying();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsRewardedPlaying();
+        
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsPreloaderPlaying();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsCountdownOverlayEnabled();
+
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_IsRewardedFailedOverlayEnabled();
+        
+        [DllImport("libARWrapper.so")]
+        private static extern string GP_Ads_CanShowFullscreenBeforeGamePlay();
+
+#endif
+
         public static void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
             _onFullscreenStart = onFullscreenStart;
             _onFullscreenClose = onFullscreenClose;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-             GP_Ads_ShowFullscreen();
+            GP_Ads_ShowFullscreen();
 #else
-            GP_Logger.Log("FULL SCREEN AD ", "SHOW");
+            CoreSDK.ads.ShowFullscreen(onFullscreenStart, onFullscreenClose);
 #endif
         }
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Ads_ShowRewarded(string idOrTag);
+        
         public static void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
             _onRewardedReward = onRewardedReward;
@@ -60,16 +153,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowRewarded(idOrTag);
 #else
-            GP_Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
-
-            OnRewardedReward?.Invoke(idOrTag);
-            _onRewardedReward?.Invoke(idOrTag);
+            CoreSDK.ads.ShowRewarded(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Ads_ShowPreloader();
         public static void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
             _onPreloaderStart = onPreloaderStart;
@@ -78,205 +165,159 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowPreloader();
 #else
-            GP_Logger.Log("PRELOADER AD: ", "SHOW");
+            CoreSDK.ads.ShowPreloader(onPreloaderStart, onPreloaderClose);
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Ads_ShowSticky();
         public static void ShowSticky()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "SHOW");
+            CoreSDK.ads.ShowSticky();
 #endif
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Ads_CloseSticky();
         public static void CloseSticky()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_CloseSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "CLOSE");
+            CoreSDK.ads.CloseSticky();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Ads_RefreshSticky();
         public static void RefreshSticky()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_RefreshSticky();
 #else
-            GP_Logger.Log("STICKY BANNER AD: ", "REFRESH");
+            CoreSDK.ads.RefreshSticky();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsAdblockEnabled();
         public static bool IsAdblockEnabled()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsAdblockEnabled() == "true";
 #else
-            GP_Logger.Log("IS ADBLOCK ENABLED: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsAdblockEnabled();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsStickyAvailable();
         public static bool IsStickyAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyAvailable() == "true";
 #else
-            GP_Logger.Log("IS STICKY BANNER AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsStickyAvailable();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsFullscreenAvailable();
         public static bool IsFullscreenAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenAvailable() == "true";
 #else
-            GP_Logger.Log("IS FULL SCREEN AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsFullscreenAvailable();
 #endif
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsRewardedAvailable();
         public static bool IsRewardedAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedAvailable() == "true";
 #else
-            GP_Logger.Log("IS REWARD AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsRewardedAvailable();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsPreloaderAvailable();
         public static bool IsPreloaderAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderAvailable() == "true";
 #else
-            GP_Logger.Log("IS PRELOADER AD AVAILABLE: ", "TRUE");
-            return false;
+            return CoreSDK.ads.IsPreloaderAvailable();
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsStickyPlaying();
         public static bool IsStickyPlaying()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyPlaying() == "true";
 #else
-            GP_Logger.Log("IS STICKY PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsStickyPlaying();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsFullscreenPlaying();
         public static bool IsFullscreenPlaying()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenPlaying() == "true";
 #else
-            GP_Logger.Log("IS FULLSCREEN AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsFullscreenPlaying();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsRewardedPlaying();
-        public static bool IsRewardPlaying()
+        public static bool IsRewardedPlaying()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedPlaying() == "true";
 #else
-            GP_Logger.Log("IS REWARDED AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsRewardedPlaying();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsPreloaderPlaying();
         public static bool IsPreloaderPlaying()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderPlaying() == "true";
 #else
-            GP_Logger.Log("IS PRELOADER AD PLAYING: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsPreloaderPlaying();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsCountdownOverlayEnabled();
         public static bool IsCountdownOverlayEnabled()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsCountdownOverlayEnabled() == "true";
 #else
-            GP_Logger.Log("Is Countdown Overlay Enabled: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsCountdownOverlayEnabled();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_IsRewardedFailedOverlayEnabled();
         public static bool IsRewardedFailedOverlayEnabled()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedFailedOverlayEnabled() == "true";
 #else
-            GP_Logger.Log("Is Rewarded Failed Overlay Enabled: ", "FALSE");
-            return false;
+            return CoreSDK.ads.IsRewardedFailedOverlayEnabled();
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Ads_CanShowFullscreenBeforeGamePlay();
         public static bool CanShowFullscreenBeforeGamePlay()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_CanShowFullscreenBeforeGamePlay() == "true";
 #else
-            GP_Logger.Log("Can Show Fullscreen Before Gameplay: ", "FALSE");
-            return false;
+            return CoreSDK.ads.CanShowFullscreenBeforeGamePlay();
 #endif
         }
 
 
         private void CallAdsStart() => OnAdsStart?.Invoke();
         private void CallAdsClose(string success) => OnAdsClose?.Invoke(success == "true");
+        private void CallAdsCloseBool(bool success) => OnAdsClose?.Invoke(success);
 
         private void CallAdsFullscreenStart()
         {
             _onFullscreenStart?.Invoke();
             OnFullscreenStart?.Invoke();
         }
+
+        private void CallAdsFullscreenCloseBool(bool success) => CallAdsFullscreenClose(success.ToString());
         private void CallAdsFullscreenClose(string success)
         {
             _onFullscreenClose?.Invoke(success == "true");
@@ -288,6 +329,8 @@ namespace GamePush
             _onPreloaderStart?.Invoke();
             OnPreloaderStart?.Invoke();
         }
+
+        private void CallAdsPreloaderCloseBool(bool success) => CallAdsPreloaderClose(success.ToString());
         private void CallAdsPreloaderClose(string success)
         {
             _onPreloaderClose?.Invoke(success == "true");
@@ -299,6 +342,8 @@ namespace GamePush
             _onRewardedStart?.Invoke();
             OnRewardedStart?.Invoke();
         }
+
+        private void CallAdsRewardedCloseBool(bool success) => CallAdsRewardedClose(success.ToString());
         private void CallAdsRewardedClose(string success)
         {
             _onRewardedClose?.Invoke(success == "true");
@@ -311,7 +356,8 @@ namespace GamePush
         }
 
         private void CallAdsStickyStart() => OnStickyStart?.Invoke();
-        private void CallAdsStickyClose() => OnStickyClose?.Invoke();
+        private void CallAdsStickyClose() => OnStickyClose?.Invoke(true);
+        private void CallAdsStickyCloseBool(bool success) => OnStickyClose?.Invoke(success);
         private void CallAdsStickyRefresh() => OnStickyRefresh?.Invoke();
         private void CallAdsStickyRender() => OnStickyRender?.Invoke();
 

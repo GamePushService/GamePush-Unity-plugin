@@ -81,7 +81,7 @@ namespace Examples.Ads
 
             ConsoleUI.Instance.Log("IS FULLSCREEN PLAYING: " + GP_Ads.IsFullscreenPlaying());
             ConsoleUI.Instance.Log("IS PRELOADER PLAYING: " + GP_Ads.IsPreloaderPlaying());
-            ConsoleUI.Instance.Log("IS REWARDED PLAYING: " + GP_Ads.IsRewardPlaying());
+            ConsoleUI.Instance.Log("IS REWARDED PLAYING: " + GP_Ads.IsRewardedPlaying());
             ConsoleUI.Instance.Log("IS STICKY PLAYING: " + GP_Ads.IsStickyPlaying());
 
             ConsoleUI.Instance.Log("-----");
@@ -113,7 +113,7 @@ namespace Examples.Ads
         private void OnRewardedClose(bool success) => ConsoleUI.Instance.Log("ON REWARDED: CLOSE");
 
         private void OnStickyStart() => ConsoleUI.Instance.Log("ON STICKY: START");
-        private void OnStickyClose() => ConsoleUI.Instance.Log("ON STICKY: CLOSE");
+        private void OnStickyClose(bool success) => ConsoleUI.Instance.Log("ON STICKY: CLOSE: " + success);
         private void OnStickyRender() => ConsoleUI.Instance.Log("ON STICKY: RENDER");
         private void OnStickyRefresh() => ConsoleUI.Instance.Log("ON STICKY: REFRESH");
     }

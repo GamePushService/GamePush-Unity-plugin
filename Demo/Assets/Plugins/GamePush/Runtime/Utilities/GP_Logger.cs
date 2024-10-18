@@ -1,14 +1,28 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using GamePush.ConsoleController;
+using GamePush.Core;
 
 namespace GamePush
 {
     public class GP_Logger : MonoBehaviour
     {
-        private static void ColorMessage(string color, string type, string title, string text) =>
-            Debug.Log($"<color=#{color}> {type}: </color> {title}: {text}");
+        public static event Action<string> OnLog;
+        private void OnEnable() => Core.Logger.OnLog += InvokeOnLog;
+        private void OnDisable() => Core.Logger.OnLog -= InvokeOnLog;
 
+        private void InvokeOnLog(string log) => OnLog?.Invoke(log);
+
+        private static void DebugLog(string log)
+        {
+            Debug.Log(log);
+            OnLog?.Invoke(log);
+        }
+
+        private static void ColorMessage(string color, string type, string title, string text) =>
+            DebugLog($"<color=#{color}> {type}: </color> {title}: {text}");
+           
 
         private static void GreenMessage(string title, string text) =>
             ColorMessage("4CA57D", "INFO", title, text);
@@ -17,7 +31,7 @@ namespace GamePush
         private static void RedMessage(string title, string text) =>
             ColorMessage("CE342A", "ERR", title, text);
         private static void LogMessage(string title, string text) =>
-            Debug.Log($" GP: {title}: {text}");
+            DebugLog($" GP: {title}: {text}");
 
 
         [DllImport("libARWrapper.so")]

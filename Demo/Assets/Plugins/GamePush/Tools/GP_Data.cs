@@ -16,6 +16,5 @@ namespace GamePush
         public List<T> GetList<T>() => UtilityJSON.GetList<T>(_data);
         public T[] GetArray<T>() => UtilityJSON.GetArray<T>(_data);
 
-        public const string SDK_VERSION = "2.0.1";
     }
 }

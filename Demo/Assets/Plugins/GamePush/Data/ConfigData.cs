@@ -41,79 +41,7 @@ namespace GamePush.Data
         public int mainChatId;
         public bool enableMainChat;
         public Achievements achievements;
-        public Ads ads;
-    }
-
-    [System.Serializable]
-    public class Ads
-    {
-        public bool showCountdownOverlay;
-        public bool showRewardedFailedOverlay;
-        public List<Banner> banners;
-        public string customAdsConfigId;
-        public CustomAdsConfig customAdsConfig;
-    }
-
-    [System.Serializable]
-    public class Banner
-    {
-        public string type;
-        public bool enabled;
-        public string bannerId;
-        public string desktopBannerId;
-        public object adServer;
-        public object adServerDesktop;
-        public int frequency;
-        public int refreshInterval;
-        public int maxWidth;
-        public int maxHeight;
-        public string maxWidthDimension;
-        public string maxHeightDimension;
-        public int desktopMaxWidth;
-        public int desktopMaxHeight;
-        public string desktopMaxWidthDimension;
-        public string desktopMaxHeightDimension;
-        public bool fitCanvas;
-        public string position;
-        public Limits limits;
-        public bool useNative;
-    }
-
-    [System.Serializable]
-    public class Limits
-    {
-        public int hour;
-        public int day;
-        public int session;
-    }
-
-    [System.Serializable]
-    public class CustomAdsConfig
-    {
-        public string id;
-        public string name;
-        public string description;
-        public string adFoxOwnerId;
-        public Configs configs;
-    }
-
-    [System.Serializable]
-    public class Configs
-    {
-        public Web web;
-        public Android android;
-    }
-
-    [System.Serializable]
-    public class Web
-    {
-        public List<Banner> banners;
-    }
-
-    [System.Serializable]
-    public class Android
-    {
-        public List<Banner> banners;
+        public AdsConfig ads;
     }
 
     [System.Serializable]
@@ -127,18 +55,18 @@ namespace GamePush.Data
     [System.Serializable]
     public class RootObject
     {
-        public Data data;
+        public RootData data;
         public List<PlayerField> playerFields;
         public string serverTime;
         public List<GameVariable> gameVariables;
-        public List<Reward> rewards;
+        public List<PlayerReward> rewards;
         public List<Trigger> triggers;
         public List<Achievement> achievements;
         public List<AchievementsGroup> achievementsGroups;
     }
 
     [System.Serializable]
-    public class Data
+    public class RootData
     {
         public Result result;
         public Project project;
@@ -164,9 +92,10 @@ namespace GamePush.Data
         public string progressSaveFormat;
         public bool alwaysSyncPublicFields;
         public Translations communityLinks;
-        public List<Banner> banners;
+        public List<AdBanner> banners;
+        public string customAdsConfigId;
+        public CustomAdsConfig customAdsConfig;
     }
-
 
     [System.Serializable]
     public class GameVariable
@@ -177,7 +106,7 @@ namespace GamePush.Data
     }
 
     [System.Serializable]
-    public class Reward
+    public class PlayerReward
     {
         public int id;
         public string icon;

@@ -679,7 +679,7 @@ namespace GamePush.Core
             //Check change of state
             if (_playerState[key] == value) return;
 
-            Logger.Log("Check public " + playerDataFields[key].name, playerDataFields[key].@public.ToString());
+            //Logger.Log("Check public " + playerDataFields[key].name, playerDataFields[key].@public.ToString());
             if (playerDataFields[key].@public)
             {
                 _isPublicFieldsDirty = true;
@@ -757,7 +757,7 @@ namespace GamePush.Core
             bool hasTimestamp = _playerState.TryGetValue(timestampKey, out object timestamp);
             if (hasTimestamp) hasTimestamp = !string.IsNullOrEmpty(timestamp.ToString());
 
-            Logger.Log("hasTimestamp", hasTimestamp.ToString());
+            //Logger.Log("hasTimestamp", hasTimestamp.ToString());
 
             // Проверка на необходимость обновления таймстампа
             if (field.intervalIncrement != null &&

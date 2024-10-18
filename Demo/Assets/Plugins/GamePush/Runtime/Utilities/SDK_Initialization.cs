@@ -10,7 +10,7 @@ namespace GamePush.Initialization
     
     public class SDK_Initialization
     {
-        public static string VERSION = GP_Data.SDK_VERSION;
+        public static string VERSION = PluginData.SDK_VERSION;
 
         [DllImport("libARWrapper.so")]
         private static extern void GP_UnityReady();
@@ -18,6 +18,7 @@ namespace GamePush.Initialization
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
 #endif
@@ -71,6 +72,10 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Storage>();
 
             SDK.AddComponent<GameStateService>();
+
+#if CUSTOM_ADS_MOBILE
+            SDK.AddComponent<MobileAdsService>();
+#endif
 
             EndInit();
         }

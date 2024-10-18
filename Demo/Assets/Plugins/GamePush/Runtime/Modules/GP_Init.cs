@@ -21,23 +21,25 @@ namespace GamePush
         private void OnEnable()
         {
             OnReady += GRA;
+            CoreSDK.OnInit += CallOnSDKReady;
         }
 
         private void OnDisable()
         {
             OnReady -= GRA;
+            CoreSDK.OnInit -= CallOnSDKReady;
         }
 
         private void GRA() => StartCoroutine(GameReadyAutocall());
 
-        private void Start()
-        {
+//        private void Start()
+//        {
 
-#if UNITY_EDITOR || !UNITY_WEBGL
-            GP_Logger.SystemLog("SDK ready");
-            CallOnSDKReady();
-#endif
-        }
+//#if UNITY_EDITOR || !UNITY_WEBGL
+//            GP_Logger.SystemLog("SDK ready");
+//            CallOnSDKReady();
+//#endif
+//        }
 
         private void CallOnSDKReady()
         {

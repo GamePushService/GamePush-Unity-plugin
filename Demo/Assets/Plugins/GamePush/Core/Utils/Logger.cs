@@ -1,13 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace GamePush.Core
 {
-    public class Logger : MonoBehaviour
+    public class Logger
     {
+        public static event Action<string> OnLog;
+
+        private static void DebugLog(string log)
+        {
+            Debug.Log(log);
+            OnLog?.Invoke(log);
+        }
+
         private static void ColorLog(string color, string type, string title, string text) =>
-            Debug.Log($"<color=#{color}> {type}: </color> {title}: {text}");
+            DebugLog($"<color=#{color}> {type}: </color> {title}: {text}");
 
         private static void ColorLogWarning(string color, string type, string title, string text) =>
             Debug.LogWarning($"<color=#{color}> {type}: </color> {title}: {text}");
@@ -24,10 +31,13 @@ namespace GamePush.Core
             ColorLogError("CE342A", "ERR", title, text);
         private static void LogMessage(string title, string text)
         {
-            if(text != null)
-                Debug.Log($"{title}: {text}");
+            string log;
+            if (text != null)
+                log = $"{title}: {text}";
             else
-                Debug.Log($"{title}");
+                log = title;
+
+            DebugLog(log);
         }
             
 
@@ -44,11 +54,11 @@ namespace GamePush.Core
             LogMessage(value.ToString(), null);
 
         public static void ModuleLog(string log, ModuleName name) =>
-                Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
+                DebugLog("<color=#04bc04> GP: </color> " + $"{name}: {log}");
         
 
         public static void SystemLog(string text) =>
-            Debug.Log("<color=#04bc04> GP: </color> " + $"{text}");
+            DebugLog("<color=#04bc04> GP: </color> " + $"{text}");
     }
 
 }
