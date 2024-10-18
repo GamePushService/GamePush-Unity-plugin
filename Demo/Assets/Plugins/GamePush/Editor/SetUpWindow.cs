@@ -57,6 +57,7 @@ namespace GamePushEditor
             _token = _projectData.token;
             _showPreloaderAd = _projectData.showPreAd;
             _gameReadyAuto = _projectData.gameReadyAuto;
+            _selectedIndex = _projectData.buildPlatformId;
         }
 
 
@@ -79,7 +80,7 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyAuto, _buildPlatform);
+            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyAuto, _selectedIndex);
 
             var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
@@ -182,7 +183,7 @@ namespace GamePushEditor
             GUILayout.Label($"<color=white>v{VERSION}</color>", new GUIStyle { alignment = TextAnchor.LowerRight });
         }
 
-        private static int _selectedIndex = 0;
+        private static int _selectedIndex;
         private static string[] _platforms = new string[] {
             "ANDROID",
             "GOOGLE_PLAY",
@@ -263,19 +264,18 @@ namespace GamePushEditor
 
             if (!ValidateToken(_token)) return;
             CoreSDK.SetProjectData(_id, _token);
-            //CoreSDK.SetAndroidPlatform(_platforms[_selectedIndex]);
+            CoreSDK.SetAndroidPlatform(_platforms[_selectedIndex]);
             SaveProjectDataToScript();
+            SaveProjectData();
+
+            GP_Logger.SystemLog("Data saved");
+
 
             await CoreSDK.FetchEditorConfig();
             GP_Logger.SystemLog("Config fetched");
             CheckCustromAds();
 
-            SaveProjectData();
-
             SetProjectDataToWebTemplate();
-            
-
-            GP_Logger.SystemLog("Data saved");
         }
 
         private static void CheckCustromAds()

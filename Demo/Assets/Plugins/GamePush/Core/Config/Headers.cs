@@ -33,7 +33,7 @@ namespace GamePush.Core
         private static string GetPlatform()
         {
 #if UNITY_ANDROID
-            return ProjectData.BUILD_PLATFORM;
+            return CoreSDK.androidPlatform;
 #else
             return PlatformTypes.CUSTOM;
 #endif

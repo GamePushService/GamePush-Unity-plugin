@@ -699,7 +699,8 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: CUSTOM_ADS_MOBILE;YANDEX_SIMPLE_MONETIZATION
+    Android: YANDEX_SIMPLE_MONETIZATION
+    Standalone: CUSTOM_ADS_MOBILE;YANDEX_SIMPLE_MONETIZATION
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

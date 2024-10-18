@@ -11,20 +11,20 @@ namespace GamePush.Data
         public bool showPreAd;
         public bool gameReadyAuto;
 
-        public string buildPlatform;
+        public int buildPlatformId;
 
         public SavedProjectData(
             int id,
             string token,
             bool showPreAd = false,
             bool gameReadyAuto = false,
-            string buildPlatform = "NONE")
+            int buildPlatform = 0)
         {
             this.id = id;
             this.token = token;
             this.showPreAd = showPreAd;
             this.gameReadyAuto = gameReadyAuto;
-            this.buildPlatform = buildPlatform;
+            this.buildPlatformId = buildPlatform;
         }
     }
 

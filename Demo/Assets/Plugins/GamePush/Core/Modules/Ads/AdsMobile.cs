@@ -96,7 +96,8 @@ namespace GamePush.Mobile
         public void ShowSticky(
            Action onStickyStart = null,
            Action<bool> onStickyClose = null,
-           Action onStickyRefresh = null)
+           Action onStickyRefresh = null,
+           Action onStickyRender = null)
         {
             onStickyStart?.Invoke();
             onStickyClose?.Invoke(false);

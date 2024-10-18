@@ -168,9 +168,9 @@ namespace GamePush.Core
 #else
             Logger.Log("SHOW REWARDED AD -> TAG: ", idOrTag);
 
-            combinedStart.Invoke()
+            combinedStart.Invoke();
             combinedReward.Invoke(idOrTag);
-            combinedClose.Invoke(close);
+            combinedClose.Invoke(true);
 #endif
         }
 

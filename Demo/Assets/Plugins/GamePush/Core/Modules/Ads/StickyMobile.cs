@@ -49,6 +49,8 @@ namespace GamePush.Mobile
 
         private void SetUpBannerSize()
         {
+
+#if YANDEX_SIMPLE_MONETIZATION
             if (_bannerData.position == Position.top.ToString())
                 _stickyPosition = AdPosition.TopCenter;
             else if (_bannerData.position == Position.bottom.ToString())
@@ -56,11 +58,15 @@ namespace GamePush.Mobile
             else
                 _stickyPosition = AdPosition.BottomCenter;
 
+
             int screenWidth = (int)UnityEngine.Screen.safeArea.width;
             int screenHeight = (int)UnityEngine.Screen.safeArea.height;
 
             int screenWidthDp = ScreenUtils.ConvertPixelsToDp(screenWidth);
             //int screenHeightDp = ScreenUtils.ConvertPixelsToDp(screenHeight);
+
+            if (_bannerData.fitCanvas)
+                _bannerData.maxWidth = screenWidth;
 
             if (_bannerData.maxWidth == 0 && _bannerData.maxHeight == 0)
             {
@@ -102,9 +108,10 @@ namespace GamePush.Mobile
             }
 
             _stickyAdSize = BannerAdSize.InlineSize(bannerWidthDp, bannerHeightDp);
+#endif
         }
 
-        
+
 
         public void ShowBanner(
             Action onStickyStart = null,
@@ -118,7 +125,6 @@ namespace GamePush.Mobile
             OnStickyRender = onStickyRender;
 
             RequestBanner();
-            //StartStickyRefresh();
 
             OnStickyStart?.Invoke();
         }
@@ -126,15 +132,12 @@ namespace GamePush.Mobile
         public void CloseBanner()
         {
             DestroyBanner();
-            //StopStickyRefresh();
             OnStickyClose?.Invoke(true);
         }
 
         public void RefreshBanner()
         {
-            //StopStickyRefresh();
             RefreshSticky();
-            //StartStickyRefresh();
         }
 
         private void RefreshSticky()
@@ -143,50 +146,6 @@ namespace GamePush.Mobile
             OnStickyRefresh?.Invoke();
             RequestBanner();
         }
-
-        //public async void StartStickyRefresh()
-        //{
-        //    if (_refreshIntervalSeconds > 0)
-        //        //if (_stickyRefreshTimer == null && _refreshIntervalSeconds > 0)
-        //    {
-        //        _isRefresh = true;
-
-        //        Logger.Log("Start Sticky Refresh Timer: " + _refreshIntervalSeconds);
-                
-        //        int interval = _refreshIntervalSeconds * 1000;
-
-        //        _stickyRefreshTimer = Task.Delay(interval);
-        //        await _stickyRefreshTimer;
-                
-        //        if (_isRefresh)
-        //        {
-        //            RefreshSticky();
-        //            StartStickyRefresh();
-        //        }
-                   
-        //        //_stickyRefreshTimer = new Timer(
-        //        //    _ => RefreshSticky(),
-        //        //    null,
-        //        //    interval,
-        //        //    interval);
-        //    }
-        //}
-
-        //public async void StopStickyRefresh()
-        //{
-        //    if (_stickyRefreshTimer != null)
-        //    {
-        //        _isRefresh = false;
-
-        //        Logger.Log("Stop Sticky Refresh Timer");
-        //        await _stickyRefreshTimer;
-
-        //        _stickyRefreshTimer.Dispose();
-        //        _stickyRefreshTimer = null;
-        //    }
-        //}
-
-
 
         #region Banner methods
 
@@ -217,15 +176,19 @@ namespace GamePush.Mobile
             Logger.Log("Banner is requested");
         }
 
+#if YANDEX_SIMPLE_MONETIZATION
         private AdRequest CreateAdRequest()
         {
             return new AdRequest.Builder().Build();
         }
+#endif
 
         private void DestroyBanner()
         {
             SetPlaying(false);
+#if YANDEX_SIMPLE_MONETIZATION
             _banner.Destroy();
+#endif
         }
 
         #endregion

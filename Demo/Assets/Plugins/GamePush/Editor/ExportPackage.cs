@@ -12,6 +12,7 @@ namespace GamePushEditor
             "Assets/WebGLTemplates",
             "Assets/Examples",
             "Assets/Plugins",
+            "Assets/ExternalDependencyManager",
             "Assets/TextMesh Pro",
             "Packages/com.unity.nuget.newtonsoft-json",
             "Packages/com.lastabyss.simplegraphql"

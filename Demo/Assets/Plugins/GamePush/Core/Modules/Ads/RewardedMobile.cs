@@ -8,9 +8,11 @@ namespace GamePush.Mobile
 {
     public class RewardedMobile
     {
+
+#if YANDEX_SIMPLE_MONETIZATION
         private RewardedAdLoader rewardedAdLoader;
         private RewardedAd rewardedAd;
-
+#endif
         private AdBanner _bannerData;
 
         private string _rewardTag;
@@ -33,14 +35,18 @@ namespace GamePush.Mobile
 
         public void SetUpLoader()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             rewardedAdLoader = new RewardedAdLoader();
             rewardedAdLoader.OnAdLoaded += HandleAdLoaded;
             rewardedAdLoader.OnAdFailedToLoad += HandleAdFailedToLoad;
+#endif
         }
 
         private void RequestRewardedAd()
         {
             Logger.Log("RewardedAd is not ready yet");
+
+#if YANDEX_SIMPLE_MONETIZATION
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
@@ -53,6 +59,7 @@ namespace GamePush.Mobile
 
             rewardedAdLoader.LoadAd(CreateAdRequest(adUnitId));
             Logger.Log("Rewarded Ad is requested");
+#endif
         }
 
 
@@ -65,6 +72,7 @@ namespace GamePush.Mobile
         {
             Logger.Log("Reward in rewarded mobile");
 
+#if YANDEX_SIMPLE_MONETIZATION
             if (rewardedAd == null)
             {
                 Logger.Log("RewardedAd is not ready yet");
@@ -79,6 +87,7 @@ namespace GamePush.Mobile
             OnRewardedClose = onRewardedClose;
 
             rewardedAd.Show();
+#endif
             SetPlaying(true);
         }
 
@@ -89,18 +98,20 @@ namespace GamePush.Mobile
 
         private void DestroyBanner(bool success)
         {
+#if YANDEX_SIMPLE_MONETIZATION
             if (rewardedAd != null)
             {
                 rewardedAd.Destroy();
                 rewardedAd = null;
             }
+#endif
 
-            
             SetPlaying(false);
         }
 
         #region Rewarded Ad callback handlers
 
+#if YANDEX_SIMPLE_MONETIZATION
         public void HandleAdLoaded(object sender, RewardedAdLoadedEventArgs args)
         {
             Logger.Log("HandleAdLoaded event received");
@@ -161,7 +172,7 @@ namespace GamePush.Mobile
             DestroyBanner(false);
             RequestRewardedAd();
         }
-
+#endif
         #endregion
 
     }

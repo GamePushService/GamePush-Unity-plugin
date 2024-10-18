@@ -8,8 +8,11 @@ namespace GamePush.Mobile
 {
     public class PreloaderMobile
     {
+
+#if YANDEX_SIMPLE_MONETIZATION
         private AppOpenAdLoader appOpenAdLoader;
         private AppOpenAd appOpenAd;
+#endif
 
         private AdBanner _bannerData;
 
@@ -30,24 +33,32 @@ namespace GamePush.Mobile
             RequestAppOpenAd();
         }
 
+
         public void SetUpLoader()
         {
+
+#if YANDEX_SIMPLE_MONETIZATION
             appOpenAdLoader = new AppOpenAdLoader();
             appOpenAdLoader.OnAdLoaded += HandleAdLoaded;
             appOpenAdLoader.OnAdFailedToLoad += HandleAdFailedToLoad;
 
             // Use the AppStateObserver to listen to application open/close events.
             AppStateObserver.OnAppStateChanged += HandleAppStateChanged;
+#endif
         }
 
+#if YANDEX_SIMPLE_MONETIZATION
         public void OnDestroy()
         {
+           
             // Unsubscribe from the event to avoid memory leaks.
             AppStateObserver.OnAppStateChanged -= HandleAppStateChanged;
         }
+#endif
 
         private void RequestAppOpenAd()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
@@ -60,11 +71,13 @@ namespace GamePush.Mobile
             }
 
             appOpenAdLoader.LoadAd(CreateAdRequestConfiguration(adUnitId));
+#endif
             Logger.Log("AppOpenAd is requested");
         }
 
         public void ShowAppOpenAd(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
+#if YANDEX_SIMPLE_MONETIZATION
             if (appOpenAd == null)
             {
                 Logger.Log("AppOpenAd is not ready yet");
@@ -75,28 +88,32 @@ namespace GamePush.Mobile
             OnPreloaderClose = onPreloaderClose;
 
             appOpenAd.Show();
-
+#endif
             SetPlaying(true);
         }
 
+#if YANDEX_SIMPLE_MONETIZATION
         private AdRequestConfiguration CreateAdRequestConfiguration(string adUnitId)
         {
             return new AdRequestConfiguration.Builder(adUnitId).Build();
         }
+#endif
 
         private void DestroyBanner()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             if (appOpenAd != null)
             {
                 appOpenAd.Destroy();
                 appOpenAd = null;
             }
-
+#endif
             SetPlaying(false);
         }
 
-        #region AppOpenAd callback handlers
+#region AppOpenAd callback handlers
 
+#if YANDEX_SIMPLE_MONETIZATION
         public void HandleAppStateChanged(object sender, AppStateChangedEventArgs args)
         {
             if (!args.IsInBackground && _bannerData.enabled)
@@ -163,8 +180,8 @@ namespace GamePush.Mobile
             DestroyBanner();
             RequestAppOpenAd();
         }
-
-        #endregion
+#endif
+#endregion
 
     }
 }

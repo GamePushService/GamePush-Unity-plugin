@@ -9,9 +9,10 @@ namespace GamePush.Mobile
 {
     public class InterstitialMobile
     {
+#if YANDEX_SIMPLE_MONETIZATION
         private InterstitialAdLoader interstitialAdLoader;
         private Interstitial interstitial;
-
+#endif
         private AdBanner _bannerData;
 
         private bool _isPlaying;
@@ -31,13 +32,16 @@ namespace GamePush.Mobile
 
         public void SetUpLoader()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             interstitialAdLoader = new InterstitialAdLoader();
             interstitialAdLoader.OnAdLoaded += HandleAdLoaded;
             interstitialAdLoader.OnAdFailedToLoad += HandleAdFailedToLoad;
+#endif
         }
 
         private void RequestInterstitial()
         {
+#if YANDEX_SIMPLE_MONETIZATION
             //Sets COPPA restriction for user age under 13
             MobileAds.SetAgeRestrictedUser(true);
 
@@ -49,12 +53,13 @@ namespace GamePush.Mobile
             }
 
             interstitialAdLoader.LoadAd(CreateAdRequest(adUnitId));
+#endif
             Logger.Log("Interstitial is requested");
         }
 
         public void ShowInterstitial(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
-
+#if YANDEX_SIMPLE_MONETIZATION
             if (interstitial == null)
             {
                 Logger.Log("Interstitial is not ready yet");
@@ -67,15 +72,19 @@ namespace GamePush.Mobile
 
             interstitial.Show();
             SetPlaying(true);
+#endif
         }
 
+#if YANDEX_SIMPLE_MONETIZATION
         private AdRequestConfiguration CreateAdRequest(string adUnitId)
         {
             return new AdRequestConfiguration.Builder(adUnitId).Build();
         }
+#endif
 
         private void DestroyBanner(bool success)
         {
+#if YANDEX_SIMPLE_MONETIZATION
             if (interstitial != null)
             {
                 interstitial.Destroy();
@@ -83,12 +92,13 @@ namespace GamePush.Mobile
             }
 
             OnFullscreenClose(success);
-
+#endif
             SetPlaying(false);
         }
 
-        #region Interstitial callback handlers
+#region Interstitial callback handlers
 
+#if YANDEX_SIMPLE_MONETIZATION
         public void HandleAdLoaded(object sender, InterstitialAdLoadedEventArgs args)
         {
             Logger.Log("HandleAdLoaded event received");
@@ -142,7 +152,7 @@ namespace GamePush.Mobile
             DestroyBanner(false);
             RequestInterstitial();
         }
-
-        #endregion
+#endif
+#endregion
     }
 }
