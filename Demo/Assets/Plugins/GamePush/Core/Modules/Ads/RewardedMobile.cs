@@ -88,7 +88,7 @@ namespace GamePush.Mobile
 
             rewardedAd.Show();
 #else
-            onRewardedClose?.Invoke(false);
+            OnRewardedClose?.Invoke(false);
 #endif
             SetPlaying(true);
         }

@@ -54,7 +54,7 @@ namespace GamePush.Mobile
 
             interstitialAdLoader.LoadAd(CreateAdRequest(adUnitId));
 #else
-        onFullscreenClose?.Invoke(false);
+        OnFullscreenClose?.Invoke(false);
 #endif
             Logger.Log("Interstitial is requested");
         }

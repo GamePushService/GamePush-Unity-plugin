@@ -81,6 +81,7 @@ namespace GamePush.Mobile
             if (appOpenAd == null)
             {
                 Logger.Log("AppOpenAd is not ready yet");
+                onPreloaderClose?.Invoke(false);
                 return;
             }
 
@@ -88,6 +89,8 @@ namespace GamePush.Mobile
             OnPreloaderClose = onPreloaderClose;
 
             appOpenAd.Show();
+#else
+            OnPreloaderClose?.Invoke(false);
 #endif
             SetPlaying(true);
         }
