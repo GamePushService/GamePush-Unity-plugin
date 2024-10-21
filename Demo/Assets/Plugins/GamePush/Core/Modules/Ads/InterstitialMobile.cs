@@ -53,6 +53,8 @@ namespace GamePush.Mobile
             }
 
             interstitialAdLoader.LoadAd(CreateAdRequest(adUnitId));
+#else
+        onFullscreenClose?.Invoke(false);
 #endif
             Logger.Log("Interstitial is requested");
         }
@@ -91,7 +93,7 @@ namespace GamePush.Mobile
                 interstitial = null;
             }
 
-            OnFullscreenClose(success);
+            OnFullscreenClose?.Invoke(success);
 #endif
             SetPlaying(false);
         }

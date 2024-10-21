@@ -51,44 +51,71 @@ namespace GamePush.Mobile
            Action<bool> onStickyClose = null,
            Action onStickyRefresh = null,
            Action onStickyRender = null)
-           => sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh, onStickyRender);
+        {
+            if (sticky != null)
+                sticky.ShowBanner(onStickyStart, onStickyClose, onStickyRefresh, onStickyRender);
+            else
+                onStickyClose?.Invoke(false);
 
-        public void RefreshSticky() => sticky.RefreshBanner();
-        public void CloseSticky() => sticky.CloseBanner();
+        }
+
+        public void RefreshSticky() => sticky?.RefreshBanner();
+        public void CloseSticky() => sticky?.CloseBanner();
 
         public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
-            fullscreen.ShowInterstitial(onFullscreenStart, onFullscreenClose);
+            if (fullscreen != null)
+                fullscreen.ShowInterstitial(onFullscreenStart, onFullscreenClose);
+            else
+                onFullscreenClose?.Invoke(false);
         }
 
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
-            rewarded.ShowRewardedAd(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
+            if (rewarded != null)
+                rewarded.ShowRewardedAd(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
+            else
+                onRewardedClose?.Invoke(false);
         }
 
         public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
-            preloader.ShowAppOpenAd(onPreloaderStart, onPreloaderClose);
+            if (preloader != null)
+                preloader.ShowAppOpenAd(onPreloaderStart, onPreloaderClose);
+            else
+                onPreloaderClose?.Invoke(false);
         }
 
         public bool IsStickyPlaying()
         {
-            return sticky.IsPlaying();
+            if (sticky != null)
+                return sticky.IsPlaying();
+            else
+                return false;
         }
 
         public bool IsFullscreenPlaying()
         {
-            return fullscreen.IsPlaying();
+            if (fullscreen != null)
+                return fullscreen.IsPlaying();
+            else
+                return false;
         }
 
         public bool IsRewardPlaying()
         {
-            return rewarded.IsPlaying();
+            if (fullscreen != null)
+                return rewarded.IsPlaying();
+            else
+                return false;
         }
 
         public bool IsPreloaderPlaying()
         {
-            return preloader.IsPlaying();
+            if (fullscreen != null)
+                return preloader.IsPlaying();
+            else
+                return false;
         }
 
 

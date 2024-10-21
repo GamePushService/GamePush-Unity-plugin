@@ -172,6 +172,8 @@ namespace GamePush.Mobile
             _banner.OnImpression += HandleImpression;
 
             _banner.LoadAd(CreateAdRequest());
+#else
+            OnStickyClose?.Invoke(false);
 #endif
             Logger.Log("Banner is requested");
         }

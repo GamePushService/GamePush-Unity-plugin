@@ -76,7 +76,7 @@ namespace GamePush.Mobile
             if (rewardedAd == null)
             {
                 Logger.Log("RewardedAd is not ready yet");
-                onRewardedClose(false);
+                onRewardedClose?.Invoke(false);
                 return;
             }
 
@@ -87,6 +87,8 @@ namespace GamePush.Mobile
             OnRewardedClose = onRewardedClose;
 
             rewardedAd.Show();
+#else
+            onRewardedClose?.Invoke(false);
 #endif
             SetPlaying(true);
         }
