@@ -185,17 +185,16 @@ namespace GamePushEditor
 
         private static int _selectedIndex;
         private static string[] _platforms = new string[] {
-            "ANDROID",
-            "GOOGLE_PLAY",
-            "APP_GALLERY",
-            "GALAXY_STORE",
-            "ONE_STORE",
-            "AMAZON_APPSTORE",
-            "XIAOMI_GETAPPS",
-            "APTOIDE",
-            "RUSTORE",
-            "CUSTOM_ANDROID",
-            "TEST_ANDROID"
+             PlatformTypes.ANDROID,
+             PlatformTypes.GOOGLE_PLAY,
+             PlatformTypes.APP_GALLERY,
+             PlatformTypes.GALAXY_STORE,
+             PlatformTypes.ONE_STORE,
+             PlatformTypes.AMAZON_APPSTORE,
+             PlatformTypes.XIAOMI_GETAPPS,
+             PlatformTypes.APTOIDE,
+             PlatformTypes.RUSTORE,
+             PlatformTypes.CUSTOM_ANDROID,
         };
         private enum AndroidPlatform { ANDROID, GOOGLE_PLAY, HUAWEI}
 

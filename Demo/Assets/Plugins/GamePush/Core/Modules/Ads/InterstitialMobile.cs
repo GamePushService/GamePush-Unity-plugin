@@ -1,9 +1,12 @@
 using System;
-using System.Timers;
-using YandexMobileAds;
-using YandexMobileAds.Base;
+
 using GamePush.Core;
 using GamePush.Data;
+
+#if YANDEX_SIMPLE_MONETIZATION
+using YandexMobileAds;
+using YandexMobileAds.Base;
+#endif
 
 namespace GamePush.Mobile
 {

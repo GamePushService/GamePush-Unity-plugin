@@ -1,8 +1,12 @@
 using System;
-using YandexMobileAds;
-using YandexMobileAds.Base;
+
 using GamePush.Core;
 using GamePush.Data;
+
+#if YANDEX_SIMPLE_MONETIZATION
+using YandexMobileAds;
+using YandexMobileAds.Base;
+#endif
 
 namespace GamePush.Mobile
 {
@@ -93,10 +97,12 @@ namespace GamePush.Mobile
             SetPlaying(true);
         }
 
+#if YANDEX_SIMPLE_MONETIZATION
         private AdRequestConfiguration CreateAdRequest(string adUnitId)
         {
             return new AdRequestConfiguration.Builder(adUnitId).Build();
         }
+#endif
 
         private void DestroyBanner(bool success)
         {
@@ -111,7 +117,7 @@ namespace GamePush.Mobile
             SetPlaying(false);
         }
 
-        #region Rewarded Ad callback handlers
+#region Rewarded Ad callback handlers
 
 #if YANDEX_SIMPLE_MONETIZATION
         public void HandleAdLoaded(object sender, RewardedAdLoadedEventArgs args)
@@ -175,7 +181,7 @@ namespace GamePush.Mobile
             RequestRewardedAd();
         }
 #endif
-        #endregion
+#endregion
 
     }
 }

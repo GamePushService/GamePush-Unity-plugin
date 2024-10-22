@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using YandexMobileAds;
-using YandexMobileAds.Base;
 
 using GamePush.Core;
 using GamePush.Data;
