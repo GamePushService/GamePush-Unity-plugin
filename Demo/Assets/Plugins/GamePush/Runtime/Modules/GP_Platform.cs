@@ -15,7 +15,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return ConvertToEnum(GP_Platform_Type());
 #else
-            return ConvertToEnum(CoreSDK.platform.type);
+            return PlatformTypes.ConvertToEnum(CoreSDK.platform.type);
 #endif
         }
 
@@ -127,69 +127,6 @@ namespace GamePush
         public static bool IsAlwaysSyncPublicFields()
         {
             return CoreSDK.platform.alwaysSyncPublicFields;
-        }
-
-        private static Platform ConvertToEnum(string platform)
-        {
-           
-            if (platform == PlatformTypes.YANDEX)
-                return Platform.YANDEX;
-
-            if (platform == PlatformTypes.VK)
-                return Platform.VK;
-
-            if (platform == PlatformTypes.CRAZY_GAMES)
-                return Platform.CRAZY_GAMES;
-
-            if (platform == PlatformTypes.GAME_DISTRIBUTION)
-                return Platform.GAME_DISTRIBUTION;
-
-            if (platform == PlatformTypes.GAME_MONETIZE)
-                return Platform.GAME_MONETIZE;
-
-            if (platform == PlatformTypes.OK)
-                return Platform.OK;
-
-            if (platform == PlatformTypes.SMARTMARKET)
-                return Platform.SMARTMARKET;
-
-            if (platform == PlatformTypes.GAMEPIX)
-                return Platform.GAMEPIX;
-
-            if (platform == PlatformTypes.POKI)
-                return Platform.POKI;
-
-            if (platform == PlatformTypes.VK_PLAY)
-                return Platform.VK_PLAY;
-
-            if (platform == PlatformTypes.WG_PLAYGROUND)
-                return Platform.WG_PLAYGROUND;
-
-            if (platform == PlatformTypes.KONGREGATE)
-                return Platform.KONGREGATE;
-
-            if (platform == PlatformTypes.GOOGLE_PLAY)
-                return Platform.GOOGLE_PLAY;
-
-            if (platform == PlatformTypes.PLAYDECK)
-                return Platform.PLAYDECK;
-
-            if (platform == PlatformTypes.CUSTOM)
-                return Platform.CUSTOM;
-
-            if (platform == PlatformTypes.TELEGRAM)
-                return Platform.TELEGRAM;
-
-            if (platform == PlatformTypes.ANDROID)
-                return Platform.ANDROID;
-
-            return Platform.NONE;
-
-            //return platform switch
-            //{
-            //    PlatformTypes.YANDEX => Platform.YANDEX,
-            //    _ => Platform.None
-            //};
         }
 
     }
