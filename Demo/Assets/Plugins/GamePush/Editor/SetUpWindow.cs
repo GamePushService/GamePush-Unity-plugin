@@ -227,8 +227,11 @@ namespace GamePushEditor
             GUILayout.Space(55);
 
 
-            if (GUILayout.Button("Save and Sync", GUILayout.Height(30)))
+            if (GUILayout.Button("Save", GUILayout.Height(30)))
                 SaveConfig();
+
+            if (GUILayout.Button("Sync", GUILayout.Height(30)))
+                SyncConfig();
         }
 
         //private void OnSettingsGUI()
@@ -253,7 +256,7 @@ namespace GamePushEditor
         }
         #endregion
 
-        private static async void SaveConfig()
+        private static void SaveConfig()
         {
             //Console.Log("Saving data");
             if (_id == 0 || string.IsNullOrEmpty(_token))
@@ -268,14 +271,19 @@ namespace GamePushEditor
             SaveProjectDataToScript();
             SaveProjectData();
 
-            GP_Logger.SystemLog("Data saved");
+            SetProjectDataToWebTemplate();
 
+            GP_Logger.SystemLog("Data saved");
+        }
+
+        private static async void SyncConfig()
+        {
+            CoreSDK.SetProjectData(_id, _token);
+            CoreSDK.SetAndroidPlatform(_platforms[_selectedIndex]);
 
             await CoreSDK.FetchEditorConfig();
             GP_Logger.SystemLog("Config fetched");
             CheckCustromAds();
-
-            SetProjectDataToWebTemplate();
         }
 
         private static void CheckCustromAds()
