@@ -76,6 +76,10 @@ namespace GamePush.Mobile
         {
             Logger.Log("Reward in rewarded mobile");
 
+            OnRewardedReward = onRewardedReward;
+            OnRewardedStart = onRewardedStart;
+            OnRewardedClose = onRewardedClose;
+
 #if YANDEX_SIMPLE_MONETIZATION
             if (rewardedAd == null)
             {
@@ -86,12 +90,12 @@ namespace GamePush.Mobile
 
             _rewardTag = idOrTag;
 
-            OnRewardedReward = onRewardedReward;
-            OnRewardedStart = onRewardedStart;
-            OnRewardedClose = onRewardedClose;
+           
 
             rewardedAd.Show();
 #else
+            OnRewardedStart?.Invoke();
+            OnRewardedReward?.Invoke(idOrTag);
             OnRewardedClose?.Invoke(false);
 #endif
             SetPlaying(true);

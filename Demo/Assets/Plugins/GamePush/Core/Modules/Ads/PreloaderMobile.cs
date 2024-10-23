@@ -94,6 +94,7 @@ namespace GamePush.Mobile
 
             appOpenAd.Show();
 #else
+            OnPreloaderStart?.Invoke();
             OnPreloaderClose?.Invoke(false);
 #endif
             SetPlaying(true);

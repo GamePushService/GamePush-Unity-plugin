@@ -124,7 +124,7 @@ namespace GamePush.Mobile
            Action onStickyRefresh = null,
            Action onStickyRender = null)
         {
-            onStickyStart?.Invoke();
+            //onStickyStart?.Invoke();
             onStickyClose?.Invoke(false);
         }
 
@@ -133,19 +133,19 @@ namespace GamePush.Mobile
 
         public void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
-            onFullscreenStart?.Invoke();
+            //onFullscreenStart?.Invoke();
             onFullscreenClose?.Invoke(false);
         }
 
         public void ShowRewarded(string idOrTag = "COINS", Action<string> onRewardedReward = null, Action onRewardedStart = null, Action<bool> onRewardedClose = null)
         {
-            onRewardedStart?.Invoke();
+            //onRewardedStart?.Invoke();
             onRewardedClose?.Invoke(false);
         }
 
         public void ShowPreloader(Action onPreloaderStart = null, Action<bool> onPreloaderClose = null)
         {
-            onPreloaderStart?.Invoke();
+            //onPreloaderStart?.Invoke();
             onPreloaderClose?.Invoke(false);
         }
 

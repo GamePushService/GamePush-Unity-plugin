@@ -56,14 +56,15 @@ namespace GamePush.Mobile
             }
 
             interstitialAdLoader.LoadAd(CreateAdRequest(adUnitId));
-#else
-        OnFullscreenClose?.Invoke(false);
 #endif
             Logger.Log("Interstitial is requested");
         }
 
         public void ShowInterstitial(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)
         {
+            OnFullscreenStart = onFullscreenStart;
+            OnFullscreenClose = onFullscreenClose;
+
 #if YANDEX_SIMPLE_MONETIZATION
             if (interstitial == null)
             {
@@ -72,11 +73,11 @@ namespace GamePush.Mobile
                 return;
             }
 
-            OnFullscreenStart = onFullscreenStart;
-            OnFullscreenClose = onFullscreenClose;
-
             interstitial.Show();
             SetPlaying(true);
+#else
+            OnFullscreenStart?.Invoke();
+            OnFullscreenClose?.Invoke(false);
 #endif
         }
 

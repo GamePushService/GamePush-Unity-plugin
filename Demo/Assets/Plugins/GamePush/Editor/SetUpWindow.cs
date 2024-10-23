@@ -9,7 +9,7 @@ namespace GamePushEditor
 {
     public class SetUpWindow : EditorWindow
     {
-        private const string SITE_URL = "https://gamepush.com";
+        private const string SITE_URL = PluginData.SITE_URL;
 
         private const string VERSION = PluginData.SDK_VERSION;
 
@@ -277,6 +277,8 @@ namespace GamePushEditor
 
         private static async void SyncConfig()
         {
+            Caching.ClearCache();
+
             CoreSDK.SetProjectData(_id, _token);
             CoreSDK.SetAndroidPlatform(_platforms[_selectedIndex]);
 
@@ -304,6 +306,7 @@ namespace GamePushEditor
             }
 
             ChangeDefineSymbols("YANDEX_SIMPLE_MONETIZATION", isYAMON);
+            ConfigurePluginsForBuild(isYAMON);
         }
 
         private static void ChangeDefineSymbols(string symbols, bool isSet)
@@ -312,12 +315,36 @@ namespace GamePushEditor
             {
                 GP_Logger.SystemLog("Add Define Symbols: " + symbols);
                 DefineSymbolsManager.AddScriptingDefineSymbol(symbols);
+                
             }
             else
             {
                 GP_Logger.SystemLog("Remove Define Symbols: " + symbols);
                 DefineSymbolsManager.RemoveScriptingDefineSymbol(symbols);
             }
+        }
+
+        public static void ConfigurePluginsForBuild(bool isSet)
+        {
+            // Пример: выключение конкретного .aar файла
+            var pluginPath = "Assets/Plugins/Android/yandex-ads-unity-plugin.aar";
+            var importer = AssetImporter.GetAtPath(pluginPath) as PluginImporter;
+            if (importer != null)
+            {
+                importer.SetCompatibleWithPlatform(BuildTarget.Android, isSet);
+                Debug.Log($"{pluginPath} is now set {isSet} in the build.");
+            }
+
+            // Пример: отключение целой папки
+            var androidLibPath = "Assets/Plugins/Android/YandexMobileAdsPlugin.androidlib";
+            var folderImporter = AssetImporter.GetAtPath(androidLibPath) as PluginImporter;
+            if (folderImporter != null)
+            {
+                folderImporter.SetCompatibleWithPlatform(BuildTarget.Android, isSet);
+                Debug.Log($"{androidLibPath} is now set {isSet} in the build.");
+            }
+
+            AssetDatabase.SaveAssets();
         }
 
         private static bool ValidateToken(string input)
