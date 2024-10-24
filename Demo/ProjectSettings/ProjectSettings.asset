@@ -257,11 +257,11 @@ PlayerSettings:
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 0
   useCustomLauncherManifest: 0
-  useCustomMainGradleTemplate: 1
+  useCustomMainGradleTemplate: 0
   useCustomLauncherGradleManifest: 0
   useCustomBaseGradleTemplate: 0
-  useCustomGradlePropertiesTemplate: 1
-  useCustomGradleSettingsTemplate: 0
+  useCustomGradlePropertiesTemplate: 0
+  useCustomGradleSettingsTemplate: 1
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 3
   AndroidTargetDevices: 0
@@ -417,9 +417,9 @@ PlayerSettings:
     PROGRESS_BAR_BACKGROUND_COLOR: 
     PROGRESS_BAR_BORDER_COLOR: 
     PROGRESS_BAR_FILL_COLOR: 
-    PROJECT_ID: 5815
+    PROJECT_ID: 1
     SHOW_PRELOADER_AD: False
-    TOKEN: BL5y2Oqp3Wl622MDcOAWrd55hJJF08SD
+    TOKEN: token
     X_SHOW_PRELOADER_AD: 
   mobileMTRendering:
     Android: 1

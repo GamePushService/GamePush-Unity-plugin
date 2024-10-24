@@ -32,13 +32,15 @@ namespace GamePush.Core
             customAds = platformConfig.customAdsConfig;
             adsInfo = LoadAdsInfo();
             CheckLimitsExpired(true);
+
+#if UNITY_ANDROID
+            adsMobile = new AdsMobile();
+#endif
         }
 
-        public void LateInit()
+        public void CustomAdInit()
         {
-
-#if UNITY_ANDROID && CUSTOM_ADS_MOBILE
-            adsMobile = new AdsMobile();
+            #if UNITY_ANDROID && CUSTOM_ADS_MOBILE
             InjectStickyParams();
             adsMobile.Init(customAds.configs.android);
             SetUpTimer();
@@ -73,7 +75,7 @@ namespace GamePush.Core
             return null;
         }
 
-        #region FullScreen Ads
+#region FullScreen Ads
 
         public event Action OnFullscreenStart;
         public event Action<bool> OnFullscreenClose;
@@ -84,21 +86,21 @@ namespace GamePush.Core
         {
             Action combinedStart = () =>
             {
+                TrackFullscreen();
+                StopFrequencyTimer();
+
                 OnAdsStart?.Invoke();
                 OnFullscreenStart?.Invoke();
                 onFullscreenStart?.Invoke();
-                TrackFullscreen();
-
-                StopFrequencyTimer();
             };
 
             Action<bool> combinedClose = (bool success) =>
             {
+                StartFrequencyTimer();
+
                 OnAdsClose?.Invoke(success);
                 OnFullscreenClose?.Invoke(success); 
                 onFullscreenClose?.Invoke(success);
-
-                StartFrequencyTimer();
             };
 
             if (!IsFullscreenAvailable())
@@ -109,7 +111,9 @@ namespace GamePush.Core
                 return;
             }
 
+
 #if UNITY_ANDROID
+            
             //OnShowFullscreen?.Invoke(combinedStart, combinedClose);
             adsMobile?.ShowFullscreen(combinedStart, combinedClose);
 #else
@@ -119,9 +123,9 @@ namespace GamePush.Core
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region Rewarded Ads
+#region Rewarded Ads
 
         public event Action OnRewardedStart;
         public event Action<bool> OnRewardedClose;
@@ -160,7 +164,6 @@ namespace GamePush.Core
                 return;
             }
 
-            Logger.Log("Reward in ads module");
 #if UNITY_ANDROID
 
             //OnShowRewarded?.Invoke(idOrTag, combinedReward, combinedStart, combinedClose);
@@ -174,9 +177,9 @@ namespace GamePush.Core
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region Sticky Ads
+#region Sticky Ads
 
         public event Action OnStickyStart;
         public event Action<bool> OnStickyClose;
@@ -297,9 +300,9 @@ namespace GamePush.Core
 
 
 
-        #endregion
+#endregion
 
-        #region Preload Ads
+#region Preload Ads
 
         public event Action OnPreloaderStart;
         public event Action<bool> OnPreloaderClose;
@@ -340,9 +343,9 @@ namespace GamePush.Core
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region Is Methods
+#region Is Methods
 
         public bool IsAdblockEnabled()
         {
@@ -512,9 +515,9 @@ namespace GamePush.Core
             return hourLimits || dayLimits || sessionLimits;
         }
 
-        #endregion
+#endregion
 
-        #region Fullscreen frequency
+#region Fullscreen frequency
 
         private Task _frequencyTimer;
         private int _frequencyInterval;
@@ -556,9 +559,9 @@ namespace GamePush.Core
             }
         }
 
-        #endregion
+#endregion
 
-        #region Limits Info
+#region Limits Info
 
         public void ShowLimits(BannerType bannerType)
         {
@@ -680,6 +683,6 @@ namespace GamePush.Core
             return hasChanges;
         }
 
-            #endregion
+#endregion
     }
 }

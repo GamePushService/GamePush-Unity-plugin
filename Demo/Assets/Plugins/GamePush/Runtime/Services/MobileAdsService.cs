@@ -12,7 +12,7 @@ namespace GamePush.Services
         private async void Start()
         {
             await GP_Init.Ready;
-            CoreSDK.ads.LateInit();
+            CoreSDK.ads.CustomAdInit();
             StartTimer();
         }
 

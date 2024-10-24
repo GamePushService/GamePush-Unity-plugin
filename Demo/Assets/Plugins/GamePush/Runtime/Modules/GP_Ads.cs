@@ -11,17 +11,21 @@ namespace GamePush
     {
         public static event UnityAction OnAdsStart;
         public static event UnityAction<bool> OnAdsClose;
+
         public static event UnityAction OnFullscreenStart;
         public static event UnityAction<bool> OnFullscreenClose;
-        public static event UnityAction OnPreloaderStart;
-        public static event UnityAction<bool> OnPreloaderClose;
+
         public static event UnityAction OnRewardedStart;
         public static event UnityAction<bool> OnRewardedClose;
         public static event UnityAction<string> OnRewardedReward;
+
         public static event UnityAction OnStickyStart;
         public static event UnityAction<bool> OnStickyClose;
         public static event UnityAction OnStickyRefresh;
         public static event UnityAction OnStickyRender;
+
+        public static event UnityAction OnPreloaderStart;
+        public static event UnityAction<bool> OnPreloaderClose;
 
         private static event Action _onFullscreenStart;
         private static event Action<bool> _onFullscreenClose;
@@ -35,44 +39,44 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.ads.OnAdsStart += CallAdsStart;
-            CoreSDK.ads.OnAdsClose += CallAdsCloseBool;
+            CoreSDK.ads.OnAdsStart += () => OnAdsStart?.Invoke();
+            CoreSDK.ads.OnAdsClose += (bool success) => OnAdsClose?.Invoke(success);
 
-            CoreSDK.ads.OnFullscreenStart += CallAdsFullscreenStart;
-            CoreSDK.ads.OnFullscreenClose += CallAdsFullscreenCloseBool;
+            CoreSDK.ads.OnFullscreenStart += () => OnFullscreenStart?.Invoke();
+            CoreSDK.ads.OnFullscreenClose += (bool success) => OnFullscreenClose?.Invoke(success);
 
-            CoreSDK.ads.OnRewardedReward += CallAdsRewardedReward;
-            CoreSDK.ads.OnRewardedStart += CallAdsRewardedStart;
-            CoreSDK.ads.OnRewardedClose += CallAdsRewardedCloseBool;
+            CoreSDK.ads.OnRewardedReward += (string tag) => OnRewardedReward?.Invoke(tag);
+            CoreSDK.ads.OnRewardedStart += () => OnRewardedStart?.Invoke();
+            CoreSDK.ads.OnRewardedClose += (bool success) => OnRewardedClose?.Invoke(success);
 
-            CoreSDK.ads.OnStickyStart += CallAdsStickyStart;
-            CoreSDK.ads.OnStickyClose += CallAdsStickyCloseBool;
-            CoreSDK.ads.OnStickyRefresh += CallAdsStickyRefresh;
-            CoreSDK.ads.OnStickyRender += CallAdsStickyRender;
+            CoreSDK.ads.OnStickyStart += () => OnStickyStart?.Invoke();
+            CoreSDK.ads.OnStickyClose += (bool success) => OnStickyClose?.Invoke(success);
+            CoreSDK.ads.OnStickyRefresh += () => OnStickyRefresh?.Invoke();
+            CoreSDK.ads.OnStickyRender += () => OnStickyRender?.Invoke();
 
-            CoreSDK.ads.OnPreloaderStart += CallAdsPreloaderStart;
-            CoreSDK.ads.OnPreloaderClose += CallAdsPreloaderCloseBool;
+            CoreSDK.ads.OnPreloaderStart += () => OnPreloaderStart?.Invoke();
+            CoreSDK.ads.OnPreloaderClose += (bool success) => OnPreloaderClose?.Invoke(success);
         }
 
         private void OnDisable()
         {
-            CoreSDK.ads.OnAdsStart -= CallAdsStart;
-            CoreSDK.ads.OnAdsClose -= CallAdsCloseBool;
+            //CoreSDK.ads.OnAdsStart -= CallAdsStart;
+            //CoreSDK.ads.OnAdsClose -= CallAdsCloseBool;
 
-            CoreSDK.ads.OnFullscreenStart -= CallAdsFullscreenStart;
-            CoreSDK.ads.OnFullscreenClose -= CallAdsFullscreenCloseBool;
+            //CoreSDK.ads.OnFullscreenStart -= CallAdsFullscreenStart;
+            //CoreSDK.ads.OnFullscreenClose -= CallAdsFullscreenCloseBool;
 
-            CoreSDK.ads.OnRewardedReward -= CallAdsRewardedReward;
-            CoreSDK.ads.OnRewardedStart -= CallAdsRewardedStart;
-            CoreSDK.ads.OnRewardedClose -= CallAdsRewardedCloseBool;
+            //CoreSDK.ads.OnRewardedReward -= CallAdsRewardedReward;
+            //CoreSDK.ads.OnRewardedStart -= CallAdsRewardedStart;
+            //CoreSDK.ads.OnRewardedClose -= CallAdsRewardedCloseBool;
 
-            CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
-            CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
-            CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
-            CoreSDK.ads.OnStickyRender -= CallAdsStickyRender;
+            //CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
+            //CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
+            //CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
+            //CoreSDK.ads.OnStickyRender -= CallAdsStickyRender;
 
-            CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
-            CoreSDK.ads.OnPreloaderClose -= CallAdsPreloaderCloseBool;
+            //CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
+            //CoreSDK.ads.OnPreloaderClose -= CallAdsPreloaderCloseBool;
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL

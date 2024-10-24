@@ -34,6 +34,15 @@ namespace Examples.Ads
             GP_Ads.OnStickyClose += OnStickyClose;
             GP_Ads.OnStickyRefresh += OnStickyRefresh;
             GP_Ads.OnStickyRender += OnStickyRender;
+
+            GP_Ads.OnFullscreenStart += OnFullscreenStartEVENT;
+            GP_Ads.OnFullscreenClose += OnFullscreenCloseEVENT;
+
+            GP_Ads.OnPreloaderStart += OnPreloaderStartEVENT;
+            GP_Ads.OnPreloaderClose += OnPreloaderCloseEVENT;
+
+            GP_Ads.OnRewardedStart += OnRewardedStartEVENT;
+            GP_Ads.OnRewardedClose += OnRewardedCloseEVENT;
         }
 
         private void OnDisable()
@@ -53,6 +62,15 @@ namespace Examples.Ads
             GP_Ads.OnStickyClose -= OnStickyClose;
             GP_Ads.OnStickyRefresh -= OnStickyRefresh;
             GP_Ads.OnStickyRender -= OnStickyRender;
+
+            GP_Ads.OnFullscreenStart -= OnFullscreenStartEVENT;
+            GP_Ads.OnFullscreenClose -= OnFullscreenCloseEVENT;
+
+            GP_Ads.OnPreloaderStart -= OnPreloaderStartEVENT;
+            GP_Ads.OnPreloaderClose -= OnPreloaderCloseEVENT;
+
+            GP_Ads.OnRewardedStart -= OnRewardedStartEVENT;
+            GP_Ads.OnRewardedClose -= OnRewardedCloseEVENT;
         }
 
 
@@ -93,13 +111,13 @@ namespace Examples.Ads
 
 
         private void OnAdsStart() => ConsoleUI.Instance.Log("ON ADS: START");
-        private void OnAdsClose(bool success) => ConsoleUI.Instance.Log("ON ADS: CLOSE");
+        private void OnAdsClose(bool success) => ConsoleUI.Instance.Log("ON ADS: CLOSE: " + success);
 
         private void OnFullscreenStart() => ConsoleUI.Instance.Log("ON FULLSCREEN START");
-        private void OnFullscreenClose(bool success) => ConsoleUI.Instance.Log("ON FULLSCREEN CLOSE");
+        private void OnFullscreenClose(bool success) => ConsoleUI.Instance.Log("ON FULLSCREEN CLOSE: " + success);
 
         private void OnPreloaderStart() => ConsoleUI.Instance.Log("ON PRELOADER: START");
-        private void OnPreloaderClose(bool success) => ConsoleUI.Instance.Log("ON PRELOADER: CLOSE");
+        private void OnPreloaderClose(bool success) => ConsoleUI.Instance.Log("ON PRELOADER: CLOSE: " + success);
 
         private void OnRewardedStart() => ConsoleUI.Instance.Log("ON REWARDED: START");
         private void OnRewardedReward(string value)
@@ -110,11 +128,20 @@ namespace Examples.Ads
             if (value == "GEMS")
                 ConsoleUI.Instance.Log("ON REWARDED: +5 GEMS");
         }
-        private void OnRewardedClose(bool success) => ConsoleUI.Instance.Log("ON REWARDED: CLOSE");
+        private void OnRewardedClose(bool success) => ConsoleUI.Instance.Log("ON REWARDED: CLOSE: " + success);
 
         private void OnStickyStart() => ConsoleUI.Instance.Log("ON STICKY: START");
         private void OnStickyClose(bool success) => ConsoleUI.Instance.Log("ON STICKY: CLOSE: " + success);
         private void OnStickyRender() => ConsoleUI.Instance.Log("ON STICKY: RENDER");
         private void OnStickyRefresh() => ConsoleUI.Instance.Log("ON STICKY: REFRESH");
+
+        private void OnFullscreenStartEVENT() => ConsoleUI.Instance.Log("ON FULLSCREEN START EVENT");
+        private void OnFullscreenCloseEVENT(bool success) => ConsoleUI.Instance.Log("ON FULLSCREEN CLOSE EVENT: " + success);
+
+        private void OnPreloaderStartEVENT() => ConsoleUI.Instance.Log("ON PRELOADER EVENT: START");
+        private void OnPreloaderCloseEVENT(bool success) => ConsoleUI.Instance.Log("ON PRELOADER EVENT: CLOSE: " + success);
+
+        private void OnRewardedStartEVENT() => ConsoleUI.Instance.Log("ON REWARDED EVENT: START");
+        private void OnRewardedCloseEVENT(bool success) => ConsoleUI.Instance.Log("ON REWARDED EVENT: CLOSE: " + success);
     }
 }

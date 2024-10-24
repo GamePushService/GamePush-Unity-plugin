@@ -307,6 +307,9 @@ namespace GamePushEditor
 
             ChangeDefineSymbols("YANDEX_SIMPLE_MONETIZATION", isYAMON);
             ConfigurePluginsForBuild(isYAMON);
+            CustomGradleTemplates(isYAMON);
+
+            GP_Logger.SystemLog("Config set");
         }
 
         private static void ChangeDefineSymbols(string symbols, bool isSet)
@@ -332,7 +335,7 @@ namespace GamePushEditor
             if (importer != null)
             {
                 importer.SetCompatibleWithPlatform(BuildTarget.Android, isSet);
-                Debug.Log($"{pluginPath} is now set {isSet} in the build.");
+                //Debug.Log($"{pluginPath} is now set {isSet} in the build.");
             }
 
             // Пример: отключение целой папки
@@ -341,10 +344,61 @@ namespace GamePushEditor
             if (folderImporter != null)
             {
                 folderImporter.SetCompatibleWithPlatform(BuildTarget.Android, isSet);
-                Debug.Log($"{androidLibPath} is now set {isSet} in the build.");
+                //Debug.Log($"{androidLibPath} is now set {isSet} in the build.");
+            }
+
+
+            AssetDatabase.SaveAssets();
+        }
+
+        public static void CustomGradleTemplates(bool isSet)
+        {
+            string mainTemplate = "Assets/Plugins/Android/mainTemplate.gradle";
+            string gradleTemplate = "Assets/Plugins/Android/gradleTemplate.properties";
+
+            string mainTemplateDis = "Assets/Plugins/Android/mainTemplate.gradle.DISABLED";
+            string gradleTemplateDis = "Assets/Plugins/Android/gradleTemplate.properties.DISABLED";
+
+            // Directory.CreateDirectory("Assets/Plugins/Android");
+
+            if (isSet)
+            {
+                if (File.Exists(mainTemplateDis))
+                {
+                    File.Copy(mainTemplateDis, mainTemplate);
+                    File.Delete(mainTemplateDis);
+                    File.Delete(mainTemplateDis + ".meta");
+                }
+
+                if (File.Exists(gradleTemplateDis))
+                {
+                    File.Copy(gradleTemplateDis, gradleTemplate);
+                    File.Delete(gradleTemplateDis);
+                    File.Delete(gradleTemplateDis + ".meta");
+                }
+                    
+            }
+            else
+            {
+                if (File.Exists(mainTemplate))
+                {
+                    File.Copy(mainTemplate, mainTemplateDis);
+                    File.Delete(mainTemplate);
+                    File.Delete(mainTemplate + ".meta");
+                }
+                    
+
+                if (File.Exists(gradleTemplate))
+                {
+                    File.Copy(gradleTemplate, gradleTemplateDis);
+                    File.Delete(gradleTemplate);
+                    File.Delete(gradleTemplate + ".meta");
+                }
+                    
             }
 
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private static bool ValidateToken(string input)

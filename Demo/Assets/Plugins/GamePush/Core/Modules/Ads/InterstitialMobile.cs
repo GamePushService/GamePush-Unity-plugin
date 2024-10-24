@@ -76,7 +76,6 @@ namespace GamePush.Mobile
             interstitial.Show();
             SetPlaying(true);
 #else
-            OnFullscreenStart?.Invoke();
             OnFullscreenClose?.Invoke(false);
 #endif
         }
