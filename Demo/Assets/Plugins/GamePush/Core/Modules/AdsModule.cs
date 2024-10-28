@@ -613,7 +613,7 @@ namespace GamePush.Core
             try
             {
                 var json = PlayerPrefs.GetString("adsInfo", null);
-                Logger.Log(json);
+                //Logger.Log(json);
                 var info = string.IsNullOrEmpty(json) ? new PlayerAdsInfo() : JsonUtility.FromJson<PlayerAdsInfo>(json);
                 
                 return info;

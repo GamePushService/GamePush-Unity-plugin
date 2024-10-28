@@ -41,6 +41,8 @@ namespace GamePush.Core
             keyValueData = new Dictionary<string, object>();
         }
 
+        public void Init(List<GameVariable> gameVariables) => SetVariablesData(gameVariables);
+
         public void SetVariablesData(List<GameVariable> gameVariables)
         {
             variablesData = gameVariables;

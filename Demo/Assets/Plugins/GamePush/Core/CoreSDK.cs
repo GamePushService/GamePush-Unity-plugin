@@ -27,6 +27,8 @@ namespace GamePush
         public static GameVariables variables;
         public static AdsModule ads;
 
+        public static DeviceModule device;
+
         #region ServerTime
 
         private static DateTime serverTime;
@@ -95,6 +97,8 @@ namespace GamePush
             variables = new GameVariables();
             platform = new PlatformModule();
             ads = new AdsModule();
+
+            device = new DeviceModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
@@ -138,7 +142,7 @@ namespace GamePush
             SetServerTime(allData.serverTime);
 
             player.Init(configData.playerFields);
-            variables.SetVariablesData(configData.gameVariables);
+            variables.Init(configData.gameVariables);
             platform.Init(configData.platformConfig);
             ads.Init(configData.project.ads, configData.platformConfig);
         }
