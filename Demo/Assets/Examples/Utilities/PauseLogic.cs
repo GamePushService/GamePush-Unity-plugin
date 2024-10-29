@@ -15,7 +15,10 @@ public class PauseLogic : MonoBehaviour
         GP_Game.OnPause += PauseGame;
         GP_Game.OnResume += UnpauseGame;
 
-        GP_Ads.OnAdsStart += AdStart;
+        GP_Ads.OnPreloaderStart += AdStart;
+        GP_Ads.OnFullscreenStart += AdStart;
+        GP_Ads.OnRewardedStart += AdStart;
+
         GP_Ads.OnAdsClose += AdClose;
     }
 
@@ -24,7 +27,10 @@ public class PauseLogic : MonoBehaviour
         GP_Game.OnPause -= PauseGame;
         GP_Game.OnResume -= UnpauseGame;
 
-        GP_Ads.OnAdsStart -= AdStart;
+        GP_Ads.OnPreloaderStart -= AdStart;
+        GP_Ads.OnFullscreenStart -= AdStart;
+        GP_Ads.OnRewardedStart -= AdStart;
+
         GP_Ads.OnAdsClose -= AdClose;
     }
 

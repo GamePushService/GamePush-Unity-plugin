@@ -22,6 +22,7 @@ namespace GamePushEditor
 
         private static bool _showPreloaderAd;
         private static bool _gameReadyAuto;
+        private static bool _waitPluginReady;
 
         private static SavedProjectData _projectData;
 
@@ -199,6 +200,8 @@ namespace GamePushEditor
             _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
             GUILayout.Space(5);
             _gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _gameReadyAuto);
+            GUILayout.Space(5);
+            _waitPluginReady = EditorGUILayout.Toggle("Auto wait plugin ready", _waitPluginReady);
 
             GUILayout.Space(25);
 
