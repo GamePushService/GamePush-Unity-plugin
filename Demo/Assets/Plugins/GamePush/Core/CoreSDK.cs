@@ -159,9 +159,4 @@ namespace GamePush
         }
     }
 
-    public class DeviceModule
-    {
-        public bool isMobile;
-    }
-
 }
