@@ -8,7 +8,7 @@ namespace GamePush
     [CreateAssetMenu(fileName = "GP_PlatformSettings", menuName = "GP_Settings/GP_PlatformSettings")]
     public class GP_PlatformSettings : ScriptableObject
     {
-        [SerializeField] public Platform PlatformToEmulate = Platform.None;
+        [SerializeField] public Platform PlatformToEmulate = Platform.NONE;
         [SerializeField] public Language Language = Language.English;
         [Header("Device")]
         [SerializeField] public bool IsMobile = true;
