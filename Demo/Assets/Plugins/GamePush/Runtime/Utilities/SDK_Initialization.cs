@@ -72,7 +72,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Storage>();
 
             SDK.AddComponent<GameStateService>();
-
+            SDK.AddComponent<DeviceStateService>();
 #if CUSTOM_ADS_MOBILE
             SDK.AddComponent<MobileAdsService>();
 #endif

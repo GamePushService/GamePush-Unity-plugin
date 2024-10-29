@@ -4,25 +4,26 @@ using UnityEngine;
 
 namespace GamePush.Core
 {
-    
-    public class DeviceModule : MonoBehaviour
+    public class DeviceModule
     {
-        public bool isMobile;
-        public bool isPortrait;
+        public bool isMobile { get; private set; }
+        public bool isPortrait { get; private set; }
+
+        public void SetPortrate(bool value) => isPortrait = value;
 
         public event Action OnChangeOrientation;
 
         public DeviceModule()
         {
-            
-            //if (DeviceOrientation.
-
-            
+#if UNITY_ANDROID
+            isMobile = true;
+#endif
         }
 
-       
-
-
+        public void ChangeOrientation()
+        {
+            OnChangeOrientation?.Invoke();
+        }
 
     }
 }

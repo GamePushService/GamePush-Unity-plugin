@@ -16,9 +16,15 @@ namespace GamePush
         private static event Action _onFullscreenOpen;
         private static event Action _onFullscreenClose;
 
-
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("libARWrapper.so")]
         private static extern void GP_Fullscreen_Open();
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Fullscreen_Close();
+        [DllImport("libARWrapper.so")]
+        private static extern void GP_Fullscreen_Toggle();
+#endif
+
         public static void Open(Action onFullscreenOpen = null)
         {
             _onFullscreenOpen = onFullscreenOpen;
@@ -33,9 +39,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Fullscreen_Close();
         public static void Close(Action onFullscreenClose = null)
         {
             _onFullscreenClose = onFullscreenClose;
@@ -50,9 +53,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Fullscreen_Toggle();
         public static void Toggle()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

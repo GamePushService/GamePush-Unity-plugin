@@ -1,50 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GamePush.Core;
 
 namespace GamePush.Services
 {
-    [ExecuteAlways]
+    //[ExecuteAlways]
     public class DeviceStateService : MonoBehaviour
     {
         ScreenOrientation currentOrientation;
 
-
-        bool isPortrate = CoreSDK.device.isPortrait;
-
-        void SetPortrate(bool isSet) => isPortrate = isSet;
-
-        private void Awake()
+        void SetPortrate(bool value)
         {
+            if (CoreSDK.isInit)
+                CoreSDK.device.SetPortrate(value);
+        }
 
+        private async void Start()
+        {
+            await GP_Init.Ready;
+            SetOrientation(Screen.orientation);
         }
 
         private void Update()
         {
             if(Screen.orientation != currentOrientation)
             {
-                switch(Screen.orientation)
-                {
-                    case ScreenOrientation.Portrait:
-                        SetPortrate(true);
-                        break;
-                    case ScreenOrientation.PortraitUpsideDown:
-                        SetPortrate(true);
-                        break;
-                    case ScreenOrientation.LandscapeLeft:
-                        SetPortrate(false);
-                        break;
-                    case ScreenOrientation.LandscapeRight:
-                        SetPortrate(false);
-                        break;
-                    case ScreenOrientation.AutoRotation:
-                        SetPortrate(GetIsPortrate());
-                        break;
-
-                }
+                SetOrientation(Screen.orientation);
                 currentOrientation = Screen.orientation;
+                CoreSDK.device.ChangeOrientation();
             }
 
+        }
+
+        void SetOrientation(ScreenOrientation orientation)
+        {
+            switch (orientation)
+            {
+                case ScreenOrientation.Portrait:
+                    SetPortrate(true);
+                    break;
+                case ScreenOrientation.PortraitUpsideDown:
+                    SetPortrate(true);
+                    break;
+                case ScreenOrientation.LandscapeLeft:
+                    SetPortrate(false);
+                    break;
+                case ScreenOrientation.LandscapeRight:
+                    SetPortrate(false);
+                    break;
+                case ScreenOrientation.AutoRotation:
+                    SetPortrate(GetIsPortrate());
+                    break;
+
+            }
         }
 
 

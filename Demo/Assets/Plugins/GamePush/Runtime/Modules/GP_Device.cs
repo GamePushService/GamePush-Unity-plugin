@@ -15,12 +15,7 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.device.OnChangeOrientation += CallChangeOrientation;
-        }
-
-        private void OnDisable()
-        {
-            CoreSDK.device.OnChangeOrientation -= CallChangeOrientation;
+            CoreSDK.device.OnChangeOrientation += () => OnChangeOrientation?.Invoke();
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
