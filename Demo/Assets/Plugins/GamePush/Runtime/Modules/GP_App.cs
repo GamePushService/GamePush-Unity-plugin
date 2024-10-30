@@ -77,7 +77,7 @@ namespace GamePush
             string cover = "";
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            string cover = GP_App_Image();
+            cover = GP_App_Image();
 #endif
             if (cover == null || cover == "") return;
             await UtilityImage.DownloadImageAsync(cover, image);

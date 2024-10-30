@@ -209,7 +209,7 @@ namespace GamePush
 #endif
         }
 
-#if UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL
         public async static void GetAvatar(Image image)
         {
             string avatar = GP_Player_GetAvatar();
