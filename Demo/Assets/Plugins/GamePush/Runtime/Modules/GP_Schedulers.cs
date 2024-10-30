@@ -46,9 +46,39 @@ namespace GamePush
         private void CallOnSchedulerJoin(string data) { OnSchedulerJoin?.Invoke(JsonUtility.FromJson<PlayerScheduler>(data)); }
         private void CallOnSchedulerJoinError(string error) { OnSchedulerJoinError?.Invoke(error); }
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Schedulers_Register(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern void GP_Schedulers_ClaimDay(string idOrTag, int day);
+        [DllImport("__Internal")]
+        private static extern void GP_Schedulers_ClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
+        [DllImport("__Internal")]
+        private static extern void GP_Schedulers_ClaimAllDay(string idOrTag, int day);
+        [DllImport("__Internal")]
+        private static extern void GP_Schedulers_ClaimAllDays(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_List();
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_ActiveList();
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_GetScheduler(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_GetSchedulerDay(string idOrTag, int day);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_GetSchedulerCurrentDay(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_IsRegistered(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_IsTodayRewardClaimed(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_CanClaimDay(string idOrTag, int day);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_CanClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Schedulers_CanClaimAllDay(string idOrTag, int day);
+#endif
+
         public static void Register(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -59,8 +89,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Schedulers_ClaimDay(string idOrTag, int day);
         public static void ClaimDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -71,8 +99,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Schedulers_ClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
         public static void ClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -83,8 +109,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Schedulers_ClaimAllDay(string idOrTag, int day);
         public static void ClaimAllDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -95,8 +119,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Schedulers_ClaimAllDays(string idOrTag);
         public static void ClaimAllDays(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -107,8 +129,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_List();
         public static SchedulerData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -122,8 +142,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_ActiveList();
         public static PlayerScheduler[] ActiveList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -137,8 +155,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_GetScheduler(string idOrTag);
         public static SchedulerInfo GetScheduler(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -152,8 +168,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_GetSchedulerDay(string idOrTag, int day);
         public static SchedulerDayInfo GetSchedulerDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -167,8 +181,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_GetSchedulerCurrentDay(string idOrTag);
         public static SchedulerDayInfo GetSchedulerCurrentDay(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -182,8 +194,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_IsRegistered(string idOrTag);
         public static bool IsRegistered(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -196,9 +206,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_IsTodayRewardClaimed(string idOrTag);
         public static bool IsTodayRewardClaimed(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -211,9 +218,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_CanClaimDay(string idOrTag, int day);
         public static bool CanClaimDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -226,9 +230,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_CanClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
         public static bool CanClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -241,8 +242,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Schedulers_CanClaimAllDay(string idOrTag, int day);
         public static bool CanClaimAllDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

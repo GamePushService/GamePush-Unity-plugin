@@ -36,22 +36,22 @@ namespace GamePush
         private static event Action _onAchievementsProgressError;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Achievements_Open();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Achievements_Fetch();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Achievements_Unlock(string idOrTag);
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Achievements_SetProgress(string idOrTag, int progress);
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Achievements_Has(string idOrTag);
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern int GP_Achievements_GetProgress(string idOrTag);
 
 #endif

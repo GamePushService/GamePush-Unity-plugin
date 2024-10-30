@@ -11,6 +11,7 @@ namespace GamePush
     public class GP_Channels : GP_Module
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Channels);
+
         #region Actions
 
         public static event UnityAction<CreateChannelData> OnCreateChannel;
@@ -88,7 +89,6 @@ namespace GamePush
         public static event UnityAction<GP_Data, bool> OnFetchChannelInvites;
         public static event UnityAction OnFetchChannelInvitesError;
 
-
         public static event UnityAction<GP_Data, bool> OnFetchMoreChannelInvites;
         public static event UnityAction OnFetchMoreChannelInvitesError;
 
@@ -159,13 +159,110 @@ namespace GamePush
 
         #endregion
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+
+        [DllImport("__Internal")]
         private static extern void GP_Channels_OpenChat(int channel_ID);
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
+        [DllImport("__Internal")]
+        private static extern string GP_Channels_IsMainChatEnabled();
+        [DllImport("__Internal")]
+        private static extern int GP_Channels_MainChatId();
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_Join(int channel_ID, string password);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_CancelJoin(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_Leave(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_Kick(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_Mute_Seconds(int channel_ID, int player_ID, int seconds);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_Mute_UnmuteAt(int channel_ID, int player_ID, string unmuteAt);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_UnMute(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_SendInvite(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_CancelInvite(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_AcceptInvite(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_RejectInvite(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchInvites(int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreInvites(int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchChannelInvites(int channel_ID, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreChannelInvites(int channel_ID, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchSentInvites(int channel_ID, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreSentInvites(int channel_ID, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_AcceptJoinRequest(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_RejectJoinRequest(int channel_ID, int player_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchJoinRequests(int channel_ID, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreJoinRequests(int channel_ID, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_SendMessage(int channel_ID, string text, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_SendPersonalMessage(int player_ID, string text, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_SendFeedMessage(int player_ID, string text, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_EditMessage(string message_ID, string text);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_DeleteMessage(string message_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMessages(int channel_ID, string tags, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchPersonalMessages(int player_ID, string tags, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchFeedMessages(int player_ID, string tags, int limit, int offset);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreMessages(int channel_ID, string tags, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMorePersonalMessages(int player_ID, string tags, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreFeedMessages(int player_ID, string tags, int limit);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_DeleteChannel(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchChannel(int channel_ID);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_CreateChannel(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_UpdateChannel(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchChannels(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreChannels(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMembers(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Channels_FetchMoreMembers(string filter);
 
+        #endregion
+#endif
 
-
+        #region Methods
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
@@ -222,8 +319,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
         public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
@@ -238,8 +333,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
         public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
@@ -254,8 +347,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Channels_IsMainChatEnabled();
         public static bool IsMainChatEnabled()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -267,9 +358,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Channels_MainChatId();
         public static int MainChatId()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -281,9 +369,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_Join(int channel_ID, string password);
         public static void Join(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -293,6 +378,7 @@ namespace GamePush
             ConsoleLog("JOIN");
 #endif
         }
+
         public static void Join(int channel_ID, string password)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -303,8 +389,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_CancelJoin(int channel_ID);
         public static void CancelJoin(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -315,8 +399,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_Leave(int channel_ID);
         public static void Leave(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -327,8 +409,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_Kick(int channel_ID, int player_ID);
         public static void Kick(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -339,8 +419,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_Mute_Seconds(int channel_ID, int player_ID, int seconds);
         public static void Mute(int channel_ID, int player_ID, int seconds)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -351,8 +429,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_Mute_UnmuteAt(int channel_ID, int player_ID, string unmuteAt);
         public static void Mute(int channel_ID, int player_ID, string unmuteAT)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -363,8 +439,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_UnMute(int channel_ID, int player_ID);
         public static void UnMute(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -375,8 +449,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_SendInvite(int channel_ID, int player_ID);
         public static void SendInvite(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -387,8 +459,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_CancelInvite(int channel_ID, int player_ID);
         public static void CancelInvite(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -399,8 +469,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_AcceptInvite(int channel_ID);
         public static void AcceptInvite(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -411,8 +479,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_RejectInvite(int channel_ID);
         public static void RejectInvite(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -423,8 +489,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchInvites(int limit, int offset);
         public static void FetchInvites(int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -435,8 +499,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreInvites(int limit);
         public static void FetchMoreInvites(int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -447,8 +509,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchChannelInvites(int channel_ID, int limit, int offset);
         public static void FetchChannelInvites(int channel_ID, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -459,8 +519,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreChannelInvites(int channel_ID, int limit);
         public static void FetchMoreChannelInvites(int channel_ID, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -471,8 +529,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchSentInvites(int channel_ID, int limit, int offset);
         public static void FetchSentInvites(int channel_ID, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -483,8 +539,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreSentInvites(int channel_ID, int limit);
         public static void FetchMoreSentInvites(int channel_ID, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -495,8 +549,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_AcceptJoinRequest(int channel_ID, int player_ID);
         public static void AcceptJoinRequest(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -507,8 +559,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_RejectJoinRequest(int channel_ID, int player_ID);
         public static void RejectJoinRequest(int channel_ID, int player_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -519,8 +569,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchJoinRequests(int channel_ID, int limit, int offset);
         public static void FetchJoinRequests(int channel_ID, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -531,8 +579,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreJoinRequests(int channel_ID, int limit);
         public static void FetchMoreJoinRequests(int channel_ID, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -543,8 +589,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
         public static void FetchSentJoinRequests(int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -555,8 +599,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
         public static void FetchMoreSentJoinRequests(int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -567,8 +609,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_SendMessage(int channel_ID, string text, string tags);
         public static void SendMessage(int channel_ID, string text, string tags = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -579,8 +619,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_SendPersonalMessage(int player_ID, string text, string tags);
         public static void SendPersonalMessage(int player_ID, string text, string tags = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -591,8 +629,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_SendFeedMessage(int player_ID, string text, string tags);
         public static void SendFeedMessage(int player_ID, string text, string tags = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -603,8 +639,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_EditMessage(string message_ID, string text);
         public static void EditMessage(string message_ID, string text)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -615,8 +649,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_DeleteMessage(string message_ID);
         public static void DeleteMessage(string message_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -627,8 +659,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMessages(int channel_ID, string tags, int limit, int offset);
         public static void FetchMessages(int channel_ID, string tags, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -639,8 +669,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchPersonalMessages(int player_ID, string tags, int limit, int offset);
         public static void FetchPersonalMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -651,8 +679,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchFeedMessages(int player_ID, string tags, int limit, int offset);
         public static void FetchFeedMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -663,8 +689,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreMessages(int channel_ID, string tags, int limit);
         public static void FetchMoreMessages(int channel_ID, string tags, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -675,8 +699,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMorePersonalMessages(int player_ID, string tags, int limit);
         public static void FetchMorePersonalMessages(int player_ID, string tags, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -687,8 +709,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreFeedMessages(int player_ID, string tags, int limit);
         public static void FetchMoreFeedMessages(int player_ID, string tags, int limit = 50)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -699,9 +719,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_DeleteChannel(int channel_ID);
         public static void DeleteChannel(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -712,8 +729,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchChannel(int channel_ID);
         public static void FetchChannel(int channel_ID)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -724,9 +739,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_CreateChannel(string filter);
         public static void CreateChannel(CreateChannelFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -737,9 +749,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_UpdateChannel(string filter);
         public static void UpdateChannel(UpdateChannelFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -750,8 +759,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchChannels(string filter);
         public static void FetchChannels(FetchChannelsFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -762,8 +769,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreChannels(string filter);
         public static void FetchMoreChannels(FetchMoreChannelsFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -774,8 +779,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMembers(string filter);
         public static void FetchMembers(FetchMembersFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -786,8 +789,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Channels_FetchMoreMembers(string filter);
         public static void FetchMoreMembers(FetchMoreMembersFilter filter)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -797,9 +798,9 @@ namespace GamePush
             ConsoleLog("FETCH MORE MEMBERS");
 #endif
         }
+#endregion
 
-
-        #region CALL
+#region Callbacks
         private void CallOnOpenChat() { OnOpenChat?.Invoke(); _onOpenChat?.Invoke(); }
         private void CallOnCloseChat()
         {
@@ -814,7 +815,6 @@ namespace GamePush
         private void CallOnCreateChannel(string data) => OnCreateChannel?.Invoke(JsonUtility.FromJson<CreateChannelData>(data));
         private void CallOnCreateChannelError() => OnCreateChannelError?.Invoke();
 
-
         private void CallOnUpdateChannel(string data) => OnUpdateChannel?.Invoke(JsonUtility.FromJson<UpdateChannelData>(data));
         private void CallOnUpdateChannelError() => OnUpdateChannelError?.Invoke();
 
@@ -822,35 +822,28 @@ namespace GamePush
         private void CallOnDeleteChannelEvent(int channel_ID) => OnDeleteChannelEvent?.Invoke(channel_ID);
         private void CallOnDeleteChannelError() => OnDeleteChannelError?.Invoke();
 
-
         private void CallOnFetchChannel(string data) => OnFetchChannel?.Invoke(JsonUtility.FromJson<FetchChannelData>(data));
         private void CallOnFetchChannelError() => OnFetchChannelError?.Invoke();
-
 
         private void CallOnFetchChannels(string data) => OnFetchChannels?.Invoke(UtilityJSON.GetList<FetchChannelData>(data), _canLoadMoreFetchChannels);
         private bool _canLoadMoreFetchChannels;
         private void CallOnFetchChannelsCanLoadMore(string canLoadMore) => _canLoadMoreFetchChannels = canLoadMore == "true";
         private void CallOnFetchChannelsError() => OnFetchChannelsError?.Invoke();
 
-
         private void CallOnFetchMoreChannels(string data) => OnFetchMoreChannels?.Invoke(UtilityJSON.GetList<FetchChannelData>(data), _canLoadMoreFetchMoreChannels);
         private bool _canLoadMoreFetchMoreChannels;
         private void CallOnFetchMoreChannelsCanLoadMore(string canLoadMore) => _canLoadMoreFetchMoreChannels = canLoadMore == "true";
         private void CallOnFetchMoreChannelsError() => OnFetchMoreChannelsError?.Invoke();
 
-
         private void CallOnJoinSuccess() => OnJoinSuccess?.Invoke();
         private void CallOnJoinEvent(string data) => OnJoinEvent?.Invoke(new GP_Data(data));
         private void CallOnJoinError() => OnJoinError?.Invoke();
 
-
         private void CallOnJoinRequest(string data) => OnJoinRequest?.Invoke(new GP_Data(data));
-
 
         private void CallOnCancelJoinSuccess() => OnCancelJoinSuccess?.Invoke();
         private void CallOnCancelJoinEvent(string data) => OnCancelJoinEvent?.Invoke(JsonUtility.FromJson<CancelJoinData>(data));
         private void CallOnCancelJoinError() => OnCancelJoinError?.Invoke();
-
 
         private void CallOnLeaveSuccess() => OnLeaveSuccess?.Invoke();
         private void CallOnLeaveEvent(string data) => OnLeaveEvent?.Invoke(JsonUtility.FromJson<MemberLeaveData>(data));
@@ -1026,7 +1019,7 @@ namespace GamePush
         private bool _canLoadMoreFetchMoreFeedMessages;
         private void CallOnFetchMoreFeedMessagesCanLoadMore(string canLoadMore) => _canLoadMoreFetchMoreFeedMessages = canLoadMore == "true";
         private void CallOnFetchMoreFeedMessagesError() => OnFetchMoreFeedMessagesError?.Invoke();
-        #endregion
+#endregion
     }
 
 

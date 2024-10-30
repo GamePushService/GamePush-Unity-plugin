@@ -33,9 +33,17 @@ namespace GamePush
         private static void LogMessage(string title, string text) =>
             DebugLog($" GP: {title}: {text}");
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_LoggerInfo(string title, string text);
+        [DllImport("__Internal")]
+        private static extern string GP_LoggerWarn(string title, string text);
+        [DllImport("__Internal")]
+        private static extern string GP_LoggerError(string title, string text);
+        [DllImport("__Internal")]
+        private static extern string GP_LoggerLog(string title, string text);
+#endif
+
         public static void Info(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +53,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_LoggerWarn(string title, string text);
         public static void Warn(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -56,8 +62,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_LoggerError(string title, string text);
         public static void Error(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -67,8 +71,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_LoggerLog(string title, string text);
         public static void Log(string title = "", string text = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -80,13 +82,13 @@ namespace GamePush
 
         public static void ModuleLog(string log, ModuleName name)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (GP_ConsoleController.Instance.IsModuleLogs(name))
                 Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
 
-            #else
+#else
             Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
-            #endif
+#endif
         }
 
         public static void SystemLog(string text) =>

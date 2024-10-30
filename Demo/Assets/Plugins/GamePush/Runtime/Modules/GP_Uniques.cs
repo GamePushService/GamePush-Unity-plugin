@@ -26,8 +26,19 @@ namespace GamePush
         private static event Action<string> _onUniqueValueDeleteError;
 
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_UniquesRegister(string tag, string value);
+        [DllImport("__Internal")]
+        private static extern string GP_UniquesGet(string tag);
+        [DllImport("__Internal")]
+        private static extern string GP_UniquesList();
+        [DllImport("__Internal")]
+        private static extern void GP_UniquesCheck(string tag, string value);
+        [DllImport("__Internal")]
+        private static extern void GP_UniquesDelete(string tag);
+#endif
+
         public static void Register(
             string tag,
             string value,
@@ -44,8 +55,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_UniquesGet(string tag);
         public static string Get(string tag)
         {
 
@@ -59,8 +68,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_UniquesList();
         public static UniquesData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -72,8 +79,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_UniquesCheck(string tag, string value);
         public static void Check(
             string tag,
             string value,
@@ -90,8 +95,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_UniquesDelete(string tag);
         public static void Delete(
             string tag,
             Action<string> onUniqueValueDelete = null,

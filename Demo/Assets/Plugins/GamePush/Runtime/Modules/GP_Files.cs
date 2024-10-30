@@ -12,6 +12,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Files);
 
+        #region Actions
         public static event UnityAction<FileData> OnUploadSuccess;
         public static event UnityAction OnUploadError;
 
@@ -54,9 +55,28 @@ namespace GamePush
 
         private static event Action<List<FileData>, bool> _onFetchMore;
         private static event Action _onFetchMoreError;
+        #endregion
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern void GP_Files_Upload(string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_UploadUrl(string url, string filename, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_UploadContent(string content, string filename, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_LoadContent(string url);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_ChooseFile(string type);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_Fetch(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Files_FetchMore(string filter);
+        #endregion
+#endif
+
+        #region Methods
         public static void Upload(string tags, Action<FileData> onUpload = null, Action onUploadError = null)
         {
             _onUpload = onUpload;
@@ -70,9 +90,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_UploadUrl(string url, string filename, string tags);
         public static void UploadUrl(string url, string filename = "", string tags = "", Action<FileData> onUploadUrl = null, Action onUploadUrlError = null)
         {
             _onUploadUrl = onUploadUrl;
@@ -86,9 +103,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_UploadContent(string content, string filename, string tags);
         public static void UploadContent(string content, string filename, string tags, Action<FileData> onUploadContent = null, Action onUploadContentError = null)
         {
             _onUploadContent = onUploadContent;
@@ -102,9 +116,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_LoadContent(string url);
         public static void LoadContent(string url, Action<string> onLoadContent = null, Action onLoadContentError = null)
         {
             _onLoadContent = onLoadContent;
@@ -118,9 +129,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_ChooseFile(string type);
         public static void ChooseFile(string type, Action<string> onFileChoose = null, Action onFileChooseError = null)
         {
             _onFileChoose = onFileChoose;
@@ -134,9 +142,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_Fetch(string filter);
         public static void Fetch(FilesFetchFilter filter = null, Action<List<FileData>, bool> onFetch = null, Action onFetchError = null)
         {
             _onFetch = onFetch;
@@ -153,9 +158,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Files_FetchMore(string filter);
         public static void FetchMore(FilesFetchMoreFilter filter = null, Action<List<FileData>, bool> onFetchMore = null, Action onFetchMoreError = null)
         {
             _onFetchMore = onFetchMore;
@@ -171,28 +173,23 @@ namespace GamePush
             ConsoleLog("FETCH MORE");
 #endif
         }
+#endregion
 
-
-
+#region Callbacks
         private void CallFilesUploadSuccess(string data) { OnUploadSuccess?.Invoke(JsonUtility.FromJson<FileData>(data)); _onUpload?.Invoke(JsonUtility.FromJson<FileData>(data)); }
         private void CallFilesUploadError() { OnUploadError?.Invoke(); _onUploadError?.Invoke(); }
-
 
         private void CallFilesUploadUrlSuccess(string data) { OnUploadUrlSuccess?.Invoke(JsonUtility.FromJson<FileData>(data)); _onUploadUrl?.Invoke(JsonUtility.FromJson<FileData>(data)); }
         private void CallFilesUploadUrlError() { OnUploadUrlError?.Invoke(); _onUploadUrlError?.Invoke(); }
 
-
         private void CallFilesUploadContentSuccess(string data) { OnUploadContentSuccess?.Invoke(JsonUtility.FromJson<FileData>(data)); _onUploadContent?.Invoke(JsonUtility.FromJson<FileData>(data)); }
         private void CallFilesUploadContentError() { OnUploadContentError?.Invoke(); _onUploadContentError?.Invoke(); }
-
 
         private void CallFilesLoadContentSuccess(string text) { OnLoadContent?.Invoke(text); _onLoadContent?.Invoke(text); }
         private void CallFilesLoadContentError() { OnLoadContentError?.Invoke(); _onLoadContentError?.Invoke(); }
 
-
         private void CallFilesChooseFile(string tempUrl) { OnChooseFile?.Invoke(tempUrl); _onFileChoose?.Invoke(tempUrl); }
         private void CallFilesChooseFileError() { OnChooseFileError?.Invoke(); _onFileChooseError?.Invoke(); }
-
 
         private bool _canLoadMoreFetch;
         private void CallFilesFetchCanLoadMore(string value) => _canLoadMoreFetch = value == "true";
@@ -214,6 +211,7 @@ namespace GamePush
             _onFetchMore?.Invoke(fetchData, _canLoadMoreFetchMore);
         }
 
+#endregion
     }
 
     [System.Serializable]

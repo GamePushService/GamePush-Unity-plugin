@@ -12,6 +12,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Images);
 
+        #region Actions
         public static event UnityAction<List<ImageData>> OnImagesFetchSuccess;
         public static event UnityAction<string> OnImagesFetchError;
         public static event UnityAction<bool> OnImagesCanLoadMore;
@@ -42,9 +43,26 @@ namespace GamePush
 
         public static event Action<string> _onImagesResize;
         public static event Action<string> _onImagesResizeError;
+        #endregion
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern void GP_Images_Choose();
+        [DllImport("__Internal")]
+        private static extern void GP_Images_Upload(string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Images_UploadUrl(string url, string tags);
+        [DllImport("__Internal")]
+        private static extern void GP_Images_Fetch(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Images_FetchMore(string filter);
+        [DllImport("__Internal")]
+        private static extern void GP_Images_Resize(string filter);
+        #endregion
+#endif
+
+        #region Methods
         public static void Choose(Action<string> onImagesChooseFile = null, Action<string> onImagesChooseError = null)
         {
             _onImagesChooseFile = onImagesChooseFile;
@@ -58,8 +76,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Images_Upload(string tags);
         public static void Upload(string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
             _onImagesUploadSuccess = onImagesUploadSuccess;
@@ -73,8 +89,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Images_UploadUrl(string url, string tags);
         public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadUrlSuccess = null, Action<string> onImagesUploadUrlError = null)
         {
             _onImagesUploadUrlSuccess = onImagesUploadUrlSuccess;
@@ -88,9 +102,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Images_Fetch(string filter);
         public static void Fetch(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
             _onImagesFetchSuccess = onImagesFetchSuccess;
@@ -107,8 +118,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Images_FetchMore(string filter);
         public static void FetchMore(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
             _onImagesFetchSuccess = onImagesFetchSuccess;
@@ -125,8 +134,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Images_Resize(string filter);
         public static void Resize(ImageResizeData resizeData = null, Action<string> onImagesResize = null, Action<string> onImagesResizeError = null)
         {
             _onImagesResize = onImagesResize;
@@ -150,8 +157,9 @@ namespace GamePush
             string formatUrl = url.Replace(".webp", format);
             return formatUrl;
         }
+        #endregion
 
-
+        #region Callbacks
         private void CallImagesFetchSuccess(string result)
         {
             List<ImageData> images = UtilityJSON.GetList<ImageData>(result);
@@ -221,7 +229,7 @@ namespace GamePush
             _onImagesResizeError?.Invoke(error);
             OnImagesResizeError?.Invoke(error);
         }
-
+        #endregion
     }
 
     [System.Serializable]

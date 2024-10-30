@@ -18,8 +18,21 @@ namespace GamePush
         private void CallOnEventJoin(string eventData) { OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData)); }
         private void CallOnEventJoinError(string error) { OnEventJoinError?.Invoke(error); }
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Events_Join(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Events_List();
+        [DllImport("__Internal")]
+        private static extern string GP_Events_ActiveList();
+        [DllImport("__Internal")]
+        private static extern string GP_Events_GetEvent(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Events_IsActive(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Events_IsJoined(string idOrTag);
+#endif
+
         public static void Join(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -30,8 +43,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Events_List();
         public static EventData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +56,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Events_ActiveList();
         public static PlayerEvents[] ActiveList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +69,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Events_GetEvent(string idOrTag);
         public static EventData GetEvent(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +82,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Events_IsActive(string idOrTag);
         public static bool IsActive(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -87,8 +92,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Events_IsJoined(string idOrTag);
         public static bool IsJoined(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

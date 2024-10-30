@@ -58,80 +58,59 @@ namespace GamePush
             CoreSDK.ads.OnPreloaderClose += (bool success) => OnPreloaderClose?.Invoke(success);
         }
 
-        private void OnDisable()
-        {
-            //CoreSDK.ads.OnAdsStart -= CallAdsStart;
-            //CoreSDK.ads.OnAdsClose -= CallAdsCloseBool;
-
-            //CoreSDK.ads.OnFullscreenStart -= CallAdsFullscreenStart;
-            //CoreSDK.ads.OnFullscreenClose -= CallAdsFullscreenCloseBool;
-
-            //CoreSDK.ads.OnRewardedReward -= CallAdsRewardedReward;
-            //CoreSDK.ads.OnRewardedStart -= CallAdsRewardedStart;
-            //CoreSDK.ads.OnRewardedClose -= CallAdsRewardedCloseBool;
-
-            //CoreSDK.ads.OnStickyStart -= CallAdsStickyStart;
-            //CoreSDK.ads.OnStickyClose -= CallAdsStickyCloseBool;
-            //CoreSDK.ads.OnStickyRefresh -= CallAdsStickyRefresh;
-            //CoreSDK.ads.OnStickyRender -= CallAdsStickyRender;
-
-            //CoreSDK.ads.OnPreloaderStart -= CallAdsPreloaderStart;
-            //CoreSDK.ads.OnPreloaderClose -= CallAdsPreloaderCloseBool;
-        }
-
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_ShowFullscreen();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_ShowRewarded(string idOrTag);
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_ShowPreloader();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_ShowSticky();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_CloseSticky();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Ads_RefreshSticky();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsStickyAvailable();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsFullscreenAvailable();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsAdblockEnabled();
         
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsRewardedAvailable();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsPreloaderAvailable();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsStickyPlaying();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsFullscreenPlaying();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsRewardedPlaying();
         
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsPreloaderPlaying();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsCountdownOverlayEnabled();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_IsRewardedFailedOverlayEnabled();
         
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Ads_CanShowFullscreenBeforeGamePlay();
 
 #endif

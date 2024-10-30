@@ -18,8 +18,19 @@ namespace GamePush
         public static event Action<string> _onCustomAsyncError;
 
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern void GP_CustomCall(string name, string args);
+        [DllImport("__Internal")]
+        private static extern string GP_CustomGetValue(string path);
+        [DllImport("__Internal")]
+        private static extern string GP_CustomReturn(string name, string args);
+        [DllImport("__Internal")]
+        private static extern void GP_CustomAsyncReturn(string name, string args);
+        #endregion
+#endif
+
         public static void Call(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -30,9 +41,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_CustomGetValue(string path);
         public static string Value(string path)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -44,9 +52,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_CustomReturn(string name, string args);
         public static string Return(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -59,8 +64,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_CustomAsyncReturn(string name, string args);
         public static void AsyncReturn(string name, string args = null, Action<string> onCustomAsyncReturn = null, Action<string> onCustomAsyncError = null)
         {
             _onCustomAsyncReturn = onCustomAsyncReturn;

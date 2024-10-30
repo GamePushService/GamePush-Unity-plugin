@@ -24,9 +24,27 @@ namespace GamePush
         private static event Action<object> _onGetGlobalValue;
         private static event Action<StorageField> _onSetGlobalValue;
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_StorageSetType(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageGet(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetString(string key, string value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetNumber(string key, float value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetBool(string key, bool value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageGetGlobal(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobalString(string key, string value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobalNumber(string key, float value);
+        [DllImport("__Internal")]
+        private static extern string GP_StorageSetGlobalBool(string key, bool value);
+#endif
+
         public static void SetStorage(SaveStorageType storage)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -36,8 +54,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageGet(string key);
         public static void Get(string key, Action<object> onGetValue)
         {
             _onGetValue = onGetValue;
@@ -48,13 +64,6 @@ namespace GamePush
             ConsoleLog("GET: VALUE: " + GetPref<object>(key).ToString());
 #endif
         }
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetString(string key, string value);
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetNumber(string key, float value);
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetBool(string key, bool value);
 
         public static void Set(string key, object value, Action<StorageField> onSetValue = null)
         {
@@ -68,6 +77,7 @@ namespace GamePush
 #endif
         }
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         private static void StorageSetValue(string key, object value)
         {
             if (value.GetType() == typeof(int))
@@ -93,10 +103,8 @@ namespace GamePush
             GP_StorageSetString(key, (string)value);
 
         }
+#endif
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageGetGlobal(string key);
         public static void GetGlobal(string key, Action<object> onGetGlobalValue)
         {
             _onGetGlobalValue = onGetGlobalValue;
@@ -109,13 +117,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetGlobalString(string key, string value);
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetGlobalNumber(string key, float value);
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_StorageSetGlobalBool(string key, bool value);
-
         public static void SetGlobal(string key, object value, Action<StorageField> onSetGlobalValue = null)
         {
             _onSetGlobalValue = onSetGlobalValue;
@@ -127,6 +128,7 @@ namespace GamePush
 #endif
         }
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         private static void StorageSetGlobalValue(string key, object value)
         {
             if (value.GetType() == typeof(int))
@@ -152,6 +154,7 @@ namespace GamePush
             GP_StorageSetGlobalString(key, (string)value);
 
         }
+#endif
 
         private static T GetPref<T>(string key)
         {
@@ -172,7 +175,6 @@ namespace GamePush
             else throw new PlayerPrefsException("No such key");
         }
 
-
         private static void SetPref<T>(string key, T value)
         {
             if (typeof(T) == typeof(int))
@@ -186,6 +188,8 @@ namespace GamePush
 
             PlayerPrefs.Save();
         }
+
+
 
         private void CallOnStorageGetValue(string result)
         {

@@ -15,8 +15,13 @@ namespace GamePush
         private void CallOnSegmentEnter(string tag) { OnSegmentEnter?.Invoke(tag); }
         private void CallOnSegmentLeave(string tag) { OnSegmentLeave?.Invoke(tag); }
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_Segments_List();
+        [DllImport("__Internal")]
+        private static extern string GP_Segments_Has(string tag);
+#endif
+
         public static string List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -29,8 +34,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Segments_Has(string tag);
         public static bool Has(string tag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

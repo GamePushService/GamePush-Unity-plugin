@@ -6,8 +6,13 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.System);
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_IsDev();
+        [DllImport("__Internal")]
+        private static extern string GP_IsAllowedOrigin();
+#endif
+
         public static bool IsDev()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -19,8 +24,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_IsAllowedOrigin();
         public static bool IsAllowedOrigin()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

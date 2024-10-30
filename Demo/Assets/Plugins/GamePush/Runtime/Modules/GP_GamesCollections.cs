@@ -9,6 +9,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.GamesCollections);
 
+        #region Actions
         public static event UnityAction OnGamesCollectionsOpen;
         public static event UnityAction OnGamesCollectionsClose;
 
@@ -20,12 +21,19 @@ namespace GamePush
 
         private static event Action<string, GamesCollectionsFetchData> _onGamesCollectionsFetch;
         private static event Action _onGamesCollectionsFetchError;
+        #endregion
 
         private string _gamesCollectionsFetchTag;
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern void GP_GamesCollections_Open(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern void GP_GamesCollections_Fetch(string idOrTag);
+        #endregion
+#endif
+
         public static void Open(string idOrTag, Action onGamesCollectionsOpen = null, Action onGamesCollectionsClose = null)
         {
             _onGamesCollectionsOpen = onGamesCollectionsOpen;
@@ -39,9 +47,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_GamesCollections_Fetch(string idOrTag);
         public static void Fetch(string idOrTag, Action<string, GamesCollectionsFetchData> onFetchSuccess = null, Action onFetchError = null)
         {
             _onGamesCollectionsFetch = onFetchSuccess;
@@ -58,9 +63,7 @@ namespace GamePush
         private void CallGamesCollectionsOpen() { _onGamesCollectionsOpen?.Invoke(); OnGamesCollectionsOpen?.Invoke(); }
         private void CallGamesCollectionsClose() { _onGamesCollectionsClose?.Invoke(); OnGamesCollectionsClose?.Invoke(); }
 
-
         private void CallGamesCollectionsFetch(string data) { _onGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsFetchData>(data)); OnGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsFetchData>(data)); }
-
 
         private void CallGamesCollectionsFetchTag(string idOrTag) => _gamesCollectionsFetchTag = idOrTag;
         private void CallGamesCollectionsFetchError() { _onGamesCollectionsFetchError?.Invoke(); OnGamesCollectionsFetchError?.Invoke(); }

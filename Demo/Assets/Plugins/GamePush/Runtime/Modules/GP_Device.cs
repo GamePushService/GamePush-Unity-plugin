@@ -13,17 +13,25 @@ namespace GamePush
         public static event UnityAction OnChangeOrientation;
         private void CallChangeOrientation() => OnChangeOrientation?.Invoke();
 
-        [DllImport("libARWrapper.so")]
+        private void OnEnable()
+        {
+            CoreSDK.device.OnChangeOrientation += () => OnChangeOrientation?.Invoke();
+        }
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_IsMobile();
+        
+        [DllImport("__Internal")]
+        private static extern string GP_IsPortrait();
+#endif
+
         public static bool IsMobile()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "true";
 #else
-            bool isMobile = GP_Settings.instance.GetFromPlatformSettings().IsMobile;
-            
-                ConsoleLog("IS MOBILE: " + isMobile.ToString());
-            return isMobile;
+            return CoreSDK.device.isMobile;
 #endif
         }
         public static bool IsDesktop()
@@ -31,24 +39,16 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "false";
 #else
-            bool isDesktop = !GP_Settings.instance.GetFromPlatformSettings().IsMobile;
-            
-                ConsoleLog("IS DESKTOP: " + isDesktop.ToString());
-            return isDesktop;
+            return !CoreSDK.device.isMobile;
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_IsPortrait();
         public static bool IsPortrait()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
-            bool isPortrait = GP_Settings.instance.GetFromPlatformSettings().IsPortrait;
-            
-                ConsoleLog("IS PORTRAIT: " + isPortrait.ToString());
-            return isPortrait;
+            return CoreSDK.device.isPortrait;
 #endif
         }
     }

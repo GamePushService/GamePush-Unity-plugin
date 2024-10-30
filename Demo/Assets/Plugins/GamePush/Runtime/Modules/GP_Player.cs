@@ -14,6 +14,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Player);
 
+        #region Actions
         public static event UnityAction OnConnect;
         public static event UnityAction OnPlayerChange;
         public static event UnityAction OnSyncComplete;
@@ -35,6 +36,7 @@ namespace GamePush
         public static event UnityAction<PlayerFetchFieldsData> OnFieldMaximum;
         public static event UnityAction<PlayerFetchFieldsData> OnFieldMinimum;
         public static event UnityAction<PlayerFetchFieldsData> OnFieldIncrement;
+        #endregion
 
         private void FieldMaximum(PlayerFetchFieldsData data) => OnFieldMaximum?.Invoke(data);
         private void FieldMinimum(PlayerFetchFieldsData data) => OnFieldMinimum?.Invoke(data);
@@ -82,8 +84,94 @@ namespace GamePush
             CoreSDK.player.OnFieldIncrement -= FieldIncrement;
         }
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern int GP_Player_GetID();
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetScore();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetName();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetAvatar();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetFieldName(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetFieldVariantName(string key, string value);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetFieldVariantAt(string key, string index);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetFieldVariantIndex(string key, string value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_SetName(string name);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_SetAvatar(string src);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_SetScore(float score);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_AddScore(float score);
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetNumberInt(string key);
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetNumberFloat(string key);
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetMaxValue(string key);
+        [DllImport("__Internal")]
+        private static extern float GP_Player_GetMinValue(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetString(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetBool(string key);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Set_Number(string key, float value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Set_Bool(string key, string value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Set_String(string key, string value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_SetFlag(string key, bool value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Add(string key, string value);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Toggle(string key);
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Reset();
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Remove();
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Sync(bool forceOverride = false, string storage = "preferred");
+        [DllImport("__Internal")]
+        private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
+        [DllImport("__Internal")]
+        private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Load();
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Login();
+        [DllImport("__Internal")]
+        private static extern void GP_Player_Logout();
+        [DllImport("__Internal")]
+        private static extern void GP_Player_FetchFields();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_Has(string key);
+        [DllImport("__Internal")]
+        private static extern string GP_Player_IsLoggedIn();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_HasAnyCredentials();
+        [DllImport("__Internal")]
+        private static extern string GP_Player_IsStub();
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetActiveDays();
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetActiveDaysConsecutive();
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetPlaytimeToday();
+        [DllImport("__Internal")]
+        private static extern int GP_Player_GetPlaytimeAll();
+        #endregion
+#endif
+
+        #region Methods
         public static int GetID()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -94,9 +182,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern float GP_Player_GetScore();
         public static float GetScore()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -106,9 +191,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetName();
         public static string GetName()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -118,10 +200,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetAvatar();
         public static string GetAvatarUrl()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -131,17 +209,15 @@ namespace GamePush
 #endif
         }
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         public async static void GetAvatar(Image image)
         {
             string avatar = GP_Player_GetAvatar();
             if (avatar == null || avatar == "") return;
             await UtilityImage.DownloadImageAsync(avatar, image);
         }
+#endif
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetFieldName(string key);
         public static string GetFieldName(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -151,10 +227,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetFieldVariantName(string key, string value);
         public static string GetFieldVariantName(string key, string value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -164,10 +236,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetFieldVariantAt(string key, string index);
         public static string GetFieldVariantAt(string key, int index)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -177,10 +245,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetFieldVariantIndex(string key, string value);
         public static string GetFieldVariantIndex(string key, string value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -190,10 +254,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_SetName(string name);
         public static void SetName(string name)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -203,10 +263,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_SetAvatar(string src);
         public static void SetAvatar(string src)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -216,10 +272,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_SetScore(float score);
         public static void SetScore(float score)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -228,6 +280,7 @@ namespace GamePush
             CoreSDK.player.SetScore(score);
 #endif
         }
+
         public static void SetScore(int score)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -237,10 +290,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_AddScore(float score);
         public static void AddScore(float score)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -249,6 +298,7 @@ namespace GamePush
             CoreSDK.player.AddScore(score);
 #endif
         }
+
         public static void AddScore(int score)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -263,8 +313,6 @@ namespace GamePush
             return CoreSDK.player.Get<T>(key);
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Player_GetNumberInt(string key);
         public static int GetInt(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -274,10 +322,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern float GP_Player_GetNumberFloat(string key);
         public static float GetFloat(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -287,8 +331,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern float GP_Player_GetMaxValue(string key);
         public static float GetMaxValue(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -299,8 +341,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern float GP_Player_GetMinValue(string key);
         public static float GetMinValue(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -329,8 +369,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetString(string key);
         public static string GetString(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -341,10 +379,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_GetBool(string key);
         public static bool GetBool(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -354,14 +388,6 @@ namespace GamePush
             return CoreSDK.player.Get<bool>(key);
 #endif
         }
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Set_Number(string key, float value);
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Set_Bool(string key, string value);
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Set_String(string key, string value);
 
         public static void Set(string key, string value)
         {
@@ -399,10 +425,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_SetFlag(string key, bool value);
         public static void SetFlag(string key, bool value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -412,10 +434,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Add(string key, string value);
         public static void Add(string key, float value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -434,10 +452,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Toggle(string key);
         public static void Toggle(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -447,10 +461,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Reset();
         public static void ResetPlayer()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -461,10 +471,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Remove();
         public static void Remove()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -475,8 +481,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Sync(bool forceOverride = false, string storage = "preferred");
         public static void Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -497,8 +501,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_EnableAutoSync(int interval = 10, string storage = "cloud");
         public static bool EnableAutoSync(int interval = 10, SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -509,8 +511,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_DisableAutoSync(string storage = "cloud");
         public static bool DisableAutoSync(SyncStorageType storage = SyncStorageType.cloud)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -521,8 +521,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Load();
         public static void Load()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -532,10 +530,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Login();
         public static void Login()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -546,8 +540,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_Logout();
         public static void Logout()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -558,10 +550,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Player_FetchFields();
         public static void FetchFields(Action<List<PlayerFetchFieldsData>> onFetchFields = null)
         {
             _onFetchFields = onFetchFields;
@@ -575,10 +563,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_Has(string key);
         public static bool Has(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -590,10 +574,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_IsLoggedIn();
         public static bool IsLoggedIn()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -605,10 +585,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_HasAnyCredentials();
         public static bool HasAnyCredentials()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -620,10 +596,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Player_IsStub();
         public static bool IsStub()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -635,8 +607,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Player_GetActiveDays();
         public static int GetActiveDays()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -648,8 +618,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Player_GetActiveDaysConsecutive();
         public static int GetActiveDaysConsecutive()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -661,8 +629,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Player_GetPlaytimeToday();
         public static int GetPlaytimeToday()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -674,8 +640,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern int GP_Player_GetPlaytimeAll();
         public static int GetPlaytimeAll()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -686,6 +650,10 @@ namespace GamePush
             return 0;
 #endif
         }
+
+#endregion
+
+#region Callbacks
 
         private void CallPlayerChange() => OnPlayerChange?.Invoke();
         private void CallPlayerConnect() => OnConnect?.Invoke();
@@ -715,5 +683,7 @@ namespace GamePush
             OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
         private void CallPlayerFieldIncrement(string field) =>
             OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+
+#endregion
     }
 }
