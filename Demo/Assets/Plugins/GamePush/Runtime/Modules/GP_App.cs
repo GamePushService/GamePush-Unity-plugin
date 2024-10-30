@@ -21,31 +21,31 @@ namespace GamePush
         private static event Action<bool> _onAddShortcut;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_Title();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_Description();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_Image();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_Url();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_ReviewRequest();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_IsAlreadyReviewed();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_CanReview();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_AddShortcut();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_App_CanAddShortcut();
 #endif
 

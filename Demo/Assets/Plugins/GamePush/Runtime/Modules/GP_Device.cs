@@ -19,10 +19,10 @@ namespace GamePush
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_IsMobile();
         
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_IsPortrait();
 #endif
 

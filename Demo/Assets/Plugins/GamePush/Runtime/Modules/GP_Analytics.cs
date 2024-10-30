@@ -8,10 +8,10 @@ namespace GamePush
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Analytics);
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Analytics_Hit(string url);
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Analytics_Goal(string eventName, string value);
 #endif
 

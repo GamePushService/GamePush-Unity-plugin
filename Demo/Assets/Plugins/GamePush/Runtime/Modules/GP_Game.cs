@@ -15,9 +15,23 @@ namespace GamePush
         private static event Action _onPause;
         private static event Action _onResume;
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_IsPaused();
+        [DllImport("__Internal")]
+        private static extern void GP_Pause();
+        [DllImport("__Internal")]
+        private static extern void GP_Resume();
+        [DllImport("__Internal")]
+        private static extern void GP_GameplayStart();
+        [DllImport("__Internal")]
+        private static extern void GP_GameplayStop();
+        [DllImport("__Internal")]
+        private static extern void GP_GameReady();
+        [DllImport("__Internal")]
+        private static extern void GP_HappyTime();
+#endif
+
         public static bool IsPaused()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -29,8 +43,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Pause();
         public static void Pause(Action onPause = null)
         {
             _onPause = onPause;
@@ -45,8 +57,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Resume();
         public static void Resume(Action onResume = null)
         {
             _onResume = onResume;
@@ -61,9 +71,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_GameplayStart();
         public static void GameplayStart()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -74,8 +81,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_GameplayStop();
         public static void GameplayStop()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -86,8 +91,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_GameReady();
         public static void GameReady()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -98,8 +101,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_HappyTime();
         public static void HappyTime()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -109,7 +110,6 @@ namespace GamePush
             Console.Log("GAME:", "HAPPY TIME!!!");
 #endif
         }
-
 
         private void CallOnPause() => OnPause?.Invoke();
         private void CallOnResume() => OnResume?.Invoke();

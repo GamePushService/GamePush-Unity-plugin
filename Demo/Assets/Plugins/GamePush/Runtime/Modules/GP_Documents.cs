@@ -23,9 +23,13 @@ namespace GamePush
         private static event Action _onDocumentsOpen;
         private static event Action _onDocumentsClose;
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Documents_Open();
+        [DllImport("__Internal")]
+        private static extern void GP_Documents_Fetch();
+#endif
+
         public static void Open(Action onDocumentsOpen = null, Action onDocumentsClose = null)
         {
             _onDocumentsOpen = onDocumentsOpen;
@@ -39,8 +43,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Documents_Fetch();
         public static void Fetch(Action<string> onFetchSuccess = null, Action onFetchError = null)
         {
             _onFetchSuccess = onFetchSuccess;

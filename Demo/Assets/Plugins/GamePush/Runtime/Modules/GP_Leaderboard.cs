@@ -24,8 +24,8 @@ namespace GamePush
         private string _leaderboardFetchTag;
         private string _leaderboardPlayerFetchTag;
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Open(
                 string orderBy = "score",
                 // DESC | ASC
@@ -39,19 +39,7 @@ namespace GamePush
                 // level,rank
                 string displayFields = ""
               );
-        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
-#else
-
-            ConsoleLog("OPEN");
-#endif
-        }
-
-
-
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Fetch(
             string tag = "",
             string orderBy = "score",
@@ -64,6 +52,25 @@ namespace GamePush
             // level,exp,rank
             string includeFields = ""
         );
+        [DllImport("__Internal")]
+        private static extern void GP_Leaderboard_FetchPlayerRating(
+            string tag = "",
+            string orderBy = "score",
+            // DESC | ASC
+            string order = "DESC"
+        );
+#endif
+
+        public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
+#else
+
+            ConsoleLog("OPEN");
+#endif
+        }
+
         public static void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -74,15 +81,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Leaderboard_FetchPlayerRating(
-            string tag = "",
-            string orderBy = "score",
-            // DESC | ASC
-            string order = "DESC"
-        );
         public static void FetchPlayerRating(string tag = "", string orderBy = "score", Order order = Order.DESC)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

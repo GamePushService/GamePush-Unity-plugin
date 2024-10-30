@@ -20,9 +20,25 @@ namespace GamePush
         private void CallOnRewardsAccept(string data) { OnRewardsAccept?.Invoke(JsonUtility.FromJson<AllRewardData>(data)); }
         private void CallOnRewardsAcceptError(string error) { OnRewardsAcceptError?.Invoke(error); }
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Rewards_Give(string idOrTag, bool lazy);
+        [DllImport("__Internal")]
+        private static extern void GP_Rewards_Accept(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_List();
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_GivenList();
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_GetReward(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_Has(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_HasAccepted(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Rewards_HasUnaccepted(string idOrTag);
+#endif
+
         public static void Give(string idOrTag, bool lazy = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -33,8 +49,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Rewards_Accept(string idOrTag);
         public static void Accept(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +59,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_List();
         public static RewardData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +72,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_GivenList();
         public static PlayerReward[] GivenList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +85,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_GetReward(string idOrTag);
         public static AllRewardData GetReward(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -90,8 +98,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_Has(string idOrTag);
         public static bool Has(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -104,8 +110,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_HasAccepted(string idOrTag);
         public static bool HasAccepted(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -118,8 +122,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Rewards_HasUnaccepted(string idOrTag);
         public static bool HasUnaccepted(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

@@ -17,11 +17,11 @@ namespace GamePush
         private static event Action _onFullscreenClose;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Fullscreen_Open();
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Fullscreen_Close();
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Fullscreen_Toggle();
 #endif
 

@@ -12,6 +12,8 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Payments);
 
+
+        #region Actions
         public static event UnityAction<List<FetchProducts>> OnFetchProducts;
         public static event UnityAction OnFetchProductsError;
 
@@ -39,10 +41,27 @@ namespace GamePush
 
         private static event Action<string> _onUnsubscribeSuccess;
         private static event Action _onUnsubscribeError;
+        #endregion
 
-
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
+        [DllImport("__Internal")]
         private static extern void GP_Payments_FetchProducts();
+        [DllImport("__Internal")]
+        private static extern void GP_Payments_Purchase(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern void GP_Payments_Consume(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Payments_IsAvailable();
+        [DllImport("__Internal")]
+        private static extern string GP_Payments_IsSubscriptionsAvailable();
+        [DllImport("__Internal")]
+        private static extern void GP_Payments_Subscribe(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern void GP_Payments_Unsubscribe(string idOrTag);
+        #endregion
+#endif
+
         public static void Fetch()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -55,9 +74,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Payments_Purchase(string idOrTag);
         public static void Purchase(string idOrTag, Action<string> onPurchaseSuccess = null, Action onPurchaseError = null)
         {
             _onPurchaseSuccess = onPurchaseSuccess;
@@ -73,10 +89,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Payments_Consume(string idOrTag);
         public static void Consume(string idOrTag, Action<string> onConsumeSuccess = null, Action onConsumeError = null)
         {
             _onConsumeSuccess = onConsumeSuccess;
@@ -92,9 +104,6 @@ namespace GamePush
 #endif
         }
 
-
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Payments_IsAvailable();
         public static bool IsPaymentsAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -107,8 +116,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Payments_IsSubscriptionsAvailable();
         public static bool IsSubscriptionsAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -121,8 +128,6 @@ namespace GamePush
         }
 
 
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Payments_Subscribe(string idOrTag);
         public static void Subscribe(string idOrTag, Action<string> onSubscribeSuccess = null, Action onSubscribeError = null)
         {
             _onSubscribeSuccess = onSubscribeSuccess;
@@ -138,10 +143,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Payments_Unsubscribe(string idOrTag);
         public static void Unsubscribe(string idOrTag, Action<string> onUnsubscribeSuccess = null, Action onUnsubscribeError = null)
         {
             _onUnsubscribeSuccess = onUnsubscribeSuccess;

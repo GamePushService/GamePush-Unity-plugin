@@ -18,8 +18,21 @@ namespace GamePush
         private void CallOnTriggerClaim(string trigger) { OnTriggerClaim?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaimError(string error) { OnTriggerClaimError?.Invoke(error); }
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern void GP_Triggers_Claim(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Triggers_List();
+        [DllImport("__Internal")]
+        private static extern string GP_Triggers_ActivatedList();
+        [DllImport("__Internal")]
+        private static extern string GP_Triggers_GetTrigger(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Triggers_IsActivated(string idOrTag);
+        [DllImport("__Internal")]
+        private static extern string GP_Triggers_IsClaimed(string idOrTag);
+#endif
+
         public static void Claim(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -30,8 +43,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Triggers_List();
         public static TriggerData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +56,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Triggers_ActivatedList();
         public static TriggerActive[] ActivatedList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +69,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Triggers_GetTrigger(string idOrTag);
         public static TriggerAllData GetTrigger(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +82,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Triggers_IsActivated(string idOrTag);
         public static bool IsActivated(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -87,8 +92,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Triggers_IsClaimed(string idOrTag);
         public static bool IsClaimed(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

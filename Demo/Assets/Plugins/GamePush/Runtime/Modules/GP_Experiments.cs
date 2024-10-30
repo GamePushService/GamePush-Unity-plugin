@@ -12,8 +12,13 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Experiments);
 
-        [DllImport("libARWrapper.so")]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport("__Internal")]
         private static extern string GP_Experiments_Map();
+        [DllImport("__Internal")]
+        private static extern string GP_Experiments_Has(string tag, string cohort);
+#endif
+
         public static string Map()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -27,8 +32,6 @@ namespace GamePush
 #endif
         }
 
-        [DllImport("libARWrapper.so")]
-        private static extern string GP_Experiments_Has(string tag, string cohort);
         public static bool Has(string tag, string cohort)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

@@ -11,10 +11,10 @@ namespace GamePush
         public static event UnityAction<string> OnChange;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern string GP_Current_AvatarGenerator();
 
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Change_AvatarGenerator(string generator);
 #endif
 

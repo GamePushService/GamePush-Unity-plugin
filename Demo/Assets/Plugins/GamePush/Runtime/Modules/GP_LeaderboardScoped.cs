@@ -8,6 +8,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.LeaderboardScoped);
 
+        #region Actions
         public static event UnityAction<string, GP_Data> OnFetchSuccess;
         public static event UnityAction<string, GP_Data> OnFetchTopPlayers;
         public static event UnityAction<string, GP_Data> OnFetchAbovePlayers;
@@ -25,7 +26,7 @@ namespace GamePush
 
         public static event UnityAction OnPublishRecordComplete;
         public static event UnityAction OnPublishRecordError;
-
+        #endregion
 
         private string _leaderboardFetchTag;
         private string _leaderboardFetchVariant;
@@ -33,9 +34,10 @@ namespace GamePush
         private string _leaderboardPlayerRatingFetchTag;
         private string _leaderboardPlayerRatingFetchVariant;
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+        #region DllImport
 
-
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Scoped_Open(
             string idOrTag = "",
             string variant = "",
@@ -46,20 +48,7 @@ namespace GamePush
             string displayFields = "",
             string withMe = "none"
         );
-
-        public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
-#else
-
-            ConsoleLog("OPEN");
-#endif
-        }
-
-
-
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Scoped_Fetch(
             string idOrTag = "",
             string variant = "",
@@ -69,20 +58,7 @@ namespace GamePush
             string includeFields = "",
             string withMe = "none"
         );
-
-        public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
-#else
-
-            ConsoleLog("FETCH");
-#endif
-        }
-
-
-
-        [DllImport("libARWrapper.so")]
+        [DllImport("__Internal")]
         private static extern void GP_Leaderboard_Scoped_PublishRecord(
             string idOrTag = "",
             string variant = "",
@@ -94,6 +70,34 @@ namespace GamePush
             string key3 = "",
             float value3 = 0
         );
+        [DllImport("__Internal")]
+        private static extern void GP_Leaderboard_Scoped_FetchPlayerRating(
+            string idOrTag = "",
+            string variant = "",
+            string includeFields = ""
+        );
+        #endregion
+#endif
+
+        public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
+#else
+
+            ConsoleLog("OPEN");
+#endif
+        }
+
+        public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
+#else
+
+            ConsoleLog("FETCH");
+#endif
+        }
 
         public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, string key1 = "", int record_value1 = 0, string key2 = "", int record_value2 = 0, string key3 = "", int record_value3 = 0)
         {
@@ -115,10 +119,6 @@ namespace GamePush
 #endif
         }
 
-
-
-        [DllImport("libARWrapper.so")]
-        private static extern void GP_Leaderboard_Scoped_FetchPlayerRating(string idOrTag = "", string variant = "", string includeFields = "");
         public static void FetchPlayerRating(string idOrTag = "", string variant = "some_variant", string includeFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -151,8 +151,6 @@ namespace GamePush
         private void CallLeaderboardScopedFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardScopedFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardScopedFetchOnlyPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
-
-
 
         private void CallLeaderboardScopedPublishRecordComplete() => OnPublishRecordComplete?.Invoke();
         private void CallLeaderboardScopedPublishRecordError() => OnPublishRecordError?.Invoke();
