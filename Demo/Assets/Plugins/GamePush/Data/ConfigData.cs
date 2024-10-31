@@ -2,6 +2,11 @@ using System.Collections.Generic;
 
 namespace GamePush.Data
 {
+    public class ConfigServices
+    {
+        public const string Xsolla = "XSOLLA";
+    }
+
     [System.Serializable]
     public class AllConfigData
     {
@@ -95,7 +100,51 @@ namespace GamePush.Data
         public List<AdBanner> banners;
         public string customAdsConfigId;
         public CustomAdsConfig customAdsConfig;
+        //public PaymentsConfig paymentsConfig;
+        //public string paymentsConfigId;
+        //public AuthConfig authConfig;
+        //public string authConfigId;
     }
+
+    [System.Serializable]
+    public class PaymentsConfig
+    {
+        public string id;
+        public string name;
+        public string description;
+        public bool sandbox;
+        public PlatfromServiceConfigs configs;
+    }
+
+    [System.Serializable]
+    public class AuthConfig
+    {
+        public string id;
+        public string name;
+        public string description;
+        public XsollaConfig xsollaConfig;
+        public PlatfromServiceConfigs configs;
+    }
+
+    [System.Serializable]
+    public class XsollaConfig
+    {
+        public string loginProjectId;
+    }
+
+    [System.Serializable]
+    public class PlatfromServiceConfigs
+    {
+        public PlatfromServiceConfig web;
+        public PlatfromServiceConfig android;
+    }
+
+    [System.Serializable]
+    public class PlatfromServiceConfig
+    {
+        public string activeService;
+    }
+
 
     [System.Serializable]
     public class GameVariable

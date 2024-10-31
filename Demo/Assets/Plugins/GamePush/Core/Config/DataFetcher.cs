@@ -42,7 +42,7 @@ namespace GamePush.Core
             ////Debug.Log(resultObject.ToString());
             //Debug.Log(resultObject["project"].ToString());
             //Debug.Log(resultObject["config"].ToString());
-            //Debug.Log(resultObject["platformConfig"].ToString());
+            Debug.Log(resultObject["platformConfig"].ToString());
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
             
             return configData;

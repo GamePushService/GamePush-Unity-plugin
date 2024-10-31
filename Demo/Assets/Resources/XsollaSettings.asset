@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52405bf87e920c34796e9e06cc914ce8, type: 3}
+  m_Name: XsollaSettings
+  m_EditorClassIdentifier: 
+  loginId: 6e7b832f-9a0a-4972-a432-6616083fb06a
+  callbackUrl: https://gamepush.com/sdk/static/pages/xsolla/auth.html
+  invalidateExistingSessions: 0
+  oauthClientId: 0
+  storeProjectId: 273061
+  isSandbox: 1
+  inAppBrowserEnabled: 1
+  packInAppBrowserInBuild: 1
+  desktopRedirectPolicySettings:
+    IsFoldout: 0
+    UseSettingsFromPublisherAccount: 1
+    ReturnUrl: 
+    RedirectConditions: 0
+    Delay: 0
+    StatusForManualRedirection: 0
+    RedirectButtonCaption: 
+  webglRedirectPolicySettings:
+    IsFoldout: 0
+    UseSettingsFromPublisherAccount: 1
+    ReturnUrl: 
+    RedirectConditions: 0
+    Delay: 0
+    StatusForManualRedirection: 0
+    RedirectButtonCaption: 
+  androidRedirectPolicySettings:
+    IsFoldout: 0
+    UseSettingsFromPublisherAccount: 1
+    ReturnUrl: 
+    RedirectConditions: 0
+    Delay: 0
+    StatusForManualRedirection: 0
+    RedirectButtonCaption: 
+  iosRedirectPolicySettings:
+    IsFoldout: 0
+    UseSettingsFromPublisherAccount: 1
+    ReturnUrl: 
+    RedirectConditions: 0
+    Delay: 0
+    StatusForManualRedirection: 0
+    RedirectButtonCaption: 
+  desktopPayStationUISettings:
+    isFoldout: 1
+    paystationThemeId: 63295aab2e47fab76f7708e3
+  webglPayStationUISettings:
+    isFoldout: 1
+    paystationThemeId: 63295aab2e47fab76f7708e3
+  androidPayStationUISettings:
+    isFoldout: 1
+    paystationThemeId: 63295aab2e47fab76f7708e3
+  iosPayStationUISettings:
+    isFoldout: 1
+    paystationThemeId: 63295aab2e47fab76f7708e3
+  facebookAppId: 
+  facebookClientToken: 
+  googleServerId: 
+  wechatAppId: 
+  qqAppId: 
+  logLevel: 0
