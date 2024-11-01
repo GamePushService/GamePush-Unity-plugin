@@ -100,10 +100,10 @@ namespace GamePush.Data
         public List<AdBanner> banners;
         public string customAdsConfigId;
         public CustomAdsConfig customAdsConfig;
-        //public PaymentsConfig paymentsConfig;
-        //public string paymentsConfigId;
-        //public AuthConfig authConfig;
-        //public string authConfigId;
+        public string paymentsConfigId;
+        public PaymentsConfig paymentsConfig;
+        public string authConfigId;
+        public AuthConfig authConfig;
     }
 
     [System.Serializable]

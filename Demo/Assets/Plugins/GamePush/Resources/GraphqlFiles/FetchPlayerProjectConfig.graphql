@@ -58,14 +58,14 @@ query result($lang: Lang) {
                 customAdsConfig {
                     ...customAdsConfig
                 }
-                # paymentsConfig {
-                #     ...paymentsConfig
-                # }
-                # paymentsConfigId
-                # authConfig {
-                #     ...authConfig
-                # }
-                # authConfigId
+                paymentsConfigId
+                paymentsConfig {
+                    ...paymentsConfig
+                }
+                authConfigId
+                authConfig {
+                    ...authConfig
+                }
             }
             playerFields {
                 name(lang: $lang)
@@ -297,37 +297,37 @@ fragment customAdsConfig on AdsConfig {
     }
 }
 
-# fragment paymentsConfig on PaymentsConfig {
-#     id
-#     name
-#     description
-#     sandbox
-#     configs {
-#         web {
-#             ...activeService
-#         }
-#         android {
-#             ...activeService
-#         }
-#     }
-# }
+fragment paymentsConfig on PaymentsConfig {
+    id
+    name
+    description
+    sandbox
+    configs {
+        web {
+            activeService
+        }
+        android {
+            activeService
+        }
+    }
+}
 
-# fragment authConfig on AuthConfig {
-#     id
-#     name
-#     description
-#     xsollaConfig {
-#         loginProjectId
-#     }
-#     configs {
-#         web {
-#             ...activeService
-#         }
-#         android {
-#             ...activeService
-#         }
-#     }
-# }
+fragment authConfig on AuthConfig {
+    id
+    name
+    description
+    xsollaConfig {
+        loginProjectId
+    }
+    configs {
+        web {
+            activeService
+        }
+        android {
+            activeService
+        }
+    }
+}
 
 fragment banner on Banner {
     type
