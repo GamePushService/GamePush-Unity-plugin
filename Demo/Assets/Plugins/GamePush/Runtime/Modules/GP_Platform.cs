@@ -18,8 +18,6 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern string GP_Platform_IsLogoutAvailable();
         [DllImport("__Internal")]
-        private static extern string GP_Platform_IsLogoutAvailable();
-        [DllImport("__Internal")]
         private static extern string GP_Platform_IsExternalLinksAllowed();
         [DllImport("__Internal")]
         private static extern string GP_Platform_IsSecretCodeAuthAvailable();
@@ -30,7 +28,7 @@ namespace GamePush
         public static Platform Type()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return ConvertToEnum(GP_Platform_Type());
+            return PlatformTypes.ConvertToEnum(GP_Platform_Type());
 #else
             //return PlatformTypes.ConvertToEnum(CoreSDK.platform.type);
             return Platform.NONE;
