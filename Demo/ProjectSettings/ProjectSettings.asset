@@ -702,7 +702,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     Android: STEAMWORKS_NET
     Standalone: CUSTOM_ADS_MOBILE;YANDEX_SIMPLE_MONETIZATION
-    WebGL: STEAMWORKS_NET
+    WebGL: STEAMWORKS_NET;XSOLLA_SERVICE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

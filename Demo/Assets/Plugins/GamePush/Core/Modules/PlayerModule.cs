@@ -6,6 +6,7 @@ using GamePush.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using GamePush.Services;
 
 namespace GamePush.Core
 {
@@ -1192,7 +1193,11 @@ namespace GamePush.Core
             if (_token != null)
                 OnLoginError?.Invoke();
             else
-                OnLoginComplete?.Invoke();
+            {
+                AuthService.Login();
+                //OnLoginComplete?.Invoke();
+            }
+                
 
         }
 
