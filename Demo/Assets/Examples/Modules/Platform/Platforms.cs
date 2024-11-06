@@ -34,5 +34,10 @@ namespace Examples.Platforms
 
         public void HasIntegratedAuth() => GP_Platform.HasIntegratedAuth();
         public void IsExternalLinksAllowed() => GP_Platform.IsExternalLinksAllowed();
+
+        public void IsPluginReady()
+        {
+            ConsoleUI.Instance.Log("Plugin ready: " + GP_Init.isReady);
+        }
     }
 }
