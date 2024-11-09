@@ -109,9 +109,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Payments_IsAvailable() == "true";
 #else
-            bool isVal = GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
-            ConsoleLog("IS PAYMENTS AVAILABLE: " + isVal);
-            return isVal;
+            //bool isVal = GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
+            //ConsoleLog("IS PAYMENTS AVAILABLE: " + isVal);
+            return CoreSDK.payments.IsPaymentsAvailable();
 #endif
         }
 
@@ -209,32 +209,4 @@ namespace GamePush
         }
     }
 
-    [System.Serializable]
-    public class FetchProducts
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public string icon;
-        public string iconSmall;
-        public int price;
-        public string currency;
-        public string currencySymbol;
-        public bool isSubscription;
-        public int period;
-        public int trialPeriod;
-    }
-
-    [System.Serializable]
-    public class FetchPlayerPurchases
-    {
-        public string tag;
-        public int productId;
-        public string payload;
-        public string createdAt;
-        public string expiredAt;
-        public bool gift;
-        public bool subscribed;
-    }
 }

@@ -23,7 +23,7 @@ namespace GamePush
         public static event UnityAction OnLoadError;
 
         public static event UnityAction OnLoginComplete;
-        public static event UnityAction OnLoginError;
+        public static event UnityAction<string> OnLoginError;
 
         public static event UnityAction OnLogoutComplete;
         public static event UnityAction OnLogoutError;
@@ -53,7 +53,7 @@ namespace GamePush
             CoreSDK.player.OnLoadError += CallPlayerLoadError;
 
             CoreSDK.player.OnLoginComplete += CallPlayerLoginComplete;
-            CoreSDK.player.OnLoginError += CallPlayerLoginError;
+            CoreSDK.player.OnLoginError += CallPlayerLoginFullError;
 
             CoreSDK.player.OnLogoutComplete += CallPlayerLoginComplete;
             CoreSDK.player.OnLogoutError += CallPlayerLoginError;
@@ -74,7 +74,7 @@ namespace GamePush
             CoreSDK.player.OnLoadError -= CallPlayerLoadError;
 
             CoreSDK.player.OnLoginComplete -= CallPlayerLoginComplete;
-            CoreSDK.player.OnLoginError -= CallPlayerLoginError;
+            CoreSDK.player.OnLoginError -= CallPlayerLoginFullError;
 
             CoreSDK.player.OnLogoutComplete -= CallPlayerLoginComplete;
             CoreSDK.player.OnLogoutError -= CallPlayerLoginError;
@@ -665,7 +665,8 @@ namespace GamePush
         private void CallPlayerLoadError() => OnLoadError?.Invoke();
 
         private void CallPlayerLoginComplete() => OnLoginComplete?.Invoke();
-        private void CallPlayerLoginError() => OnLoginError?.Invoke();
+        private void CallPlayerLoginError() => OnLoginError?.Invoke(null);
+        private void CallPlayerLoginFullError(string error) => OnLoginError?.Invoke(error);
 
         private void CallPlayerLogoutComplete() => OnLogoutComplete?.Invoke();
         private void CallPlayerLogoutError() => OnLogoutError?.Invoke();

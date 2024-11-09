@@ -1,34 +1,40 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Xsolla.Core;
 using Xsolla.Auth;
 
-namespace GamePush.Services
+namespace GamePush.Auth
 {
 	public static class AuthService
 	{
-		public static void Login()
+		public static event Action OnLoginComplete;
+		public static event Action<string> OnLoginError;
+
+		public static void Login(Action onLoginComplete = null, Action<string> onLoginError = null)
 		{
+			OnLoginComplete = onLoginComplete;
+			OnLoginError = onLoginError;
+
 			XsollaAuth.AuthWithXsollaWidget(OnSuccess, OnError, OnCancel);
 		}
 
 		private static void OnSuccess()
 		{
 			Debug.Log("Authorization successful");
-			// Add actions taken in case of success
+			OnLoginComplete?.Invoke();
 		}
 
 		private static void OnError(Error error)
 		{
 			Debug.LogError($"Authorization failed. Error: {error.errorMessage}");
-			// Add actions taken in case of error
+			OnLoginError?.Invoke(error.errorMessage);
 		}
 
 		private static void OnCancel()
 		{
 			Debug.Log("Authorization cancel");
-			// Add actions taken in case of success
+			OnLoginError?.Invoke("Cancel");
 		}
 	}
 

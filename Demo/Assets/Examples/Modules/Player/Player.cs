@@ -415,6 +415,7 @@ namespace Examples.Player
 
         private void OnLoginComplete() => ConsoleUI.Instance.Log("Login Complete");
         private void OnLoginError() => ConsoleUI.Instance.Log("Login Error");
+        private void OnLoginError(string error) => ConsoleUI.Instance.Log("Login Error: " + error);
 
         private void OnLogoutComplete() => ConsoleUI.Instance.Log("Logout Complete");
         private void OnLogoutError() => ConsoleUI.Instance.Log("Logout Error");

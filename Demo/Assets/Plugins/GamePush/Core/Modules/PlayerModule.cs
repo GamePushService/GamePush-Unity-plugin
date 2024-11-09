@@ -6,7 +6,9 @@ using GamePush.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
-using GamePush.Services;
+#if XSOLLA_SERVICE
+using GamePush.Auth;
+# endif
 
 namespace GamePush.Core
 {
@@ -20,7 +22,7 @@ namespace GamePush.Core
         public event Action OnLoadError;
 
         public event Action OnLoginComplete;
-        public event Action OnLoginError;
+        public event Action<string> OnLoginError;
 
         public event Action OnLogoutComplete;
         public event Action OnLogoutError;
@@ -1190,15 +1192,15 @@ namespace GamePush.Core
 
         public void Login()
         {
-            if (_token != null)
-                OnLoginError?.Invoke();
-            else
-            {
-                AuthService.Login();
-                //OnLoginComplete?.Invoke();
-            }
-                
-
+            //if (_token != null)
+            //    OnLoginError?.Invoke("Player already login");
+            //else
+            //{
+            //OnLoginComplete?.Invoke();
+            //}
+#if XSOLLA_SERVICE
+            AuthService.Login(OnLogoutComplete, OnLoginError);
+#endif
         }
 
         public void Logout()
