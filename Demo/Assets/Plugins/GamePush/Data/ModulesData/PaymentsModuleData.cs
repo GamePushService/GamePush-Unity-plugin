@@ -1,16 +1,28 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace GamePush
 {
-    public class PaymentsModuleData
+
+    [Serializable]
+    public class Product
     {
-        
+        public int id;
+        public string icon;
+        public string tag;
+        public int price;
+        public bool isSubscription;
+        public int period;
+        public int trialPeriod;
+        public string yandexId;
+        public string xsollaId;
+        public Dictionary<string, string> names;
+        public Dictionary<string, string> descriptions;
     }
 
-    [System.Serializable]
-    public class FetchProducts
+    [Serializable]
+    public class FetchProduct
     {
         public int id;
         public string tag;
@@ -26,8 +38,8 @@ namespace GamePush
         public int trialPeriod;
     }
 
-    [System.Serializable]
-    public class FetchPlayerPurchases
+    [Serializable]
+    public class FetchPlayerPurchase
     {
         public string tag;
         public int productId;

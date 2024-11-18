@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 #if XSOLLA_SERVICE
-using GamePush.Auth;
+using GamePush.Xsolla;
 # endif
 
 namespace GamePush.Core
@@ -1192,6 +1192,7 @@ namespace GamePush.Core
 
         public void Login()
         {
+            Logger.Log("Try to login");
             //if (_token != null)
             //    OnLoginError?.Invoke("Player already login");
             //else

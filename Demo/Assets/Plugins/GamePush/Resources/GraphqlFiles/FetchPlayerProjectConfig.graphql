@@ -191,7 +191,7 @@ query result($lang: Lang) {
                 period
                 trialPeriod
                 yandexId
-
+                xsollaId
                 names {
                     ...translations
                 }

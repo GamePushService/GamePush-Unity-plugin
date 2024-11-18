@@ -535,10 +535,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Login();
 #else
-
             CoreSDK.player.Login();
 #endif
         }
+
 
         public static void Logout()
         {

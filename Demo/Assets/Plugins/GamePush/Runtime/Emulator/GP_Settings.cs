@@ -51,23 +51,23 @@ namespace GamePush
             return Language.English;
         }
 
-        public List<FetchPlayerPurchases> GetPlayerPurchases()
+        public List<FetchPlayerPurchase> GetPlayerPurchases()
         {
             if (paymentsStub != null)
             {
-                return new List<FetchPlayerPurchases>(paymentsStub.Purchases);
+                return new List<FetchPlayerPurchase>(paymentsStub.Purchases);
             }
             Console.Log("PURCHASES SETTINGS: ", "EMPTY");
-            return new List<FetchPlayerPurchases>();
+            return new List<FetchPlayerPurchase>();
         }
-        public List<FetchProducts> GetProducts()
+        public List<FetchProduct> GetProducts()
         {
             if (paymentsStub != null)
             {
-                return new List<FetchProducts>(paymentsStub.Products);
+                return new List<FetchProduct>(paymentsStub.Products);
             }
             Console.Log("PRODUCTS SETTINGS: ", "EMPTY");
-            return new List<FetchProducts>();
+            return new List<FetchProduct>();
         }
     }
 }

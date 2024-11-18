@@ -4,7 +4,7 @@ using UnityEngine;
 using Xsolla.Core;
 using Xsolla.Auth;
 
-namespace GamePush.Auth
+namespace GamePush.Xsolla
 {
 	public static class AuthService
 	{
@@ -36,6 +36,12 @@ namespace GamePush.Auth
 			Debug.Log("Authorization cancel");
 			OnLoginError?.Invoke("Cancel");
 		}
+
+		public static void Register(string username, string password, string email, Action<LoginLink> OnSuccess = null)
+        {
+			XsollaAuth.Register(username, password, email, OnSuccess, OnError);
+		}
+
 	}
 
 }

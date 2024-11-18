@@ -17,6 +17,7 @@ namespace GamePush.Data
         public PlatformConfig platformConfig;
         public List<PlayerField> playerFields;
         public List<GameVariable> gameVariables;
+        public List<Product> products;
         public string serverTime;
     }
 

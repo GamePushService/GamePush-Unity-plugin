@@ -54,7 +54,7 @@ namespace Examples.Payments
         private void OnConsumeSuccess(string productIdOrTag) => ConsoleUI.Instance.Log("CONSUME: SUCCESS: " + productIdOrTag);
         private void OnConsumeError() => ConsoleUI.Instance.Log("CONSUME: ERROR");
 
-        private void OnFetchProducts(List<FetchProducts> products)
+        private void OnFetchProducts(List<FetchProduct> products)
         {
             for (int i = 0; i < products.Count; i++)
             {
@@ -75,7 +75,7 @@ namespace Examples.Payments
 
         private void OnFetchProductsError() => ConsoleUI.Instance.Log("FETCH PRODUCTS: ERROR");
 
-        private void OnFetchPlayerPurchases(List<FetchPlayerPurchases> purcahses)
+        private void OnFetchPlayerPurchases(List<FetchPlayerPurchase> purcahses)
         {
             for (int i = 0; i < purcahses.Count; i++)
             {

@@ -14,10 +14,10 @@ namespace GamePush
 
 
         #region Actions
-        public static event UnityAction<List<FetchProducts>> OnFetchProducts;
+        public static event UnityAction<List<FetchProduct>> OnFetchProducts;
         public static event UnityAction OnFetchProductsError;
 
-        public static event UnityAction<List<FetchPlayerPurchases>> OnFetchPlayerPurchases;
+        public static event UnityAction<List<FetchPlayerPurchase>> OnFetchPlayerPurchases;
 
         public static event UnityAction<string> OnPurchaseSuccess;
         public static event UnityAction OnPurchaseError;
@@ -67,10 +67,10 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_FetchProducts();
 #else
-
             ConsoleLog("FETCH PRODUCTS");
-            OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
-            OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
+            CoreSDK.payments.Fetch();
+            //OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
+            //OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
 #endif
         }
 
@@ -82,10 +82,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Payments_Purchase(idOrTag);
 #else
-
             ConsoleLog("PURCHASE: " + idOrTag);
-            _onPurchaseSuccess?.Invoke(idOrTag);
-            OnPurchaseSuccess?.Invoke(idOrTag);
+            CoreSDK.payments.Purchase(idOrTag);
+            
+            //_onPurchaseSuccess?.Invoke(idOrTag);
+            //OnPurchaseSuccess?.Invoke(idOrTag);
 #endif
         }
 
@@ -159,8 +160,8 @@ namespace GamePush
         }
 
 
-        private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
-        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
+        private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProduct>(data));
+        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchase>(data));
 
         private void CallPaymentsFetchProductsError() => OnFetchProductsError?.Invoke();
 

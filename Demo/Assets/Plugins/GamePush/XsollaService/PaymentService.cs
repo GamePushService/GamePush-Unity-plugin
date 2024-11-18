@@ -1,18 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Xsolla.Auth;
+using Xsolla.Catalog;
+using Xsolla.Core;
 
-public class PaymentService : MonoBehaviour
+namespace GamePush.Xsolla
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public static class PaymentService
+	{
+		public static void PurchaseItem(string itemId)
+		{
+			XsollaCatalog.Purchase(itemId, OnPurchaseSuccess, OnError);
+		}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+		private static void OnPurchaseSuccess(OrderStatus status)
+		{
+			Debug.Log("Purchase successful");
+			// Add actions taken in case of success
+		}
+
+		private static void OnError(Error error)
+		{
+			Debug.LogError($"Error: {error.errorMessage}");
+			// Add actions taken in case of error
+		}
+	}
+
 }

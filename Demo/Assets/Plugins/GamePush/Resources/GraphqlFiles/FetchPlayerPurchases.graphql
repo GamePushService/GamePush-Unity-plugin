@@ -1,0 +1,35 @@
+query result($lang: Lang) {
+  result: FetchPlayerPurchases {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on PlayerPurchasesOutput {
+      products {
+        id
+        icon
+        tag
+        price
+        isSubscription
+        period
+        trialPeriod
+        currency
+        currencySymbol
+        yandexId
+        name(lang: $lang)
+        description(lang: $lang)
+        iconSmall: icon(w: 48, h: 48, crop: false)
+      }
+      playerPurchases {
+        _id 
+        productId
+        payload
+        gift
+        subscribed
+        createdAt
+        orderStatus
+        expiredAt
+      }
+    }
+  }
+}
