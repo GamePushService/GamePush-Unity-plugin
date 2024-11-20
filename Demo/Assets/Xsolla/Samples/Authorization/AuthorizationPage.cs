@@ -24,7 +24,6 @@ namespace Xsolla.Samples.Authorization
 				// Call the user authorization method
 				// Pass credentials and callback functions for success and error cases
 				XsollaAuth.SignIn(username, password, OnSuccess, OnError);
-				XsollaAuth.AuthWithXsollaWidget(OnSuccess, OnError, OnCancel);
 			});
 		}
 
@@ -38,12 +37,6 @@ namespace Xsolla.Samples.Authorization
 		{
 			Debug.LogError($"Authorization failed. Error: {error.errorMessage}");
 			// Add actions taken in case of error
-		}
-
-		private void OnCancel()
-		{
-			Debug.Log("Authorization cancel");
-			// Add actions taken in case of success
 		}
 	}
 }

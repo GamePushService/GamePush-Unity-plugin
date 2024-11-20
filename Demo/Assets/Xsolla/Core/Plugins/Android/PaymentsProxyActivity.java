@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.xsolla.android.payments.XPayments;
 import com.xsolla.android.payments.data.AccessToken;
 import com.xsolla.android.payments.callback.BrowserCallback;
-import com.xsolla.android.payments.ui.ActivityType;
 
 public class PaymentsProxyActivity extends Activity {
 
@@ -16,12 +15,11 @@ public class PaymentsProxyActivity extends Activity {
     private static final String ARG_REDIRECT_HOST = "redirect_host";
     private static final String ARG_REDIRECT_SCHEME = "redirect_scheme";
     private static final String ARG_PAYSTATION_VERSION = "paystation_version";
-    private static final String ARG_ACTIVITY_TYPE = "activity_type";
     private static final int RC_PAY_STATION = 1;
     
     private static BrowserCallback browserCallback;
 
-    public static void perform(Activity activity, String token, boolean isSandbox, String redirectScheme, String redirectHost, int paystationVersion, BrowserCallback callback, String activityType) {
+    public static void perform(Activity activity, String token, boolean isSandbox, String redirectScheme, String redirectHost, int paystationVersion, BrowserCallback callback) {
         browserCallback = callback;
         
         Intent intent = new Intent(activity, PaymentsProxyActivity.class);
@@ -30,7 +28,6 @@ public class PaymentsProxyActivity extends Activity {
         intent.putExtra(ARG_REDIRECT_HOST, redirectHost);
         intent.putExtra(ARG_REDIRECT_SCHEME, redirectScheme);
         intent.putExtra(ARG_PAYSTATION_VERSION, paystationVersion);
-        intent.putExtra(ARG_ACTIVITY_TYPE, activityType);
         activity.startActivity(intent);
     }
 
@@ -48,7 +45,6 @@ public class PaymentsProxyActivity extends Activity {
         String redirectScheme = intent.getStringExtra(ARG_REDIRECT_SCHEME);
         String redirectHost = intent.getStringExtra(ARG_REDIRECT_HOST);
         int paystationVersionNumber = intent.getIntExtra(ARG_PAYSTATION_VERSION, 4);
-        String activityType = intent.getStringExtra(ARG_ACTIVITY_TYPE);
 
         XPayments.PayStationVersion paystationVersion = XPayments.PayStationVersion.V4;
         if (paystationVersionNumber == 3)
@@ -64,22 +60,6 @@ public class PaymentsProxyActivity extends Activity {
 
         if (redirectHost != null)
             builder.setRedirectUriHost(redirectHost);
-            
-        if (activityType != null)
-        {
-            switch (activityType)
-            {
-                case "WebView":
-                    builder.setActivityType(ActivityType.WEB_VIEW);
-                    break;
-                case "CustomTab":
-                    builder.setActivityType(ActivityType.CUSTOM_TABS);
-                    break;
-                case "TrustedWebActivity":
-                    builder.setActivityType(ActivityType.TRUSTED_WEB_ACTIVITY);
-                    break;
-            }
-        }
 
         startActivityForResult(builder.build(), RC_PAY_STATION);
     }

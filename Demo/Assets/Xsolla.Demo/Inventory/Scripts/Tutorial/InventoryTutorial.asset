@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09c9c8f70041bc24ca331b4fe1db7b95, type: 3}
+  m_Name: InventoryTutorial
+  m_EditorClassIdentifier: 
+  tutorialSteps:
+  - title: Welcome to Xsolla Inventory SDK demo!
+    description: Inventory SDK allows you to use Xsolla Player Inventory independently
+      from our payment solution on platforms that for any reason prohibit the use
+      of Xsolla In-Game Store and Pay Station.\n We will show you different ways to
+      add items to your inventory in the tutorial.
+    prevButtonText: NO, THANKS
+    nextButtonText: "LET\u2019S START"
+    highlightElementId: 
+    screenToActivate: 0
+    associatedDocumentation: 
+  - title: 'In the demo, you can add items to the inventory in one of the following
+      ways:'
+    description: 1. Buy some items in the web shop\n2. Redeem a coupon code to get
+      bonus items\n3. Link a platform account to your main account
+    prevButtonText: BACK
+    nextButtonText: NEXT
+    highlightElementId: 
+    screenToActivate: 0
+    associatedDocumentation: 
+  - title: Buy items in the web shop
+    description: 1. Go to the web shop.\n2. Log in to the same account as you used
+      for the demo.\n3. Buy some items. You can use our test cards.\n \n The items
+      you purchased will be available in the inventory.
+    prevButtonText: BACK
+    nextButtonText: NEXT
+    highlightElementId: WebStoreMenuButton
+    screenToActivate: 2
+    associatedDocumentation: 
+  - title: Redeem a coupon code
+    description: "1. Click the REDEEM COUPON button in the top navigation bar.\\n2.
+      Enter one of our test codes \u201CBONUS2020\u201D or \u201CWINTER2021\u201D
+      in the pop-up window.\\n \\n The items you purchased will be available in the
+      inventory."
+    prevButtonText: BACK
+    nextButtonText: NEXT
+    highlightElementId: RedeemCouponButton
+    screenToActivate: 1
+    associatedDocumentation: 
+  - title: Account linking
+    description: Use account linking to manage a single cross-platform inventory on
+      different platforms. Check documentation to learn more about account linking
+      in demo.\n \n1. Set up platform in the plug-in settings.\n2. Click Account Linking
+      in the main menu. The demo project will open in the default browser to simulate
+      the start of the application on another platform.\n3. Create an account or log
+      in and purchase some items using one of the test bank cards.\n4. Click Get code
+      and then click Request the code in the window that appears.\n5. Enter the received
+      account linking code in the demo and click Confirm.\n \nItems from your main
+      account will be available in the inventory after linking accounts is successful.
+    prevButtonText: BACK
+    nextButtonText: DONE
+    highlightElementId: AccountLinkingMenuButton
+    screenToActivate: 2
+    associatedDocumentation: https://developers.xsolla.com/sdk/unity/use-xsolla-servers/how-tos/#unity_sdk_use_xsolla_servers_how_to_try_account_linking_in_demo

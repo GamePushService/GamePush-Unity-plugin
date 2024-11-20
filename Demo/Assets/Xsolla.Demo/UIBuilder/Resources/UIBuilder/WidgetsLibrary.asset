@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fecfc16d7b64e3dad74031de9dc431a, type: 3}
+  m_Name: WidgetsLibrary
+  m_EditorClassIdentifier: 
+  _widgets:
+  - _name: Main Background
+    _id: 4037e322-15c6-44d4-adb4-ac9df419cc5f
+    _prefab: {fileID: 7372969442764771299, guid: 61ae11edd4240420ab192b4cb485cf22,
+      type: 3}
+  - _name: LoginPanel Background
+    _id: 132c91b4-c821-48af-b389-4fc9be1b5193
+    _prefab: {fileID: 2950440794660234406, guid: db73299c9851ad34aa6f30eaf41f1f78,
+      type: 3}
+  - _name: Blur Background
+    _id: 09c740e3-ccde-4cca-b906-8ac7e95c3773
+    _prefab: {fileID: 7372969442764771299, guid: d187803ec944ab846a4b09367e8e3307,
+      type: 3}
+  - _name: Store Item
+    _id: 61369082-43b1-4ecd-8340-d9f60b19e949
+    _prefab: {fileID: 8953394544000082325, guid: b90f74ca7a091e6479cf56bac1b14ccf,
+      type: 3}
+  - _name: Store Item Mobile Landscape
+    _id: 0550ed38-fcc8-4bee-9c2e-e4e73263a2dd
+    _prefab: {fileID: 1021045078487320294, guid: 8342bd9f29d686649bc3836ee3f6997b,
+      type: 3}
+  - _name: Store Item Mobile Portrait
+    _id: e7546abc-812b-4cc6-90e2-8b63bb6888ec
+    _prefab: {fileID: 1021045078487320294, guid: eb6c8aab6290b564981cb0c24bb95a16,
+      type: 3}
+  - _name: Cart Item
+    _id: 06e222fc-994f-4071-be2f-4b7851676ed5
+    _prefab: {fileID: 7446015085648965445, guid: 25ebb53aeb5e6a04fae7c51446b805a1,
+      type: 3}
+  - _name: Friend Item
+    _id: 0d86217c-3b51-4da8-b69d-cdd08ce050f2
+    _prefab: {fileID: 1548215438226380235, guid: 3c75978948a244e29a2092b27ec8a003,
+      type: 3}
+  - _name: Attribute Item
+    _id: c0df6903-c86a-448f-9b6b-b6b6820966c6
+    _prefab: {fileID: 8157441265017707817, guid: fd92deb8d47d5d64ba8fa13648656bb3,
+      type: 3}
+  - _name: Inventory Item
+    _id: 0f2a8680-1799-47a5-be41-f5f35eefd4d8
+    _prefab: {fileID: 1009743523206396716, guid: 2d8969daee8b5a845b27bd268881d01b,
+      type: 3}
+  - _name: Inventory Item Mobile Landscape
+    _id: 87743b40-279d-4a18-81e6-0089e5ee87dd
+    _prefab: {fileID: 1009743523206396716, guid: 95bcc1ce8f57745499e306a37e90e735,
+      type: 3}
+  - _name: Inventory Item Mobile Portrait
+    _id: 30259350-bfc0-4da1-a8dd-905e2d31409a
+    _prefab: {fileID: 1009743523206396716, guid: f30914efabfe89540903afbf2a677a94,
+      type: 3}
+  - _name: Virtual Currency Balance
+    _id: d6265335-3c74-466b-929b-25b0b8438639
+    _prefab: {fileID: 8396083916771944554, guid: 81009cdd06f88488e9c0de2d0c3f5a5c,
+      type: 3}
+  - _name: Virtual Currency Balance Mobile
+    _id: 56011445-20e1-4296-ae15-a56c2ac7b5a1
+    _prefab: {fileID: 8396083916771944554, guid: 9b4a2d36c6888e34aacec340e3c0a14a,
+      type: 3}
+  - _name: Virtual Currency Balance Mobile Inactive
+    _id: fec3e8f9-de99-4b15-bfb7-07409ad8d3f1
+    _prefab: {fileID: 5219045013859259692, guid: 9e90d358d8cd1f446bc63aa42c5b5fc7,
+      type: 3}
+  - _name: Large Logo
+    _id: a7ebd42f-eee5-4775-b36f-460b42e78a21
+    _prefab: {fileID: 3581749019319966985, guid: 7b3e54198160d4b519fe3231112b0478,
+      type: 3}
+  - _name: Small Logo
+    _id: 7b8a17f5-4c1c-412c-bd1f-24e7da1129d4
+    _prefab: {fileID: 4268998960249171906, guid: 88178502fc98a4728bbd03e2e4e098bc,
+      type: 3}
+  - _name: Logo Mobile
+    _id: 0fc0e864-b8b3-44fc-82fb-f1b102fb9a49
+    _prefab: {fileID: 5708570786088160619, guid: 65877487a700ab745b36d2689fcf7971,
+      type: 3}
+  - _name: User Info
+    _id: 2b6e1b06-2652-4168-8730-033123d0b467
+    _prefab: {fileID: 6125230841616121184, guid: 7f003be1b0f79475ba939890e91ac884,
+      type: 3}
+  - _name: Header
+    _id: a05f8117-ffad-4965-b0ab-34c93a155787
+    _prefab: {fileID: 8531808247241463359, guid: 7e06737cbc29b4606b26c26464fb7745,
+      type: 3}
+  - _name: Footer
+    _id: fe9c2ae4-ded2-4c25-a363-b6a136056520
+    _prefab: {fileID: 4886329109157310239, guid: 29e28888d99464690a97f7343069a316,
+      type: 3}
+  - _name: Red Button
+    _id: 1E29D159-20D9-4820-91C7-BD2C9F33653F
+    _prefab: {fileID: 1451502990301009615, guid: 2065d4885ca67d74696235edc8a2641f,
+      type: 3}
+  - _name: Green Button
+    _id: 591874E1-76A9-4ED2-8A8C-FC4E0D6CC9C1
+    _prefab: {fileID: 1451502990301009615, guid: ca830e4d5ef355c4eb556017fc1831ca,
+      type: 3}
+  - _name: Blue Button
+    _id: 8C831530-A84A-4A18-91B0-1AFB3D14FE2B
+    _prefab: {fileID: 1451502990301009615, guid: fce86640360b6d740b9a07bb8a7eb174,
+      type: 3}

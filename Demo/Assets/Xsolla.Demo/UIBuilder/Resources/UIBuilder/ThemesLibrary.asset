@@ -1,0 +1,1138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa775595831c4d3b83dc0d255c5bdad0, type: 3}
+  m_Name: ThemesLibrary
+  m_EditorClassIdentifier: 
+  _currentId: 1b679e97-27e4-4f2b-8aac-4dd58f3e8581
+  _themes:
+  - _name: Xsollus
+    _id: 1b679e97-27e4-4f2b-8aac-4dd58f3e8581
+    _colors:
+    - _name: Base Background Color
+      _id: 2a5a816b-0b34-4462-a11c-94ae69041b5d
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Top Background Color
+      _id: 66b9e6ff-d325-476f-9307-af7877402265
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Common Text
+      _id: a888e9eb-55a8-4cb6-95f2-87c223ebc893
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Description Text
+      _id: f082ce88-2612-4821-9daa-8d421f912d8e
+      _color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _name: Main Button
+      _id: e9c672ce-cad6-4ddf-8fe4-20b3b665f12e
+      _color: {r: 1, g: 0, b: 0.35686302, a: 1}
+    - _name: Main Button Hover
+      _id: 81ac4dd1-5977-48bb-bf5a-922ec5905155
+      _color: {r: 0.83137256, g: 0, b: 0.29803923, a: 1}
+    - _name: Main Button Disabled
+      _id: 111a067e-8ef9-4732-ab9b-3197ae1e3c75
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 0.5019608}
+    - _name: Main Button Text
+      _id: 8d406015-69a9-402e-aa9e-e28e56a8264c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Button Text Hover
+      _id: 18c39e73-c09c-424e-9023-67499764c8f4
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Button Text Disabled
+      _id: 05c23a2f-fe24-4e07-935d-9f37d02c67b5
+      _color: {r: 1, g: 1, b: 1, a: 0.7058824}
+    - _name: Logo Color
+      _id: 2bd99ceb-7235-48e9-a8bc-70fdc919a284
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Left Background Color
+      _id: 56d30534-ac79-4e61-b765-6e6e02531ecb
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Hyperlink Hover
+      _id: ff860625-4654-4245-9659-0daf1362e446
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Back
+      _id: 8448ca8c-1a44-4019-94a1-3ada7306f71c
+      _color: {r: 0.003921569, g: 0.08627451, b: 0.15294118, a: 0.5019608}
+    - _name: Input Border
+      _id: 1a20bec4-d4b3-4606-bf0b-bf1a728a7f47
+      _color: {r: 1, g: 1, b: 1, a: 0.2}
+    - _name: Input Border Hover
+      _id: e8c53602-b203-4d3f-bb64-e06c91fb271c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Text
+      _id: c06f9f33-e645-4a35-9fd2-56105da551a8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Text Placeholder
+      _id: 9e601469-eb79-4bbc-982c-7fab4d7c0c69
+      _color: {r: 1, g: 1, b: 1, a: 0.5882353}
+    - _name: Hyperlink
+      _id: 5951064b-e847-4e0a-8996-71df5fc3526d
+      _color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 0.6862745}
+    - _name: Social Button
+      _id: 21dc8235-80c2-4dd4-b5c6-40afe994b474
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Button Hover
+      _id: 8a69aa1d-8a69-4fab-89ab-0b979e74df8c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Provider Button
+      _id: 9a1dec11-9f99-4de0-9d99-16909d691d1d
+      _color: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
+    - _name: Social Provider Button Hover
+      _id: b019858e-c4a8-4ed5-a2b8-d1f392765585
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Second Button Back
+      _id: 73cf623e-4cc8-4e05-8e9b-893fc57ecd35
+      _color: {r: 0.003921569, g: 0.08627451, b: 0.15294118, a: 0.5019608}
+    - _name: Second Button Back Hover
+      _id: 722081d3-48ef-4971-b981-c1d8c48401a7
+      _color: {r: 0, g: 0.08627451, b: 0.14901961, a: 0.5019608}
+    - _name: Second Button Border
+      _id: ca37b2e6-bb12-4edc-aedb-be217b377bd6
+      _color: {r: 1, g: 1, b: 1, a: 0.2}
+    - _name: Second Button Border Hover
+      _id: 6c5976aa-207f-4fc5-a85d-58db958960cf
+      _color: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 1}
+    - _name: Second Button Border Press
+      _id: 304ceece-9d15-460c-a809-b6879784c393
+      _color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 0.5882353}
+    - _name: Second Button Text
+      _id: 71776c52-5995-43bb-b3a8-e180bc42b2aa
+      _color: {r: 1, g: 1, b: 1, a: 0.7058824}
+    - _name: Second Button Text Hover
+      _id: af1ae0ef-aa20-4a22-b474-95c34a11d55b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Second Button Text Press
+      _id: 1030c352-80c9-4e3e-924b-039d623ebc0f
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Menu Button
+      _id: a7ccf3c1-4ea7-4a9e-8fb4-8c5c438fb835
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Menu Button Hover
+      _id: d3ad3a1e-4071-40c8-b6f7-11edde7ce496
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Cart Button
+      _id: c79231aa-8f24-4f05-99aa-171f43d39ffc
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Cart Button Hover
+      _id: 7e95a9e5-a239-4ae5-8117-b9b2a8e4cb54
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Cart Text
+      _id: 0164196e-2d48-43af-868d-9edd3a08f6b6
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Background
+      _id: 04bfcbbf-48b9-4677-9e9b-1b971001579e
+      _color: {r: 0.078431375, g: 0.07058824, b: 0.23921569, a: 1}
+    - _name: Item Loading Back
+      _id: 368db7c9-cd9f-42c8-a3f4-6736e8b03ed1
+      _color: {r: 0.5176471, g: 0.5568628, b: 0.69411767, a: 1}
+    - _name: Item Loading Progress
+      _id: b7dc4e1d-f03c-4ee7-9f70-acaf930fe73e
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Selection
+      _id: d321a01e-3c64-4813-b823-669df6156ad7
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Divivder
+      _id: f86a1760-1c08-415d-af57-cad0aa9bf1a2
+      _color: {r: 1, g: 1, b: 1, a: 0.29411766}
+    - _name: Friend Border
+      _id: 089b9695-c9c0-4c92-98fd-135645808beb
+      _color: {r: 1, g: 1, b: 1, a: 0.09803922}
+    - _name: Popup Lock Back
+      _id: 3a51da75-0356-40c8-923e-dbb473a23bfb
+      _color: {r: 0, g: 0, b: 0, a: 0.29803923}
+    - _name: Popup Back
+      _id: eb14616c-0e29-4dc4-bd30-dc3728cadd7e
+      _color: {r: 0.078431375, g: 0.078431375, b: 0.27450982, a: 1}
+    - _name: Popup Title
+      _id: 178d82b2-9c39-4d53-8119-9accb17c4847
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Spinner Main
+      _id: caa8855f-2d88-42fe-944c-50d1249c7773
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Spinner Second
+      _id: da7247b4-fdc3-4b8e-9dc5-2764cc1c5f78
+      _color: {r: 0.83921576, g: 0, b: 0, a: 1}
+    - _name: Main Menu
+      _id: 807566a4-0f4e-45ac-9932-e83b9783641b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Menu Hover
+      _id: 068cdb10-341f-4c79-8f73-cf751b289695
+      _color: {r: 1, g: 0, b: 0.35686275, a: 1}
+    - _name: Main Menu Press
+      _id: 4f0d50bd-68f6-4c35-9cfa-6a1ba272257f
+      _color: {r: 0.83137256, g: 0, b: 0.29803923, a: 1}
+    - _name: Main Color
+      _id: cd078878-66a4-4637-8fe6-6f8120557afa
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Transparent
+      _id: a7ec42ea-49f2-4e5f-b985-63a0a592ccda
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Scroll Back
+      _id: d617a826-f6a4-4222-8b6c-eee2bad5f051
+      _color: {r: 1, g: 1, b: 1, a: 0.12156863}
+    - _name: Scroll Handle
+      _id: 6c56ddc5-55d5-43f1-af9b-90f17f922b35
+      _color: {r: 1, g: 1, b: 1, a: 0.69803923}
+    - _name: 'Quad Icon Button '
+      _id: e59ff61f-7047-4473-8b4d-4441b6d901e5
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Quad Icon Button Hover
+      _id: 4b755027-0140-42bc-b65d-6532545441c8
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Quad Icon Button Pressed
+      _id: 1c6a09b6-2e70-455a-8053-ca6d8e5bd90f
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Add Social Friend
+      _id: fb9fbbab-44db-4577-9a57-57a585679914
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Link Social Friend
+      _id: 027a7b89-db18-4b36-829d-9acc06eb5f4a
+      _color: {r: 0.043137256, g: 0.69803923, b: 0, a: 1}
+    - _name: BP Progress Back
+      _id: 13425be4-10bf-4c01-b2eb-94e8578e8c13
+      _color: {r: 0.02745098, g: 0.011764706, b: 0.18431373, a: 0.5019608}
+    - _name: BP FreeRewardsLabel Icon
+      _id: 0a0008c4-0a71-45a3-8d17-32184788df6c
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: BP PremiumRewards Icon
+      _id: a6bf59d9-3512-4e71-b621-ab221157c278
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Icon
+      _id: 69c39ebd-f65b-4d16-9d1f-f9a359d9369b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Icon Back
+      _id: e0e0b14d-7b31-42d0-83a4-7ce22cb7654d
+      _color: {r: 1, g: 1, b: 1, a: 0.15686275}
+    - _name: BP Edge
+      _id: 55108b7b-2d5e-47d4-8f03-2435622c109e
+      _color: {r: 0.0627451, g: 0.023529414, b: 0.20000002, a: 1}
+    - _name: BP ExperienceSlider
+      _id: d955076a-a6e1-4f1f-8b66-5546ab6eec8c
+      _color: {r: 1, g: 0, b: 0.35686302, a: 1}
+    - _name: BP ExperienceSlider Back
+      _id: c3a19156-4ea5-49a7-973a-58395e5056f8
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Current Level Text Shadow
+      _id: 8cc0982a-569f-48d1-a791-72aabe525aa1
+      _color: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0}
+    - _name: BP CurrentLevelBack Folded
+      _id: 83e36575-64f8-4223-b1df-a8907f622338
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: 82bae613-0392-4ac6-ba54-af7102033bf0
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: CurrentLevelHighlight
+      _id: 930954be-c9cf-4800-868e-f550ac9131d3
+      _color: {r: 0.14901961, g: 0.14901961, b: 0.46274513, a: 1}
+    - _name: BP FinalItem Back
+      _id: 5b28a056-01c4-411b-9bcc-2533e33937e8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Locked Tint
+      _id: 12e53fba-ceda-4e2e-be6c-c3805899752b
+      _color: {r: 0.06666667, g: 0.06666667, b: 0.23921569, a: 0.5882353}
+    - _name: BP LevelUpBlock Back
+      _id: 16c198b4-da48-4b05-b7e3-32ce59f6daee
+      _color: {r: 0.039215688, g: 0.039215688, b: 0.14117648, a: 1}
+    - _name: BP HighLight
+      _id: 86f03a36-3d54-4568-8cd4-9b65975947a4
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Item Back
+      _id: 61ac076e-e575-4d3e-aaf4-17e05d0a1b6e
+      _color: {r: 0.078431375, g: 0.07058824, b: 0.23921569, a: 1}
+    - _name: BP Item Back Empty
+      _id: 28002b75-86c1-4d15-9cdc-aa4c4be81bdd
+      _color: {r: 0.078431375, g: 0.07058824, b: 0.2392157, a: 1}
+    - _name: BP Item Back CurrentLevel
+      _id: 377be079-9200-46f5-8c15-06ff9aa2f5b2
+      _color: {r: 0, g: 0, b: 0, a: 0.2509804}
+    - _name: BP Item Back Selected
+      _id: 98ce09e5-c66c-4c0d-b9a1-d6db5f66b60c
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Price button text
+      _id: adbceac3-8f8d-4a70-845e-1899685dcbef
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Price without discount text
+      _id: 75237317-519c-41af-a8e9-7cd2ee728ce3
+      _color: {r: 0.6698113, g: 0.66033286, b: 0.66033286, a: 1}
+    - _name: Discount back
+      _id: abc92104-0835-4703-8a7d-67607745a0e5
+      _color: {r: 1, g: 1, b: 1, a: 0.2509804}
+    - _name: Discount text
+      _id: 3214ad0a-2ccd-47b8-a511-942176b8ba07
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    _sprites:
+    - _name: Base Background
+      _id: f59ef3aa-9cf9-4946-8de2-f203b773a004
+      _sprite: {fileID: 21300000, guid: 6a8a27e3e79a44045b5fe6ad849f4fb6, type: 3}
+    - _name: Blank Background
+      _id: 12ef0b5e-fa72-43a9-9ca3-aea7659483d4
+      _sprite: {fileID: 21300000, guid: 6adecf6d410754218bd2e757a851de85, type: 3}
+    - _name: BlurBackground
+      _id: fa17a7f3-67c6-49a7-a38a-26ffb5e4e6b0
+      _sprite: {fileID: 21300000, guid: 62b96774cc3d15e46817610cfc26bf68, type: 3}
+    - _name: Left Background
+      _id: 1ccb9175-26d1-48e0-8dfb-d05e03dcf41a
+      _sprite: {fileID: 21300000, guid: d1487d4161c07954da18e06235aa1e4a, type: 3}
+    - _name: Top Background
+      _id: 407489df-550f-4dd4-acf9-678063fc0cbb
+      _sprite: {fileID: 21300000, guid: bda455236a3d54dd1851f4edc71297c8, type: 3}
+    - _name: Main Button
+      _id: dfb1aea9-ded3-4435-ac2c-9199fbac8a75
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Back
+      _id: a900c48b-fbc0-44d3-8062-16263d7b7ff6
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Border
+      _id: 753dd279-ad27-41b2-bed7-8474faadcf22
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Second Button Back
+      _id: df02c64a-ae37-4af1-9ac8-dd9c0fc3b519
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Second Button Border
+      _id: dfa9db0d-7ff1-49f9-8659-be5444b602e8
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Cart Button
+      _id: 48a0fc41-631b-4248-a5ab-8fd2f5d56155
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Item Background
+      _id: 83b2de50-2cf3-40bc-bfba-83c0113979b9
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Item Loading
+      _id: 115ee7e6-d4b0-448e-848f-913a089e3d02
+      _sprite: {fileID: 21300000, guid: cad9b3e79629015499ed35b6b29d2807, type: 3}
+    - _name: Item Selection
+      _id: e4b219ec-309b-48fa-83be-57fd9659a300
+      _sprite: {fileID: 21300000, guid: e9c312b8e56488649ac78036d5ab94d8, type: 3}
+    - _name: Friend Border
+      _id: 95862eb3-a2bf-4f1e-a660-f5d71ac3f948
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Popup Back
+      _id: 7482b7ac-d5e5-4b5b-ae5e-d02628a0b6a4
+      _sprite: {fileID: 0}
+    - _name: Spinner
+      _id: 31700e90-bef4-4a9a-b375-9382dccb76c6
+      _sprite: {fileID: 21300000, guid: ca94540ee0ce8954aa2ab80d02a5b6d8, type: 3}
+    - _name: Scroll Back
+      _id: 09e9348d-7273-4a81-b1ad-ce3e91489012
+      _sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Logo
+      _id: e335fa6a-085f-404b-b1e6-b29da2bb918e
+      _sprite: {fileID: 21300000, guid: 065ddbf4432744185b704c5db1d940a8, type: 3}
+    - _name: GameLogo
+      _id: 1707d0e1-ef56-4549-ac03-679326d10851
+      _sprite: {fileID: 21300000, guid: 691d013d73324984eb9cd2d4d5742dff, type: 3}
+    - _name: Scroll Handle
+      _id: 64570eff-417a-47e2-b507-fdbf0cd28695
+      _sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Quad Icon Button
+      _id: eafe0aee-3dab-4935-9dc1-68e1e6bbb6be
+      _sprite: {fileID: 0}
+    - _name: BP Progress Back
+      _id: e0b2633c-b8e6-4436-ac2c-ae922642c818
+      _sprite: {fileID: 21300000, guid: ba5478c71653f04428a491b6757f24d2, type: 3}
+    - _name: BP Experience Icon
+      _id: c37d0b78-43f4-40aa-b3c9-7ed5fd4c1a40
+      _sprite: {fileID: 21300000, guid: 3f98f790f68867f4d87a92ff3a732ccc, type: 3}
+    - _name: BP Line Free
+      _id: b0913831-5cdf-42eb-b2ab-f5afa1647908
+      _sprite: {fileID: 0}
+    - _name: BP Line Premium
+      _id: c00c5071-58f2-48bc-b6a6-f27002641b80
+      _sprite: {fileID: 21300000, guid: 86a660e3cc1b015469e26e72557a9e18, type: 3}
+    - _name: BP Icon
+      _id: 5e3c2427-a402-4590-9540-d043c05742a4
+      _sprite: {fileID: 21300000, guid: 0ab038ce29548324b94fe26f33df4430, type: 3}
+    - _name: BP Edge
+      _id: bdbcd21c-4287-40a7-a5d0-fa9a60c40a6f
+      _sprite: {fileID: 21300000, guid: a10c72b29d80f8946b5bfae2baa8627b, type: 3}
+    - _name: BP ExperienceSlider
+      _id: 02ca5702-62e9-4a06-940b-fb4f0359ed9e
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP CurrentLevelBack Folded
+      _id: 3041028f-ecc7-4582-b742-2115d02e12ef
+      _sprite: {fileID: 21300000, guid: be16354c91758924cad3ccaf58311c3c, type: 3}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: e01a4785-39c3-46f8-8d19-e10fec681cfb
+      _sprite: {fileID: 21300000, guid: 828c42215fb68b34188aabe5f15becea, type: 3}
+    - _name: BP CurrentLevelHighlight
+      _id: db9f2683-a7c2-40f4-88d5-3aa4629d92ab
+      _sprite: {fileID: 21300000, guid: 3f5207c20922b044697760e8e1cd55e1, type: 3}
+    - _name: BP Experience Back
+      _id: 6cd28011-250e-4d56-84d1-8e85e5a1bfae
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP Locked Tint
+      _id: 27752aef-be3c-4804-ac90-f59cbc333a67
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP LevelUpBlock Back
+      _id: e2c60c14-2908-487a-a131-35fb13483ac4
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP FinalItem Back
+      _id: f802bc99-96c9-4bb4-b900-57bbf6cd6560
+      _sprite: {fileID: 21300000, guid: c3de0cf9a860f27469dfad827c3cd3ff, type: 3}
+    - _name: BP HighLight
+      _id: 28e6352b-c5ce-4be0-90e4-7e629d9c666f
+      _sprite: {fileID: 21300000, guid: bbf5dd307a281f543a7dd6ccd960808e, type: 3}
+    - _name: Main page logo
+      _id: c8d9c501-ae5d-4e7b-a288-04b815e14d9f
+      _sprite: {fileID: 21300000, guid: 691d013d73324984eb9cd2d4d5742dff, type: 3}
+    - _name: Enter page back
+      _id: 5c0b15ee-ca7f-497d-b2cb-e8393786d538
+      _sprite: {fileID: 21300000, guid: 6a8a27e3e79a44045b5fe6ad849f4fb6, type: 3}
+    _fonts:
+    - _name: Main Font
+      _id: 7b111555-c639-4655-9948-52030ad69aab
+      _font: {fileID: 12800000, guid: f70b0d194d863d14eaa3261671349a4b, type: 3}
+  - _name: Bomber
+    _id: 089491b2-d94e-4c84-b024-5737065e0dd2
+    _colors:
+    - _name: Base Background Color
+      _id: 2a5a816b-0b34-4462-a11c-94ae69041b5d
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Top Background Color
+      _id: 66b9e6ff-d325-476f-9307-af7877402265
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Common Text
+      _id: a888e9eb-55a8-4cb6-95f2-87c223ebc893
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Description Text
+      _id: f082ce88-2612-4821-9daa-8d421f912d8e
+      _color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _name: Main Button
+      _id: e9c672ce-cad6-4ddf-8fe4-20b3b665f12e
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Button Hover
+      _id: 81ac4dd1-5977-48bb-bf5a-922ec5905155
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Main Button Disabled
+      _id: 111a067e-8ef9-4732-ab9b-3197ae1e3c75
+      _color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _name: Main Button Text
+      _id: 8d406015-69a9-402e-aa9e-e28e56a8264c
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Main Button Text Hover
+      _id: 18c39e73-c09c-424e-9023-67499764c8f4
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Main Button Text Disabled
+      _id: 05c23a2f-fe24-4e07-935d-9f37d02c67b5
+      _color: {r: 1, g: 1, b: 1, a: 0.7058824}
+    - _name: Logo Color
+      _id: 2bd99ceb-7235-48e9-a8bc-70fdc919a284
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Left Background Color
+      _id: 56d30534-ac79-4e61-b765-6e6e02531ecb
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Hyperlink Hover
+      _id: ff860625-4654-4245-9659-0daf1362e446
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Back
+      _id: 8448ca8c-1a44-4019-94a1-3ada7306f71c
+      _color: {r: 0, g: 0, b: 0, a: 0.36078432}
+    - _name: Input Border
+      _id: 1a20bec4-d4b3-4606-bf0b-bf1a728a7f47
+      _color: {r: 1, g: 1, b: 1, a: 0.29803923}
+    - _name: Input Border Hover
+      _id: e8c53602-b203-4d3f-bb64-e06c91fb271c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Text
+      _id: c06f9f33-e645-4a35-9fd2-56105da551a8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Text Placeholder
+      _id: 9e601469-eb79-4bbc-982c-7fab4d7c0c69
+      _color: {r: 1, g: 1, b: 1, a: 0.5882353}
+    - _name: Hyperlink
+      _id: 5951064b-e847-4e0a-8996-71df5fc3526d
+      _color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 1}
+    - _name: Social Button
+      _id: 21dc8235-80c2-4dd4-b5c6-40afe994b474
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Button Hover
+      _id: 8a69aa1d-8a69-4fab-89ab-0b979e74df8c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Provider Button
+      _id: 9a1dec11-9f99-4de0-9d99-16909d691d1d
+      _color: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
+    - _name: Social Provider Button Hover
+      _id: b019858e-c4a8-4ed5-a2b8-d1f392765585
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Second Button Back
+      _id: 73cf623e-4cc8-4e05-8e9b-893fc57ecd35
+      _color: {r: 1, g: 1, b: 1, a: 0.36078432}
+    - _name: Second Button Back Hover
+      _id: 722081d3-48ef-4971-b981-c1d8c48401a7
+      _color: {r: 1, g: 1, b: 1, a: 0.23921569}
+    - _name: Second Button Border
+      _id: ca37b2e6-bb12-4edc-aedb-be217b377bd6
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Second Button Border Hover
+      _id: 6c5976aa-207f-4fc5-a85d-58db958960cf
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Second Button Border Press
+      _id: 304ceece-9d15-460c-a809-b6879784c393
+      _color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 0.5882353}
+    - _name: Second Button Text
+      _id: 71776c52-5995-43bb-b3a8-e180bc42b2aa
+      _color: {r: 1, g: 1, b: 1, a: 0.7058824}
+    - _name: Second Button Text Hover
+      _id: af1ae0ef-aa20-4a22-b474-95c34a11d55b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Second Button Text Press
+      _id: 1030c352-80c9-4e3e-924b-039d623ebc0f
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Menu Button
+      _id: a7ccf3c1-4ea7-4a9e-8fb4-8c5c438fb835
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Menu Button Hover
+      _id: d3ad3a1e-4071-40c8-b6f7-11edde7ce496
+      _color: {r: 0.7254902, g: 1, b: 0.2, a: 1}
+    - _name: Cart Button
+      _id: c79231aa-8f24-4f05-99aa-171f43d39ffc
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Cart Button Hover
+      _id: 7e95a9e5-a239-4ae5-8117-b9b2a8e4cb54
+      _color: {r: 0.7735849, g: 0.054734774, b: 0.43272176, a: 1}
+    - _name: Cart Text
+      _id: 0164196e-2d48-43af-868d-9edd3a08f6b6
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Background
+      _id: 04bfcbbf-48b9-4677-9e9b-1b971001579e
+      _color: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
+    - _name: Item Loading Back
+      _id: 368db7c9-cd9f-42c8-a3f4-6736e8b03ed1
+      _color: {r: 0.5176471, g: 0.5568628, b: 0.69411767, a: 1}
+    - _name: Item Loading Progress
+      _id: b7dc4e1d-f03c-4ee7-9f70-acaf930fe73e
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Selection
+      _id: d321a01e-3c64-4813-b823-669df6156ad7
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Divivder
+      _id: f86a1760-1c08-415d-af57-cad0aa9bf1a2
+      _color: {r: 1, g: 1, b: 1, a: 0.29411766}
+    - _name: Friend Border
+      _id: 089b9695-c9c0-4c92-98fd-135645808beb
+      _color: {r: 1, g: 1, b: 1, a: 0.09803922}
+    - _name: Popup Lock Back
+      _id: 3a51da75-0356-40c8-923e-dbb473a23bfb
+      _color: {r: 0, g: 0, b: 0, a: 0.29803923}
+    - _name: Popup Back
+      _id: eb14616c-0e29-4dc4-bd30-dc3728cadd7e
+      _color: {r: 0.10196079, g: 0.054901965, b: 0.18039216, a: 1}
+    - _name: Popup Title
+      _id: 178d82b2-9c39-4d53-8119-9accb17c4847
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Spinner Main
+      _id: caa8855f-2d88-42fe-944c-50d1249c7773
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Spinner Second
+      _id: da7247b4-fdc3-4b8e-9dc5-2764cc1c5f78
+      _color: {r: 0.83921576, g: 0, b: 0, a: 1}
+    - _name: Main Menu
+      _id: 807566a4-0f4e-45ac-9932-e83b9783641b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Menu Hover
+      _id: 068cdb10-341f-4c79-8f73-cf751b289695
+      _color: {r: 0.7254902, g: 1, b: 0.20000002, a: 1}
+    - _name: Main Menu Press
+      _id: 4f0d50bd-68f6-4c35-9cfa-6a1ba272257f
+      _color: {r: 0.7254902, g: 1, b: 0.20000002, a: 1}
+    - _name: Main Color
+      _id: cd078878-66a4-4637-8fe6-6f8120557afa
+      _color: {r: 0.7254902, g: 1, b: 0.2, a: 1}
+    - _name: Transparent
+      _id: a7ec42ea-49f2-4e5f-b985-63a0a592ccda
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Scroll Back
+      _id: d617a826-f6a4-4222-8b6c-eee2bad5f051
+      _color: {r: 1, g: 1, b: 1, a: 0.12156863}
+    - _name: Scroll Handle
+      _id: 6c56ddc5-55d5-43f1-af9b-90f17f922b35
+      _color: {r: 1, g: 1, b: 1, a: 0.69803923}
+    - _name: 'Quad Icon Button '
+      _id: e59ff61f-7047-4473-8b4d-4441b6d901e5
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Quad Icon Button Hover
+      _id: 4b755027-0140-42bc-b65d-6532545441c8
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Quad Icon Button Pressed
+      _id: 1c6a09b6-2e70-455a-8053-ca6d8e5bd90f
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Add Social Friend
+      _id: fb9fbbab-44db-4577-9a57-57a585679914
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: Link Social Friend
+      _id: 027a7b89-db18-4b36-829d-9acc06eb5f4a
+      _color: {r: 0.043137256, g: 0.69803923, b: 0, a: 1}
+    - _name: BP Progress Back
+      _id: 13425be4-10bf-4c01-b2eb-94e8578e8c13
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 1}
+    - _name: BP FreeRewardsLabel Icon
+      _id: 0a0008c4-0a71-45a3-8d17-32184788df6c
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: BP PremiumRewards Icon
+      _id: a6bf59d9-3512-4e71-b621-ab221157c278
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Icon
+      _id: 69c39ebd-f65b-4d16-9d1f-f9a359d9369b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Icon Back
+      _id: e0e0b14d-7b31-42d0-83a4-7ce22cb7654d
+      _color: {r: 1, g: 1, b: 1, a: 0.15686275}
+    - _name: BP Edge
+      _id: 55108b7b-2d5e-47d4-8f03-2435622c109e
+      _color: {r: 0.06666667, g: 0.06666667, b: 0.06666667, a: 1}
+    - _name: BP ExperienceSlider
+      _id: d955076a-a6e1-4f1f-8b66-5546ab6eec8c
+      _color: {r: 1, g: 0.16470589, b: 0.6039216, a: 1}
+    - _name: BP ExperienceSlider Back
+      _id: c3a19156-4ea5-49a7-973a-58395e5056f8
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Current Level Text Shadow
+      _id: 8cc0982a-569f-48d1-a791-72aabe525aa1
+      _color: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0}
+    - _name: BP CurrentLevelBack Folded
+      _id: 83e36575-64f8-4223-b1df-a8907f622338
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: 82bae613-0392-4ac6-ba54-af7102033bf0
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: CurrentLevelHighlight
+      _id: 930954be-c9cf-4800-868e-f550ac9131d3
+      _color: {r: 0.24589491, g: 0.13305448, b: 0.4339623, a: 1}
+    - _name: BP FinalItem Back
+      _id: 5b28a056-01c4-411b-9bcc-2533e33937e8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Locked Tint
+      _id: 12e53fba-ceda-4e2e-be6c-c3805899752b
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 0.5882353}
+    - _name: BP LevelUpBlock Back
+      _id: 16c198b4-da48-4b05-b7e3-32ce59f6daee
+      _color: {r: 0.039215688, g: 0.039215688, b: 0.14117648, a: 1}
+    - _name: BP HighLight
+      _id: 86f03a36-3d54-4568-8cd4-9b65975947a4
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Item Back
+      _id: 61ac076e-e575-4d3e-aaf4-17e05d0a1b6e
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 1}
+    - _name: BP Item Back Empty
+      _id: 28002b75-86c1-4d15-9cdc-aa4c4be81bdd
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 1}
+    - _name: BP Item Back CurrentLevel
+      _id: 377be079-9200-46f5-8c15-06ff9aa2f5b2
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 0.2509804}
+    - _name: BP Item Back Selected
+      _id: 98ce09e5-c66c-4c0d-b9a1-d6db5f66b60c
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Price button text
+      _id: adbceac3-8f8d-4a70-845e-1899685dcbef
+      _color: {r: 0.101960786, g: 0.05490196, b: 0.18039216, a: 1}
+    - _name: Price without discount text
+      _id: 75237317-519c-41af-a8e9-7cd2ee728ce3
+      _color: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+    - _name: Discount back
+      _id: abc92104-0835-4703-8a7d-67607745a0e5
+      _color: {r: 0.7254902, g: 1, b: 0.2, a: 1}
+    - _name: Discount text
+      _id: 3214ad0a-2ccd-47b8-a511-942176b8ba07
+      _color: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
+    _sprites:
+    - _name: Base Background
+      _id: f59ef3aa-9cf9-4946-8de2-f203b773a004
+      _sprite: {fileID: 21300000, guid: 24c5c2d6624e4214c863d8477f871537, type: 3}
+    - _name: Blank Background
+      _id: 12ef0b5e-fa72-43a9-9ca3-aea7659483d4
+      _sprite: {fileID: 21300000, guid: 182d4b8b38be2544fad6a7e47c89998e, type: 3}
+    - _name: BlurBackground
+      _id: fa17a7f3-67c6-49a7-a38a-26ffb5e4e6b0
+      _sprite: {fileID: 21300000, guid: 182d4b8b38be2544fad6a7e47c89998e, type: 3}
+    - _name: Left Background
+      _id: 1ccb9175-26d1-48e0-8dfb-d05e03dcf41a
+      _sprite: {fileID: 21300000, guid: 182d4b8b38be2544fad6a7e47c89998e, type: 3}
+    - _name: Top Background
+      _id: 407489df-550f-4dd4-acf9-678063fc0cbb
+      _sprite: {fileID: 21300000, guid: e4a48ac0a54c09a428e631bd314be2e7, type: 3}
+    - _name: Main Button
+      _id: dfb1aea9-ded3-4435-ac2c-9199fbac8a75
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Back
+      _id: a900c48b-fbc0-44d3-8062-16263d7b7ff6
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Border
+      _id: 753dd279-ad27-41b2-bed7-8474faadcf22
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Second Button Back
+      _id: df02c64a-ae37-4af1-9ac8-dd9c0fc3b519
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Second Button Border
+      _id: dfa9db0d-7ff1-49f9-8659-be5444b602e8
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Cart Button
+      _id: 48a0fc41-631b-4248-a5ab-8fd2f5d56155
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Item Background
+      _id: 83b2de50-2cf3-40bc-bfba-83c0113979b9
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Item Loading
+      _id: 115ee7e6-d4b0-448e-848f-913a089e3d02
+      _sprite: {fileID: 21300000, guid: cad9b3e79629015499ed35b6b29d2807, type: 3}
+    - _name: Item Selection
+      _id: e4b219ec-309b-48fa-83be-57fd9659a300
+      _sprite: {fileID: 21300000, guid: e9c312b8e56488649ac78036d5ab94d8, type: 3}
+    - _name: Friend Border
+      _id: 95862eb3-a2bf-4f1e-a660-f5d71ac3f948
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Popup Back
+      _id: 7482b7ac-d5e5-4b5b-ae5e-d02628a0b6a4
+      _sprite: {fileID: 0}
+    - _name: Spinner
+      _id: 31700e90-bef4-4a9a-b375-9382dccb76c6
+      _sprite: {fileID: 21300000, guid: ca94540ee0ce8954aa2ab80d02a5b6d8, type: 3}
+    - _name: Scroll Back
+      _id: 09e9348d-7273-4a81-b1ad-ce3e91489012
+      _sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Logo
+      _id: e335fa6a-085f-404b-b1e6-b29da2bb918e
+      _sprite: {fileID: 21300000, guid: 065ddbf4432744185b704c5db1d940a8, type: 3}
+    - _name: GameLogo
+      _id: 1707d0e1-ef56-4549-ac03-679326d10851
+      _sprite: {fileID: 21300000, guid: 8b2d1079604e6c54bbc5c614d5d64bce, type: 3}
+    - _name: Scroll Handle
+      _id: 64570eff-417a-47e2-b507-fdbf0cd28695
+      _sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Quad Icon Button
+      _id: eafe0aee-3dab-4935-9dc1-68e1e6bbb6be
+      _sprite: {fileID: 0}
+    - _name: BP Progress Back
+      _id: e0b2633c-b8e6-4436-ac2c-ae922642c818
+      _sprite: {fileID: 21300000, guid: ba5478c71653f04428a491b6757f24d2, type: 3}
+    - _name: BP Experience Icon
+      _id: c37d0b78-43f4-40aa-b3c9-7ed5fd4c1a40
+      _sprite: {fileID: 21300000, guid: 3f98f790f68867f4d87a92ff3a732ccc, type: 3}
+    - _name: BP Line Free
+      _id: b0913831-5cdf-42eb-b2ab-f5afa1647908
+      _sprite: {fileID: 0}
+    - _name: BP Line Premium
+      _id: c00c5071-58f2-48bc-b6a6-f27002641b80
+      _sprite: {fileID: 21300000, guid: 86a660e3cc1b015469e26e72557a9e18, type: 3}
+    - _name: BP Icon
+      _id: 5e3c2427-a402-4590-9540-d043c05742a4
+      _sprite: {fileID: 21300000, guid: 0ab038ce29548324b94fe26f33df4430, type: 3}
+    - _name: BP Edge
+      _id: bdbcd21c-4287-40a7-a5d0-fa9a60c40a6f
+      _sprite: {fileID: 21300000, guid: a10c72b29d80f8946b5bfae2baa8627b, type: 3}
+    - _name: BP ExperienceSlider
+      _id: 02ca5702-62e9-4a06-940b-fb4f0359ed9e
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP CurrentLevelBack Folded
+      _id: 3041028f-ecc7-4582-b742-2115d02e12ef
+      _sprite: {fileID: 21300000, guid: be16354c91758924cad3ccaf58311c3c, type: 3}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: e01a4785-39c3-46f8-8d19-e10fec681cfb
+      _sprite: {fileID: 21300000, guid: 828c42215fb68b34188aabe5f15becea, type: 3}
+    - _name: BP CurrentLevelHighlight
+      _id: db9f2683-a7c2-40f4-88d5-3aa4629d92ab
+      _sprite: {fileID: 21300000, guid: 3f5207c20922b044697760e8e1cd55e1, type: 3}
+    - _name: BP Experience Back
+      _id: 6cd28011-250e-4d56-84d1-8e85e5a1bfae
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP Locked Tint
+      _id: 27752aef-be3c-4804-ac90-f59cbc333a67
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP LevelUpBlock Back
+      _id: e2c60c14-2908-487a-a131-35fb13483ac4
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP FinalItem Back
+      _id: f802bc99-96c9-4bb4-b900-57bbf6cd6560
+      _sprite: {fileID: 21300000, guid: c3de0cf9a860f27469dfad827c3cd3ff, type: 3}
+    - _name: BP HighLight
+      _id: 28e6352b-c5ce-4be0-90e4-7e629d9c666f
+      _sprite: {fileID: 21300000, guid: bbf5dd307a281f543a7dd6ccd960808e, type: 3}
+    - _name: Main page logo
+      _id: c8d9c501-ae5d-4e7b-a288-04b815e14d9f
+      _sprite: {fileID: 21300000, guid: f96dc212e0d37ec4c956a8340b1de478, type: 3}
+    - _name: Enter page back
+      _id: 5c0b15ee-ca7f-497d-b2cb-e8393786d538
+      _sprite: {fileID: 21300000, guid: cbb0d6cc69a6bc0438faa4faa5b41a10, type: 3}
+    _fonts:
+    - _name: Main Font
+      _id: 7b111555-c639-4655-9948-52030ad69aab
+      _font: {fileID: 12800000, guid: f70b0d194d863d14eaa3261671349a4b, type: 3}
+  - _name: Shooter
+    _id: 25bb06fe-ed97-4b75-af84-460b1651e50a
+    _colors:
+    - _name: Base Background Color
+      _id: 2a5a816b-0b34-4462-a11c-94ae69041b5d
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Top Background Color
+      _id: 66b9e6ff-d325-476f-9307-af7877402265
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Common Text
+      _id: a888e9eb-55a8-4cb6-95f2-87c223ebc893
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Description Text
+      _id: f082ce88-2612-4821-9daa-8d421f912d8e
+      _color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _name: Main Button
+      _id: e9c672ce-cad6-4ddf-8fe4-20b3b665f12e
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Main Button Hover
+      _id: 81ac4dd1-5977-48bb-bf5a-922ec5905155
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Main Button Disabled
+      _id: 111a067e-8ef9-4732-ab9b-3197ae1e3c75
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 0.5019608}
+    - _name: Main Button Text
+      _id: 8d406015-69a9-402e-aa9e-e28e56a8264c
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Main Button Text Hover
+      _id: 18c39e73-c09c-424e-9023-67499764c8f4
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Button Text Disabled
+      _id: 05c23a2f-fe24-4e07-935d-9f37d02c67b5
+      _color: {r: 0, g: 0, b: 0, a: 0.5019608}
+    - _name: Logo Color
+      _id: 2bd99ceb-7235-48e9-a8bc-70fdc919a284
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Left Background Color
+      _id: 56d30534-ac79-4e61-b765-6e6e02531ecb
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Hyperlink Hover
+      _id: ff860625-4654-4245-9659-0daf1362e446
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Back
+      _id: 8448ca8c-1a44-4019-94a1-3ada7306f71c
+      _color: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 0.78431374}
+    - _name: Input Border
+      _id: 1a20bec4-d4b3-4606-bf0b-bf1a728a7f47
+      _color: {r: 0.6509804, g: 0.58431375, b: 0.5411765, a: 1}
+    - _name: Input Border Hover
+      _id: e8c53602-b203-4d3f-bb64-e06c91fb271c
+      _color: {r: 0.909804, g: 0.7568628, b: 0.11764707, a: 1}
+    - _name: Input Text
+      _id: c06f9f33-e645-4a35-9fd2-56105da551a8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Input Text Placeholder
+      _id: 9e601469-eb79-4bbc-982c-7fab4d7c0c69
+      _color: {r: 1, g: 1, b: 1, a: 0.5882353}
+    - _name: Hyperlink
+      _id: 5951064b-e847-4e0a-8996-71df5fc3526d
+      _color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 0.6862745}
+    - _name: Social Button
+      _id: 21dc8235-80c2-4dd4-b5c6-40afe994b474
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Button Hover
+      _id: 8a69aa1d-8a69-4fab-89ab-0b979e74df8c
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Social Provider Button
+      _id: 9a1dec11-9f99-4de0-9d99-16909d691d1d
+      _color: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
+    - _name: Social Provider Button Hover
+      _id: b019858e-c4a8-4ed5-a2b8-d1f392765585
+      _color: {r: 0.909804, g: 0.7568628, b: 0.11764707, a: 1}
+    - _name: Second Button Back
+      _id: 73cf623e-4cc8-4e05-8e9b-893fc57ecd35
+      _color: {r: 0.019607844, g: 0.019607844, b: 0.019607844, a: 1}
+    - _name: Second Button Back Hover
+      _id: 722081d3-48ef-4971-b981-c1d8c48401a7
+      _color: {r: 0.909804, g: 0.7568628, b: 0.11764707, a: 1}
+    - _name: Second Button Border
+      _id: ca37b2e6-bb12-4edc-aedb-be217b377bd6
+      _color: {r: 0.019607844, g: 0.019607844, b: 0.019607844, a: 1}
+    - _name: Second Button Border Hover
+      _id: 6c5976aa-207f-4fc5-a85d-58db958960cf
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Second Button Border Press
+      _id: 304ceece-9d15-460c-a809-b6879784c393
+      _color: {r: 1, g: 0.99733716, b: 0.9858491, a: 1}
+    - _name: Second Button Text
+      _id: 71776c52-5995-43bb-b3a8-e180bc42b2aa
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Second Button Text Hover
+      _id: af1ae0ef-aa20-4a22-b474-95c34a11d55b
+      _color: {r: 0.01886791, g: 0.01877891, b: 0.01877891, a: 1}
+    - _name: Second Button Text Press
+      _id: 1030c352-80c9-4e3e-924b-039d623ebc0f
+      _color: {r: 0.01886791, g: 0.01877891, b: 0.01877891, a: 1}
+    - _name: Menu Button
+      _id: a7ccf3c1-4ea7-4a9e-8fb4-8c5c438fb835
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Menu Button Hover
+      _id: d3ad3a1e-4071-40c8-b6f7-11edde7ce496
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Cart Button
+      _id: c79231aa-8f24-4f05-99aa-171f43d39ffc
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Cart Button Hover
+      _id: 7e95a9e5-a239-4ae5-8117-b9b2a8e4cb54
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Cart Text
+      _id: 0164196e-2d48-43af-868d-9edd3a08f6b6
+      _color: {r: 0.009433985, g: 0.009433985, b: 0.009433985, a: 1}
+    - _name: Item Background
+      _id: 04bfcbbf-48b9-4677-9e9b-1b971001579e
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Loading Back
+      _id: 368db7c9-cd9f-42c8-a3f4-6736e8b03ed1
+      _color: {r: 0.5176471, g: 0.5568628, b: 0.69411767, a: 1}
+    - _name: Item Loading Progress
+      _id: b7dc4e1d-f03c-4ee7-9f70-acaf930fe73e
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Selection
+      _id: d321a01e-3c64-4813-b823-669df6156ad7
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Item Divivder
+      _id: f86a1760-1c08-415d-af57-cad0aa9bf1a2
+      _color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _name: Friend Border
+      _id: 089b9695-c9c0-4c92-98fd-135645808beb
+      _color: {r: 1, g: 1, b: 1, a: 0.09803922}
+    - _name: Popup Lock Back
+      _id: 3a51da75-0356-40c8-923e-dbb473a23bfb
+      _color: {r: 0, g: 0, b: 0, a: 0.29803923}
+    - _name: Popup Back
+      _id: eb14616c-0e29-4dc4-bd30-dc3728cadd7e
+      _color: {r: 0.42352942, g: 0.3137255, b: 0.23529412, a: 1}
+    - _name: Popup Title
+      _id: 178d82b2-9c39-4d53-8119-9accb17c4847
+      _color: {r: 0.909804, g: 0.7568628, b: 0.11764707, a: 1}
+    - _name: Spinner Main
+      _id: caa8855f-2d88-42fe-944c-50d1249c7773
+      _color: {r: 0, g: 0, b: 0, a: 1}
+    - _name: Spinner Second
+      _id: da7247b4-fdc3-4b8e-9dc5-2764cc1c5f78
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Main Menu
+      _id: 807566a4-0f4e-45ac-9932-e83b9783641b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Main Menu Hover
+      _id: 068cdb10-341f-4c79-8f73-cf751b289695
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Main Menu Press
+      _id: 4f0d50bd-68f6-4c35-9cfa-6a1ba272257f
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Main Color
+      _id: cd078878-66a4-4637-8fe6-6f8120557afa
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Transparent
+      _id: a7ec42ea-49f2-4e5f-b985-63a0a592ccda
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Scroll Back
+      _id: d617a826-f6a4-4222-8b6c-eee2bad5f051
+      _color: {r: 1, g: 1, b: 1, a: 0.12156863}
+    - _name: Scroll Handle
+      _id: 6c56ddc5-55d5-43f1-af9b-90f17f922b35
+      _color: {r: 1, g: 1, b: 1, a: 0.69803923}
+    - _name: 'Quad Icon Button '
+      _id: e59ff61f-7047-4473-8b4d-4441b6d901e5
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: Quad Icon Button Hover
+      _id: 4b755027-0140-42bc-b65d-6532545441c8
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Quad Icon Button Pressed
+      _id: 1c6a09b6-2e70-455a-8053-ca6d8e5bd90f
+      _color: {r: 0.9098039, g: 0.75686276, b: 0.11764706, a: 1}
+    - _name: Add Social Friend
+      _id: fb9fbbab-44db-4577-9a57-57a585679914
+      _color: {r: 0.8313726, g: 0, b: 0.29803923, a: 1}
+    - _name: Link Social Friend
+      _id: 027a7b89-db18-4b36-829d-9acc06eb5f4a
+      _color: {r: 0.043137256, g: 0.69803923, b: 0, a: 1}
+    - _name: BP Progress Back
+      _id: 13425be4-10bf-4c01-b2eb-94e8578e8c13
+      _color: {r: 0.42352942, g: 0.3137255, b: 0.23529412, a: 0.5019608}
+    - _name: BP FreeRewardsLabel Icon
+      _id: 0a0008c4-0a71-45a3-8d17-32184788df6c
+      _color: {r: 1, g: 1, b: 1, a: 0}
+    - _name: BP PremiumRewards Icon
+      _id: a6bf59d9-3512-4e71-b621-ab221157c278
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Icon
+      _id: 69c39ebd-f65b-4d16-9d1f-f9a359d9369b
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Icon Back
+      _id: e0e0b14d-7b31-42d0-83a4-7ce22cb7654d
+      _color: {r: 1, g: 1, b: 1, a: 0.15686275}
+    - _name: BP Edge
+      _id: 55108b7b-2d5e-47d4-8f03-2435622c109e
+      _color: {r: 0.42352945, g: 0.3137255, b: 0.23529413, a: 1}
+    - _name: BP ExperienceSlider
+      _id: d955076a-a6e1-4f1f-8b66-5546ab6eec8c
+      _color: {r: 0.909804, g: 0.7568628, b: 0.11764707, a: 1}
+    - _name: BP ExperienceSlider Back
+      _id: c3a19156-4ea5-49a7-973a-58395e5056f8
+      _color: {r: 1, g: 1, b: 1, a: 0.039215688}
+    - _name: BP Current Level Text Shadow
+      _id: 8cc0982a-569f-48d1-a791-72aabe525aa1
+      _color: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0}
+    - _name: BP CurrentLevelBack Folded
+      _id: 83e36575-64f8-4223-b1df-a8907f622338
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: 82bae613-0392-4ac6-ba54-af7102033bf0
+      _color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _name: CurrentLevelHighlight
+      _id: 930954be-c9cf-4800-868e-f550ac9131d3
+      _color: {r: 0.42352945, g: 0.3137255, b: 0.23529413, a: 1}
+    - _name: BP FinalItem Back
+      _id: 5b28a056-01c4-411b-9bcc-2533e33937e8
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Locked Tint
+      _id: 12e53fba-ceda-4e2e-be6c-c3805899752b
+      _color: {r: 0.42352945, g: 0.3137255, b: 0.23529413, a: 0.5882353}
+    - _name: BP LevelUpBlock Back
+      _id: 16c198b4-da48-4b05-b7e3-32ce59f6daee
+      _color: {r: 0.42352942, g: 0.3137255, b: 0.23529412, a: 1}
+    - _name: BP HighLight
+      _id: 86f03a36-3d54-4568-8cd4-9b65975947a4
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: BP Item Back
+      _id: 61ac076e-e575-4d3e-aaf4-17e05d0a1b6e
+      _color: {r: 0.42352945, g: 0.3137255, b: 0.23529413, a: 1}
+    - _name: BP Item Back Empty
+      _id: 28002b75-86c1-4d15-9cdc-aa4c4be81bdd
+      _color: {r: 0.42352945, g: 0.3137255, b: 0.23529413, a: 1}
+    - _name: BP Item Back CurrentLevel
+      _id: 377be079-9200-46f5-8c15-06ff9aa2f5b2
+      _color: {r: 0, g: 0, b: 0, a: 0.2509804}
+    - _name: BP Item Back Selected
+      _id: 98ce09e5-c66c-4c0d-b9a1-d6db5f66b60c
+      _color: {r: 0.009433985, g: 0.009033485, b: 0.009033485, a: 0.21960784}
+    - _name: Price button text
+      _id: adbceac3-8f8d-4a70-845e-1899685dcbef
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Price without discount text
+      _id: 75237317-519c-41af-a8e9-7cd2ee728ce3
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    - _name: Discount back
+      _id: abc92104-0835-4703-8a7d-67607745a0e5
+      _color: {r: 1, g: 1, b: 1, a: 0.2509804}
+    - _name: Discount text
+      _id: 3214ad0a-2ccd-47b8-a511-942176b8ba07
+      _color: {r: 1, g: 1, b: 1, a: 1}
+    _sprites:
+    - _name: Base Background
+      _id: f59ef3aa-9cf9-4946-8de2-f203b773a004
+      _sprite: {fileID: 21300000, guid: 0e69e7364c6514b4d8f8f6de6766a126, type: 3}
+    - _name: Blank Background
+      _id: 12ef0b5e-fa72-43a9-9ca3-aea7659483d4
+      _sprite: {fileID: 21300000, guid: 6cbde91eeb370bf4bb53af313dc44a44, type: 3}
+    - _name: BlurBackground
+      _id: fa17a7f3-67c6-49a7-a38a-26ffb5e4e6b0
+      _sprite: {fileID: 21300000, guid: 6cbde91eeb370bf4bb53af313dc44a44, type: 3}
+    - _name: Left Background
+      _id: 1ccb9175-26d1-48e0-8dfb-d05e03dcf41a
+      _sprite: {fileID: 21300000, guid: 6cbde91eeb370bf4bb53af313dc44a44, type: 3}
+    - _name: Top Background
+      _id: 407489df-550f-4dd4-acf9-678063fc0cbb
+      _sprite: {fileID: 21300000, guid: 164653135c4d522438b46c7445cfc1e2, type: 3}
+    - _name: Main Button
+      _id: dfb1aea9-ded3-4435-ac2c-9199fbac8a75
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Back
+      _id: a900c48b-fbc0-44d3-8062-16263d7b7ff6
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Input Border
+      _id: 753dd279-ad27-41b2-bed7-8474faadcf22
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Second Button Back
+      _id: df02c64a-ae37-4af1-9ac8-dd9c0fc3b519
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Second Button Border
+      _id: dfa9db0d-7ff1-49f9-8659-be5444b602e8
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Cart Button
+      _id: 48a0fc41-631b-4248-a5ab-8fd2f5d56155
+      _sprite: {fileID: 21300000, guid: 691b0d43f07bcb84dae0b17998a994be, type: 3}
+    - _name: Item Background
+      _id: 83b2de50-2cf3-40bc-bfba-83c0113979b9
+      _sprite: {fileID: 21300000, guid: b9c5e5b6d58b2504a9364490028896aa, type: 3}
+    - _name: Item Loading
+      _id: 115ee7e6-d4b0-448e-848f-913a089e3d02
+      _sprite: {fileID: 21300000, guid: cad9b3e79629015499ed35b6b29d2807, type: 3}
+    - _name: Item Selection
+      _id: e4b219ec-309b-48fa-83be-57fd9659a300
+      _sprite: {fileID: 21300000, guid: a38e15f1b6ee6d44ba891913a7ab78ba, type: 3}
+    - _name: Friend Border
+      _id: 95862eb3-a2bf-4f1e-a660-f5d71ac3f948
+      _sprite: {fileID: 21300000, guid: 93cdeebb0cdbaa346a9f19acb68971e2, type: 3}
+    - _name: Popup Back
+      _id: 7482b7ac-d5e5-4b5b-ae5e-d02628a0b6a4
+      _sprite: {fileID: 0}
+    - _name: Spinner
+      _id: 31700e90-bef4-4a9a-b375-9382dccb76c6
+      _sprite: {fileID: 21300000, guid: ca94540ee0ce8954aa2ab80d02a5b6d8, type: 3}
+    - _name: Scroll Back
+      _id: 09e9348d-7273-4a81-b1ad-ce3e91489012
+      _sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Logo
+      _id: e335fa6a-085f-404b-b1e6-b29da2bb918e
+      _sprite: {fileID: 21300000, guid: 065ddbf4432744185b704c5db1d940a8, type: 3}
+    - _name: GameLogo
+      _id: 1707d0e1-ef56-4549-ac03-679326d10851
+      _sprite: {fileID: 21300000, guid: 1b08964d6bbdbb940af36816d3b2e40e, type: 3}
+    - _name: Scroll Handle
+      _id: 64570eff-417a-47e2-b507-fdbf0cd28695
+      _sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    - _name: Quad Icon Button
+      _id: eafe0aee-3dab-4935-9dc1-68e1e6bbb6be
+      _sprite: {fileID: 0}
+    - _name: BP Progress Back
+      _id: e0b2633c-b8e6-4436-ac2c-ae922642c818
+      _sprite: {fileID: 21300000, guid: ba5478c71653f04428a491b6757f24d2, type: 3}
+    - _name: BP Experience Icon
+      _id: c37d0b78-43f4-40aa-b3c9-7ed5fd4c1a40
+      _sprite: {fileID: 21300000, guid: 3f98f790f68867f4d87a92ff3a732ccc, type: 3}
+    - _name: BP Line Free
+      _id: b0913831-5cdf-42eb-b2ab-f5afa1647908
+      _sprite: {fileID: 0}
+    - _name: BP Line Premium
+      _id: c00c5071-58f2-48bc-b6a6-f27002641b80
+      _sprite: {fileID: 21300000, guid: 86a660e3cc1b015469e26e72557a9e18, type: 3}
+    - _name: BP Icon
+      _id: 5e3c2427-a402-4590-9540-d043c05742a4
+      _sprite: {fileID: 21300000, guid: 0ab038ce29548324b94fe26f33df4430, type: 3}
+    - _name: BP Edge
+      _id: bdbcd21c-4287-40a7-a5d0-fa9a60c40a6f
+      _sprite: {fileID: 21300000, guid: a10c72b29d80f8946b5bfae2baa8627b, type: 3}
+    - _name: BP ExperienceSlider
+      _id: 02ca5702-62e9-4a06-940b-fb4f0359ed9e
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP CurrentLevelBack Folded
+      _id: 3041028f-ecc7-4582-b742-2115d02e12ef
+      _sprite: {fileID: 21300000, guid: be16354c91758924cad3ccaf58311c3c, type: 3}
+    - _name: BP CurrentLevelBack Unfolded
+      _id: e01a4785-39c3-46f8-8d19-e10fec681cfb
+      _sprite: {fileID: 21300000, guid: 828c42215fb68b34188aabe5f15becea, type: 3}
+    - _name: BP CurrentLevelHighlight
+      _id: db9f2683-a7c2-40f4-88d5-3aa4629d92ab
+      _sprite: {fileID: 21300000, guid: 3f5207c20922b044697760e8e1cd55e1, type: 3}
+    - _name: BP Experience Back
+      _id: 6cd28011-250e-4d56-84d1-8e85e5a1bfae
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP Locked Tint
+      _id: 27752aef-be3c-4804-ac90-f59cbc333a67
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP LevelUpBlock Back
+      _id: e2c60c14-2908-487a-a131-35fb13483ac4
+      _sprite: {fileID: 21300000, guid: 925586d523b289146bc877bf660c8a8f, type: 3}
+    - _name: BP FinalItem Back
+      _id: f802bc99-96c9-4bb4-b900-57bbf6cd6560
+      _sprite: {fileID: 21300000, guid: c3de0cf9a860f27469dfad827c3cd3ff, type: 3}
+    - _name: BP HighLight
+      _id: 28e6352b-c5ce-4be0-90e4-7e629d9c666f
+      _sprite: {fileID: 21300000, guid: bbf5dd307a281f543a7dd6ccd960808e, type: 3}
+    - _name: Main page logo
+      _id: c8d9c501-ae5d-4e7b-a288-04b815e14d9f
+      _sprite: {fileID: 21300000, guid: 1b08964d6bbdbb940af36816d3b2e40e, type: 3}
+    - _name: Enter page back
+      _id: 5c0b15ee-ca7f-497d-b2cb-e8393786d538
+      _sprite: {fileID: 21300000, guid: 0e69e7364c6514b4d8f8f6de6766a126, type: 3}
+    _fonts:
+    - _name: Main Font
+      _id: 7b111555-c639-4655-9948-52030ad69aab
+      _font: {fileID: 12800000, guid: 6bd82bc6b4cdf6b429528a7fb8cc0b3a, type: 3}
