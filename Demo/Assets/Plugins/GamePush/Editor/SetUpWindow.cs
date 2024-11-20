@@ -185,6 +185,7 @@ namespace GamePushEditor
 
         private static int _selectedIndex;
         private static string[] _platforms = new string[] {
+             PlatformTypes.CUSTOM,
              PlatformTypes.ANDROID,
              PlatformTypes.GOOGLE_PLAY,
              PlatformTypes.APP_GALLERY,
@@ -220,7 +221,7 @@ namespace GamePushEditor
             Rect rect = new Rect(10, 210, position.width - 20, 20);
 
             // Отображаем выпадающий список
-            _selectedIndex = EditorGUI.Popup(rect, "Mobile target platform", _selectedIndex, _platforms);
+            _selectedIndex = EditorGUI.Popup(rect, "Target platform", _selectedIndex, _platforms);
 
 
             GUILayout.Space(55);
@@ -285,6 +286,9 @@ namespace GamePushEditor
             await CoreSDK.FetchEditorConfig();
             GP_Logger.SystemLog("Config fetched");
             CheckCustromAds();
+            CheckCustromServices();
+
+            GP_Logger.SystemLog("Config set");
         }
 
         private static void CheckCustromAds()
@@ -306,10 +310,17 @@ namespace GamePushEditor
             }
 
             ChangeDefineSymbols("YANDEX_SIMPLE_MONETIZATION", isYAMON);
-            ConfigurePluginsForBuild(isYAMON);
+            ConfigureYandexPluginForBuild(isYAMON);
             CustomGradleTemplates(isYAMON);
+        }
 
-            GP_Logger.SystemLog("Config set");
+        private static void CheckCustromServices()
+        {
+            bool isXsolla =
+                CoreSDK.platformConfig.authConfig.configs.android.activeService == "XSOLLA" ||
+                CoreSDK.platformConfig.paymentsConfig.configs.android.activeService == "XSOLLA";
+
+            ChangeDefineSymbols("XSOLLA_SERVICE", isXsolla);
         }
 
         private static void ChangeDefineSymbols(string symbols, bool isSet)
@@ -327,7 +338,7 @@ namespace GamePushEditor
             }
         }
 
-        public static void ConfigurePluginsForBuild(bool isSet)
+        public static void ConfigureYandexPluginForBuild(bool isSet)
         {
             // Пример: выключение конкретного .aar файла
             var pluginPath = "Assets/Plugins/Android/yandex-ads-unity-plugin.aar";
@@ -347,7 +358,6 @@ namespace GamePushEditor
                 //Debug.Log($"{androidLibPath} is now set {isSet} in the build.");
             }
 
-
             AssetDatabase.SaveAssets();
         }
 
@@ -365,14 +375,18 @@ namespace GamePushEditor
             {
                 if (File.Exists(mainTemplateDis))
                 {
-                    File.Copy(mainTemplateDis, mainTemplate);
+                    if (!File.Exists(mainTemplate))
+                        File.Copy(mainTemplateDis, mainTemplate);
+
                     File.Delete(mainTemplateDis);
                     File.Delete(mainTemplateDis + ".meta");
                 }
 
                 if (File.Exists(gradleTemplateDis))
                 {
-                    File.Copy(gradleTemplateDis, gradleTemplate);
+                    if (!File.Exists(gradleTemplate))
+                        File.Copy(gradleTemplateDis, gradleTemplate);
+
                     File.Delete(gradleTemplateDis);
                     File.Delete(gradleTemplateDis + ".meta");
                 }
@@ -382,7 +396,9 @@ namespace GamePushEditor
             {
                 if (File.Exists(mainTemplate))
                 {
-                    File.Copy(mainTemplate, mainTemplateDis);
+                    if(!File.Exists(mainTemplateDis)) 
+                        File.Copy(mainTemplate, mainTemplateDis);
+
                     File.Delete(mainTemplate);
                     File.Delete(mainTemplate + ".meta");
                 }
@@ -390,7 +406,9 @@ namespace GamePushEditor
 
                 if (File.Exists(gradleTemplate))
                 {
-                    File.Copy(gradleTemplate, gradleTemplateDis);
+                    if (!File.Exists(gradleTemplateDis))
+                        File.Copy(gradleTemplate, gradleTemplateDis);
+
                     File.Delete(gradleTemplate);
                     File.Delete(gradleTemplate + ".meta");
                 }

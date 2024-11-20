@@ -182,10 +182,10 @@ namespace Xsolla.Core
 					var instances = Resources.LoadAll<XsollaSettings>(string.Empty);
 
 					if (instances.Length == 0)
-						throw new Exception("`XsollaSettings` asset not found. Please create it.");
+						throw new Exception("'XsollaSettings' asset not found. Please create it."); //TEXTREVIEW
 
 					if (instances.Length > 1)
-						throw new Exception("Multiple `XsollaSettings` assets found. Please keep only one asset."); 
+						throw new Exception("Multiple 'XsollaSettings' assets found. Please leave only one."); //TEXTREVIEW
 
 					_instance = instances[0];
 				}

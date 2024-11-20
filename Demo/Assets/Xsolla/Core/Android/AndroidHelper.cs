@@ -53,8 +53,8 @@ namespace Xsolla.Core
 		{
 			CreateMainThreadExecutor();
 			InitLogin();
-			ConfigureAnalytics("com.xsolla.android.login.util.AnalyticsUtils");
-			ConfigureAnalytics("com.xsolla.android.payments.util.AnalyticsUtils");
+			//ConfigureAnalytics("com.xsolla.android.login.util.AnalyticsUtils");
+			//ConfigureAnalytics("com.xsolla.android.payments.util.AnalyticsUtils");
 		}
 
 		private static void CreateMainThreadExecutor()

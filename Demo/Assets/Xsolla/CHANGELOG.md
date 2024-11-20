@@ -1,30 +1,11 @@
 # Changelog
 
-## [2.5.0] - 2024-10-17
-### Added
-- OAuth2.0 support for the Xsolla Login Widget with token refresh functionality
-- Support for non-US keyboards in the Xsolla built-in browser
-
-### Changed
-- Improved UX for certain payment methods like Google Pay. Payment flow can be changed using the `is_independence_window` flag
-- All links in the Xsolla built-in browser now open in an external browser for better UX
-- Updated `Steamworks.NET` library to the latest version
-- Minimum supported version of `Newtonsoft.Json` package updated to 3.0.1 (previously 2.0.0)
-- Updated internal Android and iOS libraries for improved compatibility and stability
-- `XsollaCart.Purchase` and `XsollaCatalog.Purchase` SDK methods. Added the `PlatformSpecificAppearance` parameter to specify the browser (activity) type for Android builds
-- `XsollaCart.Purchase` SDK method. Added order creation callbacks
-
-### Fixed
-- APK size issue. Desktop browser files are no longer included in the Android APK build
-- Packaging issue with the embedded browser on macOS
-- `Alt+Tab` behavior on desktop platforms when using the Xsolla built-in browser
-
 ## [2.4.1] - 2024-07-19
 ### Added
 - Unity 6 support
 
 ### Changed
-- Third-party dependency manager updated to latest version
+- Third-party dependency manager updated to latest version 
 - `PurchaseParams` structure:
   - Added `close_button` parameter, that defines the way the Google Pay payment method is displayed. If true, the button for quick payment via Google Pay is displayed at the top of the payment UI. If `false`, Google Pay is displayed in the list of payment methods according to the PayRank algorithm. `false` by default
   - Added `close_button_icon` parameter, that defines the icon of the **Close** button in the payment UI. Can be arrow or cross

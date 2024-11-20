@@ -17,6 +17,8 @@ public class XsollaTest : MonoBehaviour
         //GP_Payments.Fetch();
     }
 
+
+
     public void Fetch()
     {
         GP_Payments.Fetch();
@@ -30,17 +32,16 @@ public class XsollaTest : MonoBehaviour
 
     public void Login()
     {
-        GP_Player.Login();
+        GP_Player.Login(OnSuccess, OnError);
     }
 
-    public void Register()
+    private static void OnSuccess()
     {
-        //var username = UsernameInput.text;
-        //var email = EmailInputField.text;
-        //var password = PasswordInputField.text;
+        Debug.Log("Authorization successful");
+    }
 
-        // Call the user registration method
-        // Pass credentials and callback functions for success and error cases
-       
+    private static void OnError(string error)
+    {
+        Debug.LogError($"Authorization failed. Error: {error}");
     }
 }

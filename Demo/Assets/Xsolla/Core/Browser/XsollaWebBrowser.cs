@@ -1,16 +1,14 @@
 using System;
 using UnityEngine;
-using Object = UnityEngine.Object;
 #if UNITY_WEBGL || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
 using System.Runtime.InteropServices;
 #endif
 
 namespace Xsolla.Core
 {
-	public static class XsollaWebBrowser
+	public class XsollaWebBrowser : MonoBehaviour
 	{
 		private static IInAppBrowser _inAppBrowser;
-		private static GameObject _inAppBrowserGameObject;
 
 		public static IInAppBrowser InAppBrowser
 		{
@@ -25,17 +23,16 @@ namespace Xsolla.Core
 				if (_inAppBrowser == null)
 				{
 					var prefab = Resources.Load<GameObject>(Constants.WEB_BROWSER_RESOURCE_PATH);
-					if (!prefab)
+					if (prefab == null)
 					{
 						XDebug.LogError("Prefab InAppBrowser not found in Resources folder.");
 					}
 					else
 					{
-						_inAppBrowserGameObject = Object.Instantiate(prefab);
-						_inAppBrowserGameObject.name = "XsollaWebBrowser";
-						Object.DontDestroyOnLoad(_inAppBrowserGameObject);
-						_inAppBrowser = _inAppBrowserGameObject.GetComponent<IInAppBrowser>();
-						_inAppBrowser.CloseEvent += info => Close();
+						var go = Instantiate(prefab);
+						go.name = "XsollaWebBrowser";
+						DontDestroyOnLoad(go);
+						_inAppBrowser = go.GetComponent<IInAppBrowser>();
 					}
 				}
 
@@ -44,7 +41,7 @@ namespace Xsolla.Core
 			}
 		}
 
-		public static void OpenPurchaseUI(string paymentToken, bool forcePlatformBrowser = false, Action<BrowserCloseInfo> onBrowserClosed = null, PlatformSpecificAppearance platformSpecificAppearance = null)
+		public static void OpenPurchaseUI(string paymentToken, bool forcePlatformBrowser = false, Action<BrowserCloseInfo> onBrowserClosed = null)
 		{
 #if UNITY_ANDROID
 			if (!Application.isEditor && XsollaSettings.InAppBrowserEnabled)
@@ -56,8 +53,7 @@ namespace Xsolla.Core
 							isManually = isClosedManually
 						};
 						onBrowserClosed?.Invoke(info);
-					},
-					platformSpecificAppearance?.AndroidActivityType);
+					});
 
 				return;
 			}
@@ -126,12 +122,7 @@ namespace Xsolla.Core
 
 		public static void Close(float delay = 0)
 		{
-			_inAppBrowser?.Close(delay);
-
-			if (!_inAppBrowserGameObject)
-				Object.Destroy(_inAppBrowserGameObject);
-
-			_inAppBrowser = null;
+			InAppBrowser?.Close(delay);
 		}
 
 #if UNITY_WEBGL

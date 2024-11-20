@@ -192,6 +192,8 @@ query result($lang: Lang) {
                 trialPeriod
                 yandexId
                 xsollaId
+                currency
+                currencySymbol
                 names {
                     ...translations
                 }
@@ -302,6 +304,9 @@ fragment paymentsConfig on PaymentsConfig {
     name
     description
     sandbox
+    xsollaConfig {
+        ...xsollaConfig
+    }
     configs {
         web {
             activeService
@@ -317,7 +322,7 @@ fragment authConfig on AuthConfig {
     name
     description
     xsollaConfig {
-        loginProjectId
+        ...xsollaAuthConfig
     }
     configs {
         web {
@@ -327,6 +332,19 @@ fragment authConfig on AuthConfig {
             activeService
         }
     }
+}
+
+fragment xsollaConfig on XsollaConfig {
+    merchantId
+    projectId
+    apiKey
+    webhookToken
+}
+
+
+fragment xsollaAuthConfig on XsollaAuthConfig {
+    loginProjectId
+    jwtSecretKey
 }
 
 fragment banner on Banner {

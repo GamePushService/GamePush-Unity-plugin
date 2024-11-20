@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
-// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name XsollaSDKUtilities
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+// swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name XsollaSDKUtilities
+// swift-module-flags-ignorable: -enable-bare-slash-regex
 import Foundation
 import Swift
 import UIKit
@@ -10,7 +10,7 @@ import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
 extension WebKit.WKWebView {
-  @_Concurrency.MainActor @preconcurrency public static let defaultUserAgent: Swift.String
+  @_Concurrency.MainActor(unsafe) public static let defaultUserAgent: Swift.String
 }
 public protocol ResponseProcessor {
   func process<ResponseModel>(response: Foundation.URLResponse?, data: Foundation.Data?, request: Foundation.URLRequest, error: (any Swift.Error)?, errorHandler: any XsollaSDKUtilities.APIErrorHandlerProtocol, decoder: Foundation.JSONDecoder?) -> Swift.Result<ResponseModel, any Swift.Error> where ResponseModel : Swift.Decodable
@@ -145,14 +145,12 @@ public protocol APIRequestProtocol {
   var customJSONDecoder: Foundation.JSONDecoder? { get }
   var errorHandler: Self.ErrorHandler { get }
   func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
-  func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
   func handleSuccess(model: Self.ResponseModel, completionHandler: Self.Callback)
   func handleFailure(error: any Swift.Error, completionHandler: Self.Callback)
 }
 extension XsollaSDKUtilities.APIRequestProtocol {
   @discardableResult
   public func perform(_ completionHandler: Self.Callback) -> any XsollaSDKUtilities.NetworkTask
-  public func handleSuccess(response: Foundation.URLResponse?, model: Self.ResponseModel, completionHandler: Self.Callback)
 }
 public struct LogCategory : XsollaSDKUtilities.LogCategoryProtocol {
   public let title: Swift.String

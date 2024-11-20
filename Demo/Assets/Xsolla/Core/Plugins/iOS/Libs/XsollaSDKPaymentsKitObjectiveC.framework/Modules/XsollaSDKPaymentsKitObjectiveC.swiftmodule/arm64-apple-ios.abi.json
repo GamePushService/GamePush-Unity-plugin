@@ -1,8 +1,8 @@
 {
   "ABIRoot": {
     "kind": "Root",
-    "name": "XsollaSDKPaymentsKitObjectiveC",
-    "printedName": "XsollaSDKPaymentsKitObjectiveC",
+    "name": "TopLevel",
+    "printedName": "TopLevel",
     "children": [
       {
         "kind": "Import",
@@ -330,20 +330,6 @@
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "Copyable",
-            "printedName": "Copyable",
-            "usr": "s:s8CopyableP",
-            "mangledName": "$ss8CopyableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Escapable",
-            "printedName": "Escapable",
-            "usr": "s:s9EscapableP",
-            "mangledName": "$ss9EscapableP"
-          },
-          {
-            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -493,20 +479,6 @@
           },
           {
             "kind": "Conformance",
-            "name": "Copyable",
-            "printedName": "Copyable",
-            "usr": "s:s8CopyableP",
-            "mangledName": "$ss8CopyableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Escapable",
-            "printedName": "Escapable",
-            "usr": "s:s9EscapableP",
-            "mangledName": "$ss9EscapableP"
-          },
-          {
-            "kind": "Conformance",
             "name": "LocalizedError",
             "printedName": "LocalizedError",
             "usr": "s:10Foundation14LocalizedErrorP",
@@ -603,20 +575,6 @@
           },
           {
             "kind": "Conformance",
-            "name": "Copyable",
-            "printedName": "Copyable",
-            "usr": "s:s8CopyableP",
-            "mangledName": "$ss8CopyableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Escapable",
-            "printedName": "Escapable",
-            "usr": "s:s9EscapableP",
-            "mangledName": "$ss9EscapableP"
-          },
-          {
-            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -678,18 +636,53 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/denisrakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorCodes.swift",
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/PaymentsKitError.swift",
+      "kind": "StringLiteral",
+      "offset": 258,
+      "length": 17,
+      "value": "\"cancelledByUser\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorCodes.swift",
       "kind": "IntegerLiteral",
       "offset": 143,
       "length": 1,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/denisrakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
       "kind": "StringLiteral",
       "offset": 512,
       "length": 22,
       "value": "\"localizedDescription\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/Extensions\/NSErrorFactory.swift",
+      "kind": "StringLiteral",
+      "offset": 649,
+      "length": 23,
+      "value": "\"XsollaSDK.PaymentsKit\""
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 703,
+      "length": 1,
+      "value": "3"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "IntegerLiteral",
+      "offset": 787,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/d.rakhimov\/Documents\/xsolla\/xsolla-ios-sdk\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC\/PaymentsKitObjectiveC.swift",
+      "kind": "StringLiteral",
+      "offset": 1197,
+      "length": 2,
+      "value": "\"\""
     }
   ]
 }

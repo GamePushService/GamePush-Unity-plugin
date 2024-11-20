@@ -169,5 +169,15 @@ namespace GamePush.Data
         public string name;
     }
 
+    //[Serializable]
+    //public class PlayerPurchase
+    //{
+    //    public int productId;
+    //    public string payload;
+    //    public bool gift;
+    //    public bool subscribed;
+    //    public string createdAt;
+    //    public string expiredAt;
+    //}
     
 }

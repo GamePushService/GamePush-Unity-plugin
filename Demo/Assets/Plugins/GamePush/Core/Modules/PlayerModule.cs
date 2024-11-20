@@ -576,6 +576,28 @@ namespace GamePush.Core
 
         #endregion
 
+        #region PlayerPurchases
+
+        private Dictionary<string, FetchPlayerPurchase> _playerPurchases;
+
+        public void SetPlayerPurchases()
+        {
+
+        }
+
+        public List<FetchPlayerPurchase> GetPlayerPurchases()
+        {
+            List<FetchPlayerPurchase> purchases = new List<FetchPlayerPurchase>();
+            foreach(FetchPlayerPurchase playerPurchase in _playerPurchases.Values)
+            {
+                purchases.Add(playerPurchase);
+            }
+
+            return purchases;
+        }
+
+        #endregion
+
         #region DataHolder
 
         public string GetPlayerSavedDataCode() => DataHolder.GetSavedSecretCode();
@@ -1190,17 +1212,23 @@ namespace GamePush.Core
 
         #region Account
 
-        public void Login()
+        public void Login(Action onLoginComplete = null, Action<string> onLoginError = null)
         {
             Logger.Log("Try to login");
-            //if (_token != null)
-            //    OnLoginError?.Invoke("Player already login");
-            //else
-            //{
-            //OnLoginComplete?.Invoke();
-            //}
+            Action combinedComplete = () =>
+            {
+                onLoginComplete?.Invoke();
+                OnLogoutComplete?.Invoke();
+            };
+
+            Action<string> combinedError = (string error) =>
+            {
+                onLoginError?.Invoke(error);
+                OnLoginError?.Invoke(error);
+            };
+
 #if XSOLLA_SERVICE
-            AuthService.Login(OnLogoutComplete, OnLoginError);
+            AuthService.Login(combinedComplete, combinedError);
 #endif
         }
 

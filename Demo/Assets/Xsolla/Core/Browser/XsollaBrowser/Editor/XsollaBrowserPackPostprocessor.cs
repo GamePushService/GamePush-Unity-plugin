@@ -1,14 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-using Xsolla.Core;
 
-namespace Xsolla.XsollaBrowser
+namespace Xsolla.Core.Browser
 {
 	public class XsollaBrowserPackPostprocessor : IPostprocessBuildWithReport
 	{
@@ -17,27 +15,38 @@ namespace Xsolla.XsollaBrowser
 		public void OnPostprocessBuild(BuildReport report)
 		{
 			if (report.summary.platformGroup != BuildTargetGroup.Standalone ||
-				!XsollaSettings.InAppBrowserEnabled ||
-				!XsollaSettings.PackInAppBrowserInBuild)
+			    !XsollaSettings.InAppBrowserEnabled ||
+			    !XsollaSettings.PackInAppBrowserInBuild)
 				return;
 
-			var browserPlatform = GetTargetPlatform(report.summary.platform);
-			if (browserPlatform == Platform.Unknown)
+			var browserPlatform = string.Empty;
+			switch (report.summary.platform)
+			{
+				case BuildTarget.StandaloneOSX:
+					browserPlatform = "MacOS";
+					break;
+				case BuildTarget.StandaloneWindows:
+					browserPlatform = "Win32";
+					break;
+				case BuildTarget.StandaloneWindows64:
+					browserPlatform = "Win64";
+					break;
+				case BuildTarget.StandaloneLinux64:
+					browserPlatform = "Linux";
+					break;
+			}
+
+			if (string.IsNullOrEmpty(browserPlatform))
 			{
 				XDebug.LogWarning($"Build target \"{report.summary.platform}\" is not supported. Packing browser in the build is skipped", true);
 				return;
 			}
 
 			var buildBrowserDirectory = Path.GetDirectoryName(report.summary.outputPath);
-			if (report.summary.platform == BuildTarget.StandaloneOSX)
-			{
-				buildBrowserDirectory = report.summary.outputPath + "/";
-			}
-
 			if (string.IsNullOrEmpty(buildBrowserDirectory))
 				throw new Exception(nameof(buildBrowserDirectory));
 
-			buildBrowserDirectory = Path.Combine(buildBrowserDirectory, "local-chromium");
+			buildBrowserDirectory = Path.Combine(buildBrowserDirectory, ".local-chromium");
 
 			try
 			{
@@ -70,31 +79,14 @@ namespace Xsolla.XsollaBrowser
 					return;
 				}
 
-				Task.Run(async () => await FetchBrowserAsync(browserPlatform, buildBrowserDirectory, Constants.BROWSER_REVISION)).Wait();
+				var fetcher = new XsollaBrowserFetcher {
+					Platform = browserPlatform,
+					Path = buildBrowserDirectory,
+					Revision = Constants.BROWSER_REVISION
+				};
+
+				Task.Run(async () => await fetcher.DownloadAsync()).Wait();
 			}
-		}
-
-		private static Platform GetTargetPlatform(BuildTarget target)
-		{
-			switch (target)
-			{
-				case BuildTarget.StandaloneOSX:       return Platform.MacOS;
-				case BuildTarget.StandaloneWindows:   return Platform.Win32;
-				case BuildTarget.StandaloneWindows64: return Platform.Win64;
-				case BuildTarget.StandaloneLinux64:   return Platform.Linux;
-				default:                              return Platform.Unknown;
-			}
-		}
-
-		private static Task FetchBrowserAsync(Platform platform, string path, string revision)
-		{
-			var options = new BrowserFetcherOptions {
-				Product = Product.Chrome,
-				Platform = platform,
-				Path = path
-			};
-
-			return new BrowserFetcher(options).DownloadAsync(revision);
 		}
 	}
 }

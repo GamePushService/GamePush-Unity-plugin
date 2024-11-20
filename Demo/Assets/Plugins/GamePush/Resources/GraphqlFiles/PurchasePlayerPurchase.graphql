@@ -1,0 +1,53 @@
+
+fragment ProductFields on Product {
+    id
+    icon
+    iconSmall
+    tag
+    price
+    isSubscription
+    period
+    trialPeriod
+    currency
+    currencySymbol
+    yandexId
+    xsollaId
+}
+
+fragment ProductResolvers on Product {
+    name(lang: $lang)
+    description(lang: $lang)
+    iconSmall: icon(w: 48, h: 48, crop: false)
+}
+
+fragment PlayerPurchaseFields on PlayerPurchase {
+    _id
+    productId
+    payload
+    gift
+    subscribed
+    createdAt
+    orderStatus
+    expiredAt
+}
+
+fragment PurchaseOutput on PurchaseResult {
+    __typename
+    ... on Problem { message }
+    ... on PlayerPurchaseOutput {
+        product {
+            ...ProductFields
+            ...ProductResolvers
+        }
+        purchase {
+            ...PlayerPurchaseFields
+        }
+    }
+}
+
+mutation result($input: PurchasePlayerPurchaseInput!, $lang: Lang) {
+    result: PurchasePlayerPurchase(input: $input) {
+        ...PurchaseOutput
+    }
+}
+

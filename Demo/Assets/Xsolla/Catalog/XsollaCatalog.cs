@@ -396,24 +396,19 @@ namespace Xsolla.Catalog
 		/// <param name="itemSku">Desired free item SKU.</param>
 		/// <param name="onSuccess">Called after the order transitions to the 'done' status.</param>
 		/// <param name="onError">Called after the request resulted with an error.</param>
-		/// <param name="onOrderCreated">Called after the order is created.</param>
 		/// <param name="onBrowseClosed">Called after the browser is closed. The event is tracked only when the payment UI is opened in the built-in browser. External browser events can't be tracked.</param>
 		/// <param name="purchaseParams">Purchase and payment UI parameters, such as <c>locale</c>, <c>currency</c>, etc.</param>
 		/// <param name="customHeaders">Custom web request headers</param>
-		/// <param name="platformSpecificAppearance">Additional settings of payment UI appearance for different platforms.</param>
-		public static void Purchase(string itemSku, Action<OrderStatus> onSuccess, Action<Error> onError, Action<OrderData> onOrderCreated = null, Action<BrowserCloseInfo> onBrowseClosed = null, PurchaseParams purchaseParams = null, Dictionary<string, string> customHeaders = null, PlatformSpecificAppearance platformSpecificAppearance = null)
+		public static void Purchase(string itemSku, Action<OrderStatus> onSuccess, Action<Error> onError, Action<BrowserCloseInfo> onBrowseClosed = null, PurchaseParams purchaseParams = null, Dictionary<string, string> customHeaders = null)
 		{
 			CreateOrder(
 				itemSku,
 				orderData =>
 				{
-					onOrderCreated?.Invoke(orderData);
-
 					XsollaWebBrowser.OpenPurchaseUI(
 						orderData.token,
 						false,
-						onBrowseClosed,
-						platformSpecificAppearance);
+						onBrowseClosed);
 
 					OrderTrackingService.AddOrderForTracking(orderData.order_id,
 						true, () =>
@@ -437,20 +432,17 @@ namespace Xsolla.Catalog
 		/// <param name="priceSku">Virtual currency SKU.</param>
 		/// <param name="onSuccess">Called after the order transitions to the 'done' status.</param>
 		/// <param name="onError">Called after the request resulted with an error.</param>
-		/// <param name="onOrderCreated">Called after the order is created.</param>
 		/// <param name="purchaseParams">Purchase parameters such as <c>country</c>, <c>locale</c>, and <c>currency</c>.</param>
 		/// <param name="platform">Publishing platform the user plays on.<br/>
 		///     Can be `xsolla` (default), `playstation_network`, `xbox_live`, `pc_standalone`, `nintendo_shop`, `google_play`, `app_store_ios`, `android_standalone`, `ios_standalone`, `android_other`, `ios_other`, or `pc_other`.</param>
 		/// <param name="customHeaders">Custom HTTP request headers.</param>
-		public static void PurchaseForVirtualCurrency(string itemSku, string priceSku, Action<OrderStatus> onSuccess, Action<Error> onError, Action<OrderId> onOrderCreated = null, PurchaseParams purchaseParams = null, string platform = null, Dictionary<string, string> customHeaders = null)
+		public static void PurchaseForVirtualCurrency(string itemSku, string priceSku, Action<OrderStatus> onSuccess, Action<Error> onError, PurchaseParams purchaseParams = null, string platform = null, Dictionary<string, string> customHeaders = null)
 		{
 			CreateOrderByVirtualCurrency(
 				itemSku,
 				priceSku,
 				orderId =>
 				{
-					onOrderCreated?.Invoke(orderId);
-
 					OrderTrackingService.AddOrderForTracking(
 						orderId.order_id,
 						false, () => OrderStatusService.GetOrderStatus(orderId.order_id, onSuccess, onError), onError);
@@ -468,17 +460,14 @@ namespace Xsolla.Catalog
 		/// <param name="itemSku">Desired free item SKU.</param>
 		/// <param name="onSuccess">Called after the order transitions to the 'done' status.</param>
 		/// <param name="onError">Called after the request resulted with an error.</param>
-		/// <param name="onOrderCreated">Called after the order is created.</param>
 		/// <param name="purchaseParams">Purchase parameters such as <c>country</c>, <c>locale</c>, and <c>currency</c>.</param>
 		/// <param name="customHeaders">Custom HTTP request headers.</param>
-		public static void PurchaseFreeItem(string itemSku, Action<OrderStatus> onSuccess, Action<Error> onError, Action<OrderId> onOrderCreated = null, PurchaseParams purchaseParams = null, Dictionary<string, string> customHeaders = null)
+		public static void PurchaseFreeItem(string itemSku, Action<OrderStatus> onSuccess, Action<Error> onError, PurchaseParams purchaseParams = null, Dictionary<string, string> customHeaders = null)
 		{
 			CreateOrderWithFreeItem(
 				itemSku,
 				orderId =>
 				{
-					onOrderCreated?.Invoke(orderId);
-
 					OrderTrackingService.AddOrderForTracking(
 						orderId.order_id,
 						false, () => OrderStatusService.GetOrderStatus(orderId.order_id, onSuccess, onError), onError);

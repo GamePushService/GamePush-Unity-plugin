@@ -530,12 +530,12 @@ namespace GamePush
 #endif
         }
 
-        public static void Login()
+        public static void Login(Action onLoginComplete = null, Action<string> onLoginError = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Login();
 #else
-            CoreSDK.player.Login();
+            CoreSDK.player.Login(onLoginComplete, onLoginError);
 #endif
         }
 

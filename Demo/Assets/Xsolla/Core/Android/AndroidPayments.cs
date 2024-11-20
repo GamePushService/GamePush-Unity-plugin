@@ -6,7 +6,7 @@ namespace Xsolla.Core
 {
 	internal class AndroidPayments
 	{
-		public void Perform(string paymentToken, Action<bool> onBrowserClose, AndroidActivityType? activityType)
+		public void Perform(string paymentToken, Action<bool> onBrowserClose)
 		{
 			try
 			{
@@ -26,8 +26,6 @@ namespace Xsolla.Core
 					OnBrowserClosed = isManually => helper.MainThreadExecutor.Enqueue(() => onBrowserClose?.Invoke(isManually))
 				};
 
-				string activityTypeName = activityType?.ToString();
-
 				var proxyActivity = new AndroidJavaClass($"{Application.identifier}.androidProxies.PaymentsProxyActivity");
 				proxyActivity.CallStatic("perform",
 					helper.CurrentActivity,
@@ -36,8 +34,7 @@ namespace Xsolla.Core
 					redirectScheme,
 					redirectHost,
 					XsollaSettings.PaystationVersion,
-					browserCloseCallback,
-					activityTypeName);
+					browserCloseCallback);
 			}
 			catch (Exception e)
 			{

@@ -35,8 +35,7 @@ namespace Xsolla.Core
 			try
 			{
 #if UNITY_STANDALONE
-				Steamworks.SteamNetworkingIdentity identity = new Steamworks.SteamNetworkingIdentity();
-				Steamworks.SteamUser.GetAuthSessionTicket(ticket, 1024, out var length, ref identity);
+				Steamworks.SteamUser.GetAuthSessionTicket(ticket, 1024, out var length);
 				Array.Resize(ref ticket, (int) length);
 #else
 				ticket = new byte[0];

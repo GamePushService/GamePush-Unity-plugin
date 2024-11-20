@@ -17,14 +17,10 @@ namespace Xsolla.Auth
 			OnCancel = onCancel;
 
 			var url = new UrlBuilder("https://login-widget.xsolla.com/latest/")
-				.AddProjectId(XsollaSettings.LoginId)
-				.AddClientId(XsollaSettings.OAuthClientId)
-				.AddResponseType("code")
-				.AddState("xsollatest")
-				.AddRedirectUri(RedirectUrlHelper.GetRedirectUrl(null))
-				.AddScope("offline")
-				.AddLocale(locale)
-				.Build();
+			          .AddProjectId(XsollaSettings.LoginId)
+			          .AddParam("login_url", RedirectUrlHelper.GetRedirectUrl(null))
+			          .AddLocale(locale)
+			          .Build();
 
 			XsollaWebBrowser.Open(url);
 
@@ -37,16 +33,14 @@ namespace Xsolla.Auth
 
 		private void OnBrowserUrlChange(string newUrl)
 		{
-			if (!ParseUtils.TryGetValueFromUrl(newUrl, ParseParameter.code, out var parsedCode))
+			if (!ParseUtils.TryGetValueFromUrl(newUrl, ParseParameter.token, out var parsedToken))
 				return;
+
+			XsollaToken.Create(parsedToken);
+			OnSuccess?.Invoke();
 
 			UnsubscribeFromBrowser();
 			XsollaWebBrowser.Close();
-
-			XsollaAuth.ExchangeCodeToToken(
-				parsedCode,
-				() => OnSuccess?.Invoke(),
-				error => OnError?.Invoke(error));
 		}
 
 		private void OnBrowserClose(BrowserCloseInfo info)

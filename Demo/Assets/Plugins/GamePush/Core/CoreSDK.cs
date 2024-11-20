@@ -19,6 +19,8 @@ namespace GamePush
 
         private static AllConfigData configData = new AllConfigData();
 
+        public static string currentLang;
+
         public static PlatformConfig platformConfig;
 
         public static GameModule game;
@@ -141,12 +143,14 @@ namespace GamePush
             configData = allData;
 
             SetServerTime(allData.serverTime);
+            currentLang = allData.config.lang;
+            if (currentLang == "") currentLang = "en";
 
             player.Init(configData.playerFields);
             variables.Init(configData.gameVariables);
             platform.Init(configData.platformConfig);
             ads.Init(configData.project.ads, configData.platformConfig);
-            payments.Init(configData.products);
+            payments.Init(configData.products, configData.platformConfig);
         }
 
         public static AllConfigData GetConfig()

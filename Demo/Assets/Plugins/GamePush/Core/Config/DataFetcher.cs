@@ -20,8 +20,8 @@ namespace GamePush.Core
         private static string _getPlayerQueryName = "GetPlayer";
         private static string _syncPlayerQueryName = "SyncPlayer";
         private static string _fetchPlayerFieldsQueryName = "FetchPlayerFields";
-        private static string _fetchPlayerPurchasesQueryName = "FetchPlayerPurchases";
-        private static string _fetchProductsQueryName = "FetchProducts";
+        private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
+        private static string _consumeProductQueryName = "ConsumePlayerPurchase";
 
         public static async Task<AllConfigData> GetConfig()
         {
@@ -42,12 +42,13 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
             ////Debug.Log(resultObject.ToString());
-            Debug.Log(resultObject["project"].ToString());
+            //Debug.Log(resultObject["project"].ToString());
             Debug.Log(resultObject["platformConfig"].ToString());
             //Debug.Log(resultObject["config"].ToString());
-            Debug.Log(resultObject["products"].ToString());
+            //Debug.Log(resultObject["products"].ToString());
 
-            Debug.Log(resultObject["platformConfig"]["authConfig"].ToString());
+            //Debug.Log(resultObject["platformConfig"]["authConfig"].ToString());
+            //Debug.Log(resultObject["platformConfig"]["paymentsConfig"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
             
@@ -105,13 +106,17 @@ namespace GamePush.Core
             );
 
             JObject root = JObject.Parse(results);
-            Debug.Log(root.ToString());
+            
+
             if((JObject)root["data"].ToObject<object>() == null)
             {
                 string error = root["errors"][0]["message"].ToObject<string>();
                 throw new Exception(error);
             }
             JObject resultObject = (JObject)root["data"]["result"];
+
+            Debug.Log("Sync result");
+            Debug.Log(resultObject.ToString());
 
             return resultObject;
         }
@@ -148,14 +153,13 @@ namespace GamePush.Core
             return playerFields;
         }
 
-        public static async Task<List<FetchPlayerPurchase>> FetchPlayerPurchases(bool withToken)
+        public static async Task<PurchaseOutput> PurchaseProduct(PurchasePlayerPurchaseInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
-            Debug.Log(config.ToString());
             var graphQL = new GraphQLClient(config);
             Debug.Log(graphQL.ToString());
 
-            Query query = graphQL.FindQuery(_fetchPlayerPurchasesQueryName, "result", OperationType.Query);
+            Query query = graphQL.FindQuery(_purchaseProductQueryName, "result", OperationType.Mutation);
             Debug.Log(query.ToString());
 
             Tuple<string, object> queryTuple = Hash.SingQuery(null);
@@ -164,7 +168,6 @@ namespace GamePush.Core
 
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", "EN");
-            variables.Add("withToken", withToken);
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -178,40 +181,9 @@ namespace GamePush.Core
 
             Debug.Log(resultObject.ToString());
 
-            //List<PlayerField> playerFields = resultObject["items"].ToObject<List<PlayerField>>();
+            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
 
-            return null;
-        }
-
-        public static async Task<List<FetchProduct>> FetchProducts(bool withToken)
-        {
-            //Debug.Log("Fetch Player Fields");
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
-            var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(_fetchProductsQueryName, "result", OperationType.Query);
-
-            Tuple<string, object> queryTuple = Hash.SingQuery(null);
-
-            Dictionary<string, object> variables = new Dictionary<string, object>();
-
-            variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
-            variables.Add("withToken", withToken);
-
-            string results = await graphQL.Send(
-                query.ToRequest(variables),
-                null,
-                Headers.GetHeaders(queryTuple.Item1)
-            );
-
-
-            JObject root = JObject.Parse(results);
-            JObject resultObject = (JObject)root["data"]["result"];
-
-            Debug.Log(resultObject.ToString());
-
-            //List<PlayerField> playerFields = resultObject["items"].ToObject<List<PlayerField>>();
-
+            //return purchaseOutput;
             return null;
         }
 

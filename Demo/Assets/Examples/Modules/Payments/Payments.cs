@@ -9,11 +9,11 @@ namespace Examples.Payments
 {
     public class Payments : MonoBehaviour
     {
+        [SerializeField] private InputField _tagInput;
         [SerializeField] private Button _isAvailableButton;
         [SerializeField] private Button _purchaseButton;
         [SerializeField] private Button _consumeButton;
         [SerializeField] private Button _fetchButton;
-
 
         private void OnEnable()
         {
@@ -42,8 +42,8 @@ namespace Examples.Payments
 
         public void IsPaymentsAvailable() => ConsoleUI.Instance.Log("IS PAYMENTS AVAILABLE: " + GP_Payments.IsPaymentsAvailable());
 
-        public void Purchase() => GP_Payments.Purchase("EXTRA_GOLD", OnPurchaseSuccess, OnPurchaseError);
-        public void Consume() => GP_Payments.Consume("EXTRA_GOLD", OnConsumeSuccess, OnConsumeError);
+        public void Purchase() => GP_Payments.Purchase(_tagInput.text, OnPurchaseSuccess, OnPurchaseError);
+        public void Consume() => GP_Payments.Consume(_tagInput.text, OnConsumeSuccess, OnConsumeError);
 
         public void Fetch() => GP_Payments.Fetch();
 

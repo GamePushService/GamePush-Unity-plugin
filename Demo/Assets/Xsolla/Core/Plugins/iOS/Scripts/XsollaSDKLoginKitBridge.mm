@@ -32,16 +32,10 @@ extern "C" {
                                                              scope:@"offline"
                                                              redirectUri:redirectUriString];
         
-        JWTGenerationParams *jwtGenerationParams = [[JWTGenerationParams alloc] initWithGrantType:TokenGrantTypeAuthorizationCode
-                                                             clientId:clientId
-                                                             refreshToken:nil
-                                                             clientSecret:nil
-                                                             redirectUri:redirectUriString];
-        
         if (@available(iOS 13.4, *)) {
             WebAuthenticationPresentationContextProvider* context = [[WebAuthenticationPresentationContextProvider alloc] initWithPresentationAnchor:UnityGetMainWindow()];
             
-            [[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:loginIdString oAuth2Params:oauthParams jwtParams:jwtGenerationParams locale:localeString presentationContextProvider:context completion:^(AccessTokenInfo * _Nullable accesTokenInfo, NSError * _Nullable error){
+            [[LoginKitObjectiveC shared] authWithXsollaWidgetWithLoginId:loginIdString oAuth2Params:oauthParams locale:localeString presentationContextProvider:context completion:^(AccessTokenInfo * _Nullable accesTokenInfo, NSError * _Nullable error){
                 
                 if(error != nil) {
                     NSLog(@"Error code: %ld", error.code);

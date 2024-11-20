@@ -26,8 +26,6 @@ namespace Xsolla.Core
 				.AddParam("engine_v", Application.unityVersion)
 				.AddParam("sdk", "store")
 				.AddParam("sdk_v", Constants.SDK_VERSION)
-				.AddParam("browser_type", GetBrowserType())
-				.AddParam("build_platform", GetBuildPlatform())
 				.Build();
 		}
 
@@ -56,18 +54,6 @@ namespace Xsolla.Core
 				case 4:  return "token";
 				default: throw new Exception($"Unknown Paystation version: {PaystationVersion}");
 			}
-		}
-
-		private string GetBrowserType()
-		{
-			return XsollaSettings.InAppBrowserEnabled
-				? "inapp"
-				: "system";
-		}
-
-		private string GetBuildPlatform()
-		{
-			return Application.platform.ToString().ToLowerInvariant();
 		}
 	}
 }

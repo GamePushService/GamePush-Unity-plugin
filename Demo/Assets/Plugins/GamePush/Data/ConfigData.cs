@@ -123,14 +123,15 @@ namespace GamePush.Data
         public string id;
         public string name;
         public string description;
-        public XsollaConfig xsollaConfig;
+        public XsollaAuthConfig xsollaConfig;
         public PlatfromServiceConfigs configs;
     }
 
     [System.Serializable]
-    public class XsollaConfig
+    public class XsollaAuthConfig
     {
         public string loginProjectId;
+        public string jwtSecretKey;
     }
 
     [System.Serializable]
