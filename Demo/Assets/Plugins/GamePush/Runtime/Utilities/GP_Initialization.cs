@@ -1,5 +1,6 @@
 using UnityEngine;
 using GamePush;
+using GamePush.Data;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
@@ -12,11 +13,13 @@ namespace GamePush.Initialization
     {
         public static string VERSION = PluginData.SDK_VERSION;
 
+#if UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void GP_UnityReady();
+#endif
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Execute()
+        private static async void Execute()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
@@ -68,10 +71,22 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
 
-            EndInit();
+            if (ProjectData.WAIT_PLAGIN_READY)
+            {
+                await EndInitTask();
+            }
+                
+            else
+                EndInit();
+            
         }
 
         private static async void EndInit()
+        {
+            await EndInitTask();
+        }
+
+        private static async Task EndInitTask()
         {
             await GP_Init.Ready;
             GP_Logger.Info($"Plugin {VERSION}", "Initialize");
