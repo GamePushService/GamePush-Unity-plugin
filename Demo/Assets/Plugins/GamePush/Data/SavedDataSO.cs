@@ -8,12 +8,11 @@ namespace GamePush.Data
         public string fileName = "gamepush-guid.txt";
         public bool isLogsEnabled = true;
 
-
 #if UNITY_EDITOR
         public TextAsset saveFile;
 #endif
         public TextAsset projectData;
-        public TextAsset jspreData;
+        public TextAsset jsAnchor;
 
     }
 

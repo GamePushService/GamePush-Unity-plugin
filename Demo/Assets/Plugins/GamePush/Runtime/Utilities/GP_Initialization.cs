@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GamePush;
+using GamePush.Data;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace GamePush.Initialization
 {
@@ -12,12 +15,15 @@ namespace GamePush.Initialization
     {
         public static string VERSION = PluginData.SDK_VERSION;
 
+#if UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void GP_UnityReady();
+#endif
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Execute()
         {
+
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
 #endif
@@ -34,6 +40,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
             
+
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
             SDK.AddComponent<GP_Analytics>();
@@ -68,12 +75,19 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
 
+
             EndInit();
         }
 
         private static async void EndInit()
         {
+            await EndInitTask();
+        }
+
+        private static async Task EndInitTask()
+        {
             await GP_Init.Ready;
+
             GP_Logger.Info($"Plugin {VERSION}", "Initialize");
         }
 
@@ -92,5 +106,9 @@ namespace GamePush.Initialization
                     _tcs.SetResult(false);
             };
         }
+
+        
     }
+
+   
 }

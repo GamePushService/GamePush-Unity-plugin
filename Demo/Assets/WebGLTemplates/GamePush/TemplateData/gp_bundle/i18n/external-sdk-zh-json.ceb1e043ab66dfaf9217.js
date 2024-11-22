@@ -1,0 +1,1 @@
+(self.webpackChunkgame_score_sdk=self.webpackChunkgame_score_sdk||[]).push([[7426],{2621:e=>{"use strict";e.exports=JSON.parse('{"ads":{"mark":"广告","fullscreenCountdown":"关闭前时间","rewardCountdown":"在{{timeLeft}}内奖励","rewarded":"已领取奖励","skip":{"title":"跳过广告？","description":"您将不会获得奖励","yes":"关闭广告","no":"继续观看"}},"buttons":{"cancel":"取消","close":"关闭"}}')}}]);

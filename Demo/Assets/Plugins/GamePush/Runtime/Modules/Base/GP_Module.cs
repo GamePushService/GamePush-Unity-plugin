@@ -16,7 +16,6 @@ namespace GamePush
         protected static void SetModuleName(ModuleName name) =>
             Name = name;
 
-        //protected static void ConsoleLog(string log) =>
-        //    GP_Logger.SystemLog(log);
+        //protected static void ConsoleLog(string log) { }
     }
 }

@@ -10,8 +10,6 @@ namespace GamePush
 {
     public class GP_Init : GP_Module
     {
-        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Init);
-
         public static bool isReady = false;
 
         public static Task Ready;
@@ -20,16 +18,16 @@ namespace GamePush
 
         private void OnEnable()
         {
-            OnReady += GRA;
+            OnReady += Autocalls;
         }
 
         private void OnDisable()
         {
-            OnReady -= GRA;
+            OnReady -= Autocalls;
         }
 
-        private void GRA() => StartCoroutine(GameReadyAutocall());
-
+        private void Autocalls() => StartCoroutine(AutocallsCoroutine());
+        
         private void Start()
         {
 
@@ -37,6 +35,21 @@ namespace GamePush
             GP_Logger.SystemLog("SDK ready");
             CallOnSDKReady();
 #endif
+        }
+
+        IEnumerator AutocallsCoroutine()
+        {
+            while (!SplashScreen.isFinished)
+            {
+                yield return null;
+            }
+
+            if (ProjectData.SHOW_STICKY_ON_START)
+                GP_Ads.ShowSticky();
+
+            if (ProjectData.GAMEREADY_AUTOCALL)
+                GP_Game.GameReady();
+            
         }
 
         private void CallOnSDKReady()
@@ -48,18 +61,6 @@ namespace GamePush
         private void CallOnSDKError()
         {
             OnError?.Invoke();
-        }
-
-        IEnumerator GameReadyAutocall()
-        {
-            while (!SplashScreen.isFinished)
-            {
-                yield return null;
-            }
-            if (ProjectData.GAMEREADY_AUTOCALL)
-            {
-                GP_Game.GameReady();
-            }
         }
 
     }

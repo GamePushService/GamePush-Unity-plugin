@@ -25,6 +25,12 @@ namespace GamePush.Utilities
             {
                 Texture2D _texture2D = ((DownloadHandlerTexture)request.downloadHandler).texture;
 
+                if (_texture2D == null)
+                {
+                    Debug.Log("Download Image : Incorrect texture");
+                    return;
+                }
+
                 Sprite sprite = Sprite.Create(_texture2D, new Rect(0, 0, _texture2D.width, _texture2D.height), new Vector2(0.5f, 0.5f), 20f);
 
                 image.sprite = sprite;

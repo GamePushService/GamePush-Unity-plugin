@@ -15,12 +15,16 @@ namespace GamePushEditor
 
         private const string VERSION = PluginData.SDK_VERSION;
 
-        private static bool _isDataFetch;
+        private const string INIT_SCENE = "Assets/Plugins/GamePush/InitScene/AwaitInit.unity";
+
+        //private static bool _isDataFetch;
 
         private static int _id;
         private static string _token;
 
         private static bool _showPreloaderAd;
+        private static bool _showStickyOnStart;
+        private static bool _waitPluginReady;
         private static bool _gameReadyAuto;
 
         private static SavedProjectData _projectData;
@@ -59,6 +63,8 @@ namespace GamePushEditor
 
             _token = _projectData.token;
             _showPreloaderAd = _projectData.showPreAd;
+            _showStickyOnStart = _projectData.showStickyOnStart;
+            _waitPluginReady = _projectData.waitPluginReady;
             _gameReadyAuto = _projectData.gameReadyAuto;
         }
 
@@ -82,7 +88,14 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            _projectData = new SavedProjectData(_id, _token, _showPreloaderAd, _gameReadyAuto);
+            _projectData = new SavedProjectData(
+                _id,
+                _token,
+                _showPreloaderAd,
+                _showStickyOnStart,
+                _waitPluginReady,
+                _gameReadyAuto
+                );
 
             var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
@@ -111,6 +124,8 @@ namespace GamePushEditor
             var file = new System.IO.StreamWriter(path);
 
             string gameReadyBool = _gameReadyAuto.ToString().ToLower();
+            string showStickyBool = _showStickyOnStart.ToString().ToLower();
+            string waitPluginBool = _waitPluginReady.ToString().ToLower();
 
             file.WriteLine("namespace GamePush.Data");
             file.WriteLine("{");
@@ -120,6 +135,8 @@ namespace GamePushEditor
             file.WriteLine($"        public static string ID = \"{_id}\";");
             file.WriteLine($"        public static string TOKEN = \"{_token}\";");
             file.WriteLine($"        public static bool GAMEREADY_AUTOCALL = {gameReadyBool};");
+            file.WriteLine($"        public static bool SHOW_STICKY_ON_START = {showStickyBool};");
+            file.WriteLine($"        public static bool WAIT_PLAGIN_READY = {waitPluginBool};");
             file.WriteLine("    }");
             file.WriteLine("}");
             file.Close();
@@ -128,24 +145,17 @@ namespace GamePushEditor
 
         private static void SaveProjectDataToJavaScript()
         {
-            var path = AssetDatabase.GetAssetPath(DataLinker.jspreData);
-
-            var pathJspre = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(DataLinker.jspreData)), "_dataFields.jspre");
+            var pathToJS = AssetDatabase.GetAssetPath(DataLinker.jsAnchor);
+            var pathJspre = pathToJS.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(DataLinker.jsAnchor)), "_dataFields.jspre");
             
-            var file = new StreamWriter(path);
-
-            file.WriteLine($"const dataProjectId = \'{_id}\';");
-            file.WriteLine($"const dataPublicToken = \'{_token}\';");
-            file.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
-            file.WriteLine($"const autocallGameReady = \'{_gameReadyAuto}\';");
-
-            file.Close();
 
             var filePre = new StreamWriter(pathJspre);
 
             filePre.WriteLine($"const dataProjectId = \'{_id}\';");
             filePre.WriteLine($"const dataPublicToken = \'{_token}\';");
             filePre.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
+            filePre.WriteLine($"const showStickyOnStart = \'{_showStickyOnStart}\';");
+            filePre.WriteLine($"const waitPluginReady = \'{_waitPluginReady}\';");
             filePre.WriteLine($"const autocallGameReady = \'{_gameReadyAuto}\';");
 
             filePre.Close();
@@ -198,7 +208,11 @@ namespace GamePushEditor
 
             _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
             GUILayout.Space(5);
+            _showStickyOnStart = EditorGUILayout.Toggle("Show Sticky on Start", _showStickyOnStart);
+            GUILayout.Space(5);
             _gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _gameReadyAuto);
+            GUILayout.Space(5);
+            _waitPluginReady = EditorGUILayout.Toggle("Await plugin ready", _waitPluginReady);
 
             GUILayout.Space(25);
 
@@ -244,6 +258,8 @@ namespace GamePushEditor
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
+            IniSceneHandle();
+
             GP_Logger.SystemLog("Data saved");
         }
 
@@ -263,6 +279,65 @@ namespace GamePushEditor
             return true;
         }
 
-        
+        private static void IniSceneHandle()
+        {
+            if (_waitPluginReady)
+                AddSceneToBuildSettings();
+            else
+                RemoveSceneToBuildSettings();
+        }
+
+        private static void AddSceneToBuildSettings()
+        {
+            if (!System.IO.File.Exists(INIT_SCENE))
+                return;
+
+            var scenes = EditorBuildSettings.scenes;
+
+            // Проверяем, добавлена ли уже сцена
+            foreach (var scene in scenes)
+            {
+                if (scene.path == INIT_SCENE)
+                {
+                    return;
+                }
+            }
+
+            // Добавляем сцену в список Build Settings
+            var newScenes = new EditorBuildSettingsScene[scenes.Length + 1];
+            newScenes[0] = new EditorBuildSettingsScene(INIT_SCENE, true);
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                newScenes[i+1] = scenes[i];
+            }
+            
+            EditorBuildSettings.scenes = newScenes;
+        }
+
+        private static void RemoveSceneToBuildSettings()
+        {
+            var scenes = EditorBuildSettings.scenes;
+            bool needToRemove = false;
+
+            foreach (var scene in scenes)
+            {
+                if (scene.path == INIT_SCENE)
+                {
+                    needToRemove = true;
+                    break;
+                }
+            }
+
+            if (needToRemove)
+            {
+                var newScenes = new EditorBuildSettingsScene[scenes.Length - 1];
+                for (int i = 0; i < newScenes.Length; i++)
+                {
+                    newScenes[i] = scenes[i+1];
+                }
+
+                EditorBuildSettings.scenes = newScenes;
+            }
+        }
     }
 }
