@@ -66,7 +66,6 @@ public class PauseLogic : MonoBehaviour
     private static void MusicOff() => AudioListener.pause = true;
     private static void MusicOn() => AudioListener.pause = false;
 
-
     private static void AdStart()
     {
         GP_Logger.Log($"Ad Start");

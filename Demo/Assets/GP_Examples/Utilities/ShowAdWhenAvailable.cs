@@ -22,14 +22,4 @@ public class ShowAdWhenAvailable : MonoBehaviour
 
         StartCoroutine(CheckEverySec());
     }
-
-
-    void Update()
-    {
-        // Проверка доступности рекламы каждый кадр
-        if (GP_Ads.IsFullscreenAvailable())
-        {
-            GP_Ads.ShowFullscreen();
-        }
-    }
 }
