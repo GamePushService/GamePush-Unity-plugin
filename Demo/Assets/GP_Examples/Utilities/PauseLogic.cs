@@ -5,10 +5,9 @@ using GamePush;
 
 public class PauseLogic : MonoBehaviour
 {
-    private static bool tempMute;
-    private static bool gamePause;
-
-    private static bool adPause;
+    private static bool _tempMute;
+    private static bool _gamePause;
+    private static bool _adPause;
 
     private void OnEnable()
     {
@@ -44,22 +43,25 @@ public class PauseLogic : MonoBehaviour
 
     private static void PauseGame()
     {
-        if (gamePause) return;
-        gamePause = true;
-        GP_Logger.Log($"Game On Pause: {gamePause}");
+        if (_gamePause) return;
+        _gamePause = true;
 
-        tempMute = AudioListener.pause;
+        GP_Logger.Log($"Game On Pause: {_gamePause}");
+
+        _tempMute = AudioListener.pause;
         MusicOff();
         Time.timeScale = 0f;
     }
 
     private static void UnpauseGame()
     {
-        if (!gamePause || adPause) return;
-        gamePause = false;
-        GP_Logger.Log($"Game On Pause: {gamePause}");
+        if (!_gamePause || _adPause) return;
+        _gamePause = false;
 
-        if (!tempMute) MusicOn();
+        GP_Logger.Log($"Game On Pause: {_gamePause}");
+
+        if (!_tempMute)
+            MusicOn();
         Time.timeScale = 1;
     }
 
@@ -70,7 +72,7 @@ public class PauseLogic : MonoBehaviour
     {
         GP_Logger.Log($"Ad Start");
 
-        adPause = true;
+        _adPause = true;
         PauseGame();
     }
 
@@ -78,7 +80,7 @@ public class PauseLogic : MonoBehaviour
     {
         GP_Logger.Log($"Ad Close: {succes}");
 
-        adPause = false;
+        _adPause = false;
         UnpauseGame();
     }
 }

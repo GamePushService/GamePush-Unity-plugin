@@ -6,9 +6,9 @@ using TMPro;
 
 public class TextTranslate : MonoBehaviour
 {
-    [SerializeField] List<TranslateField> translates;
-
-    TMP_Text textField;
+    [SerializeField]
+    private List<TranslateField> _translates;
+    private TMP_Text _textField;
 
     private void OnEnable()
     {
@@ -22,7 +22,7 @@ public class TextTranslate : MonoBehaviour
 
     private void Awake()
     {
-        textField = GetComponent<TMP_Text>();
+        _textField = GetComponent<TMP_Text>();
         SetLang(Language.English);
     }
 
@@ -37,11 +37,11 @@ public class TextTranslate : MonoBehaviour
 
     private void SetLang(Language lang)
     {
-        foreach (TranslateField field in translates)
+        foreach (TranslateField field in _translates)
         {
             if (field.language == lang)
             {
-                textField.text = field.text;
+                _textField.text = field.text;
             }
         }
     }

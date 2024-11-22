@@ -7,11 +7,9 @@ public class ShowAdWhenAvailable : MonoBehaviour
 {
     private void Start()
     {
-        //Запуск таймера вызова рекламы
         StartCoroutine(CheckEverySec());
     }
 
-    //Проверка доступности рекламы каждую секунду
     IEnumerator CheckEverySec()
     {
         yield return new WaitForSecondsRealtime(1f);
