@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GamePush;
 using GamePush.Data;
 using GamePush.ConsoleController;
 using System.Threading.Tasks;
 using System;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace GamePush.Initialization
 {
@@ -19,8 +21,9 @@ namespace GamePush.Initialization
 #endif
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static async void Execute()
+        private static void Execute()
         {
+
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
 #endif
@@ -37,6 +40,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
             
+
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
             SDK.AddComponent<GP_Analytics>();
@@ -71,14 +75,25 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
 
-            if (ProjectData.WAIT_PLAGIN_READY)
-            {
-                await EndInitTask();
-            }
-                
-            else
-                EndInit();
-            
+            //if (ProjectData.WAIT_PLAGIN_READY)
+            //{
+
+            //    //while (!GP_Init.isReady)
+            //    //{
+            //    //    await Task.Yield();
+            //    //}
+            //    //EndInit();
+
+            //    GameObject runner = new GameObject("InitializerRunner");
+            //    UnityEngine.Object.DontDestroyOnLoad(runner);
+            //    runner.AddComponent<InitializationRunner>();
+            //    runner.GetComponent<InitializationRunner>().StartInitialization();
+            //}
+
+            EndInit();
+
+
+            //sceneLoad.allowSceneActivation = true;
         }
 
         private static async void EndInit()
@@ -89,6 +104,7 @@ namespace GamePush.Initialization
         private static async Task EndInitTask()
         {
             await GP_Init.Ready;
+
             GP_Logger.Info($"Plugin {VERSION}", "Initialize");
         }
 
@@ -107,5 +123,9 @@ namespace GamePush.Initialization
                     _tcs.SetResult(false);
             };
         }
+
+        
     }
+
+   
 }

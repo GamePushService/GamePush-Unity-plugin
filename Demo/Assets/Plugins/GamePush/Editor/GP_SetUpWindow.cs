@@ -15,6 +15,8 @@ namespace GamePushEditor
 
         private const string VERSION = PluginData.SDK_VERSION;
 
+        private const string INIT_SCENE = "Assets/Plugins/GamePush/InitScene/AwaitInit.unity";
+
         //private static bool _isDataFetch;
 
         private static int _id;
@@ -256,6 +258,8 @@ namespace GamePushEditor
             SetProjectDataToWebTemplate();
             SaveProjectDataToScript();
 
+            IniSceneHandle();
+
             GP_Logger.SystemLog("Data saved");
         }
 
@@ -275,6 +279,65 @@ namespace GamePushEditor
             return true;
         }
 
-        
+        private static void IniSceneHandle()
+        {
+            if (_waitPluginReady)
+                AddSceneToBuildSettings();
+            else
+                RemoveSceneToBuildSettings();
+        }
+
+        private static void AddSceneToBuildSettings()
+        {
+            if (!System.IO.File.Exists(INIT_SCENE))
+                return;
+
+            var scenes = EditorBuildSettings.scenes;
+
+            // Проверяем, добавлена ли уже сцена
+            foreach (var scene in scenes)
+            {
+                if (scene.path == INIT_SCENE)
+                {
+                    return;
+                }
+            }
+
+            // Добавляем сцену в список Build Settings
+            var newScenes = new EditorBuildSettingsScene[scenes.Length + 1];
+            newScenes[0] = new EditorBuildSettingsScene(INIT_SCENE, true);
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                newScenes[i+1] = scenes[i];
+            }
+            
+            EditorBuildSettings.scenes = newScenes;
+        }
+
+        private static void RemoveSceneToBuildSettings()
+        {
+            var scenes = EditorBuildSettings.scenes;
+            bool needToRemove = false;
+
+            foreach (var scene in scenes)
+            {
+                if (scene.path == INIT_SCENE)
+                {
+                    needToRemove = true;
+                    break;
+                }
+            }
+
+            if (needToRemove)
+            {
+                var newScenes = new EditorBuildSettingsScene[scenes.Length - 1];
+                for (int i = 0; i < newScenes.Length; i++)
+                {
+                    newScenes[i] = scenes[i+1];
+                }
+
+                EditorBuildSettings.scenes = newScenes;
+            }
+        }
     }
 }
