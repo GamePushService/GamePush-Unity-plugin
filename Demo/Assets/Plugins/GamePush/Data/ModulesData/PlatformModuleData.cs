@@ -37,7 +37,9 @@ namespace GamePush
         XIAOMI_GETAPPS,
         APTOIDE,
         RUSTORE,
-        CUSTOM_ANDROID
+        CUSTOM_ANDROID,
+        FOTOSTRANA,
+        Y8,
     }
 
     public static class PlatformTypes
@@ -68,6 +70,8 @@ namespace GamePush
         public const string APTOIDE = "APTOIDE";
         public const string RUSTORE = "RUSTORE";
         public const string CUSTOM_ANDROID = "CUSTOM_ANDROID";
+        public const string FOTOSTRANA = "FOTOSTRANA";
+        public const string Y8 = "Y8";
 
 
         public static Platform ConvertToEnum(string platform)
@@ -99,6 +103,8 @@ namespace GamePush
                 APTOIDE => Platform.APTOIDE,
                 RUSTORE => Platform.RUSTORE,
                 CUSTOM_ANDROID => Platform.CUSTOM_ANDROID,
+                FOTOSTRANA => Platform.FOTOSTRANA,
+                Y8 => Platform.Y8,
                 _ => Platform.NONE
             };
 

@@ -34,11 +34,6 @@ public class PauseLogic : MonoBehaviour
         GP_Ads.OnAdsClose -= AdClose;
     }
 
-    private void Start()
-    {
-        print("Player name: " + GP_Player.GetName());
-    }
-
     void OnApplicationFocus(bool hasFocus)
     {
         if (hasFocus)

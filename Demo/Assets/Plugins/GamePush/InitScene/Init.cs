@@ -8,11 +8,8 @@ namespace GamePush.Initialization
     {
         private async void Start()
         {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(1);
-            asyncLoad.allowSceneActivation = false;
             await GP_Init.Ready;
-            //SceneManager.LoadScene(1);
-            asyncLoad.allowSceneActivation = true;
+            SceneManager.LoadScene(1);
         }
     }
 }

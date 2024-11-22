@@ -75,25 +75,8 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
 
-            //if (ProjectData.WAIT_PLAGIN_READY)
-            //{
-
-            //    //while (!GP_Init.isReady)
-            //    //{
-            //    //    await Task.Yield();
-            //    //}
-            //    //EndInit();
-
-            //    GameObject runner = new GameObject("InitializerRunner");
-            //    UnityEngine.Object.DontDestroyOnLoad(runner);
-            //    runner.AddComponent<InitializationRunner>();
-            //    runner.GetComponent<InitializationRunner>().StartInitialization();
-            //}
 
             EndInit();
-
-
-            //sceneLoad.allowSceneActivation = true;
         }
 
         private static async void EndInit()
