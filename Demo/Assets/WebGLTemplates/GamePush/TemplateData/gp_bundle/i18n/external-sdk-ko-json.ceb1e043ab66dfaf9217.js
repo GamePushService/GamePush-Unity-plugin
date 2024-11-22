@@ -1,0 +1,1 @@
+(self.webpackChunkgame_score_sdk=self.webpackChunkgame_score_sdk||[]).push([[9843],{3677:e=>{"use strict";e.exports=JSON.parse('{"ads":{"mark":"광고","fullscreenCountdown":"닫히기 전 시간","rewardCountdown":"{{timeLeft}} 후 보상","rewarded":"보상 받음","skip":{"title":"광고 건너뛰기?","description":"보상을 받지 못합니다","yes":"광고 닫기","no":"계속 시청"}},"buttons":{"cancel":"취소","close":"닫기"}}')}}]);
