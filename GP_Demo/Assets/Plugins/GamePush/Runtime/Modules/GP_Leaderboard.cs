@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
+using GamePush.Data;
 
 namespace GamePush
 {
@@ -95,17 +96,14 @@ namespace GamePush
         private void CallLeaderboardOpen() => OnLeaderboardOpen?.Invoke();
         private void CallLeaderboardClose() => OnLeaderboardClose?.Invoke();
 
-
         private void CallLeaderboardFetch(string data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchTop(string data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchAbove(string data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchBelow(string data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, new GP_Data(data));
         private void CallLeaderboardFetchOnlyPlayer(string data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, new GP_Data(data));
 
-
         private void CallLeaderboardFetchTag(string lastTag) => _leaderboardFetchTag = lastTag;
         private void CallLeaderboardFetchError() => OnFetchError?.Invoke();
-
 
         private void CallLeaderboardFetchPlayerTag(string lastTag) => _leaderboardPlayerFetchTag = lastTag;
 
@@ -114,16 +112,5 @@ namespace GamePush
         private void CallLeaderboardFetchPlayerError() => OnFetchPlayerRatingError?.Invoke();
     }
 
-    public enum Order : byte
-    {
-        DESC,
-        ASC
-    }
-
-    public enum WithMe : byte
-    {
-        none,
-        first,
-        last
-    }
+    
 }

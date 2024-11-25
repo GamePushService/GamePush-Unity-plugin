@@ -30,6 +30,7 @@ namespace GamePush
         public static AdsModule ads;
         public static DeviceModule device;
         public static PaymentsModule payments;
+        public static LeaderboardModule leaderboard;
 
         #region ServerTime
 
@@ -156,7 +157,6 @@ namespace GamePush
         public static AllConfigData GetConfig()
         {
             return configData;
-            
         }
 
         public static T GetValueWithDefault<T>(object value)
