@@ -1,0 +1,46 @@
+<dependencies>
+  <packages>
+    <package>androidx.lifecycle:lifecycle-process:2.4.1</package>
+    <package>com.xsolla.android:login:6.0.11</package>
+    <package>com.xsolla.android:login-facebook:6.0.11</package>
+    <package>com.xsolla.android:login-google:6.0.11</package>
+    <package>com.xsolla.android:login-qq:6.0.11</package>
+    <package>com.xsolla.android:login-wechat:6.0.11</package>
+    <package>com.xsolla.android:payments:1.4.2</package>
+    <package>com.yandex.android:mobileads:7.5.0</package>
+    <package>io.ktor:ktor-client-content-negotiation-jvm:2.1.0</package>
+    <package>io.ktor:ktor-client-core-jvm:2.1.0</package>
+    <package>io.ktor:ktor-client-okhttp-jvm:2.1.0</package>
+    <package>io.ktor:ktor-events-jvm:2.1.0</package>
+    <package>io.ktor:ktor-http-jvm:2.1.0</package>
+    <package>io.ktor:ktor-io-jvm:2.1.0</package>
+    <package>io.ktor:ktor-serialization-jvm:2.1.0</package>
+    <package>io.ktor:ktor-serialization-kotlinx-json-jvm:2.1.0</package>
+    <package>io.ktor:ktor-serialization-kotlinx-jvm:2.1.0</package>
+    <package>io.ktor:ktor-utils-jvm:2.1.0</package>
+    <package>io.ktor:ktor-websocket-serialization-jvm:2.1.0</package>
+    <package>io.ktor:ktor-websockets-jvm:2.1.0</package>
+    <package>org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10</package>
+    <package>org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4</package>
+    <package>org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.3.3</package>
+    <package>org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.3.3</package>
+  </packages>
+  <files />
+  <settings>
+    <setting name="androidAbis" value="arm64-v8a,armeabi-v7a" />
+    <setting name="bundleId" value="com.GamePush.GamePushDemo" />
+    <setting name="explodeAars" value="True" />
+    <setting name="gradleBuildEnabled" value="True" />
+    <setting name="gradlePropertiesTemplateEnabled" value="True" />
+    <setting name="gradleTemplateEnabled" value="True" />
+    <setting name="installAndroidPackages" value="True" />
+    <setting name="localMavenRepoDir" value="Assets/GeneratedLocalRepo" />
+    <setting name="packageDir" value="Assets/Plugins/Android" />
+    <setting name="patchAndroidManifest" value="True" />
+    <setting name="patchMainTemplateGradle" value="True" />
+    <setting name="projectExportEnabled" value="False" />
+    <setting name="useFullCustomMavenRepoPathWhenExport" value="True" />
+    <setting name="useFullCustomMavenRepoPathWhenNotExport" value="False" />
+    <setting name="useJetifier" value="True" />
+  </settings>
+</dependencies>

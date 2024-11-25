@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6073036858017053798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1665081245825186022}
+  - component: {fileID: 2722802300511024534}
+  m_Layer: 0
+  m_Name: PopupFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1665081245825186022
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073036858017053798}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2722802300511024534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073036858017053798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b790ce2244ca49469ec0cdb28cc62a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanvasPrefab: {fileID: 2235249956668261828, guid: c0e62ece127d148c58344b18a758cc33,
+    type: 3}
+  SuccessPopupPrefab: {fileID: 8129972910254772181, guid: f3c7dafcbd7c04c11a0370543b552ebd,
+    type: 3}
+  ErrorPopupPrefab: {fileID: 3340558264923615202, guid: b3d6303fdf4e6496b99691b1b6c3da3f,
+    type: 3}
+  ConfirmPopupPrefab: {fileID: 5852370263131820392, guid: 6354b0b17b24b419fad96133527070f2,
+    type: 3}
+  ConfirmCodePopupPrefab: {fileID: 2151185845519967173, guid: e1176ad20af9e450c8845de6f4b98d4c,
+    type: 3}
+  WaitingPopupPrefab: {fileID: 556361876373794609, guid: 9ca05e708e5f143be94b06a87fef194a,
+    type: 3}
+  BundlePreviewPopupPrefab: {fileID: 8129972910254772181, guid: 1514f28ff6e8b32478d9e3b28ac762c2,
+    type: 3}
+  ResetPasswordPopupPrefab: {fileID: 8129972910254772181, guid: 8ffcbd06fa7695547945d3de3397659a,
+    type: 3}
+  NicknamePopupPrefab: {fileID: 2151185845519967173, guid: 0478ac52edb07ca438bc65a9ed6011c7,
+    type: 3}
+  RedeemCouponPopupPrefab: {fileID: 2151185845519967173, guid: 32db63925643b554c80fd99a28a74fe9,
+    type: 3}
+  CouponRewardsPopupPrefab: {fileID: 8129972910254772181, guid: 026db2a0fdc69df458a46c044f69ebb3,
+    type: 3}
+  TutorialPopupPrefab: {fileID: 2151185845519967173, guid: cae2fd41e8e52ef4fa63b30ecfdc2044,
+    type: 3}
