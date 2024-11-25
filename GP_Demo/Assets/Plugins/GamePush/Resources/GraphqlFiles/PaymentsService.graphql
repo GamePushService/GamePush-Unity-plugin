@@ -1,0 +1,121 @@
+# PRODUCT fragment
+fragment ProductFields on Product {
+    id
+    icon
+    iconSmall
+    tag
+    price
+    isSubscription
+    period
+    trialPeriod
+    currency
+    currencySymbol
+    yandexId
+    xsollaId
+}
+
+# PRODUCT_RESOLVERS fragment
+fragment ProductResolvers on Product {
+    name(lang: $lang)
+    description(lang: $lang)
+    iconSmall: icon(w: 48, h: 48, crop: false)
+}
+
+# PLAYER_PURCHASE fragment
+fragment PlayerPurchaseFields on PlayerPurchase {
+    _id
+    productId
+    payload
+    gift
+    subscribed
+    createdAt
+    orderStatus
+    expiredAt
+}
+
+# PURCHASE_OUTPUT fragment
+fragment PurchaseOutput on PurchaseResult {
+    __typename
+    ... on Problem { message }
+    ... on PlayerPurchaseOutput {
+        product {
+            ...ProductFields
+            ...ProductResolvers
+        }
+        purchase {
+            ...PlayerPurchaseFields
+        }
+    }
+}
+
+# SYNC_PURCHASES mutation
+mutation result($input: SyncPlayerPurchasesInput!) {
+    result: SyncPlayerPurchases(input: $input) {
+        __typename
+        ... on Problem { message }
+        ... on PlayerProductsPurchasedOutput {
+            purchases {
+                ...PlayerPurchaseFields
+            }
+        }
+    }
+}
+
+
+# CONSUME_PRODUCT mutation
+mutation result($input: ConsumePlayerPurchaseInput!, $lang: Lang) {
+    result: ConsumePlayerPurchase(input: $input) {
+        ...PurchaseOutput
+    }
+}
+
+# CANCEL_SUBSCRIPTION mutation
+mutation result($input: CancelPlayerSubscriptionInput!, $lang: Lang) {
+    result: CancelPlayerSubscription(input: $input) {
+        ...PurchaseOutput
+    }
+}
+
+# RESUME_SUBSCRIPTION mutation
+mutation result($input: ResumePlayerSubscriptionInput!, $lang: Lang) {
+    result: ResumePlayerSubscription(input: $input) {
+        ...PurchaseOutput
+    }
+}
+
+# FETCH_PLAYER_PURCHASES query
+query result($lang: Lang) {
+    result: FetchPlayerPurchases {
+        __typename
+        ... on Problem { message }
+        ... on PlayerPurchasesOutput {
+            products {
+                ...ProductFields
+                ...ProductResolvers
+            }
+            playerPurchases {
+                ...PlayerPurchaseFields
+            }
+        }
+    }
+}
+
+# PLAYER_GET_PAYMENTS_LINK query
+query result($input: PlayerGetPaymentLinkInput!) {
+    result: PlayerGetPaymentLink(input: $input) {
+        __typename
+        ... on PlayerPaymentLink { link }
+        ... on Problem { message }
+    }
+}
+
+# GET_PLAYER_PURCHASE query
+query result($input: GetPlayerPurchaseInput!) {
+    result: GetPlayerPurchase(input: $input) {
+        __typename
+        ... on PlayerPurchase {
+            ...PlayerPurchaseFields
+        }
+        ... on Problem { message }
+    }
+}

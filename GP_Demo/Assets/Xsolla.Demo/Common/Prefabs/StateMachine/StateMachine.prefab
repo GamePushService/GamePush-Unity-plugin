@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6003545067062460714
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6003545067062460713}
+  - component: {fileID: 6003545067062460712}
+  m_Layer: 0
+  m_Name: StateMachine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6003545067062460713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003545067062460714}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6003545067062460712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003545067062460714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a405a079885494a956f838fd1ed51e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  initialState: 0
+  authMenuPrefab: {fileID: 7907913669611144744, guid: c89eccb3c8399904d977130e0d8afe56,
+    type: 3}
+  authFailedMenuPrefab: {fileID: 860802679669836760, guid: 2168f73684fbbd0478f39b01f8eaab0a,
+    type: 3}
+  registrationMenuPrefab: {fileID: 2444199083377736940, guid: a06f3d8450391f1419578b9f5e0ff526,
+    type: 3}
+  registrationFailedMenuPrefab: {fileID: 860802679669836760, guid: 2168f73684fbbd0478f39b01f8eaab0a,
+    type: 3}
+  registrationSuccessMenuPrefab: {fileID: 8190964347215985164, guid: ae2895290ef37114a83270a9a0f73e1f,
+    type: 3}
+  changePasswordMenuPrefab: {fileID: 7817862460140412975, guid: 63fb8b9e261908045a58310805c06cf4,
+    type: 3}
+  changePasswordFailedMenuPrefab: {fileID: 860802679669836760, guid: 2168f73684fbbd0478f39b01f8eaab0a,
+    type: 3}
+  changePasswordSuccessMenuPrefab: {fileID: 7512206854554231357, guid: c62b071f0afa79b4a803aa754c36e1de,
+    type: 3}
+  mainMenuPrefab: {fileID: 7587026821285697339, guid: 2c6e9cffab0accf4885527094dcd8e45,
+    type: 3}
+  storeMenuPrefab: {fileID: 6843898244374627520, guid: 1f4503db069d4428db8a4bed9b1d259f,
+    type: 3}
+  buyCurrencyMenuPrefab: {fileID: 5920836100163376800, guid: 15e31fa00847745c09f431c2fac9e3b3,
+    type: 3}
+  cartMenuPrefab: {fileID: 875223020626192435, guid: ab442f01cfe3d4afe9308bced25eaf03,
+    type: 3}
+  battlepassMenuPrefab: {fileID: 875223020626192435, guid: 751d5aa2ca9c6fd4eb6aeb47698e7f12,
+    type: 3}
+  inventoryMenuPrefab: {fileID: 3189242411452436585, guid: a4b79b636391642b29edc4f5cad11b01,
+    type: 3}
+  profileMenuPrefab: {fileID: 6843898244374627520, guid: 1048628c3a390c04bab761d00f2ccb0f,
+    type: 3}
+  characterMenuPrefab: {fileID: 6843898244374627520, guid: 154f4dc4039983f45b87cd72621eb453,
+    type: 3}
+  characterMenuPrefabLoginSDK: {fileID: 6843898244374627520, guid: 39d876024bd071247bd5627ea274ccbe,
+    type: 3}
+  friendsMenuPrefab: {fileID: 7187304734922887917, guid: 4886fcf4b72474ee99c777a007a7e5c1,
+    type: 3}
+  socialFriendsMenuPrefab: {fileID: 7106663182902892708, guid: 1281d98bd7bc8e08f80b46c1624d9509,
+    type: 3}
+  loginSettingsErrorPrefab: {fileID: 860802679669836760, guid: cf24102a48934604f83eb36f1e712329,
+    type: 3}

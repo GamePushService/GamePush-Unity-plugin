@@ -1,0 +1,16 @@
+{
+    "name": "com.xsolla.commerce-sdk",
+    "displayName": "Xsolla Unity Commerce SDK",
+    "description": "The SDK makes it easier to integrate Xsolla products into your Unity project by providing out-of-the-box data structures and methods for working with Xsolla API.",
+    "author": {
+        "name" : "Xsolla",
+        "email" : "integration@xsolla.com",
+        "url" : "https://xsolla.com/partner-support"
+    },
+    "unity": "2019.4",
+    "version": "2.3.0",
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "2.0.0"
+    },
+    "documentationUrl": "https://developers.xsolla.com/sdk/unity/"
+}
