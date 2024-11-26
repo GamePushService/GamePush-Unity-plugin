@@ -62,13 +62,18 @@ namespace GamePush
         );
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.leaderboard.OnFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
+        }
+
+
         public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
 #else
-
-            ConsoleLog("OPEN");
+            CoreSDK.leaderboard.Open(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
 #endif
         }
 
@@ -77,8 +82,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields);
 #else
-
-            ConsoleLog("FETCH");
+            CoreSDK.leaderboard.Fetch(tag, orderBy, order, limit, showNearest, withMe, includeFields);
 #endif
         }
 
@@ -87,8 +91,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_FetchPlayerRating(tag, orderBy, order.ToString());
 #else
-
-            ConsoleLog("FETCH PLAYER RATING");
+            CoreSDK.leaderboard.FetchPlayerRating(tag, orderBy, order);
 #endif
         }
 

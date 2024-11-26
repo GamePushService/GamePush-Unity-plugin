@@ -62,12 +62,6 @@ mutation result($input: SyncPlayerPurchasesInput!) {
 }
 
 
-# CONSUME_PRODUCT mutation
-mutation result($input: ConsumePlayerPurchaseInput!, $lang: Lang) {
-    result: ConsumePlayerPurchase(input: $input) {
-        ...PurchaseOutput
-    }
-}
 
 # CANCEL_SUBSCRIPTION mutation
 mutation result($input: CancelPlayerSubscriptionInput!, $lang: Lang) {

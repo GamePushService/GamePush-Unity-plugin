@@ -39,7 +39,6 @@ namespace GamePush.Data
             lastSync = lastSyncTime;
         }
     }
-
     
     [Serializable]
     public class PlayerState

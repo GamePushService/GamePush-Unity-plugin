@@ -78,14 +78,18 @@ namespace GamePush
         );
         #endregion
 #endif
+        private void OnEnable()
+        {
+            
+        }
+
 
         public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
 #else
-
-            ConsoleLog("OPEN");
+            CoreSDK.leaderboard.OpenScoped(idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe);
 #endif
         }
 
@@ -94,8 +98,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
 #else
-
-            ConsoleLog("FETCH");
+            CoreSDK.leaderboard.FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
 #endif
         }
 
@@ -104,8 +107,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-
-            ConsoleLog("PUBLICH RECORD");
+            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #endif
         }
 
@@ -114,8 +116,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-
-            ConsoleLog("PUBLICH RECORD");
+            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #endif
         }
 
@@ -124,8 +125,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, includeFields);
 #else
-
-            ConsoleLog("FETCH PLAYER RATING");
+            CoreSDK.leaderboard.FetchScopedPlayerRating(idOrTag, variant, includeFields);
 #endif
         }
 

@@ -103,6 +103,7 @@ namespace GamePush
             device = new DeviceModule();
 
             payments = new PaymentsModule();
+            leaderboard = new LeaderboardModule();
         }
 
         public static void SetProjectData(SavedProjectData data)

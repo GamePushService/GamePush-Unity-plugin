@@ -1,0 +1,63 @@
+fragment PlayerField on PlayerFieldType {
+    name(lang: $lang)
+    key
+    type
+    default
+    important
+    public
+    intervalIncrement {
+        interval
+        increment
+    }
+    limits {
+        min
+        max
+        couldGoOverLimit
+    }
+    variants {
+        value
+        name(lang: $lang)
+    }
+}
+
+fragment PlayersTop on PlayersTop {
+    __typename
+    ... on Problem {
+        message
+    }
+    leaderboard {
+        id
+        tag
+        name(lang: $lang)
+        description(lang: $lang)
+        shareText(lang: $lang)
+        isAuthorizedOnly
+        limit
+    }
+    players
+    fields {
+        ...PlayerField
+    }
+}
+
+fragment PlayerTop on PlayerTop {
+    __typename
+    ... on Problem {
+        message
+    }
+    player
+    abovePlayers
+    belowPlayers
+    fields {
+        ...PlayerField
+    }
+}
+
+query FetchTopQuery($input: FetchTopInput!, $lang: Lang, $withMe: Boolean!) {
+    result: FetchTop(input: $input) {
+        ...PlayersTop
+    }
+    playerResult: FetchPlayerRating(input: $input) @include(if: $withMe) {
+        ...PlayerTop
+    }
+}
