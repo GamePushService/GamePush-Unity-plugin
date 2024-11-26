@@ -192,7 +192,7 @@ namespace GamePush.Core
 
         #region LeaderboardFetches
 
-        public static async Task<PurchaseOutput> PurchaseProduct(GetLeaderboardQuery input, bool withMe)
+        public static async Task<JObject> FetchTop(GetLeaderboardQuery input, bool withMe)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);

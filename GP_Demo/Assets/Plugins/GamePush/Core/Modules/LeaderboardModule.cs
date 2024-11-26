@@ -48,9 +48,11 @@ namespace GamePush.Core
             Logger.Log("OPEN");
         }
 
-        public void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
+        public async void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
             Logger.Log("FETCH");
+            GetLeaderboardQuery input = new GetLeaderboardQuery();
+            await DataFetcher.FetchTop(input, withMe != WithMe.none);
         }
 
         public void FetchPlayerRating(string tag = "", string orderBy = "score", Order order = Order.DESC)

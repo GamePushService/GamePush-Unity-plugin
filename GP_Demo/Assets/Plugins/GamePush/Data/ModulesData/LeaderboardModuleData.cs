@@ -26,6 +26,19 @@ namespace GamePush
         public string order { get; set; } // "ASC" or "DESC"
         public string withMe { get; set; } // "none", "first", or "last"
         public int? showNearest { get; set; }
+
+        public GetLeaderboardQuery(
+            string orderBy = "score",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 0,
+            WithMe withMe = WithMe.none,
+            string includeFields = "")
+        {
+            this.orderBy = orderBy.Split(",");
+            this.limit = limit;
+
+        }
     }
 
     public class GetLeaderboardVariantQuery
