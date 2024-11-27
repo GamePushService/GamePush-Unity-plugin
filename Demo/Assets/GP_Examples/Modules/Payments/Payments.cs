@@ -54,7 +54,7 @@ namespace Examples.Payments
         private void OnConsumeSuccess(string productIdOrTag) => ConsoleUI.Instance.Log("CONSUME: SUCCESS: " + productIdOrTag);
         private void OnConsumeError() => ConsoleUI.Instance.Log("CONSUME: ERROR");
 
-        private void OnFetchProducts(List<FetchProducts> products)
+        private void OnFetchProducts(List<GamePush.FetchProducts> products)
         {
             for (int i = 0; i < products.Count; i++)
             {
