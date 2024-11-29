@@ -41,6 +41,13 @@ namespace GamePush.Core
             return webRequest;
         }
 
+        private static string GetLang()
+        {
+            string lang = CoreSDK.currentLang.ToUpper();
+            if (lang == "" || lang == null) lang = "EN";
+            return lang;
+        }
+
         private static async Task<JObject> SendQueryRequest(string queryName, OperationType operationType, object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -52,7 +59,7 @@ namespace GamePush.Core
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
+            variables.Add("lang", GetLang());
             variables.Add("withToken", withToken);
 
             string results = await graphQL.Send(
@@ -192,7 +199,7 @@ namespace GamePush.Core
 
         #region LeaderboardFetches
 
-        public static async Task<JObject> FetchTop(GetLeaderboardQuery input, bool withMe)
+        public static async Task<RatingData> FetchTop(GetLeaderboardQuery input, bool withMe)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -206,7 +213,7 @@ namespace GamePush.Core
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
+            variables.Add("lang", GetLang());
             variables.Add("withMe", withMe);
 
             string results = await graphQL.Send(
@@ -215,16 +222,15 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
             Debug.Log(resultObject.ToString());
 
             //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
+            RatingData ratingData = resultObject.ToObject<RatingData>();
 
-            //return purchaseOutput;
-            return null;
+            return ratingData;
         }
 
         #endregion

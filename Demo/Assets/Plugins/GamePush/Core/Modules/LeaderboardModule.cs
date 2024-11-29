@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using GamePush.UI;
+using GamePush.Data;
 
 namespace GamePush.Core
 {
@@ -37,7 +39,6 @@ namespace GamePush.Core
         public event Action OnScopedPublishRecordComplete;
         public event Action OnScopedPublishRecordError;
 
-
         public LeaderboardModule()
         {
 
@@ -46,13 +47,20 @@ namespace GamePush.Core
         public void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
             Logger.Log("OPEN");
+            OverlayCanvas.Controller.OpenLeaderboard();
         }
 
         public async void Fetch(string tag = "", string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
             Logger.Log("FETCH");
             GetLeaderboardQuery input = new GetLeaderboardQuery();
-            await DataFetcher.FetchTop(input, withMe != WithMe.none);
+            RatingData data = await DataFetcher.FetchTop(input, withMe: true);
+            Logger.Log(data.leaderboard.name);
+            
+            foreach(PlayerState playerState in data.players)
+            {
+                Logger.Log(playerState.name);
+            }
         }
 
         public void FetchPlayerRating(string tag = "", string orderBy = "score", Order order = Order.DESC)

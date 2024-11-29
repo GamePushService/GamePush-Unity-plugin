@@ -19,110 +19,113 @@ namespace GamePush
     }
     public class GetLeaderboardQuery
     {
-        public string[] orderBy { get; set; }
-        public int? limit { get; set; }
-        public string[] includeFields { get; set; }
-        public string[] displayFields { get; set; }
-        public string order { get; set; } // "ASC" or "DESC"
-        public string withMe { get; set; } // "none", "first", or "last"
-        public int? showNearest { get; set; }
+        public string[] orderBy;
+        public int? limit;
+        public string[] includeFields;
+        //public string[] displayFields;
+        public string order; // "ASC" or "DESC"
+        //public string withMe; // "none", "first", or "last"
+        public int? showNearest;
 
         public GetLeaderboardQuery(
             string orderBy = "score",
             Order order = Order.DESC,
             int limit = 10,
             int showNearest = 0,
-            WithMe withMe = WithMe.none,
+            //WithMe withMe = WithMe.none,
             string includeFields = "")
         {
-            this.orderBy = orderBy.Split(",");
+            this.orderBy = orderBy.Trim().Split(",");
             this.limit = limit;
-
+            this.includeFields = includeFields.Trim().Split(",");
+            this.order = order.ToString();
+            //this.withMe = "None";//withMe.ToString();
+            this.showNearest = showNearest;
         }
     }
 
     public class GetLeaderboardVariantQuery
     {
-        public string variant { get; set; }
-        public int? id { get; set; }
-        public string tag { get; set; }
-        public int? limit { get; set; }
-        public string[] includeFields { get; set; }
-        public string[] displayFields { get; set; }
-        public string withMe { get; set; } // "none", "first", or "last"
-        public string order { get; set; } // "ASC" or "DESC"
-        public int? showNearest { get; set; }
+        public string variant;
+        public int? id;
+        public string tag;
+        public int? limit;
+        public string[] includeFields;
+        public string[] displayFields;
+        public string withMe; // "none", "first", or "last"
+        public string order; // "ASC" or "DESC"
+        public int? showNearest;
     }
 
     public class PublishRecordQuery
     {
-        public string variant { get; set; }
-        public Dictionary<string, object> record { get; set; }
-        public bool? overrideFlag { get; set; }
-        public int? id { get; set; }
-        public string tag { get; set; }
+        public string variant;
+        public Dictionary<string, object> record;
+        public bool? overrideFlag;
+        public int? id;
+        public string tag;
     }
 
     public class GetPlayerRatingQuery
     {
-        public string[] orderBy { get; set; }
-        public int? limit { get; set; }
-        public string[] includeFields { get; set; }
-        public string[] displayFields { get; set; }
-        public string order { get; set; } // "ASC" or "DESC"
-        public int? showNearest { get; set; }
+        public string[] orderBy;
+        public int? limit;
+        public string[] includeFields;
+        public string[] displayFields;
+        public string order; // "ASC" or "DESC"
+        public int? showNearest;
     }
 
     public class GetPlayerRatingVariantQuery
     {
-        public string variant { get; set; }
-        public int? id { get; set; }
-        public string tag { get; set; }
-        public int? limit { get; set; }
-        public string[] includeFields { get; set; }
-        public string[] displayFields { get; set; }
-        public string order { get; set; } // "ASC" or "DESC"
-        public int? showNearest { get; set; }
+        public string variant;
+        public int? id;
+        public string tag;
+        public int? limit;
+        public string[] includeFields;
+        public string[] displayFields;
+        public string order; // "ASC" or "DESC"
+        public int? showNearest;
     }
 
     public class Leaderboard
     {
-        public string name { get; set; }
-        public string description { get; set; }
-        public string shareText { get; set; }
-        public bool isAuthorizedOnly { get; set; }
-        public int? limit { get; set; }
+        public string name;
+        public string description;
+        public string shareText;
+        public bool isAuthorizedOnly;
+        public int? limit;
     }
 
     public class RatingData
     {
-        public Leaderboard leaderboard { get; set; }
-        public List<PlayerState> players { get; set; }
-        public List<PlayerState> topPlayers { get; set; }
-        public List<PlayerState> abovePlayers { get; set; }
-        public List<PlayerState> belowPlayers { get; set; }
-        public PlayerState player { get; set; }
-        public List<PlayerField> fields { get; set; }
-        public int? countOfPlayersAbove { get; set; }
+        public Leaderboard leaderboard;
+        public List<PlayerState> players;
+        public List<PlayerState> topPlayers;
+        public List<PlayerState> abovePlayers;
+        public List<PlayerState> belowPlayers;
+        public PlayerState player;
+        public List<PlayerField> fields;
+        public int? countOfPlayersAbove;
     }
 
     public class PlayerRatingData
     {
-        public PlayerState player { get; set; }
-        public List<PlayerField> fields { get; set; }
-        public List<PlayerState> abovePlayers { get; set; }
-        public List<PlayerState> belowPlayers { get; set; }
+        public PlayerState player;
+        public List<PlayerField> fields;
+        public List<PlayerState> abovePlayers;
+        public List<PlayerState> belowPlayers;
     }
 
     public class PlayerRecordData
     {
-        public Dictionary<string, object> record { get; set; }
-        public List<PlayerField> fields { get; set; }
+        public Dictionary<string, object> record;
+        public List<PlayerField> fields;
     }
 
     public class FetchPlayerFieldsOutput
     {
-        public List<PlayerField> items { get; set; }
+        public List<PlayerField> items;
     }
 
 }

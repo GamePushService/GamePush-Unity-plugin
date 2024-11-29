@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Newtonsoft.Json;
+using GamePush.Data;
 
 namespace GamePush.Core
 {

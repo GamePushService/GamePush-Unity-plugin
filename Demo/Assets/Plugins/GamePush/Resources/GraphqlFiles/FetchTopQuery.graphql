@@ -1,4 +1,4 @@
-fragment PlayerField on PlayerFieldType {
+fragment PlayerField on ModelField {
     name(lang: $lang)
     key
     type
@@ -21,10 +21,10 @@ fragment PlayerField on PlayerFieldType {
 }
 
 fragment PlayersTop on PlayersTop {
-    __typename
-    ... on Problem {
-        message
-    }
+    # __typename
+    # ... on Problem {
+    #     message
+    # }
     leaderboard {
         id
         tag
@@ -41,10 +41,10 @@ fragment PlayersTop on PlayersTop {
 }
 
 fragment PlayerTop on PlayerTop {
-    __typename
-    ... on Problem {
-        message
-    }
+    # __typename
+    # ... on Problem {
+    #     message
+    # }
     player
     abovePlayers
     belowPlayers
@@ -55,9 +55,17 @@ fragment PlayerTop on PlayerTop {
 
 query FetchTopQuery($input: FetchTopInput!, $lang: Lang, $withMe: Boolean!) {
     result: FetchTop(input: $input) {
+        __typename
         ...PlayersTop
+        ... on Problem {
+            message
+        }
     }
     playerResult: FetchPlayerRating(input: $input) @include(if: $withMe) {
+        __typename
         ...PlayerTop
+        ... on Problem {
+            message
+        }
     }
 }

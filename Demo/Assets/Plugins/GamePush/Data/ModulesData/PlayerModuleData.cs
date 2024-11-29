@@ -43,22 +43,22 @@ namespace GamePush.Data
     [Serializable]
     public class PlayerState
     {
-        int id;
-        bool active;
-        bool removed;
-        bool test;
-        string name;
-        string avatar;
-        int score;
-        string secretCode;
-        StateValue[] stateValues;
+        public int id;
+        public bool active;
+        public bool removed;
+        public bool test;
+        public string name;
+        public string avatar;
+        public double score;
+        public string secretCode;
+        public StateValue[] stateValues;
     }
 
     [Serializable]
     public class StateValue
     {
-        string key;
-        object value;
+        public string key;
+        public object value;
     }
 
     [Serializable]

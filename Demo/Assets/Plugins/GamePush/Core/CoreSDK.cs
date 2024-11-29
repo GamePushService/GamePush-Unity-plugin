@@ -19,7 +19,7 @@ namespace GamePush
 
         private static AllConfigData configData = new AllConfigData();
 
-        public static string currentLang;
+        public static string currentLang { get; private set; }
 
         public static PlatformConfig platformConfig;
 

@@ -44,8 +44,6 @@ namespace GamePush.Core
                 return _secretCode;
         }
 
-
-
         public static void ResetSecretCode()
         {
             _secretCode = "";

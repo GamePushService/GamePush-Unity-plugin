@@ -309,8 +309,10 @@ namespace GamePush.Core
                     SetPlayerState(playerData);
                 }
             }
-            
-            SetPlayerDataCode(Get<string>(SECRETCODE_STATE_KEY));
+
+            secretCode = playerData["state"]["secretCode"].ToString();
+            //Debug.Log("Set secret: " + secretCode);
+            SetPlayerDataCode(secretCode);
             SetPlayerSavedID();
 
             _playerUpdateTime = CoreSDK.GetServerTime();
@@ -455,7 +457,7 @@ namespace GamePush.Core
         private void SetPlayerState(JObject playerData)
         {
             JObject stateObject = (JObject)playerData["state"];
-            //Logger.Log("Set player state", stateObject);
+            Logger.Log("Set player state", stateObject);
             _playerState = stateObject.ToObject<Dictionary<string, object>>();
         }
 
@@ -1229,7 +1231,10 @@ namespace GamePush.Core
 
 #if XSOLLA_SERVICE
             AuthService.Login(combinedComplete, combinedError);
+#else
+            combinedError?.Invoke("Nо auth service for login");
 #endif
+
         }
 
         public void Logout()
