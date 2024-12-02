@@ -21,10 +21,10 @@ fragment PlayerField on ModelField {
 }
 
 fragment PlayerRecord on PlayerRecord {
-    __typename
-    ... on Problem {
-        message
-    }
+    # __typename
+    # ... on Problem {
+    #     message
+    # }
     record
     fields {
         ...PlayerField
@@ -33,6 +33,10 @@ fragment PlayerRecord on PlayerRecord {
 
 mutation PlayerPublishRating($input: PlayerPublishRecordInput!, $lang: Lang) {
     result: PlayerPublishRecord(input: $input) {
+        __typename
+        ... on Problem {
+            message
+        }
         ...PlayerRecord
     }
 }

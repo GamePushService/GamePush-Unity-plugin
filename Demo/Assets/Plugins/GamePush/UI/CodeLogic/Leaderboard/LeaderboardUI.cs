@@ -67,7 +67,7 @@ namespace GamePush.UI
             Rect holderRect = _cellHolder.rect;
 
             // Cell width * Cell count + BotBar height
-            holderRect.height = 150 * cells + 240;
+            holderRect.height = 150 * cells + 300;
             _cellHolder.sizeDelta = new Vector2(holderRect.width, holderRect.height);
         }
 

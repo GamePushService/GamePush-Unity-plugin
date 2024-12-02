@@ -226,8 +226,12 @@ namespace GamePush.Core
             JObject resultObject = (JObject)root["data"]["result"];
             JObject playerResultObject = (JObject)root["data"]["playerResult"];
 
-            //Debug.Log(resultObject.ToString());
-            //Debug.Log(playerResultObject.ToString());
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
 
             AllRatingData allRatingData = new AllRatingData();
             allRatingData.ratingData = resultObject.ToObject<RatingData>();
@@ -279,6 +283,8 @@ namespace GamePush.Core
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", GetLang());
             variables.Add("withMe", withMe);
+
+            
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -358,6 +364,8 @@ namespace GamePush.Core
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", GetLang());
 
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,
@@ -367,7 +375,14 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            Debug.Log(resultObject.ToString());
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(root.ToString());
 
             //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
             PlayerRecordData data = resultObject.ToObject<PlayerRecordData>();

@@ -82,8 +82,8 @@ namespace GamePush
     public class PublishRecordQuery
     {
         public string variant;
-        public Dictionary<string, object> @record;
-        public bool? overrideFlag;
+        public Dictionary<string, string> @record;
+        public bool? @override;
         public int? id;
         public string tag;
 
@@ -99,9 +99,15 @@ namespace GamePush
             else
                 this.tag = idOrTag;
 
+            this.@record = new Dictionary<string, string>();
+            foreach (string key in record.Keys)
+            {
+                Debug.Log(key);
+                this.@record.Add(key, record[key].ToString());
+            }
+
             this.variant = variant;
-            this.record = record;
-            overrideFlag = Override;
+            @override = Override;
         }
     }
 

@@ -54,7 +54,8 @@ namespace GamePush.Core
         {
             //Logger.Log("OPEN");
             RatingData data = await Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
-            OverlayCanvas.Controller.OpenLeaderboard(data, OnLeaderboardOpen, OnLeaderboardClose);
+            if (data != null)
+                OverlayCanvas.Controller.OpenLeaderboard(data, OnLeaderboardOpen, OnLeaderboardClose);
         }
 
         public async void SimpleFetch(
@@ -87,6 +88,7 @@ namespace GamePush.Core
             //Logger.Log("FETCH");
             GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order, limit, showNearest, includeFields);
             AllRatingData data = await DataFetcher.GetRating(input, withMe: true);
+            if (data == null) return null;
 
             ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMe.ToString(), limit);
 
@@ -133,7 +135,8 @@ namespace GamePush.Core
         public async void OpenScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
             RatingData data = await FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
-            OverlayCanvas.Controller.OpenLeaderboard(data, OnScopedOpen, OnScopedClose);
+            if(data != null)
+                OverlayCanvas.Controller.OpenLeaderboard(data, OnScopedOpen, OnScopedClose);
         }
 
         public async void SimpleFetchScoped(
@@ -283,23 +286,31 @@ namespace GamePush.Core
                 return players;
             }
 
-            if (players.Any(p => (int)p["id"] == (int)myPlayer["id"] && (int)p["position"] == (int)myPlayer["position"]))
+            //if (players.Any(p => (int)p["id"] == (int)myPlayer["id"] && (int)p["position"] == (int)myPlayer["position"]))
+            //{
+            //    return players.Select(p => (int)p["id"] == (int)myPlayer["id"] ? myPlayer : p).ToList();
+            //}
+
+            if (players.Any(p =>
+                Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
+                Convert.ToInt32(p["position"]) == Convert.ToInt32(myPlayer["position"])))
             {
-                return players.Select(p => (int)p["id"] == (int)myPlayer["id"] ? myPlayer : p).ToList();
+                return players.Select(p =>
+                    Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) ? myPlayer : p).ToList();
             }
 
             int topLength = players.Count;
-            int myIndex = (int)myPlayer["position"] - 1;
+            int myIndex = Convert.ToInt32(myPlayer["position"]) - 1;
 
             // Adjust positions if myPlayer is cached in the top but position has shifted out of top
             if (myIndex > topLength)
             {
-                int myCachedIndex = players.FindIndex(p => (int)p["id"] == (int)myPlayer["id"]);
+                int myCachedIndex = players.FindIndex(p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]));
                 if (myCachedIndex >= 0)
                 {
                     for (int i = myCachedIndex; i < players.Count; i++)
                     {
-                        players[i]["position"] = (int)players[i]["position"] - 1;
+                        players[i]["position"] = Convert.ToInt32(players[i]["position"]) - 1;
                     }
                 }
             }
@@ -319,7 +330,7 @@ namespace GamePush.Core
                 players.Insert(myIndex, myPlayer);
                 for (int i = myIndex + 1; i < players.Count; i++)
                 {
-                    players[i]["position"] = (int)players[i]["position"] + 1;
+                    players[i]["position"] = Convert.ToInt32(players[i]["position"]) + 1;
                 }
 
                 if (players.Count > topLength)
@@ -341,13 +352,13 @@ namespace GamePush.Core
             }
 
             players = players
-                .GroupBy(p => (int)p["id"])
+                .GroupBy(p => Convert.ToInt32(p["id"]))
                 .Select(group => group.First())
                 .ToList();
 
             if (showNearest.HasValue)
             {
-                players = players.OrderBy(p => (int)p["position"]).ToList();
+                players = players.OrderBy(p => Convert.ToInt32(p["position"])).ToList();
             }
 
             return players;
