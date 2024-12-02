@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GamePush
 {
@@ -80,11 +82,35 @@ namespace GamePush
 #endif
         private void OnEnable()
         {
-            
+            CoreSDK.leaderboard.OnScopedFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnScopedFetchError += () => OnFetchError?.Invoke();
+
+            CoreSDK.leaderboard.OnScopedFetchPlayerRating += (string _leaderboardFetchTag, int position) => OnFetchPlayerRating?.Invoke(_leaderboardFetchTag, position);
+            CoreSDK.leaderboard.OnScopedFetchPlayerRatingTagVariant += (string _leaderboardFetchTag, string variant, int position) => OnFetchPlayerRatingTagVariant?.Invoke(_leaderboardFetchTag, variant, position);
+            CoreSDK.leaderboard.OnScopedFetchPlayerRatingError += () => OnFetchError?.Invoke();
+
+            CoreSDK.leaderboard.OnScopedOpen += () => OnOpen?.Invoke();
+            CoreSDK.leaderboard.OnScopedClose += () => OnClose?.Invoke();
+
+            CoreSDK.leaderboard.OnScopedPublishRecordComplete += () => OnPublishRecordComplete?.Invoke();
+            CoreSDK.leaderboard.OnScopedPublishRecordError += () => OnPublishRecordError?.Invoke();
         }
 
 
-        public static void Open(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
+        public static void Open(
+            string idOrTag = "",
+            string variant = "some_variant",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "",
+            string displayFields = "",
+            WithMe withMe = WithMe.first)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
@@ -93,21 +119,71 @@ namespace GamePush
 #endif
         }
 
-        public static void Fetch(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
+        public static void Fetch(
+            string idOrTag = "",
+            string variant = "some_variant",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "",
+            WithMe withMe = WithMe.none)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
 #else
-            CoreSDK.leaderboard.FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
+            CoreSDK.leaderboard.SimpleFetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
 #endif
         }
+
+        public static async Task<RatingData> AsyncFetch(
+            string idOrTag = "",
+            string variant = "some_variant",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "",
+            WithMe withMe = WithMe.none)
+        {
+            return await CoreSDK.leaderboard.FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
+        }
+
+        public static void FetchPlayerRating(
+            string idOrTag = "",
+            string variant = "some_variant",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "")
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+#else
+            CoreSDK.leaderboard.SimpleFetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+#endif
+        }
+
+        public static async Task<PlayerRatingData> AsyncFetchPlayerRating(
+            string idOrTag = "",
+            string variant = "some_variant",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 5,
+            string includeFields = "")
+        {
+            return await CoreSDK.leaderboard.FetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+        }
+
 
         public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, string key1 = "", int record_value1 = 0, string key2 = "", int record_value2 = 0, string key3 = "", int record_value3 = 0)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
+            Dictionary<string, object> record = new Dictionary<string, object>();
+            record.Add(key1, record_value1);
+            if (key2 != "") record.Add(key2, record_value2);
+            if (key3 != "") record.Add(key3, record_value3);
+            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
@@ -116,23 +192,26 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
+            Dictionary<string, object> record = new Dictionary<string, object>();
+            record.Add(key1, record_value1);
+            if (key2 != "") record.Add(key2, record_value2);
+            if (key3 != "") record.Add(key3, record_value3);
+            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
-        public static void FetchPlayerRating(string idOrTag = "", string variant = "some_variant", string includeFields = "")
+        public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, Dictionary<string, object> record = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, includeFields);
+            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
 #else
-            CoreSDK.leaderboard.FetchScopedPlayerRating(idOrTag, variant, includeFields);
+            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
 
         private void CallLeaderboardOpen() => OnOpen?.Invoke();
         private void CallLeaderboardClose() => OnClose?.Invoke();
-
 
         private void CallLeaderboardScopedFetchTag(string lastTag) => _leaderboardFetchTag = lastTag;
         private void CallLeaderboardScopedFetchVariant(string lastVariant) => _leaderboardFetchVariant = lastVariant;

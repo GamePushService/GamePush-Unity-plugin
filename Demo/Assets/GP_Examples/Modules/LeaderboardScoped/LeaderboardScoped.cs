@@ -114,6 +114,9 @@ namespace Examples.LeaderboardScoped
             GP_LeaderboardScoped.FetchPlayerRating(
                 _tagInput.text,
                 _variantInput.text,
+                (Order)_orderDropdown.value,
+                int.Parse(_limitInput.text),
+                int.Parse(_nearestInput.text),
                 _includeInput.text
             );
 

@@ -39,20 +39,6 @@ namespace GamePush.Data
             lastSync = lastSyncTime;
         }
     }
-    
-    [Serializable]
-    public class PlayerState
-    {
-        public int id;
-        public bool active;
-        public bool removed;
-        public bool test;
-        public string name;
-        public string avatar;
-        public double score;
-        public string secretCode;
-        public StateValue[] stateValues;
-    }
 
     [Serializable]
     public class StateValue

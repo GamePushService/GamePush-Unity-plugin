@@ -1,0 +1,63 @@
+fragment PlayerField on ModelField {
+    name(lang: $lang)
+    key
+    type
+    default
+    important
+    public
+    intervalIncrement {
+        interval
+        increment
+    }
+    limits {
+        min
+        max
+        couldGoOverLimit
+    }
+    variants {
+        value
+        name(lang: $lang)
+    }
+}
+
+fragment PlayersTop on PlayersTop {
+    leaderboard {
+        id
+        tag
+        name(lang: $lang)
+        description(lang: $lang)
+        shareText(lang: $lang)
+        isAuthorizedOnly
+        limit
+    }
+    players
+    fields {
+        ...PlayerField
+    }
+}
+
+fragment PlayerTop on PlayerTop {
+    player
+    abovePlayers
+    belowPlayers
+    fields {
+        ...PlayerField
+    }
+}
+
+query FetchTopScopedQuery($input: FetchPlayerTopScopedInput!, $lang: Lang, $withMe: Boolean!) {
+    result: FetchPlayerTopScoped(input: $input) {
+        __typename
+        ...PlayersTop
+        ... on Problem {
+            message
+        }
+    }
+    playerResult: FetchPlayerRatingScoped(input: $input) @include(if: $withMe) {
+        __typename
+        ...PlayerTop
+        ... on Problem {
+            message
+        }
+    }
+}

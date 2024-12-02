@@ -21,10 +21,6 @@ fragment PlayerField on ModelField {
 }
 
 fragment PlayersTop on PlayersTop {
-    # __typename
-    # ... on Problem {
-    #     message
-    # }
     leaderboard {
         id
         tag
@@ -41,10 +37,6 @@ fragment PlayersTop on PlayersTop {
 }
 
 fragment PlayerTop on PlayerTop {
-    # __typename
-    # ... on Problem {
-    #     message
-    # }
     player
     abovePlayers
     belowPlayers

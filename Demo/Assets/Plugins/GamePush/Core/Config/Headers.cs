@@ -25,7 +25,7 @@ namespace GamePush.Core
             { X_Platform_Key, "" },
             { X_Project_ID, CoreSDK.projectId.ToString() },
             { X_Project_Token, CoreSDK.projectToken.ToString() },
-            { X_Language, "EN" },
+            { X_Language, GetLang() },
             { X_Player_Data, base64 },
             };
         }
@@ -37,6 +37,13 @@ namespace GamePush.Core
 #else
             return PlatformTypes.NONE;
 #endif
+        }
+
+        private static string GetLang()
+        {
+            string lang = CoreSDK.currentLang.ToUpper();
+            if (lang == "" || lang == null) lang = "EN";
+            return lang;
         }
 
         private static string GetEncodeString(string secret) => $"{{\"secretCode\":\"{secret}\"}}";

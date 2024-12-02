@@ -23,6 +23,9 @@ namespace GamePush.Core
         private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
         private static string _consumeProductQueryName = "ConsumePlayerPurchase";
         private static string _fetchTopQueryName = "FetchTopQuery";
+        private static string _fetchTopScopedQueryName = "FetchTopScopedQuery";
+        private static string _playerPublishRating = "PlayerPublishRating";
+
 
         public static async void Ping(string token)
         {
@@ -106,7 +109,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            Debug.Log(resultObject["platformConfig"].ToString());
+            //Debug.Log(resultObject["platformConfig"].ToString());
 
             //Debug.Log(resultObject["platformConfig"]["authConfig"].ToString());
             //Debug.Log(resultObject["platformConfig"]["paymentsConfig"].ToString());
@@ -199,14 +202,11 @@ namespace GamePush.Core
 
         #region LeaderboardFetches
 
-        public static async Task<RatingData> FetchTop(GetLeaderboardQuery input, bool withMe)
+        public static async Task<AllRatingData> GetRating(GetLeaderboardQuery input, bool withMe)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
-            Debug.Log(graphQL.ToString());
-
             Query query = graphQL.FindQuery(_fetchTopQueryName, _fetchTopQueryName, OperationType.Query);
-            Debug.Log(query.ToString());
 
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
 
@@ -224,13 +224,155 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
+            JObject playerResultObject = (JObject)root["data"]["playerResult"];
+
+            //Debug.Log(resultObject.ToString());
+            //Debug.Log(playerResultObject.ToString());
+
+            AllRatingData allRatingData = new AllRatingData();
+            allRatingData.ratingData = resultObject.ToObject<RatingData>();
+            allRatingData.playerRatingData = playerResultObject.ToObject<PlayerRatingData>();
+
+            return allRatingData;
+        }
+
+        public static async Task<PlayerRatingData> GetPlayerRating(GetLeaderboardQuery input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_fetchTopQueryName, _fetchTopQueryName, OperationType.Query);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+            variables.Add("withMe", true);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject playerResultObject = (JObject)root["data"]["playerResult"];
+
+            //Debug.Log(playerResultObject.ToString());
+
+            PlayerRatingData ratingData = playerResultObject.ToObject<PlayerRatingData>();
+
+            return ratingData;
+        }
+
+        public static async Task<AllRatingData> GetRatingVariant(GetLeaderboardVariantQuery input, bool withMe)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
+   
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+            variables.Add("withMe", withMe);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+
+            Debug.Log(root.ToString());
+            JObject resultObject = (JObject)root["data"]["result"];
+            JObject playerResultObject = (JObject)root["data"]["playerResult"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(resultObject.ToString());
+
+            AllRatingData allRatingData = new AllRatingData();
+            allRatingData.ratingData = resultObject.ToObject<RatingData>();
+            allRatingData.playerRatingData = playerResultObject.ToObject<PlayerRatingData>();
+
+            return allRatingData;
+        }
+
+        public static async Task<PlayerRatingData> GetPlayerRatingVariant(GetLeaderboardVariantQuery input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
+          
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+            variables.Add("withMe", true);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject playerResultObject = (JObject)root["data"]["playerResult"];
+
+            if (playerResultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = playerResultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(playerResultObject.ToString());
+
+            PlayerRatingData ratingData = playerResultObject.ToObject<PlayerRatingData>();
+
+            return ratingData;
+        }
+
+        public static async Task<PlayerRecordData> PublishRecord(PublishRecordQuery input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_playerPublishRating, _playerPublishRating, OperationType.Mutation);
+          
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
 
             Debug.Log(resultObject.ToString());
 
             //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
-            RatingData ratingData = resultObject.ToObject<RatingData>();
+            PlayerRecordData data = resultObject.ToObject<PlayerRecordData>();
 
-            return ratingData;
+            return data;
         }
 
         #endregion
@@ -240,11 +382,8 @@ namespace GamePush.Core
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
-            Debug.Log(graphQL.ToString());
-
             Query query = graphQL.FindQuery(_purchaseProductQueryName, "result", OperationType.Mutation);
-            Debug.Log(query.ToString());
-
+        
             Tuple<string, object> queryTuple = Hash.SingQuery(null);
 
             Dictionary<string, object> variables = new Dictionary<string, object>();

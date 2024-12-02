@@ -116,6 +116,7 @@ namespace Examples.Leaderboard
                 ConsoleUI.Instance.Log("PLAYER: POSITION: " + players[i].position);
                 ConsoleUI.Instance.Log("PLAYER: GOLD: " + players[i].gold);
                 ConsoleUI.Instance.Log("PLAYER: LEVEL: " + players[i].level);
+                ConsoleUI.Instance.Log("---");
             }
         }
 

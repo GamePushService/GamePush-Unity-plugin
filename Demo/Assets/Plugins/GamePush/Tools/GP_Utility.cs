@@ -85,6 +85,7 @@ namespace GamePush.Tools
             public List<T> data;
         }
 
+
         public static string DictionaryToJson(Dictionary<string, object> dict)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();

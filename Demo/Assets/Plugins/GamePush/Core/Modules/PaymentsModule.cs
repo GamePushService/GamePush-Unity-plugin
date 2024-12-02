@@ -110,7 +110,7 @@ namespace GamePush.Core
 #if XSOLLA_SERVICE
             //PaymentService.PurchaseItem(idOrTag, combinedSuccess, combinedError);
 #else
-            onPurchaseError?.Invoke()
+            onPurchaseError?.Invoke();
 #endif
         }
 

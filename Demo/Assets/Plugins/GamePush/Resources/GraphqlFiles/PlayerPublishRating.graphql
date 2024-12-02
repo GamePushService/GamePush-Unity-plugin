@@ -1,0 +1,38 @@
+fragment PlayerField on ModelField {
+    name(lang: $lang)
+    key
+    type
+    default
+    important
+    public
+    intervalIncrement {
+        interval
+        increment
+    }
+    limits {
+        min
+        max
+        couldGoOverLimit
+    }
+    variants {
+        value
+        name(lang: $lang)
+    }
+}
+
+fragment PlayerRecord on PlayerRecord {
+    __typename
+    ... on Problem {
+        message
+    }
+    record
+    fields {
+        ...PlayerField
+    }
+}
+
+mutation PlayerPublishRating($input: PlayerPublishRecordInput!, $lang: Lang) {
+    result: PlayerPublishRecord(input: $input) {
+        ...PlayerRecord
+    }
+}

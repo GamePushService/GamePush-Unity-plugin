@@ -16,11 +16,19 @@ namespace GamePush.Core
         private static void ColorLog(string color, string type, string title, string text) =>
             DebugLog($"<color=#{color}> {type}: </color> {title}: {text}");
 
-        private static void ColorLogWarning(string color, string type, string title, string text) =>
-            Debug.LogWarning($"<color=#{color}> {type}: </color> {title}: {text}");
+        private static void ColorLogWarning(string color, string type, string title, string text)
+        {
+            string log = text == null || text == "" ? title : $"{title}: {text}";
+            Debug.LogWarning($"<color=#{color}> {type}: </color> {log}");
+        }
+            
 
-        private static void ColorLogError(string color, string type, string title, string text) =>
-            Debug.LogError($"<color=#{color}> {type}: </color> {title}: {text}");
+        private static void ColorLogError(string color, string type, string title, string text)
+        {
+            string log = text == null || text == "" ? title : $"{title}: {text}";
+            Debug.LogError($"<color=#{color}> {type}: </color> {log}");
+        }
+            
 
 
         private static void GreenMessage(string title, string text) =>
