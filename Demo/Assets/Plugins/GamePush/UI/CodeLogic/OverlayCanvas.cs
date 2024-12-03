@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using GamePush;
 
 namespace GamePush.UI
 {
@@ -12,7 +13,6 @@ namespace GamePush.UI
         GameObject overlayHolder;
         [SerializeField]
         GameObject leaderboard;
-
 
         public static OverlayCanvas Controller;
 
@@ -25,6 +25,11 @@ namespace GamePush.UI
 
             DontDestroyOnLoad(gameObject);
             overlayHolder.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            
         }
 
         public void Close()

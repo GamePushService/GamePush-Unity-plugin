@@ -31,15 +31,24 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_HappyTime();
 #endif
+        private void OnEnable()
+        {
+            CoreSDK.game.OnPause += CallOnPause;
+            CoreSDK.game.OnResume += CallOnResume;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.game.OnPause -= CallOnPause;
+            CoreSDK.game.OnResume -= CallOnResume;
+        }
 
         public static bool IsPaused()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-           return GP_IsPaused() == "true";
+            return GP_IsPaused() == "true";
 #else
-
-            ConsoleLog("IS PAUSED: FALSE");
-            return false;
+            return CoreSDK.game.IsPaused();
 #endif
         }
 
@@ -50,10 +59,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Pause();
 #else
-
-            ConsoleLog("PAUSE");
-            OnPause?.Invoke();
-            _onPause?.Invoke();
+            CoreSDK.game.GamePause();
 #endif
         }
 
@@ -64,10 +70,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Resume();
 #else
-
-            ConsoleLog("RESUME");
-            OnResume?.Invoke();
-            _onResume?.Invoke();
+            CoreSDK.game.GameResume();
 #endif
         }
 
@@ -76,8 +79,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStart();
 #else
-
-            Console.Log("GAMEPLAY: START");
+            CoreSDK.game.GameplayStart();
 #endif
         }
 
@@ -86,8 +88,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStop();
 #else
-
-            Console.Log("GAMEPLAY: STOP");
+            CoreSDK.game.GameplayStop();
 #endif
         }
 
@@ -96,8 +97,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameReady();
 #else
-
-            Console.Log("GAME:", "READY");
+            CoreSDK.game.GameReady();
 #endif
         }
 
@@ -106,13 +106,20 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_HappyTime();
 #else
-
-            Console.Log("GAME:", "HAPPY TIME!!!");
+            CoreSDK.game.HappyTime();
 #endif
         }
 
-        private void CallOnPause() => OnPause?.Invoke();
-        private void CallOnResume() => OnResume?.Invoke();
+        private void CallOnPause()
+        {
+            OnPause?.Invoke();
+            _onPause?.Invoke();
+        }
+        private void CallOnResume()
+        {
+            OnResume?.Invoke();
+            _onResume?.Invoke();
+        }
     }
 
 }
