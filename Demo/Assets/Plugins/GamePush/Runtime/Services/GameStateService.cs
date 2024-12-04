@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using GamePush;
 using System.Collections;
 
 namespace GamePush.Services

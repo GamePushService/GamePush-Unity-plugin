@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GamePush.Data;
 using TMPro;
+using System.Threading.Tasks;
 
 namespace GamePush.UI
 {
@@ -22,6 +23,10 @@ namespace GamePush.UI
         [SerializeField]
         private LeaderboardCell _boardCell;
         [SerializeField]
+        private GameObject _botBar;
+        [SerializeField]
+        private GameObject _divider;
+        [SerializeField]
         private RectTransform _cellHolder;
 
         private RatingData _ratingData;
@@ -29,38 +34,73 @@ namespace GamePush.UI
         private event Action _OnLeaderboardOpen;
         private event Action _OnLeaderboardClose;
 
-        public void Init(RatingData ratingData, Action onLeaderboardOpen, Action onLeaderboardClose)
+        public async void Init(RatingData ratingData, Action onLeaderboardOpen, Action onLeaderboardClose)
         {
             _ratingData = ratingData;
             _OnLeaderboardOpen = onLeaderboardOpen;
             _OnLeaderboardClose = onLeaderboardClose;
 
-            SetUpBoard();
-            SetUpCells();
-
             StartCoroutine(MoveUp());
+
+            SetUpBoard();
+            await SetUpCells();
+            SetBotBar();
         }
 
         private void SetUpBoard()
         {
             _leaderboardTitle.text = _ratingData.leaderboard.name;
+            ClearBoard();
         }
 
-        private async void SetUpCells()
+        private void ClearBoard()
+        {
+            foreach (Transform child in _cellHolder.GetComponentInChildren<Transform>())
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        private async Task SetUpCells()
         {
             List<Dictionary<string, object>> places = _ratingData.players;
 
             SetCellHolder(places.Count);
 
+            int playerID = CoreSDK.player.GetID();
+            int lastPlace = 0;
+
             foreach (Dictionary<string, object> place in places)
             {
                 PlayerRatingState playerRatingState = PlayerRatingState.FromDictionary(place);
 
+                bool isPlayer = playerID == playerRatingState.id;
+
+                if (!isPlayer && lastPlace + 1 != playerRatingState.position)
+                {
+                    Instantiate(_divider, _cellHolder);
+                }
+                lastPlace = playerRatingState.position;
+
                 LeaderboardCell leaderboardCell = Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>();
 
-                await leaderboardCell.Init(playerRatingState);
+                await leaderboardCell.Init(playerRatingState, isPlayer);
+                
             }
         }
+
+        //private bool IsNeedDivider()
+        //{
+        //    bool isNeedToShowDivider = false;
+        //    bool isGapBetweenPlayers = (player?.position as number) + 1 !== players[index + 1]?.position && index !== players.length - 1;
+
+        //    if (_ratingData.countOfPlayersAbove > 0)
+        //    {
+        //        isNeedToShowDivider = showNearest && _ratingData.countOfPlayersAbove >= showNearest && isGapBetweenPlayers;
+        //    }
+
+        //    return isNeedToShowDivider;
+        //}
 
         private void SetCellHolder(int cells)
         {
@@ -69,6 +109,12 @@ namespace GamePush.UI
             // Cell width * Cell count + BotBar height
             holderRect.height = 150 * cells + 300;
             _cellHolder.sizeDelta = new Vector2(holderRect.width, holderRect.height);
+        }
+
+
+        private void SetBotBar()
+        {
+            Instantiate(_botBar, _cellHolder);
         }
 
 

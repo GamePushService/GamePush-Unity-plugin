@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4066065696245534903}
+  - component: {fileID: 7389774097200408692}
   - component: {fileID: 8244453509648155459}
   - component: {fileID: 1251478510841999749}
   m_Layer: 5
@@ -41,6 +42,36 @@ RectTransform:
   m_AnchoredPosition: {x: -6.1831055, y: -29.923004}
   m_SizeDelta: {x: 890.5887, y: 159.846}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7389774097200408692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200515680424201992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &8244453509648155459
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -61,14 +92,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3acc5c1dee5ad41959474b63c0b9c8b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  avatarImage: {fileID: 513033103146074693}
-  playerName: {fileID: 6675497192620709162}
-  playerFields: {fileID: 785061150491324889}
-  firstPlace: {fileID: 1694674030077795936}
-  secondPlace: {fileID: 1214287107699506326}
-  thirdPlace: {fileID: 1109948541323428848}
-  defaultPlace: {fileID: 991304069983243592}
-  placeNum: {fileID: 4981285678782841651}
+  _cellBack: {fileID: 7389774097200408692}
+  _defaultBack: {r: 1, g: 1, b: 1, a: 1}
+  _playerBack: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
+  _numBack: {fileID: 710493621346850889}
+  _defaultNum: {r: 0.5294118, g: 0.50980395, b: 0.50980395, a: 1}
+  _playerNum: {r: 0.342073, g: 0.7169812, b: 0.33481666, a: 1}
+  _avatarImage: {fileID: 513033103146074693}
+  _playerName: {fileID: 6675497192620709162}
+  _playerFields: {fileID: 785061150491324889}
+  _placeNum: {fileID: 4981285678782841651}
+  _defaultPlace: {fileID: 991304069983243592}
+  _firstPlace: {fileID: 1694674030077795936}
+  _secondPlace: {fileID: 1214287107699506326}
+  _thirdPlace: {fileID: 1109948541323428848}
 --- !u!1 &226037749165604733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1086,7 +1123,7 @@ GameObject:
   - component: {fileID: 5108649776080496498}
   - component: {fileID: 4813274697099228856}
   m_Layer: 5
-  m_Name: PlaceHolder
+  m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1653,7 +1690,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6934834198629771683}
   m_Layer: 5
-  m_Name: PricePlace
+  m_Name: PricePlaces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

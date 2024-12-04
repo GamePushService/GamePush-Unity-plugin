@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using GamePush.UI;
 using GamePush.Data;
 using System.Threading.Tasks;
 using System.Linq;
@@ -20,6 +19,8 @@ namespace GamePush.Core
 
         public event Action<string, int> OnFetchPlayerRatingSuccess;
         public event Action OnFetchPlayerRatingError;
+
+        public event Action<RatingData, Action, Action> OpenLeaderboard;
 
         public event Action OnLeaderboardOpen;
         public event Action OnLeaderboardClose;
@@ -50,12 +51,28 @@ namespace GamePush.Core
             action?.Invoke(tag, gpData);
         }
 
+        private List<string> FromString(string data) => new List<string>(data.Trim().Split(","));
+
         public async void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
             //Logger.Log("OPEN");
+            GetOpenLeaderboardQuery query = new GetOpenLeaderboardQuery(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
+
             RatingData data = await Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
             if (data != null)
-                OverlayCanvas.Controller.OpenLeaderboard(data, OnLeaderboardOpen, OnLeaderboardClose);
+            {
+                //TODO Remove myPlayer from players
+                var playersFiltered = data.players;
+
+                List<Dictionary<string, object>> playersList =
+                    MapDisplayFields(playersFiltered,
+                        FromString(displayFields),
+                        FromString(includeFields),
+                        FromString(orderBy));
+                //Debug.Log(playersList.ToString());
+                data.players = playersList;
+                OpenLeaderboard?.Invoke(data, OnLeaderboardOpen, OnLeaderboardClose);
+            }
         }
 
         public async void SimpleFetch(
@@ -68,6 +85,7 @@ namespace GamePush.Core
             string includeFields = ""
             )
         {
+            //GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order, limit, showNearest, includeFields);
             RatingData data = await Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
             if (data == null)
             {
@@ -82,15 +100,17 @@ namespace GamePush.Core
             ActionInvoke(OnFetchPlayer, tag, data.player);
         }
 
-
         public async Task<RatingData> Fetch(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
             //Logger.Log("FETCH");
+            string withMeString = GetWithMeValue(showNearest, withMe.ToString());
+            showNearest = GetShowNearestValue(showNearest);
+            
             GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order, limit, showNearest, includeFields);
             AllRatingData data = await DataFetcher.GetRating(input, withMe: true);
             if (data == null) return null;
 
-            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMe.ToString(), limit);
+            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, GetLimitValue(limit, data.ratingData.leaderboard));
 
             return data.ratingData;
         }
@@ -135,8 +155,20 @@ namespace GamePush.Core
         public async void OpenScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
             RatingData data = await FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
-            if(data != null)
-                OverlayCanvas.Controller.OpenLeaderboard(data, OnScopedOpen, OnScopedClose);
+            if (data != null)
+            {
+                //TODO Remove myPlayer from players
+                var playersFiltered = data.players;
+
+                List<Dictionary<string, object>> playersList =
+                    MapDisplayFields(playersFiltered,
+                        FromString(displayFields),
+                        FromString(includeFields),
+                        FromString(""));
+                //Debug.Log(playersList.ToString());
+                data.players = playersList;
+                OpenLeaderboard?.Invoke(data, OnLeaderboardOpen, OnLeaderboardClose);
+            }
         }
 
         public async void SimpleFetchScoped(
@@ -169,11 +201,14 @@ namespace GamePush.Core
         public async Task<RatingData> FetchScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
         {
             //Logger.Log("FETCH");
+            string withMeString = GetWithMeValue(showNearest, withMe.ToString());
+            showNearest = GetShowNearestValue(showNearest);
+
             GetLeaderboardVariantQuery input = new GetLeaderboardVariantQuery(idOrTag, variant, order, limit, showNearest, includeFields);
             AllRatingData data = await DataFetcher.GetRatingVariant(input, withMe: true);
             if (data == null) return null;
 
-            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMe.ToString(), limit);
+            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, limit);
 
             return data.ratingData;
         }
@@ -217,6 +252,7 @@ namespace GamePush.Core
             int showNearest = 5,
             string includeFields = "")
         {
+            showNearest = GetShowNearestValue(showNearest);
             GetLeaderboardVariantQuery input = new GetLeaderboardVariantQuery(idOrTag, variant, order, limit, showNearest, includeFields);
             PlayerRatingData data = await DataFetcher.GetPlayerRatingVariant(input);
 
@@ -286,10 +322,13 @@ namespace GamePush.Core
                 return players;
             }
 
-            //if (players.Any(p => (int)p["id"] == (int)myPlayer["id"] && (int)p["position"] == (int)myPlayer["position"]))
-            //{
-            //    return players.Select(p => (int)p["id"] == (int)myPlayer["id"] ? myPlayer : p).ToList();
-            //}
+            if (players.Any(
+                p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
+                Convert.ToInt32(p["position"]) == Convert.ToInt32(myPlayer["position"])
+                ))
+            {
+                return players.Select(p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) ? myPlayer : p).ToList();
+            }
 
             if (players.Any(p =>
                 Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
@@ -340,6 +379,7 @@ namespace GamePush.Core
             }
             else
             {
+                Debug.Log("With me: " + withMe);
                 switch (withMe)
                 {
                     case "first":
@@ -401,6 +441,33 @@ namespace GamePush.Core
             }
 
             return uniquePlayers.Count;
+        }
+
+        public static List<Dictionary<string, object>> MapDisplayFields(
+        List<Dictionary<string, object>> players,
+        List<string> displayFields = null,
+        List<string> includeFields = null,
+        List<string> orderBy = null)
+        {
+            var fieldsListFromQuery = (displayFields != null && displayFields.Count > 0)
+                    ? displayFields
+                    : orderBy.Concat(includeFields != null ? includeFields : new List<string>()).ToList();
+
+            var fieldsList = new List<string> { "id", "name", "avatar", "position" };
+            fieldsList.AddRange(fieldsListFromQuery);
+
+            return players.Select(player =>
+            {
+                var result = new Dictionary<string, object>();
+                foreach (var field in fieldsList)
+                {
+                    if (player.ContainsKey(field))
+                    {
+                        result[field] = player[field];
+                    }
+                }
+                return result;
+            }).ToList();
         }
 
 

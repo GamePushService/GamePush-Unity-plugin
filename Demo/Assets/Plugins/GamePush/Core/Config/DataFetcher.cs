@@ -202,7 +202,8 @@ namespace GamePush.Core
 
         #region LeaderboardFetches
 
-        public static async Task<AllRatingData> GetRating(GetLeaderboardQuery input, bool withMe)
+
+        public static async Task<AllRatingData> GetRating(object input, bool withMe)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -232,6 +233,8 @@ namespace GamePush.Core
                 Logger.Error(error);
                 return null;
             }
+
+            Debug.Log(playerResultObject.ToString());
 
             AllRatingData allRatingData = new AllRatingData();
             allRatingData.ratingData = resultObject.ToObject<RatingData>();
@@ -283,8 +286,6 @@ namespace GamePush.Core
             variables.Add("input", queryTuple.Item2);
             variables.Add("lang", GetLang());
             variables.Add("withMe", withMe);
-
-            
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),

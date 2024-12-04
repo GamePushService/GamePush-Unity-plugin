@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using GamePush.Data;
-using GamePush.Tools;
+using GamePush;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
@@ -12,33 +11,58 @@ namespace GamePush.UI
 {
     public class LeaderboardCell : MonoBehaviour
     {
-        [SerializeField]
-        private Image avatarImage;
-        [SerializeField]
-        TMP_Text playerName, playerFields;
-        [SerializeField]
-        GameObject firstPlace, secondPlace, thirdPlace, defaultPlace;
-        [SerializeField]
-        TMP_Text placeNum;
+        [Header("Cell custom elements")]
+        [Space(10)]
+        [SerializeField] private Image _cellBack;
+        [SerializeField] private Color _defaultBack;
+        [SerializeField] private Color _playerBack;
 
-        public async Task Init(PlayerRatingState playerState)
+        [Space(10)]
+        [SerializeField] private Image _numBack;
+        [SerializeField] private Color _defaultNum;
+        [SerializeField] private Color _playerNum;
+
+        [Space]
+        [Header("Cell info elements")]
+        [Space(10)]
+        [SerializeField] private Image _avatarImage;
+        [SerializeField] private TMP_Text _playerName, _playerFields;
+        [SerializeField] private TMP_Text _placeNum;
+
+        [Space]
+        [Header("Place tags objects")]
+        [Space(10)]
+        [SerializeField] private GameObject _defaultPlace;
+        [SerializeField] private GameObject _firstPlace;
+        [SerializeField] private GameObject _secondPlace;
+        [SerializeField] private GameObject _thirdPlace;
+
+
+        public async Task Init(PlayerRatingState playerState, bool isMyPlayer)
         {
-            playerName.text = playerState.name;
-            playerFields.text = playerState.fields;
+            _playerName.text = playerState.name;
+            _playerFields.text = playerState.fields;
 
+            SetCustomization(isMyPlayer);
             SetPlace(playerState.position);
 
-            bool hasAvatar = await DownloadImageAsync(playerState.avatar, avatarImage);
+            bool hasAvatar = await DownloadImageAsync(playerState.avatar, _avatarImage);
             if (!hasAvatar)
-                avatarImage.enabled = false;
+                _avatarImage.enabled = false;
+        }
+
+        private void SetCustomization(bool isPlayer)
+        {
+            _cellBack.color = isPlayer? _playerBack : _defaultBack;
+            _numBack.color = isPlayer ? _playerNum : _defaultNum;
         }
 
         private void DeactivePlaces()
         {
-            firstPlace.SetActive(false);
-            secondPlace.SetActive(false);
-            thirdPlace.SetActive(false);
-            defaultPlace.SetActive(false);
+            _firstPlace.SetActive(false);
+            _secondPlace.SetActive(false);
+            _thirdPlace.SetActive(false);
+            _defaultPlace.SetActive(false);
         }
 
         private void SetPlace(int position)
@@ -50,17 +74,17 @@ namespace GamePush.UI
             switch (position)
             {
                 case 1:
-                    firstPlace.SetActive(true);
+                    _firstPlace.SetActive(true);
                     return;
                 case 2:
-                    secondPlace.SetActive(true);
+                    _secondPlace.SetActive(true);
                     return;
                 case 3:
-                    thirdPlace.SetActive(true);
+                    _thirdPlace.SetActive(true);
                     return;
                 default:
-                    defaultPlace.SetActive(true);
-                    placeNum.text = position.ToString();
+                    _defaultPlace.SetActive(true);
+                    _placeNum.text = position.ToString();
                     return;
             }
         }

@@ -17,6 +17,36 @@ namespace GamePush
         first,
         last
     }
+
+    public class GetOpenLeaderboardQuery
+    {
+        public List<string> orderBy;
+        public int limit;
+        public List<string> includeFields;
+        public List<string> displayFields;
+        public string order; // "ASC" or "DESC"
+        public string withMe; // "none", "first", or "last"
+        public int showNearest;
+
+        public GetOpenLeaderboardQuery(
+            string orderBy = "score",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 0,
+            WithMe withMe = WithMe.none,
+            string includeFields = "",
+            string displayFields = "")
+        {
+            this.orderBy = new List<string>(orderBy.Trim().Split(","));
+            this.limit = limit;
+            this.includeFields = new List<string>(includeFields.Trim().Split(","));
+            this.displayFields = new List<string>(displayFields.Trim().Split(","));
+            this.order = order.ToString();
+            this.withMe = "None";//withMe.ToString();
+            this.showNearest = showNearest;
+        }
+    }
+
     public class GetLeaderboardQuery
     {
         public string[] orderBy;
@@ -39,7 +69,30 @@ namespace GamePush
             this.limit = limit;
             this.includeFields = includeFields.Trim().Split(",");
             this.order = order.ToString();
-            //this.withMe = "None";//withMe.ToString();
+            //this.withMe = withMe.ToString();
+            this.showNearest = showNearest;
+        }
+    }
+
+    public class GetPlayerRatingQuery
+    {
+        public string[] orderBy;
+        public int? limit;
+        public string[] includeFields;
+        public string order;
+        public int? showNearest;
+
+        public GetPlayerRatingQuery(
+            string orderBy = "score",
+            Order order = Order.DESC,
+            int limit = 10,
+            int showNearest = 0,
+            string includeFields = "")
+        {
+            this.orderBy = orderBy.Trim().Split(",");
+            this.limit = limit;
+            this.includeFields = includeFields.Trim().Split(",");
+            this.order = order.ToString();
             this.showNearest = showNearest;
         }
     }

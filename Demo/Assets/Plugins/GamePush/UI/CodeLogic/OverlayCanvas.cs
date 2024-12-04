@@ -29,7 +29,19 @@ namespace GamePush.UI
 
         private void OnEnable()
         {
-            
+            CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
+            //CoreSDK.game.OnPause += Close;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.leaderboard.OpenLeaderboard -= OpenLeaderboard;
+            //CoreSDK.game.OnPause -= Close;
+        }
+
+        private void OnApplicationFocus(bool focus)
+        {
+            if (!focus) Close();
         }
 
         public void Close()
