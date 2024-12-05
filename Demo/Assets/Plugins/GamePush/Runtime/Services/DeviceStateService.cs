@@ -8,14 +8,14 @@ namespace GamePush.Services
     //[ExecuteAlways]
     public class DeviceStateService : MonoBehaviour
     {
-        ScreenOrientation currentOrientation;
+        private ScreenOrientation _currentOrientation;
+        //private bool _isFullscreen;
 
         void SetPortrate(bool value)
         {
             if (CoreSDK.isInit)
                 CoreSDK.device.SetPortrate(value);
         }
-
         private async void Start()
         {
             await GP_Init.Ready;
@@ -24,13 +24,12 @@ namespace GamePush.Services
 
         private void Update()
         {
-            if(Screen.orientation != currentOrientation)
+            if(Screen.orientation != _currentOrientation)
             {
                 SetOrientation(Screen.orientation);
-                currentOrientation = Screen.orientation;
+                _currentOrientation = Screen.orientation;
                 CoreSDK.device.ChangeOrientation();
             }
-
         }
 
         void SetOrientation(ScreenOrientation orientation)
@@ -55,7 +54,6 @@ namespace GamePush.Services
 
             }
         }
-
 
         bool GetIsPortrate()
         {

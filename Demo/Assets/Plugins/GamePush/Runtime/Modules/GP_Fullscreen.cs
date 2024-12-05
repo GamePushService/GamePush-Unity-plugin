@@ -7,7 +7,7 @@ namespace GamePush
 {
     public class GP_Fullscreen : GP_Module
     {
-        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Custom);
+        private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Fullscreen);
 
         public static event UnityAction OnFullscreenOpen;
         public static event UnityAction OnFullscreenClose;
@@ -25,6 +25,20 @@ namespace GamePush
         private static extern void GP_Fullscreen_Toggle();
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.device.OnFullscreenChange += CallFullscreenChange;
+            CoreSDK.device.OnFullscreenOpen += CallFullscreenOpen;
+            CoreSDK.device.OnFullscreenClose += CallFullscreenClose;
+        }
+
+        private void OnDisable()
+        {
+            CoreSDK.device.OnFullscreenChange -= CallFullscreenChange;
+            CoreSDK.device.OnFullscreenOpen -= CallFullscreenOpen;
+            CoreSDK.device.OnFullscreenClose -= CallFullscreenClose;
+        }
+
         public static void Open(Action onFullscreenOpen = null)
         {
             _onFullscreenOpen = onFullscreenOpen;
@@ -32,10 +46,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Open();
 #else
-
-            ConsoleLog("OPEN");
-            OnFullscreenOpen?.Invoke();
-            _onFullscreenOpen?.Invoke();
+            CoreSDK.device.OpenFullscreen();
 #endif
         }
 
@@ -46,10 +57,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Close();
 #else
-
-            ConsoleLog("CLOSE");
-            OnFullscreenClose?.Invoke();
-            _onFullscreenClose?.Invoke();
+            CoreSDK.device.CloseFullscreen();
 #endif
         }
 
@@ -58,11 +66,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Toggle();
 #else
-
-            ConsoleLog("TOGGLE");
+            CoreSDK.device.ToggleFullscreen();
 #endif
         }
-
 
         private void CallFullscreenOpen() { _onFullscreenOpen?.Invoke(); OnFullscreenOpen?.Invoke(); }
         private void CallFullscreenClose() { _onFullscreenClose?.Invoke(); OnFullscreenClose?.Invoke(); }

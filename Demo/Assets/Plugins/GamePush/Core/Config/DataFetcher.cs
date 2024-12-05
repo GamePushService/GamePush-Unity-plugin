@@ -109,10 +109,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //Debug.Log(resultObject["platformConfig"].ToString());
-
-            //Debug.Log(resultObject["platformConfig"]["authConfig"].ToString());
-            //Debug.Log(resultObject["platformConfig"]["paymentsConfig"].ToString());
+            Debug.Log(resultObject.ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -159,8 +156,8 @@ namespace GamePush.Core
         {
             JObject resultObject = await SendQueryRequest(_syncPlayerQueryName, OperationType.Mutation, input, withToken);
 
-            Debug.Log("Sync result");
-            Debug.Log(resultObject.ToString());
+            //Debug.Log("Sync result");
+            //Debug.Log(resultObject.ToString());
 
             return resultObject;
         }
@@ -278,8 +275,14 @@ namespace GamePush.Core
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
-   
-            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            object filterInput;
+            if (int.TryParse(input.idOrTag, out int id))
+                filterInput = new GetLeaderboardVariantQueryID(id);
+            else
+                filterInput = new GetLeaderboardVariantQueryTAG(input.idOrTag);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(filterInput);
 
             Dictionary<string, object> variables = new Dictionary<string, object>();
 

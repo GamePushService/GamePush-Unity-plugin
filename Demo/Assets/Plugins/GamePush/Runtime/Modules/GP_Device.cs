@@ -31,7 +31,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "true";
 #else
-            return CoreSDK.device.isMobile;
+            return CoreSDK.device._isMobile;
 #endif
         }
         public static bool IsDesktop()
@@ -39,7 +39,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "false";
 #else
-            return !CoreSDK.device.isMobile;
+            return !CoreSDK.device._isMobile;
 #endif
         }
 
@@ -48,7 +48,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
-            return CoreSDK.device.isPortrait;
+            return CoreSDK.device._isPortrait;
 #endif
         }
     }
