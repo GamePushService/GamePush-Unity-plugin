@@ -51,7 +51,11 @@ namespace GamePush.Core
             action?.Invoke(tag, gpData);
         }
 
-        private List<string> FromString(string data) => new List<string>(data.Trim().Split(","));
+        private List<string> FromString(string data)
+        {
+            if (data == null || data.Trim() == "") return null;
+            return new List<string>(data.Trim().Split(","));
+        }
 
         public async void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
@@ -296,6 +300,9 @@ namespace GamePush.Core
             result.abovePlayers = new List<Dictionary<string, object>>(playerResult?.abovePlayers ?? new List<Dictionary<string, object>>());
             result.belowPlayers = new List<Dictionary<string, object>>(playerResult?.belowPlayers ?? new List<Dictionary<string, object>>());
             result.player = playerResult?.player;
+
+            Debug.Log(result.abovePlayers.Count);
+            Debug.Log(result.belowPlayers.Count);
 
             result.players = PlayersMixMe(
                 result.players,
