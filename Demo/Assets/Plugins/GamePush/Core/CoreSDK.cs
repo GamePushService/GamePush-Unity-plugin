@@ -31,6 +31,7 @@ namespace GamePush
         public static DeviceModule device;
         public static PaymentsModule payments;
         public static LeaderboardModule leaderboard;
+        public static SystemModule system;
 
         #region ServerTime
 
@@ -101,6 +102,7 @@ namespace GamePush
             platform = new PlatformModule();
             ads = new AdsModule();
             device = new DeviceModule();
+            system = new SystemModule();
 
             payments = new PaymentsModule();
             leaderboard = new LeaderboardModule();

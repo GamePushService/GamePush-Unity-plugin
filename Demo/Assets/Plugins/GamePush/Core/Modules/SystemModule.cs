@@ -1,21 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GamePush.Data;
 
 namespace GamePush.Core
 {
-    public class SystemModule : MonoBehaviour
+    public class SystemModule
     {
-        // Start is called before the first frame update
-        void Start()
+        private bool _isAllowedOrigin;
+        private bool _isDev;
+
+        public bool IsAllowedOrigin() => _isAllowedOrigin;
+        public bool IsDev() => _isDev;
+
+        public SystemModule()
         {
-        
+
         }
 
-        // Update is called once per frame
-        void Update()
+        public void Init(AllConfigData data)
         {
-        
+            _isAllowedOrigin = data.isAllowedOrigin;
+            _isDev = data.isDev;
         }
     }
 }

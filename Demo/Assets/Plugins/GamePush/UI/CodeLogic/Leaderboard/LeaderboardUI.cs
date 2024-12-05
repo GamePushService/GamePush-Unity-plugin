@@ -78,8 +78,10 @@ namespace GamePush.UI
 
                 if (!isPlayer && lastPlace + 1 != playerRatingState.position)
                 {
-                    Instantiate(_divider, _cellHolder);
+                    if(lastPlace != playerRatingState.position)
+                        Instantiate(_divider, _cellHolder);
                 }
+
                 lastPlace = playerRatingState.position;
 
                 LeaderboardCell leaderboardCell = Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>();

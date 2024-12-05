@@ -18,9 +18,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsDev() == "true";
 #else
-            bool isVal = GP_Settings.instance.GetFromPlatformSettings().IsDev;
-            ConsoleLog("IS DEV: " + isVal);
-            return isVal;
+            return CoreSDK.system.IsDev();
 #endif
         }
 
@@ -29,9 +27,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsAllowedOrigin() == "true";
 #else
-            bool isVal = GP_Settings.instance.GetFromPlatformSettings().IsAllowedOrigin;
-            ConsoleLog("IS ALLOWED ORIGIN: " + isVal);
-            return isVal;
+            return CoreSDK.system.IsAllowedOrigin();
 #endif
         }
 
