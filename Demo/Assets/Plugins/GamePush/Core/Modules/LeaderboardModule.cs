@@ -361,15 +361,31 @@ namespace GamePush.Core
                 }
             }
 
-            if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
+            switch (withMe)
             {
-                players = abovePlayers.Concat(players).ToList();
+                case "first":
+                    if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
+                    {
+                        players = players.Concat(belowPlayers).ToList();
+                    }
+                    break;
+                case "last":
+                    if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
+                    {
+                        players = abovePlayers.Concat(players).ToList();
+                    }
+                    break;
             }
 
-            if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
-            {
-                players = players.Concat(belowPlayers).ToList();
-            }
+            //if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
+            //{
+            //    players = abovePlayers.Concat(players).ToList();
+            //}
+
+            //if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
+            //{
+            //    players = players.Concat(belowPlayers).ToList();
+            //}
 
             if (myIndex < topLength)
             {
