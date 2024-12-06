@@ -20,7 +20,7 @@ namespace GamePush.Core
         public event Action<string, int> OnFetchPlayerRatingSuccess;
         public event Action OnFetchPlayerRatingError;
 
-        public event Action<RatingData, Action, Action> OpenLeaderboard;
+        public event Action<RatingData, WithMe, Action, Action> OpenLeaderboard;
 
         public event Action OnLeaderboardOpen;
         public event Action OnLeaderboardClose;
@@ -75,7 +75,7 @@ namespace GamePush.Core
                         FromString(orderBy));
                 //Debug.Log(playersList.ToString());
                 data.players = playersList;
-                OpenLeaderboard?.Invoke(data, OnLeaderboardOpen, OnLeaderboardClose);
+                OpenLeaderboard?.Invoke(data, withMe, OnLeaderboardOpen, OnLeaderboardClose);
             }
         }
 
@@ -168,10 +168,10 @@ namespace GamePush.Core
                     MapDisplayFields(playersFiltered,
                         FromString(displayFields),
                         FromString(includeFields),
-                        FromString(""));
+                        FromString(includeFields));
                 //Debug.Log(playersList.ToString());
                 data.players = playersList;
-                OpenLeaderboard?.Invoke(data, OnLeaderboardOpen, OnLeaderboardClose);
+                OpenLeaderboard?.Invoke(data, withMe, OnLeaderboardOpen, OnLeaderboardClose);
             }
         }
 
@@ -361,31 +361,31 @@ namespace GamePush.Core
                 }
             }
 
-            switch (withMe)
+            //switch (withMe)
+            //{
+            //    case "first":
+            //        if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
+            //        {
+            //            players = players.Concat(belowPlayers).ToList();
+            //        }
+            //        break;
+            //    case "last":
+            //        if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
+            //        {
+            //            players = abovePlayers.Concat(players).ToList();
+            //        }
+            //        break;
+            //}
+
+            if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
             {
-                case "first":
-                    if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
-                    {
-                        players = players.Concat(belowPlayers).ToList();
-                    }
-                    break;
-                case "last":
-                    if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
-                    {
-                        players = abovePlayers.Concat(players).ToList();
-                    }
-                    break;
+                players = abovePlayers.Concat(players).ToList();
             }
 
-            //if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
-            //{
-            //    players = abovePlayers.Concat(players).ToList();
-            //}
-
-            //if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
-            //{
-            //    players = players.Concat(belowPlayers).ToList();
-            //}
+            if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
+            {
+                players = players.Concat(belowPlayers).ToList();
+            }
 
             if (myIndex < topLength)
             {
@@ -472,7 +472,8 @@ namespace GamePush.Core
         List<string> includeFields = null,
         List<string> orderBy = null)
         {
-            var fieldsListFromQuery = (displayFields != null && displayFields.Count > 0)
+            var fieldsListFromQuery =
+                (displayFields != null && displayFields.Count > 0)
                     ? displayFields
                     : orderBy.Concat(includeFields != null ? includeFields : new List<string>()).ToList();
 

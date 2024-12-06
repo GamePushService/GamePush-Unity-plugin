@@ -97,11 +97,33 @@ namespace GamePush
         }
     }
 
+    public class GetLeaderboardVariantQueryID : GetLeaderboardVariantQuery
+    {
+        public int id;
+
+        public GetLeaderboardVariantQueryID(int id)
+        {
+            this.id = id;
+        }
+    }
+
+    public class GetLeaderboardVariantQueryTAG : GetLeaderboardVariantQuery
+    {
+        public string tag;
+
+        public GetLeaderboardVariantQueryTAG(string tag)
+        {
+            this.tag = tag;
+        }
+    }
+
     public class GetLeaderboardVariantQuery
     {
         public string variant;
-        public int? id;
-        public string tag;
+        //public int? id;
+        //public string tag;
+        [NonSerialized]
+        public string idOrTag;
         public int? limit;
         public string[] includeFields;
         //public string[] displayFields;
@@ -118,10 +140,12 @@ namespace GamePush
             string includeFields = ""
          )
         {
-            if (int.TryParse(idOrTag, out int id))
-                this.id = id;
-            else
-                this.tag = idOrTag;
+            //if (int.TryParse(idOrTag, out int id))
+            //    this.id = id;
+            //else
+            //    this.tag = idOrTag;
+
+            this.idOrTag = idOrTag;
 
             this.variant = variant;
             this.limit = limit;
@@ -130,6 +154,8 @@ namespace GamePush
             this.showNearest = showNearest;
         }
     }
+
+
 
     
     public class PublishRecordQuery
