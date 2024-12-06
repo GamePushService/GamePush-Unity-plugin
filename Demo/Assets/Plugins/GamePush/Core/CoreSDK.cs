@@ -32,6 +32,7 @@ namespace GamePush
         public static PaymentsModule payments;
         public static LeaderboardModule leaderboard;
         public static SystemModule system;
+        public static AppModule app;
 
         #region ServerTime
 
@@ -103,6 +104,7 @@ namespace GamePush
             ads = new AdsModule();
             device = new DeviceModule();
             system = new SystemModule();
+            app = new AppModule();
 
             payments = new PaymentsModule();
             leaderboard = new LeaderboardModule();
@@ -155,6 +157,7 @@ namespace GamePush
             platform.Init(configData.platformConfig);
             ads.Init(configData.project.ads, configData.platformConfig);
             payments.Init(configData.products, configData.platformConfig);
+            app.Init(configData.project, configData.platformConfig);
         }
 
         public static AllConfigData GetConfig()
