@@ -102,8 +102,6 @@ namespace GamePush.UI
             }
         }
 
-
-
         //public void ShowPlayerCell(bool isShow)
         //{
         //    _playerBoardCell.gameObject.SetActive(isShow);

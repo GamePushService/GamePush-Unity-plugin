@@ -752,6 +752,7 @@ MonoBehaviour:
   _scrollRect: {fileID: 2786511098300658108}
   _playerShowCellTop: {fileID: 6860073814017300947}
   _playerShowCellBot: {fileID: 7899087910423218707}
+  _playerBoardCell: {fileID: 0}
 --- !u!1 &7316059003975694222
 GameObject:
   m_ObjectHideFlags: 0
@@ -1530,7 +1531,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 200515680424201992, guid: aec35527dc7db46f5aef8f4b87567aa1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4066065696245534903, guid: aec35527dc7db46f5aef8f4b87567aa1, type: 3}
       propertyPath: m_Pivot.x
@@ -1663,7 +1664,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 200515680424201992, guid: aec35527dc7db46f5aef8f4b87567aa1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4066065696245534903, guid: aec35527dc7db46f5aef8f4b87567aa1, type: 3}
       propertyPath: m_Pivot.x

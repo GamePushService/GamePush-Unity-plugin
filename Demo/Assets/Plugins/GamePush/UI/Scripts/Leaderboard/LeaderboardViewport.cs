@@ -33,8 +33,6 @@ namespace GamePush.UI
             switch (withMe)
             {
                 case WithMe.none:
-                    _playerShowCellTop.gameObject.SetActive(false);
-                    _playerShowCellBot.gameObject.SetActive(false);
                     break;
                 case WithMe.first:
                     _playerShowCell = _playerShowCellTop;
@@ -43,9 +41,6 @@ namespace GamePush.UI
                     _playerShowCell = _playerShowCellBot;
                     break;
             }
-
-            _playerShowCellTop.gameObject.SetActive(false);
-            _playerShowCellBot.gameObject.SetActive(false);
 
             isInit = true;
 
