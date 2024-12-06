@@ -159,6 +159,7 @@ namespace GamePush.Core
         public async void OpenScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
             RatingData data = await FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
+            List<string> fields = data.fields.Select(field => field.key).ToList();
             if (data != null)
             {
                 //TODO Remove myPlayer from players
@@ -168,7 +169,7 @@ namespace GamePush.Core
                     MapDisplayFields(playersFiltered,
                         FromString(displayFields),
                         FromString(includeFields),
-                        FromString(includeFields));
+                        fields);
                 //Debug.Log(playersList.ToString());
                 data.players = playersList;
                 OpenLeaderboard?.Invoke(data, withMe, OnLeaderboardOpen, OnLeaderboardClose);
