@@ -37,9 +37,14 @@ namespace GamePush.UI
         [SerializeField] private GameObject _secondPlace;
         [SerializeField] private GameObject _thirdPlace;
 
+        private LeaderboardUI _leaderboard;
+        private bool _isPlayerCell;
+        public bool IsPlayerCell() => _isPlayerCell;
 
-        public async Task Init(PlayerRatingState playerState, bool isMyPlayer)
+        public async Task Init(LeaderboardUI leaderboard, PlayerRatingState playerState, bool isMyPlayer)
         {
+            _leaderboard = leaderboard;
+
             _playerName.text = playerState.name;
             _playerFields.text = playerState.fields;
 
@@ -51,10 +56,19 @@ namespace GamePush.UI
                 _avatarImage.enabled = false;
         }
 
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            print(collision.name);
+        }
+
+
         private void SetCustomization(bool isPlayer)
         {
             _cellBack.color = isPlayer? _playerBack : _defaultBack;
             _numBack.color = isPlayer ? _playerNum : _defaultNum;
+
+            //print("My player: " + isPlayer);
+            _isPlayerCell = isPlayer;
         }
 
         private void DeactivePlaces()

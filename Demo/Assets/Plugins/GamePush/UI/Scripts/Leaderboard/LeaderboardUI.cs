@@ -23,6 +23,8 @@ namespace GamePush.UI
         [SerializeField]
         private LeaderboardCell _boardCell;
         [SerializeField]
+        private LeaderboardViewport _viewport;
+        [SerializeField]
         private GameObject _botBar;
         [SerializeField]
         private GameObject _divider;
@@ -30,13 +32,15 @@ namespace GamePush.UI
         private RectTransform _cellHolder;
 
         private RatingData _ratingData;
+        private WithMe _withMe;
 
         private event Action _OnLeaderboardOpen;
         private event Action _OnLeaderboardClose;
 
-        public async void Init(RatingData ratingData, Action onLeaderboardOpen, Action onLeaderboardClose)
+        public async void Init(RatingData ratingData, WithMe withMe, Action onLeaderboardOpen, Action onLeaderboardClose)
         {
             _ratingData = ratingData;
+            _withMe = withMe;
             _OnLeaderboardOpen = onLeaderboardOpen;
             _OnLeaderboardClose = onLeaderboardClose;
 
@@ -86,10 +90,24 @@ namespace GamePush.UI
 
                 LeaderboardCell leaderboardCell = Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>();
 
-                await leaderboardCell.Init(playerRatingState, isPlayer);
+                if (isPlayer)
+                {
+                    LeaderboardCell playerShowCell = _viewport.Init(_withMe, leaderboardCell);
+                    if(playerShowCell)
+                        await playerShowCell.Init(this, playerRatingState, isPlayer);
+                }
+
+                await leaderboardCell.Init(this, playerRatingState, isPlayer);
                 
             }
         }
+
+
+
+        //public void ShowPlayerCell(bool isShow)
+        //{
+        //    _playerBoardCell.gameObject.SetActive(isShow);
+        //}
 
         //private bool IsNeedDivider()
         //{

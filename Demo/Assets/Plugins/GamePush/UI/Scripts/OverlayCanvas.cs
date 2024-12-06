@@ -53,12 +53,12 @@ namespace GamePush.UI
             }
         }
 
-        public void OpenLeaderboard(RatingData data, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
+        public void OpenLeaderboard(RatingData data, WithMe withMe, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
             overlayHolder.SetActive(true);
 
             LeaderboardUI leaderboardUI = Instantiate(leaderboard, overlayHolder.transform).GetComponent<LeaderboardUI>();
-            leaderboardUI.Init(data, onLeaderboardOpen, onLeaderboardClose);
+            leaderboardUI.Init(data, withMe, onLeaderboardOpen, onLeaderboardClose);
 
         }
     }
