@@ -73,7 +73,7 @@ namespace GamePush.UI
                 if (_inTop)
                 {
                     _playerShowCell = IsElementAbove() ? _playerShowCellTop : _playerShowCellBot;
-                    print(_playerShowCell.name);
+                    //print(_playerShowCell.name);
                 }
                 //Debug.Log("Element is not visible.");
                 _playerShowCell.gameObject.SetActive(true);
