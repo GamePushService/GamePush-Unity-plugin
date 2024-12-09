@@ -25,7 +25,9 @@ namespace GamePush.UI
         [Space]
         [Header("Cell info elements")]
         [Space(10)]
+        [SerializeField] private GameObject _avatarHolder;
         [SerializeField] private Image _avatarImage;
+        [SerializeField] private GameObject _textHolder;
         [SerializeField] private TMP_Text _playerName, _playerFields;
         [SerializeField] private TMP_Text _placeNum;
 
@@ -54,6 +56,13 @@ namespace GamePush.UI
             bool hasAvatar = await DownloadImageAsync(playerState.avatar, _avatarImage);
             if (!hasAvatar)
                 _avatarImage.enabled = false;
+        }
+
+        public void InitEmpty()
+        {
+            _avatarHolder.SetActive(false);
+            _textHolder.SetActive(false);
+            _defaultPlace.SetActive(false);
         }
 
         private void OnTriggerEnter2D(Collider2D collision)

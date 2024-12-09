@@ -42,7 +42,7 @@ namespace GamePush
             this.includeFields = new List<string>(includeFields.Trim().Split(","));
             this.displayFields = new List<string>(displayFields.Trim().Split(","));
             this.order = order.ToString();
-            this.withMe = "None";//withMe.ToString();
+            this.withMe = withMe.ToString();
             this.showNearest = showNearest;
         }
     }

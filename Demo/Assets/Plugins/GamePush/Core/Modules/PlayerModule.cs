@@ -457,7 +457,7 @@ namespace GamePush.Core
         private void SetPlayerState(JObject playerData)
         {
             JObject stateObject = (JObject)playerData["state"];
-            Logger.Log("Set player state", stateObject);
+            //Logger.Log("Set player state", stateObject);
             _playerState = stateObject.ToObject<Dictionary<string, object>>();
         }
 

@@ -20,7 +20,7 @@ namespace GamePush.Core
         public event Action<string, int> OnFetchPlayerRatingSuccess;
         public event Action OnFetchPlayerRatingError;
 
-        public event Action<RatingData, WithMe, Action, Action> OpenLeaderboard;
+        public event Action<RatingData, GetOpenLeaderboardQuery, Action, Action> OpenLeaderboard;
 
         public event Action OnLeaderboardOpen;
         public event Action OnLeaderboardClose;
@@ -75,7 +75,7 @@ namespace GamePush.Core
                         FromString(orderBy));
                 //Debug.Log(playersList.ToString());
                 data.players = playersList;
-                OpenLeaderboard?.Invoke(data, withMe, OnLeaderboardOpen, OnLeaderboardClose);
+                OpenLeaderboard?.Invoke(data, query, OnLeaderboardOpen, OnLeaderboardClose);
             }
         }
 
@@ -158,8 +158,11 @@ namespace GamePush.Core
 
         public async void OpenScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
+            
             RatingData data = await FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
             List<string> fields = data.fields.Select(field => field.key).ToList();
+            string orderBy = string.Join(", ", fields);
+            Debug.Log(orderBy);
             if (data != null)
             {
                 //TODO Remove myPlayer from players
@@ -172,7 +175,9 @@ namespace GamePush.Core
                         fields);
                 //Debug.Log(playersList.ToString());
                 data.players = playersList;
-                OpenLeaderboard?.Invoke(data, withMe, OnLeaderboardOpen, OnLeaderboardClose);
+
+                GetOpenLeaderboardQuery query = new GetOpenLeaderboardQuery(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
+                OpenLeaderboard?.Invoke(data, query, OnLeaderboardOpen, OnLeaderboardClose);
             }
         }
 
@@ -302,8 +307,6 @@ namespace GamePush.Core
             result.belowPlayers = new List<Dictionary<string, object>>(playerResult?.belowPlayers ?? new List<Dictionary<string, object>>());
             result.player = playerResult?.player;
 
-            Debug.Log(result.abovePlayers.Count);
-            Debug.Log(result.belowPlayers.Count);
 
             result.players = PlayersMixMe(
                 result.players,

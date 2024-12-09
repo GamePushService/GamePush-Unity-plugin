@@ -32,15 +32,15 @@ namespace GamePush.UI
         private RectTransform _cellHolder;
 
         private RatingData _ratingData;
-        private WithMe _withMe;
+        private GetOpenLeaderboardQuery _query;
 
         private event Action _OnLeaderboardOpen;
         private event Action _OnLeaderboardClose;
 
-        public async void Init(RatingData ratingData, WithMe withMe, Action onLeaderboardOpen, Action onLeaderboardClose)
+        public async void Init(RatingData ratingData, GetOpenLeaderboardQuery query, Action onLeaderboardOpen, Action onLeaderboardClose)
         {
             _ratingData = ratingData;
-            _withMe = withMe;
+            _query = query;
             _OnLeaderboardOpen = onLeaderboardOpen;
             _OnLeaderboardClose = onLeaderboardClose;
 
@@ -50,6 +50,7 @@ namespace GamePush.UI
             await SetUpCells();
             SetBotBar();
         }
+
 
         private void SetUpBoard()
         {
@@ -69,10 +70,20 @@ namespace GamePush.UI
         {
             List<Dictionary<string, object>> places = _ratingData.players;
 
-            SetCellHolder(places.Count);
+            int holderCells = places.Count;
+            bool inTop = CheckInTop();
+            Enum.TryParse(_query.withMe, out WithMe withMe);
 
             int playerID = CoreSDK.player.GetID();
             int lastPlace = 0;
+
+            if(withMe == WithMe.first && !inTop)
+            {
+                Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>().InitEmpty();
+                holderCells++;
+            }
+
+            SetCellHolder(holderCells);
 
             foreach (Dictionary<string, object> place in places)
             {
@@ -92,14 +103,22 @@ namespace GamePush.UI
 
                 if (isPlayer)
                 {
-                    LeaderboardCell playerShowCell = _viewport.Init(_withMe, leaderboardCell);
+                    //Enum.TryParse(_query.withMe, out WithMe withMe);
+                    LeaderboardCell playerShowCell = _viewport.Init(withMe, inTop, leaderboardCell);
                     if(playerShowCell)
-                        await playerShowCell.Init(this, playerRatingState, isPlayer);
+                        _viewport.InitPlayerCells(this, playerRatingState, isPlayer);
                 }
 
                 await leaderboardCell.Init(this, playerRatingState, isPlayer);
                 
             }
+        }
+
+        private bool CheckInTop()
+        {
+            var playerPosition = _ratingData.player["position"];
+
+            return Convert.ToInt32(playerPosition) <= _query.limit;
         }
 
         //public void ShowPlayerCell(bool isShow)
