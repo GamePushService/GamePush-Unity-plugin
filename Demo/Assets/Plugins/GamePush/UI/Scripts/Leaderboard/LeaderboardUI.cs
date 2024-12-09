@@ -72,12 +72,13 @@ namespace GamePush.UI
 
             int holderCells = places.Count;
             bool inTop = CheckInTop();
+
             Enum.TryParse(_query.withMe, out WithMe withMe);
 
             int playerID = CoreSDK.player.GetID();
             int lastPlace = 0;
 
-            //if(withMe == WithMe.first && !inTop)
+            //if (withMe == WithMe.first && inTop)
             //{
             //    Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>().InitEmpty();
             //    holderCells++;
@@ -115,9 +116,15 @@ namespace GamePush.UI
 
         private bool CheckInTop()
         {
-            var playerPosition = _ratingData.player["position"];
+            foreach(Dictionary<string, object> gamer in _ratingData.players)
+            {
+                if (gamer["id"] == _ratingData.player["id"])
+                    return true;
+            }
+            return false;
 
-            return Convert.ToInt32(playerPosition) <= _query.limit;
+            //var playerPosition = _ratingData.player["position"];
+            //return Convert.ToInt32(playerPosition) <= _query.limit;
         }
 
         //public void ShowPlayerCell(bool isShow)

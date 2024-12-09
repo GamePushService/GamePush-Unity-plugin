@@ -78,8 +78,9 @@ namespace GamePush.UI
 
         private void ActiveCell()
         {
-            if (!_inTop)
+           if (_inTop)
                 _playerShowCell = IsElementAbove() ? _playerShowCellTop : _playerShowCellBot;
+           
 
 
             _playerShowCell.gameObject.SetActive(true);
