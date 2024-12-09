@@ -158,10 +158,10 @@ namespace GamePush.Core
 
         public async void OpenScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", string displayFields = "", WithMe withMe = WithMe.first)
         {
-            
+            //Debug.Log(variant);
             RatingData data = await FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
             List<string> fields = data.fields.Select(field => field.key).ToList();
-            string orderBy = string.Join(", ", fields);
+            string orderBy = string.Join(",", fields);
             Debug.Log(orderBy);
             if (data != null)
             {
@@ -210,7 +210,7 @@ namespace GamePush.Core
 
         public async Task<RatingData> FetchScoped(string idOrTag = "", string variant = "some_variant", Order order = Order.DESC, int limit = 10, int showNearest = 5, string includeFields = "", WithMe withMe = WithMe.none)
         {
-            //Logger.Log("FETCH");
+            //Logger.Log(variant);
             string withMeString = GetWithMeValue(showNearest, withMe.ToString());
             showNearest = GetShowNearestValue(showNearest);
 

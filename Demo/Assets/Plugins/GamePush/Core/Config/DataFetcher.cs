@@ -278,9 +278,9 @@ namespace GamePush.Core
 
             object filterInput;
             if (int.TryParse(input.idOrTag, out int id))
-                filterInput = new GetLeaderboardVariantQueryID(id);
+                filterInput = new GetLeaderboardVariantQueryID(id, input);
             else
-                filterInput = new GetLeaderboardVariantQueryTAG(input.idOrTag);
+                filterInput = new GetLeaderboardVariantQueryTAG(input.idOrTag, input);
 
             Tuple<string, object> queryTuple = Hash.SingQuery(filterInput);
 
@@ -323,8 +323,14 @@ namespace GamePush.Core
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
-          
-            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            object filterInput;
+            if (int.TryParse(input.idOrTag, out int id))
+                filterInput = new GetLeaderboardVariantQueryID(id, input);
+            else
+                filterInput = new GetLeaderboardVariantQueryTAG(input.idOrTag, input);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(filterInput);
 
             Dictionary<string, object> variables = new Dictionary<string, object>();
 

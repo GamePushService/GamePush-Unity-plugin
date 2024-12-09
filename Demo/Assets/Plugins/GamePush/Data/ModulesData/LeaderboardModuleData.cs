@@ -101,9 +101,15 @@ namespace GamePush
     {
         public int id;
 
-        public GetLeaderboardVariantQueryID(int id)
+        public GetLeaderboardVariantQueryID(int id, GetLeaderboardVariantQuery query)
         {
             this.id = id;
+
+            this.variant = query.variant;
+            this.limit = query.limit;
+            this.includeFields = query.includeFields;
+            this.order = query.order;
+            this.showNearest = query.showNearest;
         }
     }
 
@@ -111,9 +117,15 @@ namespace GamePush
     {
         public string tag;
 
-        public GetLeaderboardVariantQueryTAG(string tag)
+        public GetLeaderboardVariantQueryTAG(string tag, GetLeaderboardVariantQuery query)
         {
             this.tag = tag;
+
+            this.variant = query.variant;
+            this.limit = query.limit;
+            this.includeFields = query.includeFields;
+            this.order = query.order;
+            this.showNearest = query.showNearest;
         }
     }
 
@@ -140,6 +152,7 @@ namespace GamePush
             string includeFields = ""
          )
         {
+            //Debug.Log(variant);
             //if (int.TryParse(idOrTag, out int id))
             //    this.id = id;
             //else
