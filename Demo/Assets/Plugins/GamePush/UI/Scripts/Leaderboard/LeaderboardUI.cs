@@ -91,7 +91,7 @@ namespace GamePush.UI
 
                 bool isPlayer = playerID == playerRatingState.id;
 
-                if (!isPlayer && lastPlace + 1 != playerRatingState.position)
+                if (!isPlayer && _query.showNearest > 0 && lastPlace + 1 != playerRatingState.position)
                 {
                     if(lastPlace != playerRatingState.position)
                         Instantiate(_divider, _cellHolder);
@@ -103,7 +103,6 @@ namespace GamePush.UI
 
                 if (isPlayer)
                 {
-                    //Enum.TryParse(_query.withMe, out WithMe withMe);
                     LeaderboardCell playerShowCell = _viewport.Init(withMe, inTop, leaderboardCell);
                     if(playerShowCell)
                         _viewport.InitPlayerCells(this, playerRatingState, isPlayer);
@@ -144,7 +143,7 @@ namespace GamePush.UI
             Rect holderRect = _cellHolder.rect;
 
             // Cell width * Cell count + BotBar height
-            holderRect.height = 150 * cells + 300;
+            holderRect.height = 150 * cells + 350;
             _cellHolder.sizeDelta = new Vector2(holderRect.width, holderRect.height);
         }
 

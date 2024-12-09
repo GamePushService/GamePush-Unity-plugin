@@ -73,7 +73,13 @@ namespace GamePush.Core
                         FromString(displayFields),
                         FromString(includeFields),
                         FromString(orderBy));
-                //Debug.Log(playersList.ToString());
+
+                //foreach (Dictionary<string, object> player in playersList)
+                //{
+                //    Debug.Log(player["name"] + "|" +player["id"]);
+                //}
+                
+                
                 data.players = playersList;
                 OpenLeaderboard?.Invoke(data, query, OnLeaderboardOpen, OnLeaderboardClose);
             }
