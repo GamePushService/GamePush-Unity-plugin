@@ -77,11 +77,11 @@ namespace GamePush.UI
             int playerID = CoreSDK.player.GetID();
             int lastPlace = 0;
 
-            if(withMe == WithMe.first && !inTop)
-            {
-                Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>().InitEmpty();
-                holderCells++;
-            }
+            //if(withMe == WithMe.first && !inTop)
+            //{
+            //    Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>().InitEmpty();
+            //    holderCells++;
+            //}
 
             SetCellHolder(holderCells);
 

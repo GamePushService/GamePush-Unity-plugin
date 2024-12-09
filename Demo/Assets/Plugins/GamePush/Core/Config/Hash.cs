@@ -29,7 +29,7 @@ namespace GamePush.Core
             if (query != null)
             {
                 string jsonQuery = JsonConvert.SerializeObject(query);
-                Debug.Log(jsonQuery);
+                //Debug.Log(jsonQuery);
                 sortedQuery = SortKeys(jsonQuery);
             }
             

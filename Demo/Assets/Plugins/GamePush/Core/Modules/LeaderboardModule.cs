@@ -334,10 +334,11 @@ namespace GamePush.Core
             List<Dictionary<string, object>> belowPlayers = null,
             int? showNearest = null)
         {
-            if (myPlayer == null || string.IsNullOrEmpty(withMe) || withMe == "none")
+            if (myPlayer == null || string.IsNullOrEmpty(withMe) )// || withMe == "none")
             {
                 return players;
             }
+
 
             if (players.Any(
                 p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
@@ -371,22 +372,6 @@ namespace GamePush.Core
                 }
             }
 
-            //switch (withMe)
-            //{
-            //    case "first":
-            //        if (belowPlayers != null && belowPlayers.Count > 0 && myIndex > limit - 1)
-            //        {
-            //            players = players.Concat(belowPlayers).ToList();
-            //        }
-            //        break;
-            //    case "last":
-            //        if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
-            //        {
-            //            players = abovePlayers.Concat(players).ToList();
-            //        }
-            //        break;
-            //}
-
             if (abovePlayers != null && abovePlayers.Count > 0 && myIndex > limit - 1)
             {
                 players = abovePlayers.Concat(players).ToList();
@@ -413,6 +398,7 @@ namespace GamePush.Core
             else
             {
                 Debug.Log("With me: " + withMe);
+                Debug.Log("Me: " + myPlayer["id"]); 
                 switch (withMe)
                 {
                     case "first":
@@ -429,10 +415,12 @@ namespace GamePush.Core
                 .Select(group => group.First())
                 .ToList();
 
-            if (showNearest.HasValue)
+            if (showNearest.HasValue && showNearest > 0)
             {
                 players = players.OrderBy(p => Convert.ToInt32(p["position"])).ToList();
             }
+
+            Debug.Log("First: " + players[0]["name"] + players[0]["id"]);
 
             return players;
         }

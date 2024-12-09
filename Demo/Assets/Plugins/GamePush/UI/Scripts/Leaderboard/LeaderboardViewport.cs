@@ -19,6 +19,7 @@ namespace GamePush.UI
 
         private bool _isInit;
         private bool _inTop;
+        private WithMe _withMe;
 
         void Start()
         {
@@ -30,8 +31,11 @@ namespace GamePush.UI
 
         public LeaderboardCell Init(WithMe withMe, bool inTop, LeaderboardCell cell)
         {
+            //if (inTop) return null;
+
             _playerBoardCell = cell;
             _inTop = inTop;
+            _withMe = withMe;
 
             switch (withMe)
             {
@@ -59,25 +63,26 @@ namespace GamePush.UI
 
         private void OnScrollChanged(Vector2 position)
         {
-            if (!_isInit) return;
-            if (_playerShowCell == null) return;
+            if(!_isInit || _playerShowCell == null) return;
 
             if (IsElementInView())
-            {
-                //Debug.Log("Element is visible!");
-                _playerShowCellTop.gameObject.SetActive(false);
-                _playerShowCellBot.gameObject.SetActive(false);
-            }
+                DectiveCell();
             else
-            {
-                if (_inTop)
-                {
-                    _playerShowCell = IsElementAbove() ? _playerShowCellTop : _playerShowCellBot;
-                    //print(_playerShowCell.name);
-                }
-                //Debug.Log("Element is not visible.");
-                _playerShowCell.gameObject.SetActive(true);
-            }
+                ActiveCell();
+        }
+
+        private void DectiveCell()
+        {
+            _playerShowCell.gameObject.SetActive(false);
+        }
+
+        private void ActiveCell()
+        {
+            if (!_inTop)
+                _playerShowCell = IsElementAbove() ? _playerShowCellTop : _playerShowCellBot;
+
+
+            _playerShowCell.gameObject.SetActive(true);
         }
 
         private bool IsElementInView()
