@@ -342,14 +342,14 @@ namespace GamePush.Core
                 return players;
             }
 
-
-            if (players.Any(
-                p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
-                Convert.ToInt32(p["position"]) == Convert.ToInt32(myPlayer["position"])
-                ))
-            {
-                return players.Select(p => Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) ? myPlayer : p).ToList();
-            }
+            //if (players.Any(p =>
+            //    Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
+            //    Convert.ToInt32(p["position"]) == Convert.ToInt32(myPlayer["position"])
+            //    ))
+            //{
+            //    return players.Select(p =>
+            //        Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) ? myPlayer : p).ToList();
+            //}
 
             if (players.Any(p =>
                 Convert.ToInt32(p["id"]) == Convert.ToInt32(myPlayer["id"]) &&
