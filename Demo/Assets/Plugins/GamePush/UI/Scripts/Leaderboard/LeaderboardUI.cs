@@ -99,12 +99,13 @@ namespace GamePush.UI
                     !isPlayer &&
                     _query.showNearest > 0 &&
                     playerRatingState.position > _query.limit &&
+                    _ratingData.countOfPlayersAbove >= _query.showNearest &&
+                    lastPlace != playerRatingState.position &&
                     lastPlace + 1 != playerRatingState.position;
 
                 if (needDivider)
                 {
-                    if(lastPlace != playerRatingState.position)
-                        Instantiate(_divider, _cellHolder);
+                    Instantiate(_divider, _cellHolder);
                 }
 
                 lastPlace = playerRatingState.position;

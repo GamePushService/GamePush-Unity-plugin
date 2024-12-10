@@ -227,7 +227,7 @@ namespace GamePush.Core
             AllRatingData data = await DataFetcher.GetRatingVariant(input, withMe: true);
             if (data == null) return null;
 
-            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, limit);
+            ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, GetLimitValue(limit, data.ratingData.leaderboard));
 
             return data.ratingData;
         }
