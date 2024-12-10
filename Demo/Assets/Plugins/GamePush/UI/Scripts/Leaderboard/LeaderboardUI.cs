@@ -92,7 +92,13 @@ namespace GamePush.UI
 
                 bool isPlayer = playerID == playerRatingState.id;
 
-                if (!isPlayer && _query.showNearest > 0 && lastPlace + 1 != playerRatingState.position)
+                bool needDivider =
+                    !isPlayer &&
+                    _query.showNearest > 0 &&
+                    playerRatingState.position > _query.limit &&
+                    lastPlace + 1 != playerRatingState.position;
+
+                if (needDivider)
                 {
                     if(lastPlace != playerRatingState.position)
                         Instantiate(_divider, _cellHolder);
