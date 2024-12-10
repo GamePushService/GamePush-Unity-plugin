@@ -148,9 +148,10 @@ namespace GamePush.UI
         private void SetCellHolder(int cells)
         {
             Rect holderRect = _cellHolder.rect;
-
+            Rect cellRect = _boardCell.GetComponent<RectTransform>().rect;
+            Rect botBarRect = _botBar.GetComponent<RectTransform>().rect;
             // Cell width * Cell count + BotBar height
-            holderRect.height = 150 * cells + 350;
+            holderRect.height = cellRect.height * cells + botBarRect.height + 50;
             _cellHolder.sizeDelta = new Vector2(holderRect.width, holderRect.height);
         }
 
