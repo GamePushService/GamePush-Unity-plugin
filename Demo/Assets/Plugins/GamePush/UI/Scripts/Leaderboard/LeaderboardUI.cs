@@ -44,6 +44,9 @@ namespace GamePush.UI
             _OnLeaderboardOpen = onLeaderboardOpen;
             _OnLeaderboardClose = onLeaderboardClose;
 
+            //print(ratingData.players.Count);
+            //print(ratingData.topPlayers.Count);
+
             StartCoroutine(MoveUp());
 
             SetUpBoard();

@@ -86,14 +86,21 @@ namespace Examples.LeaderboardScoped
             GP_LeaderboardScoped.OnFetchError -= OnFetchError;
         }
 
+        private int GetIntInput(string inputText)
+        {
+            if (int.TryParse(inputText, out int result))
+                return result;
+            else
+                return 0;
+        }
 
         public void Open() =>
             GP_LeaderboardScoped.Open(
                 _tagInput.text,
                 _variantInput.text,
                 (Order)_orderDropdown.value,
-                int.Parse(_limitInput.text),
-                int.Parse(_nearestInput.text),
+                GetIntInput(_limitInput.text),
+                GetIntInput(_nearestInput.text),
                 _includeInput.text,
                 _displayInput.text,
                 (WithMe)_withMeDropdown.value
@@ -104,8 +111,8 @@ namespace Examples.LeaderboardScoped
                 _tagInput.text,
                 _variantInput.text,
                 (Order)_orderDropdown.value,
-                int.Parse(_limitInput.text),
-                int.Parse(_nearestInput.text),
+                GetIntInput(_limitInput.text),
+                GetIntInput(_nearestInput.text),
                 _includeInput.text,
                 (WithMe)_withMeDropdown.value
            );
@@ -115,8 +122,8 @@ namespace Examples.LeaderboardScoped
                 _tagInput.text,
                 _variantInput.text,
                 (Order)_orderDropdown.value,
-                int.Parse(_limitInput.text),
-                int.Parse(_nearestInput.text),
+                GetIntInput(_limitInput.text),
+                GetIntInput(_nearestInput.text),
                 _includeInput.text
             );
 

@@ -66,13 +66,21 @@ namespace Examples.Leaderboard
             GP_Leaderboard.OnFetchPlayerRatingSuccess -= OnFetchPlayerRatingSuccess;
         }
 
+        private int GetIntInput(string inputText)
+        {
+            if (int.TryParse(inputText, out int result))
+                return result;
+            else
+                return 0;
+        }
+
 
         public void Open() =>
             GP_Leaderboard.Open(
                 _orderByInput.text,
                 (Order)_orderDropdown.value,
-                int.Parse(_limitInput.text),
-                int.Parse(_nearestInput.text),
+                GetIntInput(_limitInput.text),
+                GetIntInput(_nearestInput.text),
                 (WithMe)_withMeDropdown.value,
                 _includeInput.text,
                 _displayInput.text
@@ -84,8 +92,8 @@ namespace Examples.Leaderboard
                 _tagInput.text,
                 _orderByInput.text,
                 (Order)_orderDropdown.value,
-                int.Parse(_limitInput.text),
-                int.Parse(_nearestInput.text),
+                GetIntInput(_limitInput.text),
+                GetIntInput(_nearestInput.text),
                 (WithMe)_withMeDropdown.value,
                 _includeInput.text
                 );

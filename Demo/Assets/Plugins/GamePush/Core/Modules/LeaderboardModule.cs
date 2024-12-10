@@ -60,6 +60,7 @@ namespace GamePush.Core
         public async void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
             //Logger.Log("OPEN");
+            
             GetOpenLeaderboardQuery query = new GetOpenLeaderboardQuery(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
 
             RatingData data = await Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
@@ -115,7 +116,8 @@ namespace GamePush.Core
             //Logger.Log("FETCH");
             string withMeString = GetWithMeValue(showNearest, withMe.ToString());
             showNearest = GetShowNearestValue(showNearest);
-            
+            if (limit <= 0) limit = 10;
+
             GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order, limit, showNearest, includeFields);
             AllRatingData data = await DataFetcher.GetRating(input, withMe: true);
             if (data == null) return null;
@@ -219,6 +221,7 @@ namespace GamePush.Core
             //Logger.Log(variant);
             string withMeString = GetWithMeValue(showNearest, withMe.ToString());
             showNearest = GetShowNearestValue(showNearest);
+            if(limit <= 0) limit = 10;
 
             GetLeaderboardVariantQuery input = new GetLeaderboardVariantQuery(idOrTag, variant, order, limit, showNearest, includeFields);
             AllRatingData data = await DataFetcher.GetRatingVariant(input, withMe: true);
@@ -397,8 +400,7 @@ namespace GamePush.Core
             }
             else
             {
-                Debug.Log("With me: " + withMe);
-                Debug.Log("Me: " + myPlayer["id"]); 
+                
                 switch (withMe)
                 {
                     case "first":
@@ -420,7 +422,7 @@ namespace GamePush.Core
                 players = players.OrderBy(p => Convert.ToInt32(p["position"])).ToList();
             }
 
-            Debug.Log("First: " + players[0]["name"] + players[0]["id"]);
+            //Debug.Log("First: " + players[0]["name"] + players[0]["id"]);
 
             return players;
         }
