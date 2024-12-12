@@ -294,9 +294,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7721774945679376734}
+  - component: {fileID: 3546923292276535070}
   - component: {fileID: 3875646754563406237}
   - component: {fileID: 2391128392971571882}
-  - component: {fileID: 4763389214352171116}
   m_Layer: 5
   m_Name: Divider
   m_TagString: Untagged
@@ -325,6 +325,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 890.5887, y: 24.892}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3546923292276535070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5876229535954001633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d66ec63ea4e164dfeb75d75e62793786, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nearestPlayers: {fileID: 919997561689511243}
 --- !u!114 &3875646754563406237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,29 +376,3 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5876229535954001633}
   m_CullTransparentMesh: 1
---- !u!114 &4763389214352171116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5876229535954001633}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3acc5c1dee5ad41959474b63c0b9c8b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cellBack: {fileID: 3875646754563406237}
-  _defaultBack: {r: 1, g: 1, b: 1, a: 1}
-  _playerBack: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
-  _numBack: {fileID: 0}
-  _defaultNum: {r: 0.5294118, g: 0.50980395, b: 0.50980395, a: 1}
-  _playerNum: {r: 0.342073, g: 0.7169812, b: 0.33481666, a: 1}
-  _avatarImage: {fileID: 0}
-  _playerName: {fileID: 0}
-  _playerFields: {fileID: 0}
-  _placeNum: {fileID: 0}
-  _defaultPlace: {fileID: 0}
-  _firstPlace: {fileID: 0}
-  _secondPlace: {fileID: 0}
-  _thirdPlace: {fileID: 0}
