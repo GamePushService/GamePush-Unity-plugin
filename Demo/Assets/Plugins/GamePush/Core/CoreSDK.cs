@@ -33,6 +33,8 @@ namespace GamePush
         public static LeaderboardModule leaderboard;
         public static SystemModule system;
         public static AppModule app;
+        public static SocialsModule socials;
+        public static LanguageModule language;
 
         #region ServerTime
 
@@ -108,6 +110,8 @@ namespace GamePush
 
             payments = new PaymentsModule();
             leaderboard = new LeaderboardModule();
+            socials = new SocialsModule();
+            language = new LanguageModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
@@ -158,6 +162,7 @@ namespace GamePush
             ads.Init(configData.project.ads, configData.platformConfig);
             payments.Init(configData.products, configData.platformConfig);
             app.Init(configData.project, configData.platformConfig);
+            language.Init(currentLang);
         }
 
         public static AllConfigData GetConfig()
