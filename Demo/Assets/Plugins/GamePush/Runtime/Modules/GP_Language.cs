@@ -12,6 +12,23 @@ namespace GamePush
         public static event UnityAction<Language> OnChangeLanguage;
         private static event Action<Language> _onChangeLanguage;
 
+        private void OnEnable()
+        {
+            CoreSDK.language.OnChangeLanguage += (Language lang) => CallChangeLanguageEnum(lang);
+        }
+
+        private void CallChangeLanguageEnum(Language lang)
+        {
+            _onChangeLanguage?.Invoke(lang);
+            OnChangeLanguage?.Invoke(lang);
+        }
+
+        private void CallChangeLanguage(string lang)
+        {
+            _onChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
+            OnChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
+        }
+
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern string GP_Current_Language();
@@ -23,9 +40,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return LanguageTypes.ConvertToEnum(GP_Current_Language());
 #else
-
-            ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
-            return GP_Settings.instance.GetLanguage();
+            return CoreSDK.language.Current();
 #endif
         }
 
@@ -34,9 +49,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Current_Language();
 #else
-
-            ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
-            return LanguageTypes.ConvertToString(GP_Settings.instance.GetLanguage());
+            return CoreSDK.language.CurrentISO();
 #endif
         }
 
@@ -46,10 +59,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(LanguageTypes.ConvertToString(lang));
 #else
-
-            ConsoleLog("CHANGE: " + lang.ToString());
-            OnChangeLanguage?.Invoke(lang);
-            _onChangeLanguage?.Invoke(lang);
+            CoreSDK.language.Change(lang);
 #endif
         }
 
@@ -59,18 +69,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(lang);
 #else
-
-            ConsoleLog("CHANGE: " + lang);
-            OnChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
-            _onChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
+            CoreSDK.language.Change(lang);
 #endif
         }
-
-        private void CallChangeLanguage(string lang) {
-            _onChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
-            OnChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
-        }
-
        
     }
 }
