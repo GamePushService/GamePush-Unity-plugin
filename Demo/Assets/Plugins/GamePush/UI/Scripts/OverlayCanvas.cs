@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using GamePush;
+using GamePush.Data;
 
 namespace GamePush.UI
 {
@@ -11,8 +12,13 @@ namespace GamePush.UI
     {
         [SerializeField]
         GameObject overlayHolder;
+        [Space]
+        [Header("[ UI panels ]")]
+        [Space]
         [SerializeField]
-        GameObject leaderboard;
+        LeaderboardUI leaderboard;
+        [SerializeField]
+        SocialsUI socials;
 
         public static OverlayCanvas Controller;
 
@@ -30,6 +36,8 @@ namespace GamePush.UI
         private void OnEnable()
         {
             CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
+
+            //CoreSDK.socials.
             //CoreSDK.game.OnPause += Close;
         }
 
@@ -56,10 +64,16 @@ namespace GamePush.UI
         public void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
             overlayHolder.SetActive(true);
-
             LeaderboardUI leaderboardUI = Instantiate(leaderboard, overlayHolder.transform).GetComponent<LeaderboardUI>();
             leaderboardUI.Init(data, query, onLeaderboardOpen, onLeaderboardClose);
 
+        }
+
+        public void OpenSocials(ShareType type)
+        {
+            overlayHolder.SetActive(true);
+            SocialsUI socialsUI = Instantiate(socials, overlayHolder.transform).GetComponent<SocialsUI>();
+            socialsUI.Init(type);
         }
     }
 }
