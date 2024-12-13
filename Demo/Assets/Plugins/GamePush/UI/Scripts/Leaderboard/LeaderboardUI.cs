@@ -136,23 +136,6 @@ namespace GamePush.UI
             //return Convert.ToInt32(playerPosition) <= _query.limit;
         }
 
-        //public void ShowPlayerCell(bool isShow)
-        //{
-        //    _playerBoardCell.gameObject.SetActive(isShow);
-        //}
-
-        //private bool IsNeedDivider()
-        //{
-        //    bool isNeedToShowDivider = false;
-        //    bool isGapBetweenPlayers = (player?.position as number) + 1 !== players[index + 1]?.position && index !== players.length - 1;
-
-        //    if (_ratingData.countOfPlayersAbove > 0)
-        //    {
-        //        isNeedToShowDivider = showNearest && _ratingData.countOfPlayersAbove >= showNearest && isGapBetweenPlayers;
-        //    }
-
-        //    return isNeedToShowDivider;
-        //}
 
         private void SetCellHolder(int cells)
         {

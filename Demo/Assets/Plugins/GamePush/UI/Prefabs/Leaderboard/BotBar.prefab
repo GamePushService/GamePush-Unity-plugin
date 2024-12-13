@@ -199,7 +199,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0412\u043C\u0435\u0441\u0442\u0435 \u0432\u0435\u0441\u0435\u043B\u0435\u0435"
+  m_text: "\U0001F389 More fun together \U0001F38A"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c17e01fe362414a5aad3601ba27b3eb4, type: 2}
   m_sharedMaterial: {fileID: 7086343307514649833, guid: c17e01fe362414a5aad3601ba27b3eb4, type: 2}
@@ -226,7 +226,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.2
+  m_fontSize: 20.05
   m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -303,7 +303,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 106.55}
+  m_AnchoredPosition: {x: 0, y: 96}
   m_SizeDelta: {x: 254.3235, y: 36.895}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6722568787309864842
@@ -633,8 +633,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 93}
-  m_SizeDelta: {x: -50, y: 1}
+  m_AnchoredPosition: {x: -5.5, y: 93}
+  m_SizeDelta: {x: -13, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6234610138435198397
 CanvasRenderer:
@@ -715,7 +715,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 9.618774}
-  m_SizeDelta: {x: 924, y: 250}
+  m_SizeDelta: {x: 925, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6571757710110079077
 MonoBehaviour:
@@ -803,8 +803,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21}
-  m_SizeDelta: {x: 874, y: 2}
+  m_AnchoredPosition: {x: 0, y: -32}
+  m_SizeDelta: {x: 900, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &999207541107780662
 CanvasRenderer:
