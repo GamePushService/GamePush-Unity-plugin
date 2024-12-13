@@ -45,6 +45,8 @@ namespace GamePush.UI
             {
                 social.GetComponentInChildren<Button>().onClick.AddListener(() => SocialInteract(social));
             }
+
+            _link.GetComponentInChildren<Button>().onClick.AddListener(() => CopyToClickboard());
         }
 
         public void Close()
@@ -54,14 +56,13 @@ namespace GamePush.UI
 
         private void SocialInteract(SocialHolder social)
         {
-            print(social.Type().ToString());
-            print(_shareType.ToString());
-
             string link = MakeLink(social.Type());
+            //print(_url);
+            //print(link);
             OpenLink(link);
         }
 
-        public string MakeLink(SocialType type)
+        private string MakeLink(SocialType type)
         {
             return type switch
             {
@@ -77,15 +78,17 @@ namespace GamePush.UI
             };
         }
 
-        public void OpenLink(string url)
+        private void OpenLink(string url)
         {
-            if (IsValidURL(url))
+            //print("Try open: " + url);
+            //print("Link is valid: " + IsValidURL(url));
+            if (url != "")
             {
                 Application.OpenURL(url);
             }
         }
 
-        public bool IsValidURL(string url)
+        private bool IsValidURL(string url)
         {
             return Uri.IsWellFormedUriString(url, UriKind.Absolute);
         }
@@ -116,6 +119,9 @@ namespace GamePush.UI
             }
         }
 
-        
+        private void CopyToClickboard()
+        {
+            GUIUtility.systemCopyBuffer = _url;
+        }
     }
 }

@@ -27,10 +27,7 @@ namespace GamePush.Core
 
         public string ProjectIcon() => _project.icon;
 
-        public string AppLink()
-        {
-            return Application.absoluteURL;
-        }
+        public string AppLink() => _platformConfig.gameLink;
 
         public void ReviewRequest()
         {
