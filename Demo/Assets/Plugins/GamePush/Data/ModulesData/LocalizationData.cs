@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace GamePush.Localization
 {
@@ -148,8 +149,11 @@ namespace GamePush.Localization
         [Serializable]
         public class Share
         {
+            [JsonProperty("title-share")]
             public string title_share;
+            [JsonProperty("title-post")]
             public string title_post;
+            [JsonProperty("title-invite")]
             public string title_invite;
             public string link;
         }

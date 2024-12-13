@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 using GamePush.Localization;
 
 namespace GamePush.Core
@@ -36,9 +37,10 @@ namespace GamePush.Core
         private void SetLangData()
         {
             string path = TRANSLATES_PATH + "/" + _currentLang;
-            Debug.Log(path);
+            //Debug.Log(path);
             TextAsset jsonFile = Resources.Load<TextAsset>(path);
-            localization = JsonUtility.FromJson<LocalizationData>(jsonFile.text);
+            //Debug.Log(jsonFile.text);
+            localization = JsonConvert.DeserializeObject<LocalizationData>(jsonFile.text);
         }
 
         public Language Current() => _currentLangEnum;

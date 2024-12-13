@@ -37,7 +37,9 @@ namespace GamePush.UI
         {
             CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
 
-            //CoreSDK.socials.
+            CoreSDK.socials.OnInvite += (bool success) => OpenSocials(ShareType.invite);
+            CoreSDK.socials.OnPost += (bool success) => OpenSocials(ShareType.post);
+            CoreSDK.socials.OnShare += (bool success) => OpenSocials(ShareType.share);
             //CoreSDK.game.OnPause += Close;
         }
 
