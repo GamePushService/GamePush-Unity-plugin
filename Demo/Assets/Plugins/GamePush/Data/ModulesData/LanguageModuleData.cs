@@ -79,5 +79,27 @@ namespace GamePush
                 _ => English
             };
         }
+
+        public static string GetTranslation(string lang, GamePush.Data.Translations translations)
+        {
+            return lang switch
+            {
+                English => translations.en,
+                Russian => translations.ru,
+                Turkish => translations.tr,
+                French => translations.fr,
+                Italian => translations.it,
+                German => translations.de,
+                Spanish => translations.es,
+                Chineese => translations.zh,
+                Portuguese => translations.pt,
+                Korean => translations.ko,
+                Japanese => translations.ja,
+                Arab => translations.ar,
+                Hindi => translations.hi,
+                Indonesian => translations.id,
+                _ => translations.en
+            };
+        }
     }
 }

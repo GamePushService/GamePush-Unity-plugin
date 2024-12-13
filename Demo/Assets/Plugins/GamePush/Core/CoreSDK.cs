@@ -155,6 +155,7 @@ namespace GamePush
             SetServerTime(allData.serverTime);
             currentLang = allData.config.lang;
             if (currentLang == "") currentLang = "en";
+            language.Init(currentLang);
 
             player.Init(configData.playerFields);
             variables.Init(configData.gameVariables);
@@ -162,7 +163,7 @@ namespace GamePush
             ads.Init(configData.project.ads, configData.platformConfig);
             payments.Init(configData.products, configData.platformConfig);
             app.Init(configData.project, configData.platformConfig);
-            language.Init(currentLang);
+            socials.Init(configData.config);
         }
 
         public static AllConfigData GetConfig()

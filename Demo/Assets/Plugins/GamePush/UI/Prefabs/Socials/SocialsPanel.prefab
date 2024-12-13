@@ -188,7 +188,15 @@ MonoBehaviour:
   _startOffset: 400
   _moveUpSpeed: 1200
   _title: {fileID: 2211115278895776034}
-  _socials: []
+  _socials:
+  - {fileID: 4725681073044206207}
+  - {fileID: 8611575153194647232}
+  - {fileID: 3078382169543495735}
+  - {fileID: 1178478278983657637}
+  - {fileID: 5979466373506447596}
+  - {fileID: 3703766914902060219}
+  - {fileID: 3700277343878657900}
+  - {fileID: 3084770144041408604}
   _link: {fileID: 8660749972834152353}
 --- !u!222 &1721738388100566094
 CanvasRenderer:
@@ -995,6 +1003,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+      propertyPath: _shareLink
+      value: 'https://t.me/share/url?url= &text= '
+      objectReference: {fileID: 0}
+    - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
       propertyPath: _socialType
       value: 2
       objectReference: {fileID: 0}
@@ -1011,6 +1023,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &3078382169543495735 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 555494612231242854}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3262956267041696131 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -1137,6 +1160,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &3084770144041408604 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 559098603758881805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3260477693606453736 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -1279,6 +1313,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &3700277343878657900 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 2186244242902786877}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3795060631346794200 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -1405,6 +1450,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &3703766914902060219 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 2191972428189694186}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3789402265626481935 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -1535,6 +1591,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &1178478278983657637 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 4420235677224090868}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1705191807475470609 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -1633,6 +1700,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+      propertyPath: _shareLink
+      value: https://twitter.com/share?text= &url=
+      objectReference: {fileID: 0}
+    - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
       propertyPath: _socialType
       value: 3
       objectReference: {fileID: 0}
@@ -1670,6 +1741,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
   m_PrefabInstance: {fileID: 6525551844462799505}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8611575153194647232 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 6525551844462799505}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7825535176669177390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1763,6 +1845,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+      propertyPath: _shareLink
+      value: https://www.facebook.com/sharer/sharer.php?u=
+      objectReference: {fileID: 0}
+    - target: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
       propertyPath: _socialType
       value: 4
       objectReference: {fileID: 0}
@@ -1795,6 +1881,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &4725681073044206207 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 7825535176669177390}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5072241545738505163 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
@@ -2038,6 +2135,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+--- !u!114 &5979466373506447596 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246285188533490769, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}
+  m_PrefabInstance: {fileID: 9220640650743524541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9cd7f9b33d2e4499983a7cc44089506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6128152067871621464 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3097871845555727845, guid: 9ea467bc4e52949d8b179a4e1c154f52, type: 3}

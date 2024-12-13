@@ -24,12 +24,17 @@ namespace GamePush.UI
         private LinkHolder _link;
 
         private ShareType _shareType;
+        private string _text, _url, _image;
 
 
-        public void Init(ShareType type)
+        public void Init(ShareType type, string text, string url, string image)
         {
             _shareType = type;
             _title.text = GetTitle(type);
+
+            _text = text == "" ? CoreSDK.language.localization.leaderboard.inviteDivider : text;
+            _url = url == "" ? CoreSDK.platform.gameLink : url;
+            _image = image == "" ? CoreSDK.app.ProjectIcon() : image;
 
             StartCoroutine(MoveUp());
         }
@@ -38,15 +43,7 @@ namespace GamePush.UI
         {
             foreach(SocialHolder social in _socials)
             {
-                social.GetComponent<Button>().onClick.AddListener(() => SocialInteract(social.Type()));
-            }
-        }
-
-        private void OnDisable()
-        {
-            foreach (SocialHolder social in _socials)
-            {
-                social.GetComponent<Button>().onClick.RemoveAllListeners();
+                social.GetComponentInChildren<Button>().onClick.AddListener(() => SocialInteract(social));
             }
         }
 
@@ -55,10 +52,42 @@ namespace GamePush.UI
             OverlayCanvas.Controller.Close();
         }
 
-        private void SocialInteract(SocialType type)
+        private void SocialInteract(SocialHolder social)
         {
-            print(type.ToString());
+            print(social.Type().ToString());
             print(_shareType.ToString());
+
+            string link = MakeLink(social.Type());
+            OpenLink(link);
+        }
+
+        public string MakeLink(SocialType type)
+        {
+            return type switch
+            {
+                SocialType.vkontakte => SocialLinks.vkontakte + "url=" + _url + "&title=" + _text + "&image=" + _image,
+                SocialType.odnoklassniki => SocialLinks.odnoklassniki + "url=" + _url + "&title=" + _text + "&imageUrl=" + _image,
+                SocialType.telegram => SocialLinks.telegram + "url=" + _url + "&text=" + _text,
+                SocialType.twitter => SocialLinks.twitter + "text=" + _text + "&url=" + _url,
+                SocialType.facebook => SocialLinks.facebook + _url,
+                SocialType.moymir => SocialLinks.moymir + "url=" + _url + "&title=" + _text + "&image_url=" + _image,
+                SocialType.whatsapp => SocialLinks.whatsapp + "text=" + _text + _url,
+                SocialType.viber => SocialLinks.viber + "text=" + _text + _url,
+                _ => _url
+            };
+        }
+
+        public void OpenLink(string url)
+        {
+            if (IsValidURL(url))
+            {
+                Application.OpenURL(url);
+            }
+        }
+
+        public bool IsValidURL(string url)
+        {
+            return Uri.IsWellFormedUriString(url, UriKind.Absolute);
         }
 
         private string GetTitle(ShareType type)
@@ -87,18 +116,6 @@ namespace GamePush.UI
             }
         }
 
-        public void OpenLink(string url)
-        {
-            if (IsValidURL(url))
-            {
-                Application.OpenURL(url);
-            }
-            
-        }
-
-        public bool IsValidURL(string url)
-        {
-            return Uri.IsWellFormedUriString(url, UriKind.Absolute);
-        }
+        
     }
 }

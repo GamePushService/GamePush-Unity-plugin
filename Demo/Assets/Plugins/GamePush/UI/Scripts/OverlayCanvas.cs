@@ -37,9 +37,7 @@ namespace GamePush.UI
         {
             CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
 
-            CoreSDK.socials.OnInvite += (bool success) => OpenSocials(ShareType.invite);
-            CoreSDK.socials.OnPost += (bool success) => OpenSocials(ShareType.post);
-            CoreSDK.socials.OnShare += (bool success) => OpenSocials(ShareType.share);
+            CoreSDK.socials.OpenOverlay += OpenSocials;
             //CoreSDK.game.OnPause += Close;
         }
 
@@ -71,11 +69,11 @@ namespace GamePush.UI
 
         }
 
-        public void OpenSocials(ShareType type)
+        public void OpenSocials(ShareType type, string text, string url, string image)
         {
             overlayHolder.SetActive(true);
             SocialsUI socialsUI = Instantiate(socials, overlayHolder.transform).GetComponent<SocialsUI>();
-            socialsUI.Init(type);
+            socialsUI.Init(type, text, url, image);
         }
     }
 }
