@@ -9,7 +9,7 @@ namespace Examples.Socials
 {
     public class Socials : MonoBehaviour
     {
-        private readonly string SHARE_TEXT = "Мне удалось нажать 73 раза по квадрату за 5 секунд! Сможешь меня обогнать?";
+        private readonly string SHARE_TEXT = "Я побил рекорд! Сможешь меня обогнать?";
         private string URL => GP_App.Url();
         private readonly string IMAGE = "https://gamepush.com/img/ogimage.png";
 

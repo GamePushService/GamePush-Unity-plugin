@@ -56,27 +56,49 @@ namespace GamePush.UI
 
         private void SocialInteract(SocialHolder social)
         {
-            string link = MakeLink(social.Type());
-            //print(_url);
-            //print(link);
+            SocialType socialType = social.Type();
+            string link = GetBase(socialType) + GetQuery(socialType);
+
+            print(link);
             OpenLink(link);
         }
 
-        private string MakeLink(SocialType type)
+        private string GetBase(SocialType type)
         {
             return type switch
             {
-                SocialType.vkontakte => SocialLinks.vkontakte + "url=" + _url + "&title=" + _text + "&image=" + _image,
-                SocialType.odnoklassniki => SocialLinks.odnoklassniki + "url=" + _url + "&title=" + _text + "&imageUrl=" + _image,
-                SocialType.telegram => SocialLinks.telegram + "url=" + _url + "&text=" + _text,
-                SocialType.twitter => SocialLinks.twitter + "text=" + _text + "&url=" + _url,
-                SocialType.facebook => SocialLinks.facebook + _url,
-                SocialType.moymir => SocialLinks.moymir + "url=" + _url + "&title=" + _text + "&image_url=" + _image,
-                SocialType.whatsapp => SocialLinks.whatsapp + "text=" + _text + _url,
-                SocialType.viber => SocialLinks.viber + "text=" + _text + _url,
+                SocialType.vkontakte => SocialLinks.vkontakte,
+                SocialType.odnoklassniki => SocialLinks.odnoklassniki,
+                SocialType.telegram => SocialLinks.telegram,
+                SocialType.twitter => SocialLinks.twitter,
+                SocialType.facebook => SocialLinks.facebook,
+                SocialType.moymir => SocialLinks.moymir,
+                SocialType.whatsapp => SocialLinks.whatsapp,
+                SocialType.viber => SocialLinks.viber,
                 _ => _url
             };
         }
+
+        private string GetQuery(SocialType type)
+        {
+            _url = UnityEngine.Networking.UnityWebRequest.EscapeURL(_url);
+            _text = UnityEngine.Networking.UnityWebRequest.EscapeURL(_text);
+            _image = UnityEngine.Networking.UnityWebRequest.EscapeURL(_image);
+
+            return type switch
+            {
+                SocialType.vkontakte => "?url=" + _url + "&title=" + _text,
+                SocialType.odnoklassniki => "?url=" + _url + "&title=" + _text + "&imageUrl=" + _image,
+                SocialType.telegram => "?url=" + _url + "&text=" + _text,
+                SocialType.twitter => "?url=" + _url + "&text=" + _text,
+                SocialType.facebook => "?u=" + _url,
+                SocialType.moymir => "?url=" + _url + "&title=" + _text + "&image_url=" + _image,
+                SocialType.whatsapp => "?url=" + _url + "&text=" + _text,
+                SocialType.viber => "?url=" + _url + "&text=" + _text,
+                _ => _url
+            };
+        }
+
 
         private void OpenLink(string url)
         {
