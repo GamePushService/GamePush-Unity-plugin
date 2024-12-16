@@ -302,6 +302,8 @@ namespace GamePushEditor
             {
                 foreach (AdBanner adBanner in CoreSDK.platformConfig.customAdsConfig.configs.android.banners)
                 {
+                    if (adBanner.adServer == null) continue;
+
                     if (adBanner.adServer.ToString() == AdServerType.YandexSimpleMonetization.ToString())
                     {
                         isYAMON = true;

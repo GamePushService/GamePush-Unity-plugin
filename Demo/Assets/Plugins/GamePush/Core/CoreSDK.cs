@@ -13,7 +13,7 @@ namespace GamePush
 
         public static int projectId { get; private set; }
         public static string projectToken { get; private set; }
-        public static string androidPlatform { get; private set; }
+        public static string targetPlatform { get; private set; }
         public static Platform platformType { get; private set; }
         public static string platformKey { get; private set; }
 
@@ -127,7 +127,7 @@ namespace GamePush
         }
 
         public static void SetAndroidPlatform(string platform)
-            => androidPlatform = platform;
+            => targetPlatform = platform;
 
         public static async Task InitFetch()
         {

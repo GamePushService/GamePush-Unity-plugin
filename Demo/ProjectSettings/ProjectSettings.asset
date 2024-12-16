@@ -701,7 +701,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Android: STEAMWORKS_NET
-    Standalone: STEAMWORKS_NET
+    Standalone: STEAMWORKS_NET;CUSTOM_ADS_MOBILE;XSOLLA_SERVICE
     WebGL: STEAMWORKS_NET;XSOLLA_SERVICE
   additionalCompilerArguments: {}
   platformArchitecture: {}

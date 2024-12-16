@@ -37,10 +37,12 @@ namespace Examples.App
             string title = GP_App.Title();
             string description = GP_App.Description();
             string url = GP_App.Url();
+            string icon = GP_App.ImageUrl();
 
             ConsoleUI.Instance.Log("App Title: " + title);
             ConsoleUI.Instance.Log("App Description: " + description);
             ConsoleUI.Instance.Log("App URL: " + url);
+            ConsoleUI.Instance.Log("App Icon: " + icon);
         }
 
         public void ReviewRequest()

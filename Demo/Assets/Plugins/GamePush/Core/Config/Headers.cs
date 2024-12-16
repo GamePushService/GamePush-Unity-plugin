@@ -18,6 +18,9 @@ namespace GamePush.Core
         {
             string base64 = GetBase64();
 
+            //Logger.Log("Platform", GetPlatform());
+            //Logger.Log("Lang", GetLang());
+
             return new Dictionary<string, string>()
             {
             { X_Transaction_Token, hash},
@@ -34,6 +37,8 @@ namespace GamePush.Core
         {
 #if UNITY_ANDROID
             return ProjectData.BUILD_PLATFORM;
+#elif UNITY_EDITOR
+            return CoreSDK.targetPlatform == null ? ProjectData.BUILD_PLATFORM : CoreSDK.targetPlatform;
 #else
             return PlatformTypes.NONE;
 #endif

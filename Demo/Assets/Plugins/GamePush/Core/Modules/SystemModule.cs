@@ -13,11 +13,6 @@ namespace GamePush.Core
         public bool IsAllowedOrigin() => _isAllowedOrigin;
         public bool IsDev() => _isDev;
 
-        public SystemModule()
-        {
-
-        }
-
         public void Init(AllConfigData data)
         {
             _isAllowedOrigin = data.isAllowedOrigin;
