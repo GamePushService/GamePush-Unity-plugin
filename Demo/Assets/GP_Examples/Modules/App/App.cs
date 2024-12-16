@@ -69,8 +69,8 @@ namespace Examples.App
 
         public void AppShortcut()
         {
-            GP_App.AddShortcut(OnAddShortcut);
             ConsoleUI.Instance.Log("Send add shortcut request");
+            GP_App.AddShortcut(OnAddShortcut);
         }
 
         private void OnAddShortcut(bool success)

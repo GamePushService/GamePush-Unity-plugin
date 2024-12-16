@@ -40,6 +40,7 @@ namespace GamePush.Core
 
         public void AddShortcut()
         {
+            Logger.Log("AddShortcut", "Not supported");
             OnAddShortcut?.Invoke(false);
         }
 

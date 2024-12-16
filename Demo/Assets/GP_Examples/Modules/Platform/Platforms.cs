@@ -32,6 +32,8 @@ namespace Examples.Platforms
             ConsoleUI.Instance.Log("Is Logout Available: " + GP_Platform.IsLogoutAvailable().ToString());
             ConsoleUI.Instance.Log("Is SecretCode Auth Available: " + GP_Platform.IsSecretCodeAuthAvailable().ToString());
             ConsoleUI.Instance.Log("Is Supports Cloud Saves: " + GP_Platform.IsSupportsCloudSaves().ToString());
+            ConsoleUI.Instance.Log("\nIs Allowed Origin: " + GP_System.IsAllowedOrigin().ToString());
+            ConsoleUI.Instance.Log("Is Dev: " + GP_System.IsDev().ToString());
         }
 
         public void HasIntegratedAuth() => GP_Platform.HasIntegratedAuth();
