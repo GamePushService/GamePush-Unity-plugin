@@ -6,8 +6,7 @@ using GamePush.Tools;
 
 namespace GamePush.Core
 {
-    [System.Serializable]
-    public class GameVariables
+    public class GameVariablesModule
     {
         protected List<GameVariable> variablesData;
         protected Dictionary<string, string> keyTypeData;
@@ -35,7 +34,7 @@ namespace GamePush.Core
             return fetchGameVariables;
         }
 
-        public GameVariables()
+        public GameVariablesModule()
         {
             keyTypeData = new Dictionary<string, string>();
             keyValueData = new Dictionary<string, object>();

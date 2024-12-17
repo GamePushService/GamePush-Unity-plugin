@@ -19,7 +19,6 @@ namespace GamePush.Core
         public bool IsPaused()
         {
             bool gamePaused = isAutoPaused || isPaused;
-            Logger.Log("GAME: IS PAUSED: ", gamePaused.ToString());
             return gamePaused;
         }
 
@@ -30,7 +29,6 @@ namespace GamePush.Core
 
             onPauseCallback?.Invoke();
             OnPause?.Invoke();
-            Logger.Log("GAME: ", "PAUSE");
         }
 
         public void GameResume(Action onResumeCallback = null)
@@ -40,7 +38,6 @@ namespace GamePush.Core
 
             onResumeCallback?.Invoke();
             OnResume?.Invoke();
-            Logger.Log("GAME: ", "RESUME");
         }
 
         public bool IsAutoPaused() => isAutoPaused;
@@ -52,33 +49,20 @@ namespace GamePush.Core
 
             if (isPause) OnPause?.Invoke();
             else OnResume?.Invoke();
-
-            Logger.Log("GAME: ", isPause ? "PAUSE" : "RESUME");
         }
 
-        public void GameReady()
-        {
-            gameReady = true;
-            Logger.Log("GAME:", "READY");
-        }
+        public void GameReady() => gameReady = true;
 
         public void GameplayStart() => SetGameplay(true);
         public void GameplayStop() => SetGameplay(false);
 
-        public void SetGameplay(bool gameplay)
-        {
-            isGameplay = gameplay;
-            Logger.Log("GAMEPLAY: ", isGameplay ? "START" : "STOP");
-        }
+        public void SetGameplay(bool gameplay) => isGameplay = gameplay;
 
-        public void SetPause(bool pause)
-        {
-            isPaused = pause;
-        }
+        public void SetPause(bool pause) => isPaused = pause;
 
         public void HappyTime()
         {
-            Logger.Log("GAME:", "HAPPY TIME!!!");
+            //Logger.Log("GAME:", "HAPPY TIME!!!");
         }
     }
 }

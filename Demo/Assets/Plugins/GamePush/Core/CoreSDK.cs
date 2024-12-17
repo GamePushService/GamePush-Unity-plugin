@@ -26,7 +26,7 @@ namespace GamePush
         public static GameModule game;
         public static PlayerModule player;
         public static PlatformModule platform;
-        public static GameVariables variables;
+        public static GameVariablesModule variables;
         public static AdsModule ads;
         public static DeviceModule device;
         public static PaymentsModule payments;
@@ -101,7 +101,7 @@ namespace GamePush
         {
             game = new GameModule();
             player = new PlayerModule();
-            variables = new GameVariables();
+            variables = new GameVariablesModule();
             platform = new PlatformModule();
             ads = new AdsModule();
             device = new DeviceModule();

@@ -45,6 +45,8 @@ namespace GamePush.Core
                 OnFullscreenClose?.Invoke();
         }
 
+        public bool IsFullscreenEnabled() => _isFullscreen;
+
         public void ToggleFullscreen() => SetFullscreen(!_isFullscreen);
 
         public void OpenFullscreen() => SetFullscreen(true);
