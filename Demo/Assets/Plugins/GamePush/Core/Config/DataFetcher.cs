@@ -46,7 +46,12 @@ namespace GamePush.Core
 
         private static string GetLang()
         {
-            string lang = CoreSDK.currentLang.ToUpper();
+            string lang;
+            if (CoreSDK.language != null)
+                lang = CoreSDK.language.CurrentISO().ToUpper();
+            else
+                lang = CoreSDK.currentLang.ToUpper();
+
             if (lang == "" || lang == null) lang = "EN";
             return lang;
         }

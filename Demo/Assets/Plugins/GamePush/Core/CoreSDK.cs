@@ -99,10 +99,12 @@ namespace GamePush
 
         private static void InitModules()
         {
+            platform = new PlatformModule();
+            language = new LanguageModule();
             game = new GameModule();
             player = new PlayerModule();
             variables = new GameVariablesModule();
-            platform = new PlatformModule();
+            
             ads = new AdsModule();
             device = new DeviceModule();
             system = new SystemModule();
@@ -111,7 +113,7 @@ namespace GamePush
             payments = new PaymentsModule();
             leaderboard = new LeaderboardModule();
             socials = new SocialsModule();
-            language = new LanguageModule();
+            
         }
 
         public static void SetProjectData(SavedProjectData data)

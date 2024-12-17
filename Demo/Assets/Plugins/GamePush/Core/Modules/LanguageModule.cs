@@ -19,19 +19,22 @@ namespace GamePush.Core
         public void Init(string lang)
         {
             SetLang(lang);
-            SetLangData();
         }
 
         private void SetLang(string lang)
         {
             _currentLang = lang;
             _currentLangEnum = LanguageTypes.ConvertToEnum(lang);
+
+            SetLangData();
         }
 
         private void SetLang(Language lang)
         {
             _currentLang = LanguageTypes.ConvertToString(lang);
             _currentLangEnum = lang;
+
+            SetLangData();
         }
 
         private void SetLangData()
