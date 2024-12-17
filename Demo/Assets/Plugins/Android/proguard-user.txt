@@ -1,0 +1,4 @@
+
+# Proguard Xsolla
+-keep public class com.xsolla.** { *; }
+-dontwarn com.xsolla.**
