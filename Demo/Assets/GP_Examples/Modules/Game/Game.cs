@@ -51,31 +51,31 @@ namespace Examples.Game
             ConsoleUI.Instance.Log($"GAME IS PAUSED: {isPaused}");
         }
 
-        public void Pause() => GP_Game.Pause(OnPause);
-        public void Resume() => GP_Game.Resume(OnResume);
+        public void Pause() => GP_Game.Pause();
+        public void Resume() => GP_Game.Resume();
 
         public void GameReady()
         {
             GP_Game.GameReady();
-            //ConsoleUI.Instance.Log("GAME: READY");
+            ConsoleUI.Instance.Log("GAME: READY");
         }
 
         public void GamePlayStart()
         {
             GP_Game.GameplayStart();
-            //ConsoleUI.Instance.Log("GAME: GAMEPLAY START");
+            ConsoleUI.Instance.Log("GAME: GAMEPLAY START");
         }
 
         public void GamePlayStop()
         {
             GP_Game.GameplayStop();
-            //ConsoleUI.Instance.Log("GAME: GAMEPLAY STOP");
+            ConsoleUI.Instance.Log("GAME: GAMEPLAY STOP");
         }
 
         public void HappyTime()
         {
             GP_Game.HappyTime();
-            //ConsoleUI.Instance.Log("HAPPY TIME!!!");
+            ConsoleUI.Instance.Log("HAPPY TIME!!!");
         }
 
 
