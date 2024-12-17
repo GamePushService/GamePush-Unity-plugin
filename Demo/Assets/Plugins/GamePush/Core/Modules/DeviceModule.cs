@@ -21,7 +21,7 @@ namespace GamePush.Core
         public DeviceModule()
         {
 #if UNITY_ANDROID
-            isMobile = true;
+            _isMobile = true;
 #endif
             _isFullscreen = Screen.fullScreen;
         }
