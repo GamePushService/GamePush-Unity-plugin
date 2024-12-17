@@ -23,14 +23,11 @@ namespace GamePush.UI
         [SerializeField]
         private LinkHolder _link;
 
-        private ShareType _shareType;
         private string _text, _url, _image;
 
-
-        public void Init(ShareType type, string text, string url, string image)
+        public void Init(string title, string text, string url, string image)
         {
-            _shareType = type;
-            _title.text = GetTitle(type);
+            _title.text = title;
 
             _text = text == "" ? CoreSDK.language.localization.leaderboard.inviteDivider : text;
             _url = url == "" ? CoreSDK.platform.gameLink : url;
@@ -113,17 +110,6 @@ namespace GamePush.UI
         private bool IsValidURL(string url)
         {
             return Uri.IsWellFormedUriString(url, UriKind.Absolute);
-        }
-
-        private string GetTitle(ShareType type)
-        {
-            return type switch
-            {
-                ShareType.share => CoreSDK.language.localization.share.title_share,
-                ShareType.post => CoreSDK.language.localization.share.title_post,
-                ShareType.invite => CoreSDK.language.localization.share.title_invite,
-                _ => ""
-            };
         }
 
         private IEnumerator MoveUp()

@@ -52,9 +52,7 @@ namespace GamePush
         public string[] orderBy;
         public int? limit;
         public string[] includeFields;
-        //public string[] displayFields;
         public string order; // "ASC" or "DESC"
-        //public string withMe; // "none", "first", or "last"
         public int? showNearest;
 
         public GetLeaderboardQuery(
@@ -62,14 +60,12 @@ namespace GamePush
             Order order = Order.DESC,
             int limit = 10,
             int showNearest = 0,
-            //WithMe withMe = WithMe.none,
             string includeFields = "")
         {
             this.orderBy = orderBy.Trim().Split(",");
             this.limit = limit;
             this.includeFields = includeFields.Trim().Split(",");
             this.order = order.ToString();
-            //this.withMe = withMe.ToString();
             this.showNearest = showNearest;
         }
     }
@@ -132,14 +128,10 @@ namespace GamePush
     public class GetLeaderboardVariantQuery
     {
         public string variant;
-        //public int? id;
-        //public string tag;
         [NonSerialized]
         public string idOrTag;
         public int? limit;
         public string[] includeFields;
-        //public string[] displayFields;
-        //public string withMe; // "none", "first", or "last"
         public string order; // "ASC" or "DESC"
         public int? showNearest;
 
@@ -152,12 +144,6 @@ namespace GamePush
             string includeFields = ""
          )
         {
-            //Debug.Log(variant);
-            //if (int.TryParse(idOrTag, out int id))
-            //    this.id = id;
-            //else
-            //    this.tag = idOrTag;
-
             this.idOrTag = idOrTag;
 
             this.variant = variant;
@@ -167,8 +153,6 @@ namespace GamePush
             this.showNearest = showNearest;
         }
     }
-
-
 
     
     public class PublishRecordQuery
@@ -202,44 +186,6 @@ namespace GamePush
             @override = Override;
         }
     }
-
-    
-    //public class GetPlayerRatingQuery
-    //{
-    //    public string[] orderBy;
-    //    public int? limit;
-    //    public string[] includeFields;
-    //    public string[] displayFields;
-    //    public string order; // "ASC" or "DESC"
-    //    public int? showNearest;
-
-    //    public GetPlayerRatingQuery(
-    //        string orderBy = "score",
-    //        Order order = Order.DESC,
-    //        int limit = 10,
-    //        int showNearest = 0,
-    //        string includeFields = ""
-    //        )
-    //    {
-    //        this.orderBy = orderBy.Trim().Split(",");
-    //        this.order = order.ToString();
-    //        this.limit = limit;
-    //        this.includeFields = includeFields.Trim().Split(",");
-    //        this.showNearest = showNearest;
-    //    }
-    //}
-
-    //public class GetPlayerRatingVariantQuery
-    //{
-    //    public string variant;
-    //    public int? id;
-    //    public string tag;
-    //    public int? limit;
-    //    public string[] includeFields;
-    //    public string[] displayFields;
-    //    public string order; // "ASC" or "DESC"
-    //    public int? showNearest;
-    //}
 
     public class Leaderboard
     {

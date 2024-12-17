@@ -25,7 +25,7 @@ namespace GamePush.UI
         [SerializeField]
         private LeaderboardViewport _viewport;
         [SerializeField]
-        private GameObject _botBar;
+        private BottomBar _botBar;
         [SerializeField]
         private GameObject _divider;
         [SerializeField]
@@ -34,6 +34,8 @@ namespace GamePush.UI
         private RatingData _ratingData;
         private GetOpenLeaderboardQuery _query;
 
+        private string _playerPosition;
+
         private event Action _OnLeaderboardOpen;
         private event Action _OnLeaderboardClose;
 
@@ -41,6 +43,8 @@ namespace GamePush.UI
         {
             _ratingData = ratingData;
             _query = query;
+            _playerPosition = ratingData.player["position"].ToString();
+
             _OnLeaderboardOpen = onLeaderboardOpen;
             _OnLeaderboardClose = onLeaderboardClose;
 
@@ -150,7 +154,8 @@ namespace GamePush.UI
 
         private void SetBotBar()
         {
-            Instantiate(_botBar, _cellHolder);
+            BottomBar bottomBar = Instantiate(_botBar, _cellHolder);
+            bottomBar.SetPlayerPosition(_playerPosition);
         }
 
 
@@ -176,6 +181,8 @@ namespace GamePush.UI
             _OnLeaderboardClose?.Invoke();
             OverlayCanvas.Controller.Close();
         }
+
+
     }
 
 }

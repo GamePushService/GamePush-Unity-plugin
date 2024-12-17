@@ -74,11 +74,6 @@ namespace GamePush.Core
                         FromString(displayFields),
                         FromString(includeFields),
                         FromString(orderBy));
-
-                //foreach (Dictionary<string, object> player in playersList)
-                //{
-                //    Debug.Log(player["name"] + "|" +player["id"]);
-                //}
                 
                 
                 data.players = playersList;
@@ -173,7 +168,6 @@ namespace GamePush.Core
             Debug.Log(orderBy);
             if (data != null)
             {
-                //TODO Remove myPlayer from players
                 var playersFiltered = data.players;
 
                 List<Dictionary<string, object>> playersList =

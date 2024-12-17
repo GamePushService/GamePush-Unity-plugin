@@ -37,7 +37,7 @@ namespace GamePush.UI
         {
             CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
 
-            CoreSDK.socials.OpenOverlay += OpenSocials;
+            CoreSDK.socials.OnOpenOverlay += OpenSocials;
             //CoreSDK.game.OnPause += Close;
         }
 
@@ -63,17 +63,21 @@ namespace GamePush.UI
 
         public void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
+            Close();
+
             overlayHolder.SetActive(true);
             LeaderboardUI leaderboardUI = Instantiate(leaderboard, overlayHolder.transform).GetComponent<LeaderboardUI>();
             leaderboardUI.Init(data, query, onLeaderboardOpen, onLeaderboardClose);
 
         }
 
-        public void OpenSocials(ShareType type, string text, string url, string image)
+        public void OpenSocials(string title, string text, string url, string image)
         {
+            Close();
+
             overlayHolder.SetActive(true);
             SocialsUI socialsUI = Instantiate(socials, overlayHolder.transform).GetComponent<SocialsUI>();
-            socialsUI.Init(type, text, url, image);
+            socialsUI.Init(title, text, url, image);
         }
     }
 }

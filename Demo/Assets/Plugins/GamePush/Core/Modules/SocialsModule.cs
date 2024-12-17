@@ -14,8 +14,8 @@ namespace GamePush.Core
         public event Action<bool> OnPost;
         public event Action<bool> OnInvite;
         public event Action<bool> OnJoinCommunity;
-
-        public event Action<ShareType, string, string, string> OpenOverlay;
+       
+        public event Action<string, string, string, string> OnOpenOverlay; //Action parameters: title, text, url, image
 
         public void Init(Config config)
         {
@@ -25,22 +25,36 @@ namespace GamePush.Core
             _gameLink = CoreSDK.platform.gameLink;
         }
 
+        public void OpenPanel(string title = "", string text = "", string url = "", string image = "") =>
+            OnOpenOverlay?.Invoke(title, text, url, image);
+
         public void Share(string text = "", string url = "", string image = "")
         {
-            OpenOverlay?.Invoke(ShareType.share, text, url, image);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.share), text, url, image);
             OnShare?.Invoke(false);
         }
 
         public void Post(string text = "", string url = "", string image = "")
         {
-            OpenOverlay?.Invoke(ShareType.post, text, url, image);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.post), text, url, image);
             OnPost?.Invoke(false);
         }
 
         public void Invite(string text = "", string url = "", string image = "")
         {
-            OpenOverlay?.Invoke(ShareType.invite, text, url, image);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.invite), text, url, image);
             OnInvite?.Invoke(false);
+        }
+
+        private string GetTitle(ShareType type)
+        {
+            return type switch
+            {
+                ShareType.share => CoreSDK.language.localization.share.title_share,
+                ShareType.post => CoreSDK.language.localization.share.title_post,
+                ShareType.invite => CoreSDK.language.localization.share.title_invite,
+                _ => ""
+            };
         }
 
         public void JoinCommunity()
