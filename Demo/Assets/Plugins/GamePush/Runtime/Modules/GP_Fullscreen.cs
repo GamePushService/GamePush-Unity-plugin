@@ -39,6 +39,11 @@ namespace GamePush
             CoreSDK.device.OnFullscreenClose -= CallFullscreenClose;
         }
 
+        public static bool IsEnabled()
+        {
+            return CoreSDK.device.IsFullscreenEnabled();
+        }
+
         public static void Open(Action onFullscreenOpen = null)
         {
             _onFullscreenOpen = onFullscreenOpen;
