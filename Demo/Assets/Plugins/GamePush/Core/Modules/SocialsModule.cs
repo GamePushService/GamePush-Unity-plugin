@@ -14,8 +14,9 @@ namespace GamePush.Core
         public event Action<bool> OnPost;
         public event Action<bool> OnInvite;
         public event Action<bool> OnJoinCommunity;
-       
-        public event Action<string, string, string, string> OnOpenOverlay; //Action parameters: title, text, url, image
+
+        //Action parameters: title, text, url, image, callback
+        public event Action<string, string, string, string, Action<bool>> OnOpenOverlay; 
 
         public void Init(Config config)
         {
@@ -26,24 +27,24 @@ namespace GamePush.Core
         }
 
         public void OpenPanel(string title = "", string text = "", string url = "", string image = "") =>
-            OnOpenOverlay?.Invoke(title, text, url, image);
+            OnOpenOverlay?.Invoke(title, text, url, image, null);
 
         public void Share(string text = "", string url = "", string image = "")
         {
-            OnOpenOverlay?.Invoke(GetTitle(ShareType.share), text, url, image);
-            OnShare?.Invoke(false);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.share), text, url, image, OnShare);
+            //OnShare?.Invoke(false);
         }
 
         public void Post(string text = "", string url = "", string image = "")
         {
-            OnOpenOverlay?.Invoke(GetTitle(ShareType.post), text, url, image);
-            OnPost?.Invoke(false);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.post), text, url, image, OnPost);
+            //OnPost?.Invoke(false);
         }
 
         public void Invite(string text = "", string url = "", string image = "")
         {
-            OnOpenOverlay?.Invoke(GetTitle(ShareType.invite), text, url, image);
-            OnInvite?.Invoke(false);
+            OnOpenOverlay?.Invoke(GetTitle(ShareType.invite), text, url, image, OnInvite);
+            //OnInvite?.Invoke(false);
         }
 
         private string GetTitle(ShareType type)

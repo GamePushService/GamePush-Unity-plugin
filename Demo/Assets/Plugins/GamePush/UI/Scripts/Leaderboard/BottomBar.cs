@@ -6,7 +6,7 @@ namespace GamePush.UI
     public class BottomBar : MonoBehaviour
     {
         [SerializeField]
-        private TMPro.TMP_Text _inviteDivider, _inviteFriends;
+        private TMPro.TMP_Text _inviteDivider, _shareRecord;
         [SerializeField]
         private UnityEngine.UI.Button _shareButton;
 
@@ -15,7 +15,7 @@ namespace GamePush.UI
         void Start()
         {
             _inviteDivider.text = CoreSDK.language.localization.leaderboard.inviteDivider;
-            _inviteFriends.text = CoreSDK.language.localization.leaderboard.inviteFriends;
+            _shareRecord.text = CoreSDK.language.localization.leaderboard.shareRecord;
 
             _shareButton.onClick.AddListener(() => ShareRecord());
         }
@@ -23,9 +23,16 @@ namespace GamePush.UI
         public void SetPlayerPosition(int position) => _playerPosition = position.ToString();
         public void SetPlayerPosition(string position) => _playerPosition = position;
 
+        public void SetButtonText(bool playerInBoard)
+        {
+            _shareRecord.text = playerInBoard ?
+                CoreSDK.language.localization.leaderboard.shareRecord :
+                CoreSDK.language.localization.leaderboard.inviteFriends;
+        }
+
         private void ShareRecord()
         {
-            string shareRecord = CoreSDK.language.localization.leaderboard.shareRecord;
+            string shareRecord = _shareRecord.text;
             string shareRecordText = CoreSDK.language.localization.leaderboard.shareRecordText;
 
             string gameTitle = CoreSDK.app.Title();

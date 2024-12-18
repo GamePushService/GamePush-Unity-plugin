@@ -24,14 +24,17 @@ namespace GamePush.UI
         private LinkHolder _link;
 
         private string _text, _url, _image;
+        private event Action<bool> SocialCallback;
 
-        public void Init(string title, string text, string url, string image)
+        public void Init(string title, string text, string url, string image, Action<bool> callback)
         {
             _title.text = title;
 
             _text = text == "" ? CoreSDK.language.localization.leaderboard.inviteDivider : text;
             _url = url == "" ? CoreSDK.platform.gameLink : url;
             _image = image == "" ? CoreSDK.app.ProjectIcon() : image;
+
+            SocialCallback = callback;
 
             StartCoroutine(MoveUp());
         }
@@ -48,6 +51,7 @@ namespace GamePush.UI
 
         public void Close()
         {
+            SocialCallback?.Invoke(false);
             OverlayCanvas.Controller.Close();
         }
 
@@ -99,12 +103,13 @@ namespace GamePush.UI
 
         private void OpenLink(string url)
         {
-            //print("Try open: " + url);
-            //print("Link is valid: " + IsValidURL(url));
             if (url != "")
             {
                 Application.OpenURL(url);
+                SocialCallback?.Invoke(true);
             }
+            else
+                SocialCallback?.Invoke(false);
         }
 
         private bool IsValidURL(string url)
@@ -130,6 +135,8 @@ namespace GamePush.UI
         private void CopyToClickboard()
         {
             GUIUtility.systemCopyBuffer = _url;
+            SocialCallback?.Invoke(true);
+            OverlayCanvas.Controller.Close();
         }
     }
 }

@@ -35,6 +35,7 @@ namespace GamePush
         public static AppModule app;
         public static SocialsModule socials;
         public static LanguageModule language;
+        public static UniquesModule uniques;
 
         #region ServerTime
 

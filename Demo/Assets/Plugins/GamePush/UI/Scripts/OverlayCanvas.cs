@@ -71,13 +71,13 @@ namespace GamePush.UI
 
         }
 
-        public void OpenSocials(string title, string text, string url, string image)
+        public void OpenSocials(string title, string text, string url, string image, Action<bool> callback)
         {
             Close();
 
             overlayHolder.SetActive(true);
             SocialsUI socialsUI = Instantiate(socials, overlayHolder.transform).GetComponent<SocialsUI>();
-            socialsUI.Init(title, text, url, image);
+            socialsUI.Init(title, text, url, image, callback);
         }
     }
 }
