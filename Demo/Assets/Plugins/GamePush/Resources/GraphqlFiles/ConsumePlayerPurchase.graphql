@@ -48,7 +48,6 @@ fragment PurchaseOutput on PurchaseResult {
     }
 }
 
-
 # CONSUME_PRODUCT mutation
 mutation result($input: ConsumePlayerPurchaseInput!, $lang: Lang) {
     result: ConsumePlayerPurchase(input: $input) {

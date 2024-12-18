@@ -25,6 +25,7 @@ namespace GamePush.Core
         private static string _fetchTopQueryName = "FetchTopQuery";
         private static string _fetchTopScopedQueryName = "FetchTopScopedQuery";
         private static string _playerPublishRating = "PlayerPublishRating";
+        private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
 
 
         public static async void Ping(string token)
@@ -114,7 +115,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            Debug.Log(resultObject["platformConfig"].ToString());
+            //Debug.Log(resultObject["platformConfig"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -187,23 +188,51 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-            //JObject resultObject = await SendQueryRequest(_fetchPlayerFieldsQueryName, OperationType.Query, null, withToken);
-
-
-            Debug.Log(resultObject.ToString());
 
             List<PlayerField> playerFields = resultObject["items"].ToObject<List<PlayerField>>();
 
             return playerFields;
         }
 
+        public static async Task<List<FetchGameVariable>> FetchPlayerProjectVariables(bool withToken)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_fetchPlayerProjectVariables, "result", OperationType.Query);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(null);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", "EN");
+            variables.Add("withToken", withToken);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                throw new Exception(error);
+            }
+
+            List<FetchGameVariable> playerGameVariables = resultObject["items"].ToObject<List<FetchGameVariable>>();
+
+            return playerGameVariables;
+        }
+
         #endregion
 
         #region LeaderboardFetches
-
 
         public static async Task<AllRatingData> GetRating(object input, bool withMe)
         {

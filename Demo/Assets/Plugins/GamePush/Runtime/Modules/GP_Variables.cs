@@ -24,6 +24,15 @@ namespace GamePush
         private static event Action<Dictionary<string, string>> _onPlatformSuccess;
         private static event Action<string> _onPlatformError;
 
+        private void OnEnable()
+        {
+            CoreSDK.variables.OnFetchSuccess += (List<FetchGameVariable> data) => CallVariablesFetchListSuccess(data);
+            CoreSDK.variables.OnFetchError += () => CallVariablesFetchError();
+
+            CoreSDK.variables.OnPlatformFetchSuccess += (Dictionary<string, string> data) => CallOnFetchPlatformVariablesDictionary(data);
+            CoreSDK.variables.OnPlatformFetchError += (string error) => CallOnFetchPlatformVariablesError(error);
+        }
+
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
@@ -56,8 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_Fetch();
 #else
-
-            ConsoleLog("FETCH");
+            CoreSDK.variables.Fetch();
 #endif
         }
 
@@ -66,9 +74,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_Has(key) == "true";
 #else
-
-            ConsoleLog("HAS: " + key + " -> TRUE");
-            return true;
+            return CoreSDK.variables.Has(key);
 #endif
         }
 
@@ -77,9 +83,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetNumberInt(key);
 #else
-
-            ConsoleLog("GET INT: " + key + " -> 0");
-            return 0;
+            return CoreSDK.variables.Get<int>(key);
 #endif
         }
 
@@ -88,9 +92,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetFloat(key);
 #else
-
-            ConsoleLog("GET FLOAT: " + key + " -> 0f");
-            return 0f;
+            return CoreSDK.variables.Get<float>(key);
 #endif
         }
 
@@ -99,9 +101,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetString(key);
 #else
-
-            ConsoleLog("GET STRING: " + key + " -> NULL");
-            return null;
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -110,9 +110,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetBool(key) == "true";
 #else
-
-            ConsoleLog("GET BOOL: " + key + " -> TRUE");
-            return true;
+            return CoreSDK.variables.Get<bool>(key);
 #endif
         }
 
@@ -121,9 +119,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetImage(key);
 #else
-
-            ConsoleLog("GET IMAGE: " + key + " -> URL");
-            return "URL";
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -132,9 +128,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetFile(key);
 #else
-
-            ConsoleLog("GET FILE: " + key + " -> URL");
-            return "URL";
+            return CoreSDK.variables.Get<string>(key);
 #endif
         }
 
@@ -143,9 +137,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_IsPlatformVariablesAvailable() == "true";
 #else
-
-            Console.Log("Platform Variables: " + "Is Available");
-            return true;
+            return CoreSDK.variables.IsPlatformVariablesAvailable();
 #endif
         }
 
@@ -159,8 +151,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables(options);
 #else
-
-            Console.Log("Platform Variables: " + "Fetch");
+            CoreSDK.variables.FetchPlatformVariables(options);
 #endif
         }
 
@@ -172,8 +163,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables();
 #else
-
-            Console.Log("Platform Variables: " + "FETCH");
+            CoreSDK.variables.FetchPlatformVariables();
 #endif
         }
 
@@ -217,6 +207,12 @@ namespace GamePush
             return clientParams;
         }
 
+        private void CallVariablesFetchListSuccess(List<FetchGameVariable> data)
+        {
+            _onSuccess?.Invoke(data);
+            OnFetchSuccess?.Invoke(data);
+        }
+
         private void CallVariablesFetchSuccess(string data)
         {
             var variablesData = UtilityJSON.GetList<FetchGameVariable>(data);
@@ -228,6 +224,12 @@ namespace GamePush
         {
             _onError?.Invoke();
             OnFetchError?.Invoke();
+        }
+
+        private void CallOnFetchPlatformVariablesDictionary(Dictionary<string, string> dictionary)
+        {
+            _onPlatformSuccess?.Invoke(dictionary);
+            OnPlatformFetchSuccess?.Invoke(dictionary);
         }
 
         private void CallOnFetchPlatformVariables(string variables)

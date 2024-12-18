@@ -58,7 +58,6 @@ namespace GamePush.Core
                 _playerState.TryAdd(key, defaultState[key]);
             }
 
-
             SyncTimeListInit();
 
             _isFirstRequest = true;
@@ -66,7 +65,6 @@ namespace GamePush.Core
 
         private void SyncTimeListInit()
         {
-            
             lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
 
             DateTime now = CoreSDK.GetServerTime();

@@ -14,10 +14,18 @@ namespace GamePush.Core
 
         protected List<FetchGameVariable> fetchGameVariables;
 
+        public event Action<List<FetchGameVariable>> OnFetchSuccess;
+        public event Action OnFetchError;
+
+        public event Action<Dictionary<string, string>> OnPlatformFetchSuccess;
+        public event Action<string> OnPlatformFetchError;
+
         public List<FetchGameVariable> FetchData()
         {
             if (fetchGameVariables != null)
                 return fetchGameVariables;
+
+            Logger.Log("fetchGameVariables null");
 
             List<FetchGameVariable> fetchData = new List<FetchGameVariable>();
             foreach(string key in keyTypeData.Keys)
@@ -68,8 +76,9 @@ namespace GamePush.Core
                         break;
                 }
                
-                //Debug.Log(variable.key + " " + variable.type + " " + variable.value);
             }
+
+            //Logger.Log("keyTypeData count:" + keyTypeData.Count);
         }
 
         public bool Has(string key) => keyValueData.ContainsKey(key);
@@ -78,7 +87,7 @@ namespace GamePush.Core
         {
             if(keyValueData.TryGetValue(key, out object value))
             {
-                Helpers.ConvertValue<T>(value);
+                return Helpers.ConvertValue<T>(value);
             }
             
             return default(T);
@@ -89,18 +98,25 @@ namespace GamePush.Core
             return false;
         }
 
-        public void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
+        public async void Fetch()
         {
-            if (variablesData != null)
-                onFetchSuccess(FetchData());
+            if (variablesData != null && variablesData.Count > 0)
+            {
+                OnFetchSuccess(FetchData());
+                return;
+            }
+
+            fetchGameVariables = await DataFetcher.FetchPlayerProjectVariables(false);
+            if (fetchGameVariables != null)
+                OnFetchSuccess(FetchData());
             else
-                onFetchError();
+                OnFetchError();
         }
 
-        public void FetchPlatformVariables(string optionsDict = null, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
+        public void FetchPlatformVariables(string optionsDict = null)
         {
             Logger.Error("Can't fetch platform variables");
-            onPlatformFetchError?.Invoke("Platform doesn't have variables");
+            OnPlatformFetchError?.Invoke("Platform doesn't have variables");
         }
 
     }

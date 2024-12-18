@@ -88,6 +88,7 @@ namespace Examples.Variables
                 ConsoleUI.Instance.Log("VARIABLE KEY: " + variables[i].key);
                 ConsoleUI.Instance.Log("VARIABLE TYPE: " + variables[i].type);
                 ConsoleUI.Instance.Log("VARIABLE VALUE: " + variables[i].value);
+                ConsoleUI.Instance.Log(" ");
             }
         }
 

@@ -1,0 +1,15 @@
+query result($lang: Lang) {
+  result: FetchPlayerProjectVariables {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on ProjectVariablesList {
+      items {
+        key
+        value(lang: $lang)
+        type
+      }
+    }
+  }
+}
