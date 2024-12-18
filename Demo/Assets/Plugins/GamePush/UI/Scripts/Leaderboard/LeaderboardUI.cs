@@ -35,6 +35,7 @@ namespace GamePush.UI
         private GetOpenLeaderboardQuery _query;
 
         private string _playerPosition;
+        private bool _hasPlayer = false;
 
         private event Action _OnLeaderboardOpen;
         private event Action _OnLeaderboardClose;
@@ -117,6 +118,7 @@ namespace GamePush.UI
 
                 if (isPlayer)
                 {
+                    _hasPlayer = true;
                     LeaderboardCell playerShowCell = _viewport.Init(withMe, inTop, leaderboardCell);
                     if(playerShowCell)
                         _viewport.InitPlayerCells(this, playerRatingState, isPlayer);
@@ -156,6 +158,7 @@ namespace GamePush.UI
         {
             BottomBar bottomBar = Instantiate(_botBar, _cellHolder);
             bottomBar.SetPlayerPosition(_playerPosition);
+            bottomBar.SetButtonText(_hasPlayer);
         }
 
 
