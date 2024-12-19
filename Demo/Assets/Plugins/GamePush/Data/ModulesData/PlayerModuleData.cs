@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GamePush.Data
+namespace GamePush
 {
     [Serializable]
     public enum SyncStorageType
@@ -60,16 +60,16 @@ namespace GamePush.Data
         public bool isFirstRequest;
     }
 
-    [Serializable]
-    public class RewardData
-    {
-        public object[] activatedTriggersNow = { };
-        public object[] claimedTriggersNow = { };
-        public object[] claimedSchedulersDaysNow = { };
-        public object[] givenAchievements = { };
-        public object[] givenRewards = { };
-        public object[] givenProducts = { };
-    }
+    //[Serializable]
+    //public class RewardData
+    //{
+    //    public object[] activatedTriggersNow = { };
+    //    public object[] claimedTriggersNow = { };
+    //    public object[] claimedSchedulersDaysNow = { };
+    //    public object[] givenAchievements = { };
+    //    public object[] givenRewards = { };
+    //    public object[] givenProducts = { };
+    //}
 
     [Serializable]
     public class SyncPlayerInput
