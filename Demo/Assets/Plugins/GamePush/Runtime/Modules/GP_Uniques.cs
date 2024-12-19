@@ -25,6 +25,16 @@ namespace GamePush
         private static event Action<string> _onUniqueValueDelete;
         private static event Action<string> _onUniqueValueDeleteError;
 
+        private void OnEnable()
+        {
+            CoreSDK.uniques.OnUniqueValueRegister += (UniquesData data) => CallOnUniqueCheck(data);
+            CoreSDK.uniques.OnUniqueValueCheck += (UniquesData data) => CallOnUniqueCheck(data);
+            CoreSDK.uniques.OnUniqueValueDelete += (UniquesData data) => CallOnUniqueDelete(data);
+
+            CoreSDK.uniques.OnUniqueValueRegisterError += (string error) => CallOnUniqueValueRegisterError(error);
+            CoreSDK.uniques.OnUniqueValueCheckError += (string error) => CallOnUniqueValueCheckError(error);
+            CoreSDK.uniques.OnUniqueValueDeleteError += (string error) => CallOnUniqueValueDeleteError(error);
+        }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
@@ -51,7 +61,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesRegister(tag, value);
 #else
-            ConsoleLog("Register");
+            CoreSDK.uniques.Register(tag, value);
 #endif
         }
 
@@ -63,8 +73,7 @@ namespace GamePush
             //return UtilityJSON.Get<UniquesData>(json);
             return GP_UniquesGet(tag);
 #else
-            ConsoleLog("Get");
-            return null;
+            return CoreSDK.uniques.Get(tag);
 #endif
         }
 
@@ -74,8 +83,7 @@ namespace GamePush
             string json = GP_UniquesList();
             return UtilityJSON.GetArray<UniquesData>(json);
 #else
-            ConsoleLog("List");
-            return null;
+            return CoreSDK.uniques.List();
 #endif
         }
 
@@ -91,7 +99,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesCheck(tag, value);
 #else
-            ConsoleLog("List");
+            CoreSDK.uniques.Check(tag, value);
 #endif
         }
 
@@ -106,16 +114,22 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesDelete(tag);
 #else
-            ConsoleLog("Delete");
+            CoreSDK.uniques.Delete(tag);
 #endif
         }
 
         private void CallOnUniqueValueRegister(string uniqueValue)
         {
             UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            CallOnUniqueRegister(data);
+        }
+
+        private void CallOnUniqueRegister(UniquesData data)
+        {
             OnUniqueValueRegister?.Invoke(data);
             _onUniqueValueRegister?.Invoke(data);
         }
+
         private void CallOnUniqueValueRegisterError(string error)
         {
             OnUniqueValueRegisterError?.Invoke(error);
@@ -125,9 +139,15 @@ namespace GamePush
         private void CallOnUniqueValueCheck(string uniqueValue)
         {
             UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            CallOnUniqueCheck(data);
+        }
+
+        private void CallOnUniqueCheck(UniquesData data)
+        {
             OnUniqueValueCheck?.Invoke(data);
             _onUniqueValueCheck?.Invoke(data);
         }
+
         private void CallOnUniqueValueCheckError(string error)
         {
             OnUniqueValueCheckError?.Invoke(error);
@@ -137,9 +157,15 @@ namespace GamePush
         private void CallOnUniqueValueDelete(string uniqueValue)
         {
             UniquesData data = UtilityJSON.Get<UniquesData>(uniqueValue);
+            CallOnUniqueDelete(data);
+        }
+
+        private void CallOnUniqueDelete(UniquesData data)
+        {
             OnUniqueValueDelete?.Invoke(data.tag);
             _onUniqueValueDelete?.Invoke(data.tag);
         }
+
         private void CallOnUniqueValueDeleteError(string error)
         {
             GP_Logger.Log("Delete", error);
@@ -149,10 +175,4 @@ namespace GamePush
     }
 
 
-    [System.Serializable]
-    public class UniquesData
-    {
-        public string tag;
-        public string value;
-    }
 }
