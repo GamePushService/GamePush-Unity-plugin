@@ -105,16 +105,16 @@ namespace GamePush
             game = new GameModule();
             player = new PlayerModule();
             variables = new GameVariablesModule();
-            
             ads = new AdsModule();
             device = new DeviceModule();
             system = new SystemModule();
             app = new AppModule();
+            leaderboard = new LeaderboardModule();
 
             payments = new PaymentsModule();
-            leaderboard = new LeaderboardModule();
             socials = new SocialsModule();
-            
+
+            uniques = new UniquesModule();
         }
 
         public static void SetProjectData(SavedProjectData data)

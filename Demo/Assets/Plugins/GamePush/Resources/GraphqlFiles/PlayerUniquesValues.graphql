@@ -1,0 +1,36 @@
+query Check($input: CheckPlayerUniqueValueInput!) {
+  result: CheckPlayerUniqueValue(input: $input) {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on Success {
+      success
+    }
+  }
+}
+
+mutation Register($input: RegisterPlayerUniqueValueInput!) {
+  result: RegisterPlayerUniqueValue(input: $input) {
+    __typename
+    ... on UniqueValue {
+      tag
+      value
+    }
+    ... on Problem {
+      message
+    }
+  }
+}
+
+mutation Delete($input: DeletePlayerUniqueValueInput!) {
+  result: DeletePlayerUniqueValue(input: $input) {
+    __typename
+    ... on Success {
+      success
+    }
+    ... on Problem {
+      message
+    }
+  }
+}

@@ -7,5 +7,11 @@ namespace GamePush
     {
         public string tag;
         public string value;
+
+        public UniquesData(string tag = "", string value = "")
+        {
+            this.tag = tag;
+            this.value = value;
+        }
     }
 }

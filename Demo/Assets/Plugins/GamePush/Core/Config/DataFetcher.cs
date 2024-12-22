@@ -26,6 +26,7 @@ namespace GamePush.Core
         private static string _fetchTopScopedQueryName = "FetchTopScopedQuery";
         private static string _playerPublishRating = "PlayerPublishRating";
         private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
+        private static string _playerUniquesValues = "PlayerUniquesValues";
 
         public static async void Ping(string token)
         {
@@ -162,7 +163,7 @@ namespace GamePush.Core
             JObject resultObject = await SendQueryRequest(_syncPlayerQueryName, OperationType.Mutation, input, withToken);
 
             //Debug.Log("Sync result");
-            //Debug.Log(resultObject.ToString());
+            //Debug.Log(resultObject["uniques"].ToString());
 
             return resultObject;
         }
@@ -178,7 +179,7 @@ namespace GamePush.Core
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
+            variables.Add("lang", GetLang());
             variables.Add("withToken", withToken);
 
             string results = await graphQL.Send(
@@ -206,7 +207,7 @@ namespace GamePush.Core
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
+            variables.Add("lang", GetLang());
             variables.Add("withToken", withToken);
 
             string results = await graphQL.Send(
@@ -437,7 +438,38 @@ namespace GamePush.Core
 
         #region UniquesFetches
 
+        public static async Task<bool> CheckUniqueValue(object input, bool withToken)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_playerUniquesValues, "Check", OperationType.Query);
 
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("withToken", withToken);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                throw new Exception(error);
+            }
+
+            bool result = resultObject["success"].ToObject<bool>();
+
+            return result;
+        }
 
         #endregion
 

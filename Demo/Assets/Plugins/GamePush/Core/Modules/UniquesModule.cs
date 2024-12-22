@@ -33,9 +33,15 @@ namespace GamePush.Core
 
         }
 
-        public void Check(string tag, string value)
-        { 
-            
+        public async void Check(string tag, string value)
+        {
+            UniquesData data = new UniquesData(tag, value);
+
+            bool result = await DataFetcher.CheckUniqueValue(data, false);
+            if (result)
+                OnUniqueValueCheck?.Invoke(data);
+            else
+                OnUniqueValueCheckError?.Invoke("Already exist");
         }
 
         public void Delete(string tag)
