@@ -1,0 +1,11 @@
+mutation result($input: DeletePlayerUniqueValueInput!) {
+  result: DeletePlayerUniqueValue(input: $input) {
+    __typename
+    ... on Success {
+      success
+    }
+    ... on Problem {
+      message
+    }
+  }
+}

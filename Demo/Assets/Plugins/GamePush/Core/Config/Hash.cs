@@ -39,6 +39,7 @@ namespace GamePush.Core
             data.Add("token", token);
 
             string json = JsonConvert.SerializeObject(data);
+            //Debug.Log(json);
 
             var sortedObj = SortKeys(json);
             var hash = CalculateSHA256(sortedObj.ToString(Formatting.None));

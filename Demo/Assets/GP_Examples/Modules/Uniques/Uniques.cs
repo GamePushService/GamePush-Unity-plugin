@@ -49,6 +49,7 @@ namespace Examples.Uniques
         {
             ConsoleUI.Instance.Log($"Get List:");
             UniquesData[] uniques = GP_Uniques.List();
+            if (uniques == null) return;
             foreach (UniquesData data in uniques)
             {
                 ConsoleUI.Instance.Log($"TAG: {data.tag}, VALUE: {data.value}");

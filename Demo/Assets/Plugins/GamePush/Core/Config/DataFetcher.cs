@@ -16,6 +16,8 @@ namespace GamePush.Core
     {
         private static string _apiURL = "https://api.gamepush.com/gs/api";
         private static string _configName = "GP_GraphQL";
+        private static string _resultOperation = "result";
+
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";
         private static string _syncPlayerQueryName = "SyncPlayer";
@@ -55,6 +57,14 @@ namespace GamePush.Core
 
             if (lang == "" || lang == null) lang = "EN";
             return lang;
+        }
+
+        public static Query GetQuery(string queryName, OperationType operationType)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(queryName, _resultOperation, operationType);
+            return query;
         }
 
         private static async Task<JObject> SendQueryRequest(string queryName, OperationType operationType, object input, bool withToken)
@@ -438,7 +448,11 @@ namespace GamePush.Core
 
         #region UniquesFetches
 
-        public static async Task<bool> CheckUniqueValue(object input, bool withToken)
+
+        private static string SUCCESS_TAG = "gp_success";
+        private static string ERROR_TAG = "gp_error";
+
+        public static async Task<TagValueData> CheckUniqueValue(object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -460,13 +474,94 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
+            TagValueData result;
+
             if (resultObject["__typename"].ToObject<string>() == "Problem")
             {
                 string error = resultObject["message"].ToObject<string>();
-                throw new Exception(error);
+                result = new TagValueData(ERROR_TAG, error);
+                return result;
+                //throw new Exception(error);
             }
 
-            bool result = resultObject["success"].ToObject<bool>();
+            bool resultValue = resultObject["success"].ToObject<bool>();
+            result = new TagValueData(SUCCESS_TAG, resultValue);
+
+            return result;
+        }
+
+        public static async Task<TagValueData> RegisterUniqueValue(object input, bool withToken)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_playerUniquesValues, "Register", OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("withToken", withToken);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+            Debug.Log(resultObject);
+            TagValueData result;
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                result = new TagValueData(ERROR_TAG, error);
+                return result;
+                //throw new Exception(error);
+            }
+
+            UniquesData resultValue = resultObject.ToObject<UniquesData>();
+            result = new TagValueData(SUCCESS_TAG, resultValue);
+
+            return result;
+        }
+
+        public static async Task<TagValueData> DeleteUniqueValue(object input, bool withToken)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_playerUniquesValues, "Delete", OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("withToken", withToken);
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            TagValueData result;
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                result = new TagValueData(ERROR_TAG, error);
+                return result;
+                //throw new Exception(error);
+            }
+
+            bool resultValue = resultObject["success"].ToObject<bool>();
+            result = new TagValueData(SUCCESS_TAG, resultValue);
 
             return result;
         }

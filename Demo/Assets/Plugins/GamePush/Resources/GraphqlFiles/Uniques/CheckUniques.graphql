@@ -1,0 +1,11 @@
+query result($input: CheckPlayerUniqueValueInput!) {
+  result: CheckPlayerUniqueValue(input: $input) {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on Success {
+      success
+    }
+  }
+}

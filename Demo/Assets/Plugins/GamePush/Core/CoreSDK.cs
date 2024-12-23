@@ -167,6 +167,7 @@ namespace GamePush
             payments.Init(configData.products, configData.platformConfig);
             app.Init(configData.project, configData.platformConfig);
             socials.Init(configData.config);
+            uniques.Init();
         }
 
         public static AllConfigData GetConfig()

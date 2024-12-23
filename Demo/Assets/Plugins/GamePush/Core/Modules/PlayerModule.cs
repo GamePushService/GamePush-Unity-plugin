@@ -245,6 +245,8 @@ namespace GamePush.Core
             //Logger.Log("Sync Data", playerData);
             
             SetPlayerStats(playerData);
+            SetUniqueValues(playerData);
+
             SetStartTime(playerData["sessionStart"].ToString());
 
             if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
@@ -264,11 +266,9 @@ namespace GamePush.Core
                 }
             }
 
-
             string secretCode = GetPlayerSavedDataCode();
             string credentials = Get<string>("credentials");
             int playerID = GetPlayerSavedID();
-
 
             bool isNeedToLoadFromServer =
                 (credentials != null && credentials != "" && credentials != playerData["state"]["credentials"].ToString()) ||
@@ -315,6 +315,15 @@ namespace GamePush.Core
 
             _playerUpdateTime = CoreSDK.GetServerTime();
             SavePlayerStateToPrefs();
+        }
+
+        private void SetUniqueValues(JObject playerData)
+        {
+            //Logger.Log("playerData", playerData);
+            //Logger.Log("uniques", playerData["uniques"]);
+
+            List<UniquesData> uniques = playerData["uniques"].ToObject<List<UniquesData>>();
+            CoreSDK.uniques.SetUniques(uniques);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)

@@ -1,0 +1,12 @@
+mutation result($input: RegisterPlayerUniqueValueInput!) {
+  result: RegisterPlayerUniqueValue(input: $input) {
+    __typename
+    ... on UniqueValue {
+      tag
+      value
+    }
+    ... on Problem {
+      message
+    }
+  }
+}
