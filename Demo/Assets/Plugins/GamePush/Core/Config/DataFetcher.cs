@@ -511,7 +511,7 @@ namespace GamePush.Core
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
-            Debug.Log(resultObject);
+            //Debug.Log(resultObject);
             TagValueData result;
 
             if (resultObject["__typename"].ToObject<string>() == "Problem")

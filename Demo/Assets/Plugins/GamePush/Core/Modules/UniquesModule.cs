@@ -47,7 +47,7 @@ namespace GamePush.Core
 
         private void RemoveUnique(UniquesData uniquesData)
         {
-            uniquesList.RemoveAll(item => item.tag == uniquesData.tag && item.value == uniquesData.value);
+            uniquesList.RemoveAll(item => item.tag == uniquesData.tag);
             uniquesDict.Remove(uniquesData.tag);
         }
 

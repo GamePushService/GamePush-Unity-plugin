@@ -27,7 +27,7 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.uniques.OnUniqueValueRegister += (UniquesData data) => CallOnUniqueCheck(data);
+            CoreSDK.uniques.OnUniqueValueRegister += (UniquesData data) => CallOnUniqueRegister(data);
             CoreSDK.uniques.OnUniqueValueCheck += (UniquesData data) => CallOnUniqueCheck(data);
             CoreSDK.uniques.OnUniqueValueDelete += (UniquesData data) => CallOnUniqueDelete(data);
 
