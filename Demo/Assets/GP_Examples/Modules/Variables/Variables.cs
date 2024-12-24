@@ -13,6 +13,7 @@ namespace Examples.Variables
         [SerializeField] private Button _fetchButton;
         [SerializeField] private Button _getButton;
         [SerializeField] private Button _hasButton;
+        [SerializeField] private Button _listButton;
         [SerializeField] private Button _fetchPlatformButton;
         [SerializeField] private Button _checkPlatformButton;
 
@@ -28,6 +29,7 @@ namespace Examples.Variables
             _fetchButton.onClick.AddListener(Fetch);
             _getButton.onClick.AddListener(Get);
             _hasButton.onClick.AddListener(Has);
+            _listButton.onClick.AddListener(List);
             _fetchPlatformButton.onClick.AddListener(FetchPlatformVariables);
             _checkPlatformButton.onClick.AddListener(IsPlatformFetchAvailable);
         }
@@ -37,11 +39,27 @@ namespace Examples.Variables
             _fetchButton.onClick.RemoveListener(Fetch);
             _getButton.onClick.RemoveListener(Get);
             _hasButton.onClick.RemoveListener(Has);
+            _listButton.onClick.RemoveListener(List);
             _fetchPlatformButton.onClick.RemoveListener(FetchPlatformVariables);
             _checkPlatformButton.onClick.RemoveListener(IsPlatformFetchAvailable);
         }
 
         public void Fetch() => GP_Variables.Fetch(OnFetchSuccess, OnFetchError);
+
+        public void List()
+        {
+            List<GameVariable> variables = GP_Variables.GetList();
+
+            ConsoleUI.Instance.Log("VARIABLES:");
+            for (int i = 0; i < variables.Count; i++)
+            {
+                ConsoleUI.Instance.Log(" ");
+                ConsoleUI.Instance.Log("VARIABLE KEY: " + variables[i].key);
+                ConsoleUI.Instance.Log("VARIABLE TYPE: " + variables[i].type);
+                ConsoleUI.Instance.Log("VARIABLE VALUE: " + variables[i].value);
+            }
+        }
+
         public void Check()
         {
             ConsoleUI.Instance.Log("VARIABLES: GET INT " + GP_Variables.GetInt("number"));
@@ -116,16 +134,16 @@ namespace Examples.Variables
             return dict;
         }
 
-        private void OnFetchSuccess(List<FetchGameVariable> variables)
+        private void OnFetchSuccess(List<GameVariable> variables)
         {
-            ConsoleUI.Instance.Log("FETCH SUCCESS:");
-            for (int i = 0; i < variables.Count; i++)
-            {
-                ConsoleUI.Instance.Log(" ");
-                ConsoleUI.Instance.Log("VARIABLE KEY: " + variables[i].key);
-                ConsoleUI.Instance.Log("VARIABLE TYPE: " + variables[i].type);
-                ConsoleUI.Instance.Log("VARIABLE VALUE: " + variables[i].value);
-            }
+            ConsoleUI.Instance.Log("FETCH: SUCCESS");
+            //for (int i = 0; i < variables.Count; i++)
+            //{
+            //    ConsoleUI.Instance.Log(" ");
+            //    ConsoleUI.Instance.Log("VARIABLE KEY: " + variables[i].key);
+            //    ConsoleUI.Instance.Log("VARIABLE TYPE: " + variables[i].type);
+            //    ConsoleUI.Instance.Log("VARIABLE VALUE: " + variables[i].value);
+            //}
         }
 
         private void OnFetchError() => ConsoleUI.Instance.Log("FETCH: ERROR");

@@ -2,7 +2,7 @@
 namespace GamePush
 {
     [System.Serializable]
-    public class FetchGameVariable
+    public class GameVariable
     {
         public string key;
         public object value;

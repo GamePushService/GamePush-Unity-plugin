@@ -206,7 +206,7 @@ namespace GamePush.Core
             return playerFields;
         }
 
-        public static async Task<List<FetchGameVariable>> FetchPlayerProjectVariables(bool withToken)
+        public static async Task<List<GameVariable>> FetchPlayerProjectVariables(bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -235,7 +235,7 @@ namespace GamePush.Core
                 throw new Exception(error);
             }
 
-            List<FetchGameVariable> playerGameVariables = resultObject["items"].ToObject<List<FetchGameVariable>>();
+            List<GameVariable> playerGameVariables = resultObject["items"].ToObject<List<GameVariable>>();
 
             return playerGameVariables;
         }

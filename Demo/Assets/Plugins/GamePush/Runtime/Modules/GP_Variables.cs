@@ -12,10 +12,10 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Variables);
 
-        public static event UnityAction<List<FetchGameVariable>> OnFetchSuccess;
+        public static event UnityAction<List<GameVariable>> OnFetchSuccess;
         public static event UnityAction OnFetchError;
 
-        private static event Action<List<FetchGameVariable>> _onSuccess;
+        private static event Action<List<GameVariable>> _onSuccess;
         private static event Action _onError;
 
         public static event UnityAction<Dictionary<string, string>> OnPlatformFetchSuccess;
@@ -26,7 +26,7 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.variables.OnFetchSuccess += (List<FetchGameVariable> data) => CallVariablesFetchListSuccess(data);
+            CoreSDK.variables.OnFetchSuccess += (List<GameVariable> data) => CallVariablesFetchListSuccess(data);
             CoreSDK.variables.OnFetchError += () => CallVariablesFetchError();
 
             CoreSDK.variables.OnPlatformFetchSuccess += (Dictionary<string, string> data) => CallOnFetchPlatformVariablesDictionary(data);
@@ -57,7 +57,7 @@ namespace GamePush
 
 #endif
 
-        public static void Fetch(Action<List<FetchGameVariable>> onFetchSuccess = null, Action onFetchError = null)
+        public static void Fetch(Action<List<GameVariable>> onFetchSuccess = null, Action onFetchError = null)
         {
             _onSuccess = onFetchSuccess;
             _onError = onFetchError;
@@ -130,6 +130,11 @@ namespace GamePush
 #else
             return CoreSDK.variables.Get<string>(key);
 #endif
+        }
+
+        public static List<GameVariable> GetList()
+        {
+            return CoreSDK.variables.GetList();
         }
 
         public static bool IsPlatformVariablesAvailable()
@@ -207,7 +212,7 @@ namespace GamePush
             return clientParams;
         }
 
-        private void CallVariablesFetchListSuccess(List<FetchGameVariable> data)
+        private void CallVariablesFetchListSuccess(List<GameVariable> data)
         {
             _onSuccess?.Invoke(data);
             OnFetchSuccess?.Invoke(data);
@@ -215,7 +220,7 @@ namespace GamePush
 
         private void CallVariablesFetchSuccess(string data)
         {
-            var variablesData = UtilityJSON.GetList<FetchGameVariable>(data);
+            var variablesData = UtilityJSON.GetList<GameVariable>(data);
             _onSuccess?.Invoke(variablesData);
             OnFetchSuccess?.Invoke(variablesData);
         }

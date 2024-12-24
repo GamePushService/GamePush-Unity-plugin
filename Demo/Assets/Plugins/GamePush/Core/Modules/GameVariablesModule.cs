@@ -12,25 +12,25 @@ namespace GamePush.Core
         protected Dictionary<string, string> keyTypeData;
         protected Dictionary<string, object> keyValueData;
 
-        protected List<FetchGameVariable> fetchGameVariables;
+        protected List<GameVariable> fetchGameVariables;
 
-        public event Action<List<FetchGameVariable>> OnFetchSuccess;
+        public event Action<List<GameVariable>> OnFetchSuccess;
         public event Action OnFetchError;
 
         public event Action<Dictionary<string, string>> OnPlatformFetchSuccess;
         public event Action<string> OnPlatformFetchError;
 
-        public List<FetchGameVariable> FetchData()
+        public List<GameVariable> GetList()
         {
             if (fetchGameVariables != null)
                 return fetchGameVariables;
 
-            Logger.Log("fetchGameVariables null");
+            //Logger.Log("fetchGameVariables null");
 
-            List<FetchGameVariable> fetchData = new List<FetchGameVariable>();
+            List<GameVariable> fetchData = new List<GameVariable>();
             foreach(string key in keyTypeData.Keys)
             {
-                FetchGameVariable variable = new FetchGameVariable();
+                GameVariable variable = new GameVariable();
                 variable.key = key;
                 variable.value = keyValueData[key];
                 variable.type = keyTypeData[key];
@@ -79,11 +79,11 @@ namespace GamePush.Core
             }
         }
 
-        public void SetVariablesData(List<FetchGameVariable> gameVariables)
+        public void SetVariablesData(List<GameVariable> gameVariables)
         {
             variablesData = new List<GameVariableConfigData>();
 
-            foreach (FetchGameVariable variable in gameVariables)
+            foreach (GameVariable variable in gameVariables)
             {
                 variablesData.Add(new GameVariableConfigData(variable.key, variable.value.ToString(), variable.type));
                 keyTypeData.TryAdd(variable.key, variable.type);
@@ -129,17 +129,11 @@ namespace GamePush.Core
 
         public async void Fetch()
         {
-            if (variablesData != null && variablesData.Count > 0)
-            {
-                OnFetchSuccess(FetchData());
-                return;
-            }
-
             fetchGameVariables = await DataFetcher.FetchPlayerProjectVariables(false);
             if (fetchGameVariables != null)
             {
                 SetVariablesData(fetchGameVariables);
-                OnFetchSuccess(FetchData());
+                OnFetchSuccess(GetList());
             }
             else
                 OnFetchError();
