@@ -8,7 +8,7 @@ namespace GamePush.Core
 {
     public class GameVariablesModule
     {
-        protected List<GameVariable> variablesData;
+        protected List<GameVariableConfigData> variablesData;
         protected Dictionary<string, string> keyTypeData;
         protected Dictionary<string, object> keyValueData;
 
@@ -48,13 +48,13 @@ namespace GamePush.Core
             keyValueData = new Dictionary<string, object>();
         }
 
-        public void Init(List<GameVariable> gameVariables) => SetVariablesData(gameVariables);
+        public void Init(List<GameVariableConfigData> gameVariables) => SetVariablesData(gameVariables);
 
-        public void SetVariablesData(List<GameVariable> gameVariables)
+        public void SetVariablesData(List<GameVariableConfigData> gameVariables)
         {
             variablesData = gameVariables;
 
-            foreach (GameVariable variable in variablesData)
+            foreach (GameVariableConfigData variable in variablesData)
             {
                 keyTypeData.TryAdd(variable.key, variable.type);
                 switch (variable.type)
@@ -76,6 +76,35 @@ namespace GamePush.Core
                         break;
                 }
                
+            }
+        }
+
+        public void SetVariablesData(List<FetchGameVariable> gameVariables)
+        {
+            variablesData = new List<GameVariableConfigData>();
+
+            foreach (FetchGameVariable variable in gameVariables)
+            {
+                variablesData.Add(new GameVariableConfigData(variable.key, variable.value.ToString(), variable.type));
+                keyTypeData.TryAdd(variable.key, variable.type);
+                switch (variable.type)
+                {
+                    case "flag":
+                        bool value = (bool)variable.value;
+                        keyValueData.TryAdd(variable.key, value);
+                        break;
+                    case "stats":
+                        if (int.TryParse(variable.value.ToString(), out int intValue))
+                            keyValueData.TryAdd(variable.key, intValue);
+                        else if (float.TryParse(variable.value.ToString(), out float floatValue))
+                            keyValueData.TryAdd(variable.key, floatValue);
+                        else
+                            keyValueData.TryAdd(variable.key, variable.value);
+                        break;
+                    default:
+                        keyValueData.TryAdd(variable.key, variable.value.ToString());
+                        break;
+                }
             }
 
             //Logger.Log("keyTypeData count:" + keyTypeData.Count);
@@ -108,7 +137,10 @@ namespace GamePush.Core
 
             fetchGameVariables = await DataFetcher.FetchPlayerProjectVariables(false);
             if (fetchGameVariables != null)
+            {
+                SetVariablesData(fetchGameVariables);
                 OnFetchSuccess(FetchData());
+            }
             else
                 OnFetchError();
         }

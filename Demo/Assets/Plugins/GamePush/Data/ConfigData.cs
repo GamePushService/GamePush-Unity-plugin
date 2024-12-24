@@ -16,7 +16,7 @@ namespace GamePush.Data
         public Project project;
         public PlatformConfig platformConfig;
         public List<PlayerField> playerFields;
-        public List<GameVariable> gameVariables;
+        public List<GameVariableConfigData> gameVariables;
         public List<Product> products;
         public string serverTime;
     }
@@ -64,7 +64,7 @@ namespace GamePush.Data
         public RootData data;
         public List<PlayerField> playerFields;
         public string serverTime;
-        public List<GameVariable> gameVariables;
+        public List<GameVariableConfigData> gameVariables;
         public List<PlayerReward> rewards;
         public List<Trigger> triggers;
         public List<Achievement> achievements;
@@ -145,15 +145,6 @@ namespace GamePush.Data
     public class PlatfromServiceConfig
     {
         public string activeService;
-    }
-
-
-    [System.Serializable]
-    public class GameVariable
-    {
-        public string key;
-        public string value;
-        public string type;
     }
 
     [System.Serializable]
