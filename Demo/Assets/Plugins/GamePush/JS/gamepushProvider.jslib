@@ -271,11 +271,14 @@ mergeInto(LibraryManager.library, {
     GP_Leaderboard_Scoped_Fetch: function (idOrTag, variant, order, limit, showNearest, includeFields, withMe) {
         _GP().LeaderboardScopedFetch(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields), UTF8ToString(withMe));
     },
-    GP_Leaderboard_Scoped_PublishRecord: function (idOrTag, variant, override, key1, value1, key2, value2, key3, value3) {
-        _GP().LeaderboardScopedPublishRecord(UTF8ToString(idOrTag), UTF8ToString(variant), override, UTF8ToString(key1), value1, UTF8ToString(key2), value2, UTF8ToString(key3), value3);
+    // GP_Leaderboard_Scoped_PublishRecord: function (idOrTag, variant, override, key1, value1, key2, value2, key3, value3) {
+    //     _GP().LeaderboardScopedPublishRecord(UTF8ToString(idOrTag), UTF8ToString(variant), override, UTF8ToString(key1), value1, UTF8ToString(key2), value2, UTF8ToString(key3), value3);
+    // },
+    GP_Leaderboard_Scoped_PublishRecord: function (idOrTag, variant, override, record) {
+        _GP().LeaderboardScopedPublishRecord(UTF8ToString(idOrTag), UTF8ToString(variant), override, UTF8ToString(record));
     },
-    GP_Leaderboard_Scoped_FetchPlayerRating: function (idOrTag, variant, includeFields) {
-        _GP().LeaderboardScopedFetchPlayerRating(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(includeFields));
+    GP_Leaderboard_Scoped_FetchPlayerRating: function (idOrTag, variant, order, limit, showNearest, includeFields) {
+        _GP().LeaderboardScopedFetchPlayerRating(UTF8ToString(idOrTag), UTF8ToString(variant), UTF8ToString(order), limit, showNearest, UTF8ToString(includeFields));
     },
     /* LEADER BOARD SCOPED */
 

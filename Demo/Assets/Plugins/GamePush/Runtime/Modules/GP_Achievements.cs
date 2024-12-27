@@ -11,6 +11,7 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Achievements);
 
+        #region Events
         public static event UnityAction OnAchievementsOpen;
         public static event UnityAction OnAchievementsClose;
 
@@ -34,6 +35,45 @@ namespace GamePush
 
         private static event Action<string> _onAchievementsProgress;
         private static event Action _onAchievementsProgressError;
+        #endregion
+
+        #region Callbacks
+        private void CallAchievementsOpen() { _onAchievementsOpen?.Invoke(); OnAchievementsOpen?.Invoke(); }
+        private void CallAchievementsClose() { _onAchievementsClose?.Invoke(); OnAchievementsClose?.Invoke(); }
+
+        private void CallAchievementsFetchList(List<AchievementsFetch> achievementsData) => OnAchievementsFetch?.Invoke(achievementsData);
+        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(UtilityJSON.GetList<AchievementsFetch>(achievementsData));
+        private void CallAchievementsFetchError() => OnAchievementsFetchError?.Invoke();
+
+        private void CallAchievementsFetchGroupsList(List<AchievementsFetchGroups> achievementsData) => OnAchievementsFetchGroups?.Invoke(achievementsData);
+        private void CallPlayerAchievementsFetchList(List<AchievementsFetchPlayer> achievementsData) => OnAchievementsFetchPlayer?.Invoke(achievementsData);
+        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(UtilityJSON.GetList<AchievementsFetchGroups>(achievementsGroupsData));
+        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(UtilityJSON.GetList<AchievementsFetchPlayer>(achievementsPlayerData));
+
+        private void CallAchievementsUnlock(string achievement) { _onAchievementsUnlock?.Invoke(achievement); OnAchievementsUnlock?.Invoke(achievement); }
+        private void CallAchievementsUnlockError(string error) { _onAchievementsUnlockError?.Invoke(error); OnAchievementsUnlockError?.Invoke(error); }
+
+        private void CallAchievementsProgress(string idOrTag) { OnAchievementsProgress?.Invoke(idOrTag); _onAchievementsProgress?.Invoke(idOrTag); }
+        private void CallAchievementsProgressError() { OnAchievementsProgressError?.Invoke(); _onAchievementsProgressError?.Invoke(); }
+        #endregion
+
+        private void OnEnable()
+        {
+            CoreSDK.achievements.OnAchievementsOpen += () => CallAchievementsOpen();
+            CoreSDK.achievements.OnAchievementsClose += () => CallAchievementsOpen();
+
+            CoreSDK.achievements.OnAchievementsFetch += (List<AchievementsFetch> achievementsData) => CallAchievementsFetchList(achievementsData);
+            CoreSDK.achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
+
+            CoreSDK.achievements.OnAchievementsFetchGroups += (List<AchievementsFetchGroups> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
+            CoreSDK.achievements.OnAchievementsFetchPlayer += (List<AchievementsFetchPlayer> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
+
+            CoreSDK.achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
+            CoreSDK.achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);
+
+            CoreSDK.achievements.OnAchievementsProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
+            CoreSDK.achievements.OnAchievementsProgressError += () => CallAchievementsProgressError();
+        }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
@@ -64,9 +104,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Open();
 #else
-            ConsoleLog("OPEN");
-            OnAchievementsOpen?.Invoke();
-            _onAchievementsOpen?.Invoke();
+            CoreSDK.achievements.Open();
 #endif
         }
 
@@ -76,7 +114,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Fetch();
 #else
-            ConsoleLog("FETCH");
+            CoreSDK.achievements.Fetch();
 #endif
         }
 
@@ -89,9 +127,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Unlock(idOrTag);
 #else
-            ConsoleLog("UNLOCK: " + idOrTag);
-            OnAchievementsUnlock?.Invoke(idOrTag);
-            _onAchievementsUnlock?.Invoke(idOrTag);
+            CoreSDK.achievements.Unlock(idOrTag);
 #endif
         }
 
@@ -103,10 +139,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_SetProgress(idOrTag,progress);
 #else
-            ConsoleLog("PROGRESS: " + idOrTag + " : " + progress);
-
-            OnAchievementsProgress?.Invoke(idOrTag);
-            _onAchievementsProgress?.Invoke(idOrTag);
+            CoreSDK.achievements.SetProgress(idOrTag, progress);
 #endif
         }
 
@@ -116,8 +149,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_Has(idOrTag) == "true";
 #else
-            ConsoleLog("HAS: " + idOrTag + " : TRUE");
-            return true;
+           return CoreSDK.achievements.Has(idOrTag);
 #endif
         }
 
@@ -126,63 +158,8 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_GetProgress(idOrTag);
 #else
-            ConsoleLog("GET PROGRESS: " + idOrTag + " : 100");
-            return 100;
+           return CoreSDK.achievements.GetProgress(idOrTag);
 #endif
         }
-
-
-        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(UtilityJSON.GetList<AchievementsFetch>(achievementsData));
-        private void CallAchievementsFetchError() => OnAchievementsFetchError?.Invoke();
-
-        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(UtilityJSON.GetList<AchievementsFetchGroups>(achievementsGroupsData));
-        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(UtilityJSON.GetList<AchievementsFetchPlayer>(achievementsPlayerData));
-
-        private void CallAchievementsOpen() { _onAchievementsOpen?.Invoke(); OnAchievementsOpen?.Invoke(); }
-        private void CallAchievementsClose() { _onAchievementsClose?.Invoke(); OnAchievementsClose?.Invoke(); }
-
-        private void CallAchievementsUnlock(string achievement) { _onAchievementsUnlock?.Invoke(achievement); OnAchievementsUnlock?.Invoke(achievement); }
-        private void CallAchievementsUnlockError(string error) { _onAchievementsUnlockError?.Invoke(error); OnAchievementsUnlockError?.Invoke(error); }
-
-        private void CallAchievementsProgress(string idOrTag) { OnAchievementsProgress?.Invoke(idOrTag); _onAchievementsProgress?.Invoke(idOrTag); }
-        private void CallAchievementsProgressError() { OnAchievementsProgressError?.Invoke(); _onAchievementsProgressError?.Invoke(); }
-
-    }
-
-    [System.Serializable]
-    public class AchievementsFetch
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public string icon;
-        public string iconSmall;
-        public string lockedIcon;
-        public string lockedIconSmall;
-        public string rare;
-        public int maxProgress;
-        public int progressStep;
-        public bool lockedVisible;
-        public bool lockedDescriptionVisible;
-    }
-
-    [System.Serializable]
-    public class AchievementsFetchGroups
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public int[] achievements;
-    }
-
-    [System.Serializable]
-    public class AchievementsFetchPlayer
-    {
-        public int achievementId;
-        public string createdAt;
-        public int progress;
-        public bool unlocked;
     }
 }

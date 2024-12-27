@@ -1168,12 +1168,13 @@ class GamePushUnityInner {
         idOrTag,
         variant,
         override,
-        key1,
-        value1,
-        key2,
-        value2,
-        key3,
-        value3
+        record
+        // key1,
+        // value1,
+        // key2,
+        // value2,
+        // key3,
+        // value3
     ) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
@@ -1182,11 +1183,12 @@ class GamePushUnityInner {
                 ...query,
                 variant,
                 override: Boolean(override),
-                record: {
-                    [key1]: value1,
-                    [key2]: value2,
-                    [key3]: value3
-                }
+                record: record
+                // {
+                //     [key1]: value1,
+                //     [key2]: value2,
+                //     [key3]: value3
+                // }
             })
             .then(() => {
                 this.trigger('CallLeaderboardScopedPublishRecordComplete');
@@ -1197,17 +1199,28 @@ class GamePushUnityInner {
             });
     }
 
-    LeaderboardScopedFetchPlayerRating(idOrTag, variant, includeFields) {
+    LeaderboardScopedFetchPlayerRating(
+        idOrTag, 
+        variant, 
+        order, 
+        limit,
+        showNearest,
+        includeFields
+    ) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag };
         return this.gp.leaderboard
             .fetchPlayerRatingScoped({
                 ...query,
-                variant,
+                variant: variant,
+                order: order,
+                limit: limit,
+                showNearest: showNearest,
                 includeFields: includeFields
                     .split(',')
                     .map((o) => o.trim())
-                    .filter((f) => f)
+                    .filter((f) => f),
+                
             })
             .then((result) => {
                 this.trigger('CallLeaderboardScopedFetchPlayerTag', idOrTag);

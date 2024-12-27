@@ -36,6 +36,7 @@ namespace GamePush
         public static SocialsModule socials;
         public static LanguageModule language;
         public static UniquesModule uniques;
+        public static AchievementsModule achievements;
 
         #region ServerTime
 
@@ -110,11 +111,12 @@ namespace GamePush
             system = new SystemModule();
             app = new AppModule();
             leaderboard = new LeaderboardModule();
+            uniques = new UniquesModule();
+            achievements = new AchievementsModule();
 
             payments = new PaymentsModule();
             socials = new SocialsModule();
 
-            uniques = new UniquesModule();
         }
 
         public static void SetProjectData(SavedProjectData data)
