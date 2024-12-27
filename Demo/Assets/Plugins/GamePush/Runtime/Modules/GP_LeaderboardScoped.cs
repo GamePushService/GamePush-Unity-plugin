@@ -1,6 +1,8 @@
 ﻿using UnityEngine.Events;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using GamePush.Tools;
 
 namespace GamePush
 {
@@ -74,6 +76,9 @@ namespace GamePush
         private static extern void GP_Leaderboard_Scoped_FetchPlayerRating(
             string idOrTag = "",
             string variant = "",
+            string order = "DESC",
+            int limit = 10,
+            int showNearest = 5,
             string includeFields = ""
         );
         #endregion
@@ -154,7 +159,7 @@ namespace GamePush
             string includeFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+            GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, order.ToString(), limit, showNearest, includeFields);
 #else
             CoreSDK.leaderboard.SimpleFetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
 #endif
@@ -187,21 +192,24 @@ namespace GamePush
 
         public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, string key1 = "", float record_value1 = 0, string key2 = "", float record_value2 = 0, string key3 = "", float record_value3 = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
-#else
             Dictionary<string, object> record = new Dictionary<string, object>();
             record.Add(key1, record_value1);
             if (key2 != "") record.Add(key2, record_value2);
             if (key3 != "") record.Add(key3, record_value3);
+            string recordJSON = UtilityJSON.DictionaryToJson(record);
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, recordJSON);
+#else
             CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
         public static void PublishRecord(string idOrTag = "", string variant = "some_variant", bool Override = true, Dictionary<string, object> record = null)
         {
+            string recordJSON = UtilityJSON.DictionaryToJson(record);
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, key1, record_value1, key2, record_value2, key3, record_value3);
+
+            GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, recordJSON);
 #else
             CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif

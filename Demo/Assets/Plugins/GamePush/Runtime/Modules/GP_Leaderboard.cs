@@ -1,5 +1,6 @@
 ﻿using UnityEngine.Events;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace GamePush
 {
@@ -22,6 +23,22 @@ namespace GamePush
 
         private string _leaderboardFetchTag;
         private string _leaderboardPlayerFetchTag;
+
+        private void OnEnable()
+        {
+            CoreSDK.leaderboard.OnFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.leaderboard.OnFetchError += () => OnFetchError?.Invoke();
+
+            CoreSDK.leaderboard.OnFetchPlayerRatingSuccess += (string _leaderboardFetchTag, int position) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardFetchTag, position);
+            CoreSDK.leaderboard.OnFetchPlayerRatingError += () => OnFetchError?.Invoke();
+
+            CoreSDK.leaderboard.OnLeaderboardOpen += () => OnLeaderboardOpen?.Invoke();
+            CoreSDK.leaderboard.OnLeaderboardClose += () => OnLeaderboardClose?.Invoke();
+        }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
@@ -60,21 +77,7 @@ namespace GamePush
         );
 #endif
 
-        private void OnEnable()
-        {
-            CoreSDK.leaderboard.OnFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchError += () => OnFetchError?.Invoke();
 
-            CoreSDK.leaderboard.OnFetchPlayerRatingSuccess += (string _leaderboardFetchTag, int position) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardFetchTag, position);
-            CoreSDK.leaderboard.OnFetchPlayerRatingError += () => OnFetchError?.Invoke();
-
-            CoreSDK.leaderboard.OnLeaderboardOpen += () => OnLeaderboardOpen?.Invoke();
-            CoreSDK.leaderboard.OnLeaderboardClose += () => OnLeaderboardClose?.Invoke();
-        }
 
 
         public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
