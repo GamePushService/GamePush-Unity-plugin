@@ -1,0 +1,64 @@
+fragment AchievementFields on Achievement {
+  id
+  icon(w: 256, h: 256, crop: false)
+  y8Id
+  tag
+  rare
+  progress
+  maxProgress
+  unlocked
+  lockedIcon(w: 256, h: 256, crop: false)
+  progressStep
+  isPublished
+  isLockedVisible
+  isLockedDescriptionVisible
+}
+
+fragment AchievementResolvers on Achievement {
+  name(lang: $lang)
+  description(lang: $lang)
+  names {
+    ...translations
+  }
+  iconSmall: icon(w: 48, h: 48, crop: false)
+  lockedIconSmall: lockedIcon(w: 48, h: 48, crop: false)
+}
+
+fragment PlayerAchievementFields on PlayerAchievement {
+  achievementId
+  createdAt
+  progress
+  unlocked
+}
+
+fragment ProjectAchievementsFields on ProjectAchievements {
+  isLockedVisible
+  isLockedDescriptionVisible
+  enableUnlockToast
+}
+
+fragment AchievementsGroupFields on AchievementsGroup {
+  id
+  tag
+  name(lang: $lang)
+  description(lang: $lang)
+  achievements {
+    ...AchievementFields
+  }
+}
+
+mutation PlayerSetAchievementProgress($input: PlayerSetAchievementProgressInput!, $lang: Lang) {
+  result: PlayerSetAchievementProgress(input: $input) {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on PlayerAchievement {
+      ...PlayerAchievementFields
+      achievement {
+        ...AchievementFields
+        ...AchievementResolvers
+      }
+    }
+  }
+}

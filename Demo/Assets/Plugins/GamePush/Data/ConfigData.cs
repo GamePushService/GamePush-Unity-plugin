@@ -18,6 +18,8 @@ namespace GamePush.Data
         public List<PlayerField> playerFields;
         public List<GameVariableConfigData> gameVariables;
         public List<Product> products;
+        public List<Achievement> achievements;
+        public List<AchievementsGroup> achievementsGroups;
         public string serverTime;
     }
 
@@ -225,24 +227,5 @@ namespace GamePush.Data
         public List<int> achievements;
         public Translations names;
         public Translations descriptions;
-    }
-
-    [System.Serializable]
-    public class Translations
-    {
-        public string en;
-        public string fr;
-        public string it;
-        public string de;
-        public string es;
-        public string zh;
-        public string pt;
-        public string ko;
-        public string ja;
-        public string ru;
-        public string tr;
-        public string ar;
-        public string id;
-        public string hi;
     }
 }

@@ -1,6 +1,25 @@
 
 namespace GamePush
 {
+    [System.Serializable]
+    public class Translations
+    {
+        public string en;
+        public string fr;
+        public string it;
+        public string de;
+        public string es;
+        public string zh;
+        public string pt;
+        public string ko;
+        public string ja;
+        public string ru;
+        public string tr;
+        public string ar;
+        public string id;
+        public string hi;
+    }
+
     public enum Language : byte
     {
         English,
@@ -80,7 +99,7 @@ namespace GamePush
             };
         }
 
-        public static string GetTranslation(string lang, GamePush.Data.Translations translations)
+        public static string GetTranslation(string lang, Translations translations)
         {
             return lang switch
             {
