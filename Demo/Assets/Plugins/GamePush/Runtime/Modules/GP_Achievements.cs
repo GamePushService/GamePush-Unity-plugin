@@ -15,11 +15,11 @@ namespace GamePush
         public static event UnityAction OnAchievementsOpen;
         public static event UnityAction OnAchievementsClose;
 
-        public static event UnityAction<List<AchievementsFetch>> OnAchievementsFetch;
+        public static event UnityAction<List<AchievementData>> OnAchievementsFetch;
         public static event UnityAction OnAchievementsFetchError;
 
-        public static event UnityAction<List<AchievementsFetchGroups>> OnAchievementsFetchGroups;
-        public static event UnityAction<List<AchievementsFetchPlayer>> OnAchievementsFetchPlayer;
+        public static event UnityAction<List<AchievementsGroupData>> OnAchievementsFetchGroups;
+        public static event UnityAction<List<PlayerAchievement>> OnAchievementsFetchPlayer;
 
         public static event UnityAction<string> OnAchievementsUnlock;
         public static event UnityAction<string> OnAchievementsUnlockError;
@@ -41,14 +41,14 @@ namespace GamePush
         private void CallAchievementsOpen() { _onAchievementsOpen?.Invoke(); OnAchievementsOpen?.Invoke(); }
         private void CallAchievementsClose() { _onAchievementsClose?.Invoke(); OnAchievementsClose?.Invoke(); }
 
-        private void CallAchievementsFetchList(List<AchievementsFetch> achievementsData) => OnAchievementsFetch?.Invoke(achievementsData);
-        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(UtilityJSON.GetList<AchievementsFetch>(achievementsData));
+        private void CallAchievementsFetchList(List<AchievementData> achievementsData) => OnAchievementsFetch?.Invoke(achievementsData);
+        private void CallAchievementsFetch(string achievementsData) => OnAchievementsFetch?.Invoke(UtilityJSON.GetList<AchievementData>(achievementsData));
         private void CallAchievementsFetchError() => OnAchievementsFetchError?.Invoke();
 
-        private void CallAchievementsFetchGroupsList(List<AchievementsFetchGroups> achievementsData) => OnAchievementsFetchGroups?.Invoke(achievementsData);
-        private void CallPlayerAchievementsFetchList(List<AchievementsFetchPlayer> achievementsData) => OnAchievementsFetchPlayer?.Invoke(achievementsData);
-        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(UtilityJSON.GetList<AchievementsFetchGroups>(achievementsGroupsData));
-        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(UtilityJSON.GetList<AchievementsFetchPlayer>(achievementsPlayerData));
+        private void CallAchievementsFetchGroupsList(List<AchievementsGroupData> achievementsData) => OnAchievementsFetchGroups?.Invoke(achievementsData);
+        private void CallPlayerAchievementsFetchList(List<PlayerAchievement> achievementsData) => OnAchievementsFetchPlayer?.Invoke(achievementsData);
+        private void CallAchievementsFetchGroups(string achievementsGroupsData) => OnAchievementsFetchGroups?.Invoke(UtilityJSON.GetList<AchievementsGroupData>(achievementsGroupsData));
+        private void CallPlayerAchievementsFetch(string achievementsPlayerData) => OnAchievementsFetchPlayer?.Invoke(UtilityJSON.GetList<PlayerAchievement>(achievementsPlayerData));
 
         private void CallAchievementsUnlock(string achievement) { _onAchievementsUnlock?.Invoke(achievement); OnAchievementsUnlock?.Invoke(achievement); }
         private void CallAchievementsUnlockError(string error) { _onAchievementsUnlockError?.Invoke(error); OnAchievementsUnlockError?.Invoke(error); }
@@ -62,11 +62,11 @@ namespace GamePush
             CoreSDK.achievements.OnAchievementsOpen += () => CallAchievementsOpen();
             CoreSDK.achievements.OnAchievementsClose += () => CallAchievementsOpen();
 
-            CoreSDK.achievements.OnAchievementsFetch += (List<AchievementsFetch> achievementsData) => CallAchievementsFetchList(achievementsData);
+            CoreSDK.achievements.OnAchievementsFetch += (List<AchievementData> achievementsData) => CallAchievementsFetchList(achievementsData);
             CoreSDK.achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
 
-            CoreSDK.achievements.OnAchievementsFetchGroups += (List<AchievementsFetchGroups> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
-            CoreSDK.achievements.OnAchievementsFetchPlayer += (List<AchievementsFetchPlayer> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
+            CoreSDK.achievements.OnAchievementsFetchGroups += (List<AchievementsGroupData> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
+            CoreSDK.achievements.OnAchievementsFetchPlayer += (List<PlayerAchievement> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
 
             CoreSDK.achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
             CoreSDK.achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);

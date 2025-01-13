@@ -8,11 +8,11 @@ namespace GamePush.Core
         public event Action OnAchievementsOpen;
         public event Action OnAchievementsClose;
 
-        public event Action<List<AchievementsFetch>> OnAchievementsFetch;
+        public event Action<List<AchievementData>> OnAchievementsFetch;
         public event Action OnAchievementsFetchError;
 
-        public event Action<List<AchievementsFetchGroups>> OnAchievementsFetchGroups;
-        public event Action<List<AchievementsFetchPlayer>> OnAchievementsFetchPlayer;
+        public event Action<List<AchievementsGroupData>> OnAchievementsFetchGroups;
+        public event Action<List<PlayerAchievement>> OnAchievementsFetchPlayer;
 
         public event Action<string> OnAchievementsUnlock;
         public event Action<string> OnAchievementsUnlockError;

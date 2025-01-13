@@ -198,34 +198,4 @@ namespace GamePush.Data
         public string type;
     }
 
-    [System.Serializable]
-    public class Achievement
-    {
-        public int id;
-        public string icon;
-        public string tag;
-        public string rare;
-        public int progress;
-        public int maxProgress;
-        public bool unlocked;
-        public string lockedIcon;
-        public int progressStep;
-        public bool isPublished;
-        public bool isLockedVisible;
-        public bool isLockedDescriptionVisible;
-        public Translations names;
-        public Translations descriptions;
-    }
-
-    [System.Serializable]
-    public class AchievementsGroup
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public List<int> achievements;
-        public Translations names;
-        public Translations descriptions;
-    }
 }

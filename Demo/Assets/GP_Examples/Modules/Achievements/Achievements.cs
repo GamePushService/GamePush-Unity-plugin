@@ -68,7 +68,7 @@ namespace Examples.Achievements
         private void OnPogress(string idOrTag) => ConsoleUI.Instance.Log("ON PROGRESS: SUCCESS: " + idOrTag);
         private void OnProgressError() => ConsoleUI.Instance.Log("PROGRESS: ERROR");
 
-        private void OnFetchSuccess(List<AchievementsFetch> achievements)
+        private void OnFetchSuccess(List<AchievementData> achievements)
         {
             ConsoleUI.Instance.Log("FETCH: SUCCESS");
 
@@ -90,7 +90,7 @@ namespace Examples.Achievements
             }
         }
 
-        private void OnFetchGroups(List<AchievementsFetchGroups> data)
+        private void OnFetchGroups(List<AchievementsGroupData> data)
         {
             ConsoleUI.Instance.Log("FETCH: GROUP: SUCCESS");
 
@@ -108,7 +108,7 @@ namespace Examples.Achievements
             }
         }
 
-        private void OnFetchPlayer(List<AchievementsFetchPlayer> data)
+        private void OnFetchPlayer(List<PlayerAchievement> data)
         {
             ConsoleUI.Instance.Log("FETCH: PLAYER ACHIEVEMENTS: SUCCESS");
 
