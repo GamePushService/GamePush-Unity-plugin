@@ -179,7 +179,7 @@ namespace GamePush.Core
                 data.players = playersList;
 
                 GetOpenLeaderboardQuery query = new GetOpenLeaderboardQuery(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
-                OpenLeaderboard?.Invoke(data, query, OnLeaderboardOpen, OnLeaderboardClose);
+                OpenLeaderboard?.Invoke(data, query, OnScopedOpen, OnScopedClose);
             }
         }
 

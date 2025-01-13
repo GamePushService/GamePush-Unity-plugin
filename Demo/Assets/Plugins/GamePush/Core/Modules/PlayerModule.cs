@@ -591,7 +591,7 @@ namespace GamePush.Core
 
         public void SetPlayerPurchases()
         {
-
+            //TODO Set purchases from fetch
         }
 
         public List<FetchPlayerPurchase> GetPlayerPurchases()

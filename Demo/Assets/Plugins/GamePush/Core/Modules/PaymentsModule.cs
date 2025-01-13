@@ -83,7 +83,10 @@ namespace GamePush.Core
 
         public void Fetch()
         {
-            OnFetchProducts?.Invoke(_fetchProducts);
+            if (_fetchProducts != null)
+                OnFetchProducts?.Invoke(_fetchProducts);
+            else
+                OnFetchProductsError?.Invoke();
         }
 
 
@@ -114,9 +117,32 @@ namespace GamePush.Core
 #endif
         }
 
+        public void FetchPlayerPurchases()
+        {
+            //TODO FetchPlayerPurchases logic
+            List<FetchPlayerPurchase> playerPurchases = new List<FetchPlayerPurchase>();
+            OnFetchPlayerPurchases?.Invoke(playerPurchases);
+        }
+
         public void Consume(string idOrTag)
         {
+            //TODO Consume logic
+            OnConsumeSuccess?.Invoke(idOrTag);
+            OnConsumeError?.Invoke();
+        }
 
+        public void Subscribe(string idOrTag)
+        {
+            //TODO Subscribe logic
+            OnSubscribeSuccess?.Invoke(idOrTag);
+            OnSubscribeError?.Invoke();
+        }
+
+        public void Unsubscribe(string idOrTag)
+        {
+            //TODO Unsubscribe logic
+            OnUnsubscribeSuccess?.Invoke(idOrTag);
+            OnUnsubscribeError?.Invoke();
         }
 
         private async void CloudPurchase(string product)
