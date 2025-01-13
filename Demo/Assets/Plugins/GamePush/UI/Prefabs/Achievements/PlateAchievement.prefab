@@ -407,9 +407,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94eb318c2b72640cd80edd300c738a72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _backPlate: {fileID: 0}
+  _titleText: {fileID: 6791560450953044059}
+  _descriptionText: {fileID: 8315728831014173085}
+  _topInfoText: {fileID: 3308505745029445250}
+  _botInfoText: {fileID: 563874235475726202}
+  _achievImage: {fileID: 6559902145951044733}
+  _backPlate: {fileID: 5143582030136301629}
   _startOffset: 300
   _moveUpSpeed: 1500
+  _topInfo: {fileID: 4761872329206870050}
+  _botInfo: {fileID: 8131874959706771840}
 --- !u!1 &3734481629400382856
 GameObject:
   m_ObjectHideFlags: 0

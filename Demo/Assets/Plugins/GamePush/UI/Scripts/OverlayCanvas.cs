@@ -19,6 +19,8 @@ namespace GamePush.UI
         LeaderboardUI leaderboard;
         [SerializeField]
         SocialsUI socials;
+        [SerializeField]
+        AchievementsUI achievements;
 
         public static OverlayCanvas Controller;
 
@@ -78,6 +80,11 @@ namespace GamePush.UI
             overlayHolder.SetActive(true);
             SocialsUI socialsUI = Instantiate(socials, overlayHolder.transform).GetComponent<SocialsUI>();
             socialsUI.Init(title, text, url, image, callback);
+        }
+
+        public void OpenAchivements()
+        {
+
         }
     }
 }

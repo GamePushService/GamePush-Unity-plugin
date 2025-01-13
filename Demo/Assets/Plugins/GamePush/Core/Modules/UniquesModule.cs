@@ -6,7 +6,6 @@ namespace GamePush.Core
 {
     public class UniquesModule
     {
-
         public event Action<UniquesData> OnUniqueValueRegister;
         public event Action<string> OnUniqueValueRegisterError;
         public event Action<UniquesData> OnUniqueValueCheck;

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GamePush.Data;
-using GamePush;
 
 namespace GamePush.UI
 {

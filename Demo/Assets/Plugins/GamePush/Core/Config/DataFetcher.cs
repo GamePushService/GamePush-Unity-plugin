@@ -444,7 +444,6 @@ namespace GamePush.Core
 
         #region UniquesFetches
 
-
         private static string SUCCESS_TAG = "gp_success";
         private static string ERROR_TAG = "gp_error";
 
@@ -561,6 +560,12 @@ namespace GamePush.Core
 
             return result;
         }
+
+        #endregion
+
+        #region AchievementsFetchers
+
+
 
         #endregion
 

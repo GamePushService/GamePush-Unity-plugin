@@ -170,6 +170,7 @@ namespace GamePush
             app.Init(configData.project, configData.platformConfig);
             socials.Init(configData.config);
             uniques.Init();
+            achievements.Init(configData);
         }
 
         public static AllConfigData GetConfig()

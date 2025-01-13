@@ -48,17 +48,10 @@ namespace GamePush.Data
         public string icon;
         public int mainChatId;
         public bool enableMainChat;
-        public Achievements achievements;
+        public AchievementsSettings achievements;
         public AdsConfig ads;
     }
 
-    [System.Serializable]
-    public class Achievements
-    {
-        public bool isLockedVisible;
-        public bool isLockedDescriptionVisible;
-        public bool enableUnlockToast;
-    }
 
     [System.Serializable]
     public class RootObject

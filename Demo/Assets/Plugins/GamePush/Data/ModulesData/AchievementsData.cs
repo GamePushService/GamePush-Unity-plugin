@@ -3,6 +3,16 @@ using UnityEngine;
 
 namespace GamePush
 {
+    public enum Rare
+    {
+        COMMON,
+        UNCOMMON,
+        RARE,
+        EPIC,
+        LEGENDARY,
+        MYTHIC
+    }
+
     [System.Serializable]
     public class AchievementData
     {
@@ -72,5 +82,46 @@ namespace GamePush.Data
         public List<int> achievements;
         public Translations names;
         public Translations descriptions;
+    }
+
+    [System.Serializable]
+    public class AchievementsSettings
+    {
+        public bool isLockedVisible;
+        public bool isLockedDescriptionVisible;
+        public bool enableUnlockToast;
+    }
+
+    public class UnlockPlayerAchievementInput
+    {
+        public int? Id { get; set; }
+        public string Tag { get; set; }
+    }
+
+    public class PlayerSetAchievementProgressInput
+    {
+        public int? Id { get; set; }
+        public string Tag { get; set; }
+        public int Progress { get; set; }
+    }
+
+    public class UnlockPlayerAchievementOutput
+    {
+        public bool Success { get; set; }
+        public Achievement Achievement { get; set; }
+        public string Error { get; set; }
+    }
+
+    public class FetchPlayerAchievementsOutput
+    {
+        public List<Achievement> Achievements { get; set; }
+        public List<AchievementsGroup> AchievementsGroups { get; set; }
+        public List<PlayerAchievement> PlayerAchievements { get; set; }
+    }
+
+    public class PlayerAchievementInfo
+    {
+        public Achievement Achievement { get; set; }
+        public PlayerAchievement PlayerAchievement { get; set; }
     }
 }

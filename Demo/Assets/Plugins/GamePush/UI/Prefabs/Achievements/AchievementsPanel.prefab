@@ -410,7 +410,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 490673229289543293}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GamePush.UI.LeaderboardUI, GamePush.UI
         m_MethodName: Close
         m_Mode: 1
@@ -433,7 +433,6 @@ GameObject:
   - component: {fileID: 6484142983096192942}
   - component: {fileID: 5446825084110175712}
   - component: {fileID: 131065523377629546}
-  - component: {fileID: 490673229289543293}
   m_Layer: 5
   m_Name: AchievementsPanel
   m_TagString: Untagged
@@ -500,26 +499,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 15
---- !u!114 &490673229289543293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3248385255284095872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 458f9a719e6864856a2778a7cbe38cd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startOffset: 400
-  _moveUpSpeed: 1500
-  _leaderboardTitle: {fileID: 4623480015271160329}
-  _boardCell: {fileID: 1251478510841999749, guid: aec35527dc7db46f5aef8f4b87567aa1, type: 3}
-  _viewport: {fileID: 2275070245038361994}
-  _botBar: {fileID: 6571757710110079077, guid: da0103afa8b6c4f928d5d2bcf9541753, type: 3}
-  _divider: {fileID: 5876229535954001633, guid: c292fbe9535044558aaf0282bb729179, type: 3}
-  _cellHolder: {fileID: 5933998060017296674}
 --- !u!1 &3870415213854078668
 GameObject:
   m_ObjectHideFlags: 0
