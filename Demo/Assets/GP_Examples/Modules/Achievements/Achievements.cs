@@ -58,7 +58,6 @@ namespace Examples.Achievements
         private void Fetch() => GP_Achievements.Fetch();
 
 
-
         private void OnOpen() => ConsoleUI.Instance.Log("ON OPEN");
         private void OnClose() => ConsoleUI.Instance.Log("ON CLOSE");
 

@@ -7,7 +7,7 @@ using GamePush.Data;
 
 namespace GamePush.UI
 {
-    public class SocialsUI : MonoBehaviour
+    public class SocialsUI : ModuleUI
     {
         [SerializeField]
         private float _startOffset = 400f;

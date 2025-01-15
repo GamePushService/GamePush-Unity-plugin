@@ -30,6 +30,9 @@ namespace GamePush.Core
         private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
         private static string _playerUniquesValues = "PlayerUniquesValues";
 
+        private static string _unlockAchivement = "UnlockPlayerAchievement";
+        private static string _setAchivementProgress = "PlayerSetAchievementProgress";
+
         public static async void Ping(string token)
         {
             UnityWebRequest pingRequest = await GetRequest($"{_apiURL}/ping?t={token}");
@@ -565,7 +568,44 @@ namespace GamePush.Core
 
         #region AchievementsFetchers
 
+        public static async Task<PlayerAchievement> UnlockAchievemnt(PublishRecordQuery input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_playerPublishRating, _playerPublishRating, OperationType.Mutation);
 
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(root.ToString());
+
+            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
+            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
+
+            return data;
+        }
 
         #endregion
 

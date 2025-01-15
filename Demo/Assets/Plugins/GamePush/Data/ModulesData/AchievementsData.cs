@@ -94,15 +94,15 @@ namespace GamePush.Data
 
     public class UnlockPlayerAchievementInput
     {
-        public int? Id { get; set; }
-        public string Tag { get; set; }
+        public int? id;
+        public string tag;
     }
 
     public class PlayerSetAchievementProgressInput
     {
-        public int? Id { get; set; }
-        public string Tag { get; set; }
-        public int Progress { get; set; }
+        public int? id;
+        public string tag;
+        public int progress;
     }
 
     public class UnlockPlayerAchievementOutput
