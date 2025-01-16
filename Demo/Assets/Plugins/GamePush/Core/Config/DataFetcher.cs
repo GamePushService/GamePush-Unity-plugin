@@ -568,7 +568,7 @@ namespace GamePush.Core
 
         #region AchievementsFetchers
 
-        public static async Task<PlayerAchievement> UnlockAchievemnt(UnlockPlayerAchievementInput input)
+        public static async Task<PlayerAchievement> UnlockAchievement(UnlockPlayerAchievementInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);

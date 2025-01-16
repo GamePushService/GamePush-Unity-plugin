@@ -88,10 +88,10 @@ namespace GamePush.UI
             socialsUI.Init(title, text, url, image, callback);
         }
 
-        public void OpenAchivements(FetchPlayerAchievementsOutput info, Action onAchievementsOpen = null, Action onAchievementsClose = null)
+        public void OpenAchivements(FetchPlayerAchievementsOutput info, AchievementsSettings settings, Action onAchievementsOpen = null, Action onAchievementsClose = null)
         {
             AchievementsUI achievementsUI = (AchievementsUI)CreateUITable(achievements);
-            achievementsUI.Init(info, onAchievementsOpen, onAchievementsClose);
+            achievementsUI.Init(info, settings, onAchievementsOpen, onAchievementsClose);
         }
 
         public async void UnlockAchievement()

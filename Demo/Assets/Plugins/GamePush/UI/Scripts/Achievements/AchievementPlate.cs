@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using GamePush.Data;
 
 namespace GamePush.UI
 {
@@ -42,7 +43,6 @@ namespace GamePush.UI
             
         }
 
-
         void SetUnlock(AchievementData data)
         {
             //_topInfo.text = CoreSDK.language.localization.achievements.
@@ -63,6 +63,19 @@ namespace GamePush.UI
 
             _backPlate.anchoredPosition = startPos;
             MoveDown(endPos);
+        }
+
+        private static string GetAchievementIcon(Achievement achievement)
+        {
+            float DevicePixelRatio = CoreSDK.Device.DevicePixelRatio();
+            if (DevicePixelRatio > 1)
+            {
+                return achievement.unlocked ? achievement.icon ?? achievement.lockedIcon : achievement.lockedIcon ?? achievement.icon;
+            }
+            else
+            {
+                return achievement.unlocked ? achievement.iconSmall ?? achievement.lockedIconSmall : achievement.lockedIconSmall ?? achievement.iconSmall;
+            }
         }
 
         IEnumerator MoveDown(Vector3 moveToPos)

@@ -32,15 +32,18 @@ namespace GamePush.UI
 
 
         private FetchPlayerAchievementsOutput _info;
+        private AchievementsSettings _settings;
+
         private Dictionary<int, Achievement> _allAchievements;
         private Dictionary<int, Achievement> _tempAchievements;
 
         private event Action _OnAchievementsOpen;
         private event Action _OnAchievementsClose;
 
-        public void Init(FetchPlayerAchievementsOutput info, Action onAchievementsOpen, Action onAchievementsClose)
+        public void Init(FetchPlayerAchievementsOutput info, AchievementsSettings settings, Action onAchievementsOpen, Action onAchievementsClose)
         {
             _info = info;
+            _settings = settings;
             _allAchievements = new Dictionary<int, Achievement>();
             foreach(Achievement achievement in _info.Achievements)
             {
@@ -116,9 +119,13 @@ namespace GamePush.UI
 
                 foreach (int id in group.achievements)
                 {
-                    AchievementCell achievementCell = Instantiate(_achievementCell, _cellHolder).GetComponent<AchievementCell>();
-                    
                     Achievement achievement = _allAchievements[id];
+                    if (!achievement.unlocked && !_settings.isLockedVisible)
+                        continue;
+                    if (!achievement.unlocked && !_settings.isLockedDescriptionVisible)
+                        achievement.description = "";
+
+                    AchievementCell achievementCell = Instantiate(_achievementCell, _cellHolder).GetComponent<AchievementCell>();
                     achievementCell.SetUp(achievement);
                 }
             }

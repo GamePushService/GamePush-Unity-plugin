@@ -26,7 +26,7 @@ namespace GamePush.Core
         public event Action OnShowAcievementUnlock;
         public event Action OnShowAcievementProgress;
 
-        public event Action<FetchPlayerAchievementsOutput, Action, Action> OnShowAcievementsList;
+        public event Action<FetchPlayerAchievementsOutput, AchievementsSettings, Action, Action> OnShowAcievementsList;
 
         private AchievementsSettings _settings;
         //private SyncManager _syncManager;
@@ -40,6 +40,10 @@ namespace GamePush.Core
         private Dictionary<int, PlayerAchievement> _playerAchievementsMap = new();
         private Dictionary<int, AchievementsGroup> _achievementsGroupsMap = new();
         private HashSet<int> _alreadyUnlocked = new();
+
+        private const string AlreadyUnlockedError = "already_unlocked";
+        private const string ProgressTheSameError = "progress_the_same";
+        private const string AchievementNotFoundError = "achievement_not_found";
 
         public void Init(AllConfigData config)
         {
@@ -96,11 +100,10 @@ namespace GamePush.Core
 
                 UpsertInPlayersList(mergedAchievement);
 
-                //if (settings.EnableUnlockToast)
-                //{
-                //    Task.WhenAll(overlayTask, PreloadImage(GetAchievementIcon(mergedAchievement)))
-                //        .ContinueWith(_ => gp.Overlay.UnlockAchievement(mergedAchievement));
-                //}
+                if (_settings.enableUnlockToast)
+                {
+                    
+                }
             }
         }
 
@@ -204,18 +207,6 @@ namespace GamePush.Core
             };
         }
 
-        private static string GetAchievementIcon(Achievement achievement)
-        {
-            float DevicePixelRatio = CoreSDK.Device.DevicePixelRatio();
-            if (DevicePixelRatio > 1)
-            {
-                return achievement.unlocked ? achievement.icon ?? achievement.lockedIcon : achievement.lockedIcon ?? achievement.icon;
-            }
-            else
-            {
-                return achievement.unlocked ? achievement.iconSmall ?? achievement.lockedIconSmall : achievement.lockedIconSmall ?? achievement.iconSmall;
-            }
-        }
 
         public void Open()
         {
@@ -225,141 +216,59 @@ namespace GamePush.Core
             info.AchievementsGroups = _achievementsGroups;
             info.PlayerAchievements = _playerAchievements;
 
-            OnShowAcievementsList?.Invoke(info, OnAchievementsOpen, OnAchievementsClose);
+            OnShowAcievementsList?.Invoke(info, _settings, OnAchievementsOpen, OnAchievementsClose);
         }
 
-        //public async Task<FetchPlayerAchievementsOutput> Fetch()
-        //{
-        //    var transaction = CreateTransaction<FetchPlayerAchievementsOutput>();
-        //    gp.Loader.Inc();
 
-        //    try
-        //    {
-        //        var result = new FetchPlayerAchievementsOutput
-        //        {
-        //            Achievements = List,
-        //            AchievementsGroups = GroupsList,
-        //            PlayerAchievements = UnlockedList
-        //        };
 
-        //        transaction.Done(result);
-        //        _events.Emit("fetch", result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        transaction.Abort(ex);
-        //        _events.Emit("error:fetch");
-        //    }
-        //    finally
-        //    {
-        //        gp.Loader.Dec();
-        //    }
-
-        //    return await transaction.Ready;
-        //}
-
-        //public async Task<UnlockPlayerAchievementOutput> Unlock(UnlockPlayerAchievementInput input)
-        //{
-        //    var transaction = CreateTransaction<UnlockPlayerAchievementOutput>();
-
-        //    UnlockPlayerAchievementOutput HandleError(string reason)
-        //    {
-        //        var errorResult = new UnlockPlayerAchievementOutput
-        //        {
-        //            Success = false,
-        //            Achievement = null,
-        //            Error = reason
-        //        };
-
-        //        transaction.Done(errorResult);
-        //        _events.Emit("error:unlock", reason, input);
-        //        return errorResult;
-        //    }
-
-        //    var idOrTag = input.Id ?? input.Tag;
-        //    var info = GetAchievementInfo(idOrTag);
-
-        //    if (info.Achievement == null)
-        //    {
-        //        return HandleError(AchievementNotFoundError);
-        //    }
-
-        //    if (info.PlayerAchievement?.Unlocked == true)
-        //    {
-        //        return HandleError(AlreadyUnlockedError);
-        //    }
-
-        //    if (_alreadyUnlocked.Contains(info.Achievement.Id))
-        //    {
-        //        return HandleError(AlreadyUnlockedError);
-        //    }
-
-        //    _unlockTransactions[idOrTag] = transaction;
-        //    gp.Loader.Inc();
-
-        //    Task overlayPromise = null;
-        //    if (_settings.EnableUnlockToast)
-        //    {
-        //        overlayPromise = gp.LoadOverlay();
-        //    }
-
-        //    try
-        //    {
-        //        var unlockResult = await gp.Services.AchievementsService.Unlock(new { id = info.Achievement.Id });
-
-        //        var achievement = MergeAchievement(unlockResult.Achievement, unlockResult);
-        //        UpsertInPlayersList(achievement);
-        //        _events.Emit("unlock", achievement);
-
-        //        if (_settings.EnableUnlockToast)
-        //        {
-        //            await Task.WhenAll(overlayPromise, PreloadImage(GetAchievementIcon(achievement)))
-        //                      .ContinueWith(t => gp.Overlay.UnlockAchievement(achievement), TaskScheduler.Default);
-        //        }
-
-        //        var successResult = new UnlockPlayerAchievementOutput
-        //        {
-        //            Achievement = achievement,
-        //            Success = true,
-        //            Error = string.Empty
-        //        };
-
-        //        transaction.Done(successResult);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (ex.Message == AlreadyUnlockedError)
-        //        {
-        //            _alreadyUnlocked.Add(info.Achievement.Id);
-        //        }
-
-        //        Logger.Error(ex);
-        //        transaction.Abort(ex);
-        //        _events.Emit("error:unlock", ex, input);
-        //    }
-        //    finally
-        //    {
-        //        gp.Loader.Dec();
-        //    }
-
-        //    transaction.Ready.ContinueWith(_ => _unlockTransactions.Remove(idOrTag), TaskScheduler.Default);
-
-        //    return await transaction.Ready;
-        //}
 
         public void Fetch()
         {
 
         }
 
-        public void Unlock(string idOrTag)
+        public async void Unlock(string idOrTag)
         {
+            var info = GetAchievementInfo(idOrTag);
 
+            if (info.Achievement == null)
+            {
+                OnAchievementsUnlockError?.Invoke(AchievementNotFoundError);
+            }
+
+            if (info.PlayerAchievement?.unlocked == true)
+            {
+                OnAchievementsUnlockError?.Invoke(AlreadyUnlockedError);
+            }
+
+            if (_alreadyUnlocked.Contains(info.Achievement.id))
+            {
+                OnAchievementsUnlockError?.Invoke(AlreadyUnlockedError);
+            }
+            UnlockPlayerAchievementInput input = new UnlockPlayerAchievementInput();
+            input.id = info.Achievement.id;
+
+            var unlockResult = await DataFetcher.UnlockAchievement(input);
+            //var mergedAchievement = new Achievement
+            //{
+            //    id = unlockResult.Achievement.Id,
+            //    tag = unlockResult.Achievement.Tag,
+            //    unlocked = true,
+            //    progress = unlockResult.PlayerAchievement.Progress,
+            //};
+
+            UpsertInPlayersList(unlockResult);
+
+            if (_settings.enableUnlockToast)
+            {
+                //await Task.WhenAll(overlayPromise, PreloadImage(GetAchievementIcon(mergedAchievement)));
+                //gp.Overlay.UnlockAchievement(mergedAchievement);
+            }
         }
 
         public bool Has(string idOrTag)
         {
-            return false;
+            return GetAchievementInfo(idOrTag).PlayerAchievement.unlocked;
         }
 
         public void SetProgress(string idOrTag, int progress)
@@ -369,6 +278,13 @@ namespace GamePush.Core
 
         public int GetProgress(string idOrTag)
         {
+            PlayerAchievementInfo info = GetAchievementInfo(idOrTag);
+
+            if (info.Achievement == null)
+                return 0;
+            if (info.PlayerAchievement != null)
+                return info.PlayerAchievement.progress;
+
             return 0;
         }
     }
