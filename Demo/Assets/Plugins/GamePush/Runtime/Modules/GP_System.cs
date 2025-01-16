@@ -18,7 +18,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsDev() == "true";
 #else
-            return CoreSDK.system.IsDev();
+            return CoreSDK.System.IsDev();
 #endif
         }
 
@@ -27,7 +27,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsAllowedOrigin() == "true";
 #else
-            return CoreSDK.system.IsAllowedOrigin();
+            return CoreSDK.System.IsAllowedOrigin();
 #endif
         }
 

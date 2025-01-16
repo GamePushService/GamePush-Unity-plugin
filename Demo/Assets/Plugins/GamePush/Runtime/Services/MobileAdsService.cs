@@ -12,7 +12,7 @@ namespace GamePush.Services
         private async void Start()
         {
             await GP_Init.Ready;
-            CoreSDK.ads.CustomAdInit();
+            CoreSDK.Ads.CustomAdInit();
             StartTimer();
         }
 
@@ -25,7 +25,7 @@ namespace GamePush.Services
         {
             StopTimer();
             _timer = new Timer(3000);
-            _timer.Elapsed += (sender, e) => CoreSDK.ads.CheckLimitsExpired();
+            _timer.Elapsed += (sender, e) => CoreSDK.Ads.CheckLimitsExpired();
             _timer.AutoReset = true; // Повторное выполнение таймера
             _timer.Enabled = true;   // Запуск таймера
         }

@@ -33,14 +33,14 @@ namespace GamePush
 #endif
         private void OnEnable()
         {
-            CoreSDK.game.OnPause += CallOnPause;
-            CoreSDK.game.OnResume += CallOnResume;
+            CoreSDK.Game.OnPause += CallOnPause;
+            CoreSDK.Game.OnResume += CallOnResume;
         }
 
         private void OnDisable()
         {
-            CoreSDK.game.OnPause -= CallOnPause;
-            CoreSDK.game.OnResume -= CallOnResume;
+            CoreSDK.Game.OnPause -= CallOnPause;
+            CoreSDK.Game.OnResume -= CallOnResume;
         }
 
         public static bool IsPaused()
@@ -48,7 +48,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPaused() == "true";
 #else
-            return CoreSDK.game.IsPaused();
+            return CoreSDK.Game.IsPaused();
 #endif
         }
 
@@ -59,7 +59,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Pause();
 #else
-            CoreSDK.game.GamePause();
+            CoreSDK.Game.GamePause();
 #endif
         }
 
@@ -70,7 +70,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Resume();
 #else
-            CoreSDK.game.GameResume();
+            CoreSDK.Game.GameResume();
 #endif
         }
 
@@ -79,7 +79,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStart();
 #else
-            CoreSDK.game.GameplayStart();
+            CoreSDK.Game.GameplayStart();
 #endif
         }
 
@@ -88,7 +88,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameplayStop();
 #else
-            CoreSDK.game.GameplayStop();
+            CoreSDK.Game.GameplayStop();
 #endif
         }
 
@@ -97,7 +97,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GameReady();
 #else
-            CoreSDK.game.GameReady();
+            CoreSDK.Game.GameReady();
 #endif
         }
 
@@ -106,7 +106,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_HappyTime();
 #else
-            CoreSDK.game.HappyTime();
+            CoreSDK.Game.HappyTime();
 #endif
         }
 

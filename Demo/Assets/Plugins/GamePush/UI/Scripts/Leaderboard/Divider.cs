@@ -9,7 +9,7 @@ namespace GamePush.UI
 
         void Start()
         {
-            _nearestPlayers.text = CoreSDK.language.localization.leaderboard.nearestPlayers;
+            _nearestPlayers.text = CoreSDK.Language.localization.leaderboard.nearestPlayers;
         }
     }
 }

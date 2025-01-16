@@ -85,23 +85,23 @@ namespace GamePush
 #endif
         private void OnEnable()
         {
-            CoreSDK.leaderboard.OnScopedFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnScopedFetchError += () => OnFetchError?.Invoke();
+            CoreSDK.Leaderboard.OnScopedFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnScopedFetchError += () => OnFetchError?.Invoke();
 
-            CoreSDK.leaderboard.OnScopedFetchPlayerRating += (string _leaderboardFetchTag, int position) => OnFetchPlayerRating?.Invoke(_leaderboardFetchTag, position);
-            CoreSDK.leaderboard.OnScopedFetchPlayerRatingTagVariant += (string _leaderboardFetchTag, string variant, int position) => OnFetchPlayerRatingTagVariant?.Invoke(_leaderboardFetchTag, variant, position);
-            CoreSDK.leaderboard.OnScopedFetchPlayerRatingError += () => OnFetchError?.Invoke();
+            CoreSDK.Leaderboard.OnScopedFetchPlayerRating += (string _leaderboardFetchTag, int position) => OnFetchPlayerRating?.Invoke(_leaderboardFetchTag, position);
+            CoreSDK.Leaderboard.OnScopedFetchPlayerRatingTagVariant += (string _leaderboardFetchTag, string variant, int position) => OnFetchPlayerRatingTagVariant?.Invoke(_leaderboardFetchTag, variant, position);
+            CoreSDK.Leaderboard.OnScopedFetchPlayerRatingError += () => OnFetchError?.Invoke();
 
-            CoreSDK.leaderboard.OnScopedOpen += () => OnOpen?.Invoke();
-            CoreSDK.leaderboard.OnScopedClose += () => OnClose?.Invoke();
+            CoreSDK.Leaderboard.OnScopedOpen += () => OnOpen?.Invoke();
+            CoreSDK.Leaderboard.OnScopedClose += () => OnClose?.Invoke();
 
-            CoreSDK.leaderboard.OnScopedPublishRecordComplete += () => OnPublishRecordComplete?.Invoke();
-            CoreSDK.leaderboard.OnScopedPublishRecordError += () => OnPublishRecordError?.Invoke();
+            CoreSDK.Leaderboard.OnScopedPublishRecordComplete += () => OnPublishRecordComplete?.Invoke();
+            CoreSDK.Leaderboard.OnScopedPublishRecordError += () => OnPublishRecordError?.Invoke();
         }
 
 
@@ -118,7 +118,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Open(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, displayFields, withMe.ToString());
 #else
-            CoreSDK.leaderboard.OpenScoped(idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe);
+            CoreSDK.Leaderboard.OpenScoped(idOrTag, variant, order, limit, showNearest, includeFields, displayFields, withMe);
 #endif
         }
 
@@ -134,7 +134,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_Fetch(idOrTag, variant, order.ToString(), limit, showNearest, includeFields, withMe.ToString());
 #else
-            CoreSDK.leaderboard.SimpleFetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
+            CoreSDK.Leaderboard.SimpleFetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
 #endif
         }
 
@@ -147,7 +147,7 @@ namespace GamePush
             string includeFields = "",
             WithMe withMe = WithMe.none)
         {
-            return await CoreSDK.leaderboard.FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
+            return await CoreSDK.Leaderboard.FetchScoped(idOrTag, variant, order, limit, showNearest, includeFields, withMe);
         }
 
         public static void FetchPlayerRating(
@@ -161,7 +161,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_FetchPlayerRating(idOrTag, variant, order.ToString(), limit, showNearest, includeFields);
 #else
-            CoreSDK.leaderboard.SimpleFetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+            CoreSDK.Leaderboard.SimpleFetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
 #endif
         }
 
@@ -173,7 +173,7 @@ namespace GamePush
             int showNearest = 5,
             string includeFields = "")
         {
-            return await CoreSDK.leaderboard.FetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
+            return await CoreSDK.Leaderboard.FetchScopedPlayerRating(idOrTag, variant, order, limit, showNearest, includeFields);
         }
 
 
@@ -186,7 +186,7 @@ namespace GamePush
             record.Add(key1, record_value1);
             if (key2 != "") record.Add(key2, record_value2);
             if (key3 != "") record.Add(key3, record_value3);
-            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
+            CoreSDK.Leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
@@ -200,7 +200,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, recordJSON);
 #else
-            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
+            CoreSDK.Leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 
@@ -211,7 +211,7 @@ namespace GamePush
 
             GP_Leaderboard_Scoped_PublishRecord(idOrTag, variant, Override, recordJSON);
 #else
-            CoreSDK.leaderboard.PublishRecord(idOrTag, variant, Override, record);
+            CoreSDK.Leaderboard.PublishRecord(idOrTag, variant, Override, record);
 #endif
         }
 

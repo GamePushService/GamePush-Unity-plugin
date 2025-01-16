@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System;
+using System.Text.RegularExpressions;
 
 namespace GamePush.Tools
 {
@@ -42,6 +43,70 @@ namespace GamePush.Tools
             }
         }
 
+        private const int MaxSize = 2048;
+
+        private static readonly Regex RegexPattern = new Regex(
+            @"cdn\.(eponesh|gamepush|spellsync)\.com\/static(\/([\d\-]+\.)([\d\-]+.)|)\/(.*)",
+            RegexOptions.Compiled);
+
+        private static readonly Regex SizeRegex = new Regex(@"-(\d+)x(\d+)\.\w+$", RegexOptions.Compiled);
+
+        public static (int, int) GetOriginalSize(string url)
+        {
+            var matches = SizeRegex.Match(url);
+            if (!matches.Success)
+            {
+                return (0, 0);
+            }
+
+            int width = int.TryParse(matches.Groups[1].Value, out var w) ? w : 0;
+            int height = int.TryParse(matches.Groups[2].Value, out var h) ? h : 0;
+
+            return (width, height);
+        }
+
+        public static string ResizeImage(string url, int? width = null, int? height = null, bool crop = false)
+        {
+            var matches = Regex.Match(url, @"your-regex-pattern"); // Укажите нужный шаблон regex
+            if (!matches.Success)
+            {
+                return url;
+            }
+
+            var (originalWidth, originalHeight) = GetOriginalSize(url);
+
+            if (originalWidth != 0 && width.HasValue && width > originalWidth)
+            {
+                width = originalWidth;
+            }
+
+            if (originalWidth != 0 && height.HasValue && height > originalHeight)
+            {
+                height = originalHeight;
+            }
+
+            if (width.HasValue && width > MaxSize)
+            {
+                width = MaxSize;
+            }
+
+            if (height.HasValue && height > MaxSize)
+            {
+                height = MaxSize;
+            }
+
+            var domain = matches.Groups[1].Value;
+            var path = matches.Groups[5].Value;
+
+            return $"https://cdn.{domain}.com/static/{(width.HasValue ? width.ToString() : "-")}x{(height.HasValue ? height.ToString() : "-")}{(crop ? "crop" : "")}/{path}";
+        }
+
+        public static Color GetColorByHEX(string hexColor)
+        {
+            if (ColorUtility.TryParseHtmlString("#" + hexColor.TrimStart('#'), out Color color))
+                return color;
+            return Color.white;
+        }
     }
 
     public class UtilityJSON

@@ -47,7 +47,7 @@ fragment AchievementsGroupFields on AchievementsGroup {
   }
 }
 
-mutation result($input: UnlockPlayerAchievementInput!, $lang: Lang) {
+mutation UnlockPlayerAchievement($input: UnlockPlayerAchievementInput!, $lang: Lang) {
   result: UnlockPlayerAchievement(input: $input) {
     __typename
     ... on Problem {

@@ -27,13 +27,13 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.uniques.OnUniqueValueRegister += (UniquesData data) => CallOnUniqueRegister(data);
-            CoreSDK.uniques.OnUniqueValueCheck += (UniquesData data) => CallOnUniqueCheck(data);
-            CoreSDK.uniques.OnUniqueValueDelete += (UniquesData data) => CallOnUniqueDelete(data);
+            CoreSDK.Uniques.OnUniqueValueRegister += (UniquesData data) => CallOnUniqueRegister(data);
+            CoreSDK.Uniques.OnUniqueValueCheck += (UniquesData data) => CallOnUniqueCheck(data);
+            CoreSDK.Uniques.OnUniqueValueDelete += (UniquesData data) => CallOnUniqueDelete(data);
 
-            CoreSDK.uniques.OnUniqueValueRegisterError += (string error) => CallOnUniqueValueRegisterError(error);
-            CoreSDK.uniques.OnUniqueValueCheckError += (string error) => CallOnUniqueValueCheckError(error);
-            CoreSDK.uniques.OnUniqueValueDeleteError += (string error) => CallOnUniqueValueDeleteError(error);
+            CoreSDK.Uniques.OnUniqueValueRegisterError += (string error) => CallOnUniqueValueRegisterError(error);
+            CoreSDK.Uniques.OnUniqueValueCheckError += (string error) => CallOnUniqueValueCheckError(error);
+            CoreSDK.Uniques.OnUniqueValueDeleteError += (string error) => CallOnUniqueValueDeleteError(error);
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -61,7 +61,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesRegister(tag, value);
 #else
-            CoreSDK.uniques.Register(tag, value);
+            CoreSDK.Uniques.Register(tag, value);
 #endif
         }
 
@@ -73,7 +73,7 @@ namespace GamePush
             //return UtilityJSON.Get<UniquesData>(json);
             return GP_UniquesGet(tag);
 #else
-            return CoreSDK.uniques.Get(tag);
+            return CoreSDK.Uniques.Get(tag);
 #endif
         }
 
@@ -83,7 +83,7 @@ namespace GamePush
             string json = GP_UniquesList();
             return UtilityJSON.GetArray<UniquesData>(json);
 #else
-            return CoreSDK.uniques.List();
+            return CoreSDK.Uniques.List();
 #endif
         }
 
@@ -99,7 +99,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesCheck(tag, value);
 #else
-            CoreSDK.uniques.Check(tag, value);
+            CoreSDK.Uniques.Check(tag, value);
 #endif
         }
 
@@ -114,7 +114,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_UniquesDelete(tag);
 #else
-            CoreSDK.uniques.Delete(tag);
+            CoreSDK.Uniques.Delete(tag);
 #endif
         }
 

@@ -27,19 +27,25 @@ namespace GamePush.UI
         private AchievementGroupCell _achievementsGroupCell;
         [SerializeField]
         private AchievementCell _achievementCell;
-
         [SerializeField]
         private RectTransform _cellHolder;
 
 
         private FetchPlayerAchievementsOutput _info;
+        private Dictionary<int, Achievement> _allAchievements;
+        private Dictionary<int, Achievement> _tempAchievements;
 
         private event Action _OnAchievementsOpen;
         private event Action _OnAchievementsClose;
 
-        public async void Init(FetchPlayerAchievementsOutput info, Action onAchievementsOpen, Action onAchievementsClose)
+        public void Init(FetchPlayerAchievementsOutput info, Action onAchievementsOpen, Action onAchievementsClose)
         {
             _info = info;
+            _allAchievements = new Dictionary<int, Achievement>();
+            foreach(Achievement achievement in _info.Achievements)
+            {
+                _allAchievements[achievement.id] = achievement;
+            }
 
             _OnAchievementsOpen = onAchievementsOpen;
             _OnAchievementsClose = onAchievementsClose;
@@ -48,7 +54,8 @@ namespace GamePush.UI
 
             ClearBoard();
             SetUpBoard();
-            await SetUpCells();
+
+            SetUpCells();
         }
 
         private void ClearBoard()
@@ -61,26 +68,59 @@ namespace GamePush.UI
 
         private void SetUpBoard()
         {
-            _achievementsTitle.text = CoreSDK.language.localization.achievements.title;
+            _achievementsTitle.text = CoreSDK.Language.localization.achievements.title;
+
+            AchievementsProgressInfo progressInfo = Instantiate(_progressInfo, _cellHolder).GetComponent<AchievementsProgressInfo>();
+            int all = _info.Achievements.Count;
+            int unlocked = GetUnlockedAchievements();
+            progressInfo.SetInfo(unlocked, all);
+
+            SetCellHolder(_info.AchievementsGroups.Count, _info.Achievements.Count);
         }
 
-        private async Task SetUpCells()
+
+        private void SetCellHolder(int groups, int cells)
+        {
+            Rect holderRect = _cellHolder.rect;
+            Rect topInfoRect = _progressInfo.GetComponent<RectTransform>().rect;
+            Rect cellRect = _achievementCell.GetComponent<RectTransform>().rect;
+            Rect groupRect = _achievementsGroupCell.GetComponent<RectTransform>().rect;
+
+            //ProgressInfo height + Cell height * Cell count + Group width * Group count
+            holderRect.height = topInfoRect.height + cellRect.height * cells + groupRect.height * groups + 50;
+            _cellHolder.sizeDelta = new Vector2(holderRect.width, holderRect.height);
+        }
+
+        private int GetUnlockedAchievements(List<int> ids = null)
+        {
+            int counter = 0;
+            foreach (PlayerAchievement playerAchievement in _info.PlayerAchievements)
+            {
+                if (ids != null && !ids.Contains(playerAchievement.achievementId))
+                    continue;
+
+                if (playerAchievement.unlocked)
+                    counter++;
+            }
+
+            return counter;
+        }
+
+        private void SetUpCells()
         {
             foreach(AchievementsGroup group in _info.AchievementsGroups)
             {
-                Debug.Log(group.name);
+                AchievementGroupCell groupCell = Instantiate(_achievementsGroupCell, _cellHolder).GetComponent<AchievementGroupCell>();
+                int unlocked = GetUnlockedAchievements(group.achievements);
+                groupCell.SetUp(group, unlocked);
 
-                foreach(int id in group.achievements)
+                foreach (int id in group.achievements)
                 {
-                    Debug.Log(id);
+                    AchievementCell achievementCell = Instantiate(_achievementCell, _cellHolder).GetComponent<AchievementCell>();
+                    
+                    Achievement achievement = _allAchievements[id];
+                    achievementCell.SetUp(achievement);
                 }
-            }
-
-            await Task.Delay(100);
-
-            foreach(Achievement achievement in _info.Achievements)
-            {
-                Debug.Log(achievement.id);
             }
         }
 

@@ -23,7 +23,7 @@ namespace GamePush.Core
             Translations links = config.communityLinks;
             _communityLink = LanguageTypes.GetTranslation(CoreSDK.currentLang, links);
 
-            _gameLink = CoreSDK.platform.gameLink;
+            _gameLink = CoreSDK.Platform.gameLink;
         }
 
         public void OpenPanel(string title = "", string text = "", string url = "", string image = "") =>
@@ -51,9 +51,9 @@ namespace GamePush.Core
         {
             return type switch
             {
-                ShareType.share => CoreSDK.language.localization.share.title_share,
-                ShareType.post => CoreSDK.language.localization.share.title_post,
-                ShareType.invite => CoreSDK.language.localization.share.title_invite,
+                ShareType.share => CoreSDK.Language.localization.share.title_share,
+                ShareType.post => CoreSDK.Language.localization.share.title_post,
+                ShareType.invite => CoreSDK.Language.localization.share.title_invite,
                 _ => ""
             };
         }

@@ -15,10 +15,10 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.socials.OnShare += (bool success) => OnShare?.Invoke(success);
-            CoreSDK.socials.OnPost += (bool success) => OnPost?.Invoke(success);
-            CoreSDK.socials.OnInvite += (bool success) => OnInvite?.Invoke(success);
-            CoreSDK.socials.OnJoinCommunity += (bool success) => OnJoinCommunity?.Invoke(success);
+            CoreSDK.Socials.OnShare += (bool success) => OnShare?.Invoke(success);
+            CoreSDK.Socials.OnPost += (bool success) => OnPost?.Invoke(success);
+            CoreSDK.Socials.OnInvite += (bool success) => OnInvite?.Invoke(success);
+            CoreSDK.Socials.OnJoinCommunity += (bool success) => OnJoinCommunity?.Invoke(success);
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -58,7 +58,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Share(text, url, image);
 #else
-            CoreSDK.socials.Share(text, url, image);
+            CoreSDK.Socials.Share(text, url, image);
 #endif
         }
 
@@ -67,7 +67,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Post(text, url, image);
 #else
-            CoreSDK.socials.Post(text, url, image);
+            CoreSDK.Socials.Post(text, url, image);
 #endif
         }
 
@@ -76,7 +76,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_Invite(text, url, image);
 #else
-            CoreSDK.socials.Invite(text, url, image);
+            CoreSDK.Socials.Invite(text, url, image);
 #endif
         }
 
@@ -85,7 +85,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Socials_JoinCommunity();
 #else
-            CoreSDK.socials.JoinCommunity();
+            CoreSDK.Socials.JoinCommunity();
 #endif
         }
 
@@ -94,7 +94,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_CommunityLink();
 #else
-            return CoreSDK.socials.CommunityLink();
+            return CoreSDK.Socials.CommunityLink();
 #endif
         }
 
@@ -170,7 +170,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_MakeShareLink(content);
 #else
-            return CoreSDK.socials.MakeShareLink(content);
+            return CoreSDK.Socials.MakeShareLink(content);
 #endif
         }
 
@@ -179,7 +179,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_GetSharePlayerID();
 #else
-            return CoreSDK.socials.GetSharePlayerID();
+            return CoreSDK.Socials.GetSharePlayerID();
 #endif
         }
 
@@ -188,7 +188,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_GetShareContent();
 #else
-            return CoreSDK.socials.GetShareContent();
+            return CoreSDK.Socials.GetShareContent();
 #endif
         }
 

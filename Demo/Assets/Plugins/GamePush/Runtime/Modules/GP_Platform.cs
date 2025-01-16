@@ -30,7 +30,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return PlatformTypes.ConvertToEnum(GP_Platform_Type());
 #else
-            return PlatformTypes.ConvertToEnum(CoreSDK.platform.type);
+            return PlatformTypes.ConvertToEnum(CoreSDK.Platform.type);
 #endif
         }
 
@@ -39,7 +39,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Type();
 #else
-            return CoreSDK.platform.type;
+            return CoreSDK.Platform.type;
 #endif
         }
 
@@ -52,18 +52,18 @@ namespace GamePush
             return GP_Platform_Tag();
 #else
 
-            return CoreSDK.platform.tag;
+            return CoreSDK.Platform.tag;
 #endif
         }
 
         public static string ProgressSaveFormat()
         {
-            return CoreSDK.platform.progressSaveFormat;
+            return CoreSDK.Platform.progressSaveFormat;
         }
 
         public static SyncStorageType PrefferedSyncType()
         {
-            return CoreSDK.platform.prefferedSyncType;
+            return CoreSDK.Platform.prefferedSyncType;
         }
 
         
@@ -72,7 +72,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
-            return CoreSDK.platform.hasIntegratedAuth;
+            return CoreSDK.Platform.hasIntegratedAuth;
 #endif
         }
 
@@ -82,7 +82,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsLogoutAvailable() == "true";
 #else
-            return CoreSDK.platform.isLogoutAvailable;
+            return CoreSDK.Platform.isLogoutAvailable;
 #endif
         }
 
@@ -92,7 +92,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsExternalLinksAllowed() == "true";
 #else
-            return CoreSDK.platform.isExternalLinksAllowed;
+            return CoreSDK.Platform.isExternalLinksAllowed;
 #endif
         }
 
@@ -101,7 +101,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsSecretCodeAuthAvailable() == "true";
 #else
-            return CoreSDK.platform.isSecretCodeAuthAvailable;
+            return CoreSDK.Platform.isSecretCodeAuthAvailable;
 #endif
         }
 
@@ -111,13 +111,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_IsSupportsCloudSaves() == "true";
 #else
-            return CoreSDK.platform.isSupportsCloudSaves;
+            return CoreSDK.Platform.isSupportsCloudSaves;
 #endif
         }
 
         public static bool IsAlwaysSyncPublicFields()
         {
-            return CoreSDK.platform.alwaysSyncPublicFields;
+            return CoreSDK.Platform.alwaysSyncPublicFields;
         }
 
     }

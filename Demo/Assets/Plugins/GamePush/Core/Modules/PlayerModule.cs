@@ -143,12 +143,12 @@ namespace GamePush.Core
                 autoSyncData.lastSync = CoreSDK.GetServerTime().ToString();
 
             if (storage == SyncStorageType.preffered)
-                storage = CoreSDK.platform.prefferedSyncType;
+                storage = CoreSDK.Platform.prefferedSyncType;
 
             //Logger.Log($"Sync storage", $"{storage}");
             bool isCloudSave = storage == SyncStorageType.cloud;
 
-            bool isNeedSyncPublicFields = CoreSDK.platform.alwaysSyncPublicFields && _isPublicFieldsDirty;
+            bool isNeedSyncPublicFields = CoreSDK.Platform.alwaysSyncPublicFields && _isPublicFieldsDirty;
 
             bool isNeedToSyncWithServer =
                  isNeedSyncPublicFields ||
@@ -239,13 +239,14 @@ namespace GamePush.Core
             lastSyncTimeList[SyncStorageType.cloud] = CoreSDK.GetServerTime();
         }
 
+
         private void HandleSync(JObject playerData, SyncStorageType syncStorage)
         {
             //Logger.Log("Handle Sync", syncStorage);
             //Logger.Log("Sync Data", playerData);
             
             SetPlayerStats(playerData);
-            SetUniqueValues(playerData);
+            SetDataFromSync(playerData);
 
             SetStartTime(playerData["sessionStart"].ToString());
 
@@ -283,7 +284,7 @@ namespace GamePush.Core
             {
                 SetPlayerState(playerData);
 
-                if (CoreSDK.platform.alwaysSyncPublicFields && syncStorage != SyncStorageType.cloud && !_isFirstRequest)
+                if (CoreSDK.Platform.alwaysSyncPublicFields && syncStorage != SyncStorageType.cloud && !_isFirstRequest)
                 {
                     Dictionary<string, object> storageState = GetPlayerStateFromPrefs();
 
@@ -298,7 +299,7 @@ namespace GamePush.Core
             }
             else
             {
-                if (CoreSDK.platform.alwaysSyncPublicFields)
+                if (CoreSDK.Platform.alwaysSyncPublicFields)
                 {
                     UpdateOnlyPublicFields(playerData);
                 }
@@ -317,13 +318,15 @@ namespace GamePush.Core
             SavePlayerStateToPrefs();
         }
 
-        private void SetUniqueValues(JObject playerData)
+        private void SetDataFromSync(JObject playerData)
         {
-            //Logger.Log("playerData", playerData);
-            //Logger.Log("uniques", playerData["uniques"]);
-
+            //Set uniques
             List<UniquesData> uniques = playerData["uniques"].ToObject<List<UniquesData>>();
-            CoreSDK.uniques.SetUniques(uniques);
+            CoreSDK.Uniques.SetUniques(uniques);
+
+            //Set achievements
+            List<PlayerAchievement> achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
+            CoreSDK.Achievements.SetAchievementsList(achievements);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)
@@ -417,7 +420,7 @@ namespace GamePush.Core
             //Logger.Log(resultObject.ToString());
             _lastSyncResult = resultObject.ToString();
 
-            HandleSync(resultObject, CoreSDK.platform.prefferedSyncType);
+            HandleSync(resultObject, CoreSDK.Platform.prefferedSyncType);
             _isFirstRequest = false;
 
             OnLoadComplete?.Invoke();

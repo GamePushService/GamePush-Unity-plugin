@@ -3,16 +3,6 @@ using UnityEngine;
 
 namespace GamePush
 {
-    public enum Rare
-    {
-        COMMON,
-        UNCOMMON,
-        RARE,
-        EPIC,
-        LEGENDARY,
-        MYTHIC
-    }
-
     [System.Serializable]
     public class AchievementData
     {
@@ -49,6 +39,65 @@ namespace GamePush
         public int progress;
         public bool unlocked;
     }
+
+    public enum Rare
+    {
+        COMMON,
+        UNCOMMON,
+        RARE,
+        EPIC,
+        LEGENDARY,
+        MYTHIC
+    }
+
+    public static class RareColors
+    {
+        public const string COMMON = "FFFFFF";
+        public const string UNCOMMON = "31C33B";
+        public const string RARE = "3152C3";
+        public const string EPIC = "BF32C8";
+        public const string LEGENDARY = "CC992D";
+        public const string MYTHIC = "C5CC2D";
+    }
+
+    public static class RareTypes
+    {
+        public const string COMMON = "COMMON";
+        public const string UNCOMMON = "UNCOMMON";
+        public const string RARE = "RARE";
+        public const string EPIC = "EPIC";
+        public const string LEGENDARY = "LEGENDARY";
+        public const string MYTHIC = "MYTHIC";
+
+        public static string GetColor(Rare rare)
+        {
+            return rare switch
+            {
+                Rare.COMMON => RareColors.COMMON,
+                Rare.UNCOMMON => RareColors.UNCOMMON,
+                Rare.RARE => RareColors.RARE,
+                Rare.EPIC => RareColors.EPIC,
+                Rare.LEGENDARY => RareColors.LEGENDARY,
+                Rare.MYTHIC => RareColors.MYTHIC,
+                _ => RareColors.COMMON
+            };
+        }
+
+        public static string GetColor(string rare)
+        {
+            return rare switch
+            {
+                COMMON => RareColors.COMMON,
+                UNCOMMON => RareColors.UNCOMMON,
+                RARE => RareColors.RARE,
+                EPIC => RareColors.EPIC,
+                LEGENDARY => RareColors.LEGENDARY,
+                MYTHIC => RareColors.MYTHIC,
+                _ => RareColors.COMMON
+            };
+        }
+
+    }
 }
 
 namespace GamePush.Data
@@ -57,14 +106,18 @@ namespace GamePush.Data
     public class Achievement
     {
         public int id;
+        public string name;
+        public string description;
         public string icon;
+        public string iconSmall;
         public string tag;
         public string rare;
         public int progress;
         public int maxProgress;
+        public int progressStep;
         public bool unlocked;
         public string lockedIcon;
-        public int progressStep;
+        public string lockedIconSmall;
         public bool isPublished;
         public bool isLockedVisible;
         public bool isLockedDescriptionVisible;

@@ -52,6 +52,13 @@ namespace GamePush.Core
         public void OpenFullscreen() => SetFullscreen(true);
 
         public void CloseFullscreen() => SetFullscreen(false);
+
+        public float DevicePixelRatio()
+        {
+            float screenRatioX = (float)Screen.width / Screen.safeArea.width;
+            float screenRatioY = (float)Screen.height / Screen.safeArea.height;
+            return (screenRatioX + screenRatioY) / 2f;
+        }
     
     }
 }

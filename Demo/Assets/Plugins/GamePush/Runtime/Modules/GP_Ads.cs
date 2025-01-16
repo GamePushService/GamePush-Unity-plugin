@@ -39,23 +39,23 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.ads.OnAdsStart += () => OnAdsStart?.Invoke();
-            CoreSDK.ads.OnAdsClose += (bool success) => OnAdsClose?.Invoke(success);
+            CoreSDK.Ads.OnAdsStart += () => OnAdsStart?.Invoke();
+            CoreSDK.Ads.OnAdsClose += (bool success) => OnAdsClose?.Invoke(success);
 
-            CoreSDK.ads.OnFullscreenStart += () => OnFullscreenStart?.Invoke();
-            CoreSDK.ads.OnFullscreenClose += (bool success) => OnFullscreenClose?.Invoke(success);
+            CoreSDK.Ads.OnFullscreenStart += () => OnFullscreenStart?.Invoke();
+            CoreSDK.Ads.OnFullscreenClose += (bool success) => OnFullscreenClose?.Invoke(success);
 
-            CoreSDK.ads.OnRewardedReward += (string tag) => OnRewardedReward?.Invoke(tag);
-            CoreSDK.ads.OnRewardedStart += () => OnRewardedStart?.Invoke();
-            CoreSDK.ads.OnRewardedClose += (bool success) => OnRewardedClose?.Invoke(success);
+            CoreSDK.Ads.OnRewardedReward += (string tag) => OnRewardedReward?.Invoke(tag);
+            CoreSDK.Ads.OnRewardedStart += () => OnRewardedStart?.Invoke();
+            CoreSDK.Ads.OnRewardedClose += (bool success) => OnRewardedClose?.Invoke(success);
 
-            CoreSDK.ads.OnStickyStart += () => OnStickyStart?.Invoke();
-            CoreSDK.ads.OnStickyClose += (bool success) => OnStickyClose?.Invoke(success);
-            CoreSDK.ads.OnStickyRefresh += () => OnStickyRefresh?.Invoke();
-            CoreSDK.ads.OnStickyRender += () => OnStickyRender?.Invoke();
+            CoreSDK.Ads.OnStickyStart += () => OnStickyStart?.Invoke();
+            CoreSDK.Ads.OnStickyClose += (bool success) => OnStickyClose?.Invoke(success);
+            CoreSDK.Ads.OnStickyRefresh += () => OnStickyRefresh?.Invoke();
+            CoreSDK.Ads.OnStickyRender += () => OnStickyRender?.Invoke();
 
-            CoreSDK.ads.OnPreloaderStart += () => OnPreloaderStart?.Invoke();
-            CoreSDK.ads.OnPreloaderClose += (bool success) => OnPreloaderClose?.Invoke(success);
+            CoreSDK.Ads.OnPreloaderStart += () => OnPreloaderStart?.Invoke();
+            CoreSDK.Ads.OnPreloaderClose += (bool success) => OnPreloaderClose?.Invoke(success);
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -123,7 +123,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowFullscreen();
 #else
-            CoreSDK.ads.ShowFullscreen(onFullscreenStart, onFullscreenClose);
+            CoreSDK.Ads.ShowFullscreen(onFullscreenStart, onFullscreenClose);
 #endif
         }
         
@@ -136,7 +136,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowRewarded(idOrTag);
 #else
-            CoreSDK.ads.ShowRewarded(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
+            CoreSDK.Ads.ShowRewarded(idOrTag, onRewardedReward, onRewardedStart, onRewardedClose);
 #endif
         }
 
@@ -148,7 +148,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowPreloader();
 #else
-            CoreSDK.ads.ShowPreloader(onPreloaderStart, onPreloaderClose);
+            CoreSDK.Ads.ShowPreloader(onPreloaderStart, onPreloaderClose);
 #endif
         }
 
@@ -157,7 +157,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_ShowSticky();
 #else
-            CoreSDK.ads.ShowSticky();
+            CoreSDK.Ads.ShowSticky();
 #endif
         }
 
@@ -167,7 +167,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_CloseSticky();
 #else
-            CoreSDK.ads.CloseSticky();
+            CoreSDK.Ads.CloseSticky();
 #endif
         }
 
@@ -176,7 +176,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Ads_RefreshSticky();
 #else
-            CoreSDK.ads.RefreshSticky();
+            CoreSDK.Ads.RefreshSticky();
 #endif
         }
 
@@ -185,7 +185,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsAdblockEnabled() == "true";
 #else
-            return CoreSDK.ads.IsAdblockEnabled();
+            return CoreSDK.Ads.IsAdblockEnabled();
 #endif
         }
 
@@ -194,7 +194,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyAvailable() == "true";
 #else
-            return CoreSDK.ads.IsStickyAvailable();
+            return CoreSDK.Ads.IsStickyAvailable();
 #endif
         }
 
@@ -203,7 +203,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenAvailable() == "true";
 #else
-            return CoreSDK.ads.IsFullscreenAvailable();
+            return CoreSDK.Ads.IsFullscreenAvailable();
 #endif
         }
 
@@ -213,7 +213,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedAvailable() == "true";
 #else
-            return CoreSDK.ads.IsRewardedAvailable();
+            return CoreSDK.Ads.IsRewardedAvailable();
 #endif
         }
 
@@ -222,7 +222,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderAvailable() == "true";
 #else
-            return CoreSDK.ads.IsPreloaderAvailable();
+            return CoreSDK.Ads.IsPreloaderAvailable();
 #endif
         }
 
@@ -231,7 +231,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsStickyPlaying() == "true";
 #else
-            return CoreSDK.ads.IsStickyPlaying();
+            return CoreSDK.Ads.IsStickyPlaying();
 #endif
         }
 
@@ -240,7 +240,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsFullscreenPlaying() == "true";
 #else
-            return CoreSDK.ads.IsFullscreenPlaying();
+            return CoreSDK.Ads.IsFullscreenPlaying();
 #endif
         }
 
@@ -249,7 +249,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedPlaying() == "true";
 #else
-            return CoreSDK.ads.IsRewardedPlaying();
+            return CoreSDK.Ads.IsRewardedPlaying();
 #endif
         }
 
@@ -258,7 +258,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsPreloaderPlaying() == "true";
 #else
-            return CoreSDK.ads.IsPreloaderPlaying();
+            return CoreSDK.Ads.IsPreloaderPlaying();
 #endif
         }
 
@@ -267,7 +267,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsCountdownOverlayEnabled() == "true";
 #else
-            return CoreSDK.ads.IsCountdownOverlayEnabled();
+            return CoreSDK.Ads.IsCountdownOverlayEnabled();
 #endif
         }
 
@@ -276,7 +276,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_IsRewardedFailedOverlayEnabled() == "true";
 #else
-            return CoreSDK.ads.IsRewardedFailedOverlayEnabled();
+            return CoreSDK.Ads.IsRewardedFailedOverlayEnabled();
 #endif
         }
 
@@ -285,7 +285,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Ads_CanShowFullscreenBeforeGamePlay() == "true";
 #else
-            return CoreSDK.ads.CanShowFullscreenBeforeGamePlay();
+            return CoreSDK.Ads.CanShowFullscreenBeforeGamePlay();
 #endif
         }
 

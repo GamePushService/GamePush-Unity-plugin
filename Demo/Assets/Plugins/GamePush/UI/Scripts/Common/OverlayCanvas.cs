@@ -1,28 +1,34 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using GamePush;
 using GamePush.Data;
+using System.Threading.Tasks;
 
 namespace GamePush.UI
 {
     public class OverlayCanvas : MonoBehaviour
     {
         [SerializeField]
-        GameObject overlayHolder;
+        private GameObject overlayHolder;
         [Space]
         [Header("[ UI panels ]")]
         [Space]
         [SerializeField]
-        LeaderboardUI leaderboard;
+        private LeaderboardUI leaderboard;
         [SerializeField]
-        SocialsUI socials;
+        private SocialsUI socials;
         [SerializeField]
-        AchievementsUI achievements;
+        private AchievementsUI achievements;
+
+        [Space]
+        [Header("[ Notification UI ]")]
+        [SerializeField]
+        AchievementPlate achievementPlate;
 
         public static OverlayCanvas Controller;
+
+        private List<int> _notificationList;
 
         private void Awake()
         {
@@ -37,20 +43,20 @@ namespace GamePush.UI
 
         private void OnEnable()
         {
-            CoreSDK.leaderboard.OpenLeaderboard += OpenLeaderboard;
-            CoreSDK.socials.OnOpenOverlay += OpenSocials;
+            CoreSDK.Leaderboard.OpenLeaderboard += OpenLeaderboard;
+            CoreSDK.Socials.OnOpenOverlay += OpenSocials;
 
-            CoreSDK.achievements.OnShowAcievementsList += OpenAchivements;
+            CoreSDK.Achievements.OnShowAcievementsList += OpenAchivements;
         }
 
         private void OnDisable()
         {
-            CoreSDK.leaderboard.OpenLeaderboard -= OpenLeaderboard;
+            CoreSDK.Leaderboard.OpenLeaderboard -= OpenLeaderboard;
         }
 
         private void OnApplicationFocus(bool focus)
         {
-            if (!focus) Close();
+            //if (!focus) Close();
         }
 
         public void Close()
@@ -74,7 +80,6 @@ namespace GamePush.UI
         {
             LeaderboardUI leaderboardUI = (LeaderboardUI)CreateUITable(leaderboard);
             leaderboardUI.Init(data, query, onLeaderboardOpen, onLeaderboardClose);
-
         }
 
         public void OpenSocials(string title, string text, string url, string image, Action<bool> callback)
@@ -86,7 +91,17 @@ namespace GamePush.UI
         public void OpenAchivements(FetchPlayerAchievementsOutput info, Action onAchievementsOpen = null, Action onAchievementsClose = null)
         {
             AchievementsUI achievementsUI = (AchievementsUI)CreateUITable(achievements);
-            achievementsUI.Init(new FetchPlayerAchievementsOutput(), onAchievementsOpen, onAchievementsClose);
+            achievementsUI.Init(info, onAchievementsOpen, onAchievementsClose);
+        }
+
+        public async void UnlockAchievement()
+        {
+            await Task.Delay(1);
+        }
+
+        public async void SetProgressAchievement()
+        {
+            await Task.Delay(1);
         }
     }
 }

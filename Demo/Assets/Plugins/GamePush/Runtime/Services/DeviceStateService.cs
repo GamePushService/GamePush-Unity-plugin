@@ -14,7 +14,7 @@ namespace GamePush.Services
         void SetPortrate(bool value)
         {
             if (CoreSDK.isInit)
-                CoreSDK.device.SetPortrate(value);
+                CoreSDK.Device.SetPortrate(value);
         }
         private async void Start()
         {
@@ -28,7 +28,7 @@ namespace GamePush.Services
             {
                 SetOrientation(Screen.orientation);
                 _currentOrientation = Screen.orientation;
-                CoreSDK.device.ChangeOrientation();
+                CoreSDK.Device.ChangeOrientation();
             }
         }
 

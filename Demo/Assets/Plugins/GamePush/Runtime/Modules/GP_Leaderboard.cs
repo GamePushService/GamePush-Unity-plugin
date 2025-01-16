@@ -26,18 +26,18 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.leaderboard.OnFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
-            CoreSDK.leaderboard.OnFetchError += () => OnFetchError?.Invoke();
+            CoreSDK.Leaderboard.OnFetchSuccess += (string _leaderboardFetchTag, GP_Data data) => OnFetchSuccess?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnFetchTopPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchTopPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnFetchAbovePlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchAbovePlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnFetchBelowPlayers += (string _leaderboardFetchTag, GP_Data data) => OnFetchBelowPlayers?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnFetchPlayer += (string _leaderboardFetchTag, GP_Data data) => OnFetchPlayer?.Invoke(_leaderboardFetchTag, data);
+            CoreSDK.Leaderboard.OnFetchError += () => OnFetchError?.Invoke();
 
-            CoreSDK.leaderboard.OnFetchPlayerRatingSuccess += (string _leaderboardFetchTag, int position) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardFetchTag, position);
-            CoreSDK.leaderboard.OnFetchPlayerRatingError += () => OnFetchError?.Invoke();
+            CoreSDK.Leaderboard.OnFetchPlayerRatingSuccess += (string _leaderboardFetchTag, int position) => OnFetchPlayerRatingSuccess?.Invoke(_leaderboardFetchTag, position);
+            CoreSDK.Leaderboard.OnFetchPlayerRatingError += () => OnFetchError?.Invoke();
 
-            CoreSDK.leaderboard.OnLeaderboardOpen += () => OnLeaderboardOpen?.Invoke();
-            CoreSDK.leaderboard.OnLeaderboardClose += () => OnLeaderboardClose?.Invoke();
+            CoreSDK.Leaderboard.OnLeaderboardOpen += () => OnLeaderboardOpen?.Invoke();
+            CoreSDK.Leaderboard.OnLeaderboardClose += () => OnLeaderboardClose?.Invoke();
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -85,7 +85,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Open(orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields, displayFields);
 #else
-            CoreSDK.leaderboard.Open(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
+            CoreSDK.Leaderboard.Open(orderBy, order, limit, showNearest, withMe, includeFields, displayFields);
 #endif
         }
 
@@ -94,13 +94,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_Fetch(tag, orderBy, order.ToString(), limit, showNearest, withMe.ToString(), includeFields);
 #else
-            CoreSDK.leaderboard.SimpleFetch(tag, orderBy, order, limit, showNearest, withMe, includeFields);
+            CoreSDK.Leaderboard.SimpleFetch(tag, orderBy, order, limit, showNearest, withMe, includeFields);
 #endif
         }
 
         public static async Task<RatingData> AsyncFetch(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 0, WithMe withMe = WithMe.none, string includeFields = "")
         {
-            return await CoreSDK.leaderboard.Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
+            return await CoreSDK.Leaderboard.Fetch(orderBy, order, limit, showNearest, withMe, includeFields);
         }
 
         public static void FetchPlayerRating(string tag = "", string orderBy = "score", Order order = Order.DESC)
@@ -108,13 +108,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Leaderboard_FetchPlayerRating(tag, orderBy, order.ToString());
 #else
-            CoreSDK.leaderboard.SimpleFetchPlayerRating(tag, orderBy, order);
+            CoreSDK.Leaderboard.SimpleFetchPlayerRating(tag, orderBy, order);
 #endif
         }
 
         public static async Task<PlayerRatingData> AsyncFetchPlayerRating(string orderBy = "score", Order order = Order.DESC)
         {
-            return await CoreSDK.leaderboard.FetchPlayerRating(orderBy, order);
+            return await CoreSDK.Leaderboard.FetchPlayerRating(orderBy, order);
         }
 
 

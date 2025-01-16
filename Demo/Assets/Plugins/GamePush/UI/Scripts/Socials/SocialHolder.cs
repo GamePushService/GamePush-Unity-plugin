@@ -22,14 +22,14 @@ namespace GamePush.UI
         {
             return socialType switch
             {
-                SocialType.vkontakte => CoreSDK.language.localization.socials.vkontakte,
-                SocialType.odnoklassniki => CoreSDK.language.localization.socials.odnoklassniki,
-                SocialType.telegram => CoreSDK.language.localization.socials.telegram,
-                SocialType.twitter => CoreSDK.language.localization.socials.twitter,
-                SocialType.facebook => CoreSDK.language.localization.socials.facebook,
-                SocialType.moymir => CoreSDK.language.localization.socials.moymir,
-                SocialType.whatsapp => CoreSDK.language.localization.socials.whatsapp,
-                SocialType.viber => CoreSDK.language.localization.socials.viber,
+                SocialType.vkontakte => CoreSDK.Language.localization.socials.vkontakte,
+                SocialType.odnoklassniki => CoreSDK.Language.localization.socials.odnoklassniki,
+                SocialType.telegram => CoreSDK.Language.localization.socials.telegram,
+                SocialType.twitter => CoreSDK.Language.localization.socials.twitter,
+                SocialType.facebook => CoreSDK.Language.localization.socials.facebook,
+                SocialType.moymir => CoreSDK.Language.localization.socials.moymir,
+                SocialType.whatsapp => CoreSDK.Language.localization.socials.whatsapp,
+                SocialType.viber => CoreSDK.Language.localization.socials.viber,
                 _ => ""
             };
         }

@@ -49,8 +49,8 @@ namespace GamePush.Core
         private static string GetLang()
         {
             string lang;
-            if (CoreSDK.language != null)
-                lang = CoreSDK.language.CurrentISO().ToUpper();
+            if (CoreSDK.Language != null)
+                lang = CoreSDK.Language.CurrentISO().ToUpper();
             else
                 lang = CoreSDK.currentLang.ToUpper();
 
@@ -568,11 +568,50 @@ namespace GamePush.Core
 
         #region AchievementsFetchers
 
-        public static async Task<PlayerAchievement> UnlockAchievemnt(PublishRecordQuery input)
+        public static async Task<PlayerAchievement> UnlockAchievemnt(UnlockPlayerAchievementInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(_playerPublishRating, _playerPublishRating, OperationType.Mutation);
+            Query query = graphQL.FindQuery(_unlockAchivement, _unlockAchivement, OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(root.ToString());
+
+            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
+            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
+
+            return data;
+        }
+
+        public static async Task<PlayerAchievement> SetAchievemntProgress(PlayerSetAchievementProgressInput input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_setAchivementProgress, _setAchivementProgress, OperationType.Mutation);
 
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
 

@@ -82,7 +82,7 @@ namespace GamePush.UI
 
             Enum.TryParse(_query.withMe, out WithMe withMe);
 
-            int playerID = CoreSDK.player.GetID();
+            int playerID = CoreSDK.Player.GetID();
             int lastPlace = 0;
 
             SetCellHolder(holderCells);

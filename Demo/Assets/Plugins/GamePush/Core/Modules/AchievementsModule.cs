@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GamePush.Data;
+using GamePush.Tools;
 
 namespace GamePush.Core
 {
@@ -32,9 +33,7 @@ namespace GamePush.Core
         private List<Achievement> _achievements = new();
         private List<AchievementsGroup> _achievementsGroups = new();
         private List<PlayerAchievement> _playerAchievements = new();
-        //private Dictionary<string, Transaction<UnlockPlayerAchievementOutput>> _unlockTransactions = new();
         private Dictionary<string, int> _setProgressTimeouts = new();
-        //private Dictionary<string, Transaction<UnlockPlayerAchievementOutput>> _setProgressTransactions = new();
 
         private Dictionary<int, Achievement> _achievementsMapID = new();
         private Dictionary<string, Achievement> _achievementsMapTag = new();
@@ -42,29 +41,66 @@ namespace GamePush.Core
         private Dictionary<int, AchievementsGroup> _achievementsGroupsMap = new();
         private HashSet<int> _alreadyUnlocked = new();
 
-        private List<AchievementData> _achievementsData = new();
-
         public void Init(AllConfigData config)
         {
             _settings = config.project.achievements;
-            _achievements = config.achievements;
-            _achievementsGroups = config.achievementsGroups;
-            string langKey = CoreSDK.currentLang.ToLower();
 
-            
+            _achievements = new List<Achievement>(config.achievements);
+            _achievementsGroups = new List<AchievementsGroup>(config.achievementsGroups);
+            RefreshAchievementsMap();
+            RefreshAchievementsGroupsMap();
+
+            string langKey = CoreSDK.currentLang.ToLower();
 
             foreach (var a in config.achievements)
             {
-                AchievementData achievement = new AchievementData();
-                achievement.name = LanguageTypes.GetTranslation(langKey, a.names) != "" ? LanguageTypes.GetTranslation(langKey, a.names) : LanguageTypes.GetTranslation(LanguageTypes.English, a.names);
-                achievement.description = LanguageTypes.GetTranslation(langKey, a.descriptions) != "" ? LanguageTypes.GetTranslation(langKey, a.descriptions) : LanguageTypes.GetTranslation(LanguageTypes.English, a.descriptions);
-                //a.LockedIcon = ResizeImage(a.LockedIcon, 256, 256, false);
-                //a.LockedIconSmall = ResizeImage(a.LockedIcon, 48, 48, false);
-                //a.Icon = ResizeImage(a.Icon, 256, 256, false);
-                //a.IconSmall = ResizeImage(a.Icon, 48, 48, false);
+                a.name = LanguageTypes.GetTranslation(langKey, a.names) != "" ? LanguageTypes.GetTranslation(langKey, a.names) : LanguageTypes.GetTranslation(LanguageTypes.English, a.names);
+                a.description = LanguageTypes.GetTranslation(langKey, a.descriptions) != "" ? LanguageTypes.GetTranslation(langKey, a.descriptions) : LanguageTypes.GetTranslation(LanguageTypes.English, a.descriptions);
 
-                _achievementsData.Add(achievement);
-                Logger.Log(a.progress + "/" + a.progressStep + "/" + a.maxProgress);
+                a.icon = UtilityImage.ResizeImage(a.icon, 256, 256, false);
+                a.iconSmall = UtilityImage.ResizeImage(a.icon, 48, 48, false);
+
+                a.lockedIcon = UtilityImage.ResizeImage(a.lockedIcon, 256, 256, false);
+                a.lockedIconSmall = UtilityImage.ResizeImage(a.lockedIcon, 48, 48, false);
+            }
+
+            CoreSDK.Language.OnChangeLanguage += RenameOnLanguageChange;
+        }
+
+        public void UnlockAchievements(IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                var achievementInfo = GetAchievementInfo(id);
+                if (achievementInfo.Achievement == null)
+                {
+                    Logger.Error($"Achievement not found, ID: {id}");
+                    continue;
+                }
+
+                if (achievementInfo.PlayerAchievement != null)
+                {
+                    Logger.Error($"Player achievement already unlocked, ID: {id}, Tag: {achievementInfo.Achievement.tag}");
+                    continue;
+                }
+
+                var newUnlockedPlayerAchievement = new PlayerAchievement
+                {
+                    achievementId = achievementInfo.Achievement.id,
+                    unlocked = true,
+                    progress = achievementInfo.Achievement.maxProgress,
+                    createdAt = DateTime.UtcNow.ToString("o") // ISO 8601 формат
+                };
+
+                var mergedAchievement = MergeAchievement(achievementInfo.Achievement, newUnlockedPlayerAchievement);
+
+                UpsertInPlayersList(mergedAchievement);
+
+                //if (settings.EnableUnlockToast)
+                //{
+                //    Task.WhenAll(overlayTask, PreloadImage(GetAchievementIcon(mergedAchievement)))
+                //        .ContinueWith(_ => gp.Overlay.UnlockAchievement(mergedAchievement));
+                //}
             }
         }
 
@@ -88,7 +124,26 @@ namespace GamePush.Core
             }
         }
 
-        private void SetAchievementsList(List<PlayerAchievement> achievements)
+        private void RenameOnLanguageChange(Language language)
+        {
+            foreach (var achievement in _achievements)
+            {
+                string name = LanguageTypes.GetTranslation(language, achievement.names);
+                achievement.name = name != "" ? name : achievement.names.en;
+                string description = LanguageTypes.GetTranslation(language, achievement.descriptions);
+                achievement.description = description != "" ? description : achievement.descriptions.en;
+            }
+            foreach (var group in _achievementsGroups)
+            {
+                string name = LanguageTypes.GetTranslation(language, group.names);
+                group.name = name != "" ? name : group.names.en;
+                string description = LanguageTypes.GetTranslation(language, group.descriptions);
+                group.description = description != "" ? description : group.descriptions.en;
+            }
+            RefreshAchievementsMap();
+        }
+
+        public void SetAchievementsList(List<PlayerAchievement> achievements)
         {
             _playerAchievements = new List<PlayerAchievement>(achievements);
             RefreshPlayerAchievementsMap();
@@ -105,6 +160,7 @@ namespace GamePush.Core
             {
                 _playerAchievements.Add(achievement);
             }
+
             RefreshPlayerAchievementsMap();
         }
 
@@ -148,73 +204,29 @@ namespace GamePush.Core
             };
         }
 
-        private static async Task PreloadImage(string url)
+        private static string GetAchievementIcon(Achievement achievement)
         {
-            try
+            float DevicePixelRatio = CoreSDK.Device.DevicePixelRatio();
+            if (DevicePixelRatio > 1)
             {
-                // ????????? ???????? ???????????
-                await Task.Delay(100);
+                return achievement.unlocked ? achievement.icon ?? achievement.lockedIcon : achievement.lockedIcon ?? achievement.icon;
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Error(ex.Message);
+                return achievement.unlocked ? achievement.iconSmall ?? achievement.lockedIconSmall : achievement.lockedIconSmall ?? achievement.iconSmall;
             }
         }
-
-        //private static string GetAchievementIcon(Achievement achievement)
-        //{
-        //    if (DevicePixelRatio > 1)
-        //    {
-        //        return achievement.unlocked ? achievement.Icon ?? achievement.LockedIcon : achievement.LockedIcon ?? achievement.Icon;
-        //    }
-        //    else
-        //    {
-        //        return achievement.unlocked ? achievement.IconSmall ?? achievement.LockedIconSmall : achievement.LockedIconSmall ?? achievement.IconSmall;
-        //    }
-        //}
 
         public void Open()
         {
             FetchPlayerAchievementsOutput info = new FetchPlayerAchievementsOutput();
+
             info.Achievements = _achievements;
             info.AchievementsGroups = _achievementsGroups;
+            info.PlayerAchievements = _playerAchievements;
+
             OnShowAcievementsList?.Invoke(info, OnAchievementsOpen, OnAchievementsClose);
         }
-
-        //public async Task Open(int? scrollTo = null, string scrollToTag = null)
-        //{
-        //    try
-        //    {
-        //        var fetchTask = Fetch();
-        //        var overlayTask = gp.LoadOverlay();
-        //        var preloadTask = PreloadImage(StaticLinks.App.Trophy).ContinueWith(t =>
-        //        {
-        //            if (t.IsFaulted) Logger.Error(t.Exception);
-        //        });
-
-        //        var result = await Task.WhenAll(fetchTask, overlayTask, preloadTask);
-        //        gp.Loader.Dec();
-
-        //        if (result[0].Achievements.Count > 0)
-        //        {
-        //            OnAchievementsOpen?.Invoke();
-                    
-        //            await gp.Overlay.OpenAchievements(result[0], scrollTo, scrollToTag).ContinueWith(t =>
-        //            {
-        //                if (t.IsFaulted) Logger.Error(t.Exception);
-        //            });
-        //            OnAchievementsClose?.Invoke();
-        //        }
-        //        else
-        //        {
-        //            Logger.Error("Empty achievements list");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.Error(ex.Message);
-        //    }
-        //}
 
         //public async Task<FetchPlayerAchievementsOutput> Fetch()
         //{

@@ -43,12 +43,12 @@ namespace GamePush.UI
         }
 
 
-        void SetUnlock()
+        void SetUnlock(AchievementData data)
         {
             //_topInfo.text = CoreSDK.language.localization.achievements.
         }
 
-        void SetProgress()
+        void SetProgress(AchievementData data)
         {
 
         }

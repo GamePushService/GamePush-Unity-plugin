@@ -17,7 +17,7 @@ namespace GamePush.UI
             _progressCounter.SetProgress(unlocked, all);
             _progressBar.SetProgress(unlocked, all);
 
-            _unlockedText.text = CoreSDK.language.localization.achievements.unlockedTotal;
+            _unlockedText.text = CoreSDK.Language.localization.achievements.unlockedTotal;
         }
     }
 }

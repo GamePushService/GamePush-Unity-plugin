@@ -120,5 +120,27 @@ namespace GamePush
                 _ => translations.en
             };
         }
+
+        public static string GetTranslation(Language lang, Translations translations)
+        {
+            return lang switch
+            {
+                Language.English => translations.en,
+                Language.Russian => translations.ru,
+                Language.Turkish => translations.tr,
+                Language.French => translations.fr,
+                Language.Italian => translations.it,
+                Language.German => translations.de,
+                Language.Spanish => translations.es,
+                Language.Chineese => translations.zh,
+                Language.Portuguese => translations.pt,
+                Language.Korean => translations.ko,
+                Language.Japanese => translations.ja,
+                Language.Arab => translations.ar,
+                Language.Hindi => translations.hi,
+                Language.Indonesian => translations.id,
+                _ => translations.en
+            };
+        }
     }
 }

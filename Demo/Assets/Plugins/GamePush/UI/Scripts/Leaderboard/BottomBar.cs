@@ -14,8 +14,8 @@ namespace GamePush.UI
 
         void Start()
         {
-            _inviteDivider.text = CoreSDK.language.localization.leaderboard.inviteDivider;
-            _shareRecord.text = CoreSDK.language.localization.leaderboard.shareRecord;
+            _inviteDivider.text = CoreSDK.Language.localization.leaderboard.inviteDivider;
+            _shareRecord.text = CoreSDK.Language.localization.leaderboard.shareRecord;
 
             _shareButton.onClick.AddListener(() => ShareRecord());
         }
@@ -26,23 +26,23 @@ namespace GamePush.UI
         public void SetButtonText(bool playerInBoard)
         {
             _shareRecord.text = playerInBoard ?
-                CoreSDK.language.localization.leaderboard.shareRecord :
-                CoreSDK.language.localization.leaderboard.inviteFriends;
+                CoreSDK.Language.localization.leaderboard.shareRecord :
+                CoreSDK.Language.localization.leaderboard.inviteFriends;
         }
 
         private void ShareRecord()
         {
             string shareRecord = _shareRecord.text;
-            string shareRecordText = CoreSDK.language.localization.leaderboard.shareRecordText;
+            string shareRecordText = CoreSDK.Language.localization.leaderboard.shareRecordText;
 
-            string gameTitle = CoreSDK.app.Title();
+            string gameTitle = CoreSDK.App.Title();
 
             shareRecordText = Regex.Replace(shareRecordText, @"\{\{player\.position\}\}", _playerPosition);
             shareRecordText = Regex.Replace(shareRecordText, @"\{\{game\.title\}\}", gameTitle);
 
             //print(shareRecordText);
 
-            CoreSDK.socials.OpenPanel(shareRecord, shareRecordText);
+            CoreSDK.Socials.OpenPanel(shareRecord, shareRecordText);
         }
     }
 }

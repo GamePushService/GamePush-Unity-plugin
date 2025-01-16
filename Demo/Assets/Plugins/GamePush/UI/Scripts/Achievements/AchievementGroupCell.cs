@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using GamePush.Data;
 
 namespace GamePush.UI
 {
@@ -11,9 +12,12 @@ namespace GamePush.UI
         [SerializeField]
         private ProgressCounter _progressCounter;
 
-        public void Init()
+        public void SetUp(AchievementsGroup group, int progress)
         {
+            _title.text = group.name;
+            _description.text = group.description;
 
+            _progressCounter.SetProgress(progress, group.achievements.Count);
         }
     }
 }

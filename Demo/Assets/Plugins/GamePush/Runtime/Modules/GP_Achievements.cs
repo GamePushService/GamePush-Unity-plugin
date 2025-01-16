@@ -59,20 +59,20 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.achievements.OnAchievementsOpen += () => CallAchievementsOpen();
-            CoreSDK.achievements.OnAchievementsClose += () => CallAchievementsOpen();
+            CoreSDK.Achievements.OnAchievementsOpen += () => CallAchievementsOpen();
+            CoreSDK.Achievements.OnAchievementsClose += () => CallAchievementsOpen();
 
-            CoreSDK.achievements.OnAchievementsFetch += (List<AchievementData> achievementsData) => CallAchievementsFetchList(achievementsData);
-            CoreSDK.achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
+            CoreSDK.Achievements.OnAchievementsFetch += (List<AchievementData> achievementsData) => CallAchievementsFetchList(achievementsData);
+            CoreSDK.Achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
 
-            CoreSDK.achievements.OnAchievementsFetchGroups += (List<AchievementsGroupData> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
-            CoreSDK.achievements.OnAchievementsFetchPlayer += (List<PlayerAchievement> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
+            CoreSDK.Achievements.OnAchievementsFetchGroups += (List<AchievementsGroupData> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
+            CoreSDK.Achievements.OnAchievementsFetchPlayer += (List<PlayerAchievement> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
 
-            CoreSDK.achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
-            CoreSDK.achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);
+            CoreSDK.Achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
+            CoreSDK.Achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);
 
-            CoreSDK.achievements.OnAchievementsProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
-            CoreSDK.achievements.OnAchievementsProgressError += () => CallAchievementsProgressError();
+            CoreSDK.Achievements.OnAchievementsProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
+            CoreSDK.Achievements.OnAchievementsProgressError += () => CallAchievementsProgressError();
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -104,7 +104,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Open();
 #else
-            CoreSDK.achievements.Open();
+            CoreSDK.Achievements.Open();
 #endif
         }
 
@@ -114,7 +114,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Fetch();
 #else
-            CoreSDK.achievements.Fetch();
+            CoreSDK.Achievements.Fetch();
 #endif
         }
 
@@ -127,7 +127,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_Unlock(idOrTag);
 #else
-            CoreSDK.achievements.Unlock(idOrTag);
+            CoreSDK.Achievements.Unlock(idOrTag);
 #endif
         }
 
@@ -139,7 +139,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Achievements_SetProgress(idOrTag,progress);
 #else
-            CoreSDK.achievements.SetProgress(idOrTag, progress);
+            CoreSDK.Achievements.SetProgress(idOrTag, progress);
 #endif
         }
 
@@ -149,7 +149,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_Has(idOrTag) == "true";
 #else
-           return CoreSDK.achievements.Has(idOrTag);
+           return CoreSDK.Achievements.Has(idOrTag);
 #endif
         }
 
@@ -158,7 +158,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
            return GP_Achievements_GetProgress(idOrTag);
 #else
-           return CoreSDK.achievements.GetProgress(idOrTag);
+           return CoreSDK.Achievements.GetProgress(idOrTag);
 #endif
         }
     }
