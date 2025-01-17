@@ -20,9 +20,10 @@ namespace GamePush.UI
 
         [Header("Image components")]
         [SerializeField]
-        private Image _achievImage;
-        [SerializeField]
         private Image _achiveProgress;
+        [SerializeField]
+        private Image _achievImage;
+        
 
         [Space]
         [Header("Moving parts")]
@@ -54,6 +55,11 @@ namespace GamePush.UI
             };
         }
 
+        private void Awake()
+        {
+            SetStartState();
+        }
+
         public async Task SetUnlock(Achievement data)
         {
             string json = UtilityJSON.ToJson(data);
@@ -63,7 +69,8 @@ namespace GamePush.UI
             _descriptionText.text = data.description;
 
             _achievImage.color = Color.white;
-            await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
+            if (data.icon != "")
+                await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
 
             _topInfoText.text = CoreSDK.Language.localization.achievements.unlocked;
 
@@ -91,7 +98,8 @@ namespace GamePush.UI
             _descriptionText.text = data.description;
 
             _achievImage.color = Color.white;
-            await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
+            if (data.icon != "")
+                await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
 
             _topInfoText.text = CoreSDK.Language.localization.achievements.progress;
 
@@ -122,7 +130,6 @@ namespace GamePush.UI
         {
             bool isUp = endY > rect.anchoredPosition.y;
 
-
             while (rect && isUp ? rect.anchoredPosition.y < endY : rect.anchoredPosition.y > endY)
             {
                 float newY = isUp ?
@@ -138,7 +145,7 @@ namespace GamePush.UI
 
         private async Task ShowPlate()
         {
-            SetStartState();
+            
             await MoveDown();
             await Task.Delay(300);
             await OpenUp();
@@ -199,13 +206,17 @@ namespace GamePush.UI
 
             float showSpeed = 0.5f * _moveSpeed;
 
-            await VerticalMove(_topInfo, moveTopToY, showSpeed);
-            await VerticalMove(_botInfo, moveBotToY, showSpeed);
+            Task moveTop1 = VerticalMove(_topInfo, moveTopToY, showSpeed);
+            Task moveBot1 = VerticalMove(_botInfo, moveBotToY, showSpeed);
+
+            await Task.WhenAll(moveTop1, moveBot1);
 
             await Task.Delay(2000);
 
-            await VerticalMove(_botInfo, 0, showSpeed);
-            await VerticalMove(_topInfo, 0, showSpeed);
+            Task moveTop2 = VerticalMove(_botInfo, 0, showSpeed);
+            Task moveBot2 = VerticalMove(_topInfo, 0, showSpeed);
+
+            await Task.WhenAll(moveTop2, moveBot2);
 
             _topInfo.gameObject.SetActive(false);
             _botInfo.gameObject.SetActive(false);

@@ -179,7 +179,6 @@ namespace GamePush.Core
 
         private PlayerAchievementInfo GetAchievementInfo(object idOrTag)
         {
-            Logger.Log(idOrTag);
             var info = new PlayerAchievementInfo();
 
             if (int.TryParse(idOrTag.ToString(), out int id) && _achievementsMapID.TryGetValue(id, out var achievement))
