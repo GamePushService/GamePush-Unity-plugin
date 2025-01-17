@@ -35,6 +35,7 @@ namespace GamePush.UI
         private AchievementsSettings _settings;
 
         private Dictionary<int, Achievement> _allAchievements;
+        private Dictionary<int, PlayerAchievement> _allPlayerAchievements;
         private Dictionary<int, Achievement> _tempAchievements;
 
         private event Action _OnAchievementsOpen;
@@ -45,10 +46,20 @@ namespace GamePush.UI
             _info = info;
             _settings = settings;
             _allAchievements = new Dictionary<int, Achievement>();
-            foreach(Achievement achievement in _info.Achievements)
+            _allPlayerAchievements = new Dictionary<int, PlayerAchievement>();
+
+            
+            foreach (PlayerAchievement achievement in _info.PlayerAchievements)
+                _allPlayerAchievements[achievement.achievementId] = achievement;
+
+            foreach (Achievement achievement in _info.Achievements)
             {
+                int id = achievement.id;
+                achievement.unlocked = _allPlayerAchievements.ContainsKey(id) ? _allPlayerAchievements[id].unlocked : false;
+                achievement.progress = _allPlayerAchievements.ContainsKey(id) ? _allPlayerAchievements[id].progress : 0;
                 _allAchievements[achievement.id] = achievement;
             }
+
 
             _OnAchievementsOpen = onAchievementsOpen;
             _OnAchievementsClose = onAchievementsClose;
@@ -60,6 +71,7 @@ namespace GamePush.UI
 
             SetUpCells();
         }
+
 
         private void ClearBoard()
         {
@@ -80,7 +92,6 @@ namespace GamePush.UI
 
             SetCellHolder(_info.AchievementsGroups.Count, _info.Achievements.Count);
         }
-
 
         private void SetCellHolder(int groups, int cells)
         {
@@ -120,6 +131,8 @@ namespace GamePush.UI
                 foreach (int id in group.achievements)
                 {
                     Achievement achievement = _allAchievements[id];
+
+                    //Debug.Log(achievement.name + " | " + achievement.unlocked + " | " + achievement.progress);
                     if (!achievement.unlocked && !_settings.isLockedVisible)
                         continue;
                     if (!achievement.unlocked && !_settings.isLockedDescriptionVisible)

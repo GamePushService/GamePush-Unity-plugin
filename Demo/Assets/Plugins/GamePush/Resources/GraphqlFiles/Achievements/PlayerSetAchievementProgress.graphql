@@ -1,3 +1,5 @@
+fragment translations on Translations { en fr it de es zh pt ko ja ru tr ar id hi }
+
 fragment AchievementFields on Achievement {
   id
   icon(w: 256, h: 256, crop: false)
@@ -31,21 +33,6 @@ fragment PlayerAchievementFields on PlayerAchievement {
   unlocked
 }
 
-fragment ProjectAchievementsFields on ProjectAchievements {
-  isLockedVisible
-  isLockedDescriptionVisible
-  enableUnlockToast
-}
-
-fragment AchievementsGroupFields on AchievementsGroup {
-  id
-  tag
-  name(lang: $lang)
-  description(lang: $lang)
-  achievements {
-    ...AchievementFields
-  }
-}
 
 mutation PlayerSetAchievementProgress($input: PlayerSetAchievementProgressInput!, $lang: Lang) {
   result: PlayerSetAchievementProgress(input: $input) {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GamePush;
 using GamePush.Data;
+using GamePush.Tools;
 using System.Threading.Tasks;
 
 namespace GamePush.UI
@@ -28,7 +29,6 @@ namespace GamePush.UI
 
         public static OverlayCanvas Controller;
 
-        private List<int> _notificationList;
 
         private void Awake()
         {
@@ -39,6 +39,8 @@ namespace GamePush.UI
 
             DontDestroyOnLoad(gameObject);
             overlayHolder.SetActive(false);
+
+            
         }
 
         private void OnEnable()
@@ -47,6 +49,8 @@ namespace GamePush.UI
             CoreSDK.Socials.OnOpenOverlay += OpenSocials;
 
             CoreSDK.Achievements.OnShowAcievementsList += OpenAchivements;
+            CoreSDK.Achievements.OnShowAcievementUnlock += UnlockAchievement;
+            CoreSDK.Achievements.OnShowAcievementProgress += SetProgressAchievement;
         }
 
         private void OnDisable()
@@ -76,6 +80,12 @@ namespace GamePush.UI
             return ui;
         }
 
+        public ModuleUI CreateUINotif(ModuleUI UIcomponent)
+        {
+            ModuleUI ui = Instantiate(UIcomponent, transform).GetComponent<ModuleUI>();
+            return ui;
+        }
+
         public void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
             LeaderboardUI leaderboardUI = (LeaderboardUI)CreateUITable(leaderboard);
@@ -94,15 +104,37 @@ namespace GamePush.UI
             achievementsUI.Init(info, settings, onAchievementsOpen, onAchievementsClose);
         }
 
-        public async void UnlockAchievement()
+        private TaskQueue taskQueue = new TaskQueue();
+
+        public async Task PlateAwait(Task plateShow, GameObject plate)
         {
-            await Task.Delay(1);
+            await plateShow;
+            Destroy(plate);
         }
 
-        public async void SetProgressAchievement()
+        public void UnlockAchievement(Achievement achievement)
         {
-            await Task.Delay(1);
+            AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
+            Task show = achievementPlateUI.SetUnlock(achievement);
+            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI.gameObject));
+
         }
+
+        public void SetProgressAchievement(Achievement achievement)
+        {
+            AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
+            Task show = achievementPlateUI.SetProgress(achievement);
+            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI.gameObject));
+        }
+
+        //private void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.T))
+        //    {
+        //        AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
+        //        achievementPlateUI.TestPlate();
+        //    }
+        //}
     }
 }
 

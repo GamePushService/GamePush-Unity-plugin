@@ -25,7 +25,7 @@ namespace GamePush
         public static event UnityAction<string> OnAchievementsUnlockError;
 
         public static event UnityAction<string> OnAchievementsProgress;
-        public static event UnityAction OnAchievementsProgressError;
+        public static event UnityAction<string> OnAchievementsProgressError;
 
         private static event Action _onAchievementsOpen;
         private static event Action _onAchievementsClose;
@@ -34,7 +34,7 @@ namespace GamePush
         private static event Action<string> _onAchievementsUnlockError;
 
         private static event Action<string> _onAchievementsProgress;
-        private static event Action _onAchievementsProgressError;
+        private static event Action<string> _onAchievementsProgressError;
         #endregion
 
         #region Callbacks
@@ -54,7 +54,8 @@ namespace GamePush
         private void CallAchievementsUnlockError(string error) { _onAchievementsUnlockError?.Invoke(error); OnAchievementsUnlockError?.Invoke(error); }
 
         private void CallAchievementsProgress(string idOrTag) { OnAchievementsProgress?.Invoke(idOrTag); _onAchievementsProgress?.Invoke(idOrTag); }
-        private void CallAchievementsProgressError() { OnAchievementsProgressError?.Invoke(); _onAchievementsProgressError?.Invoke(); }
+        private void CallAchievementsProgressError() => CallAchievementsProgressError("");
+        private void CallAchievementsProgressError(string error) { OnAchievementsProgressError?.Invoke(error); _onAchievementsProgressError?.Invoke(error); }
         #endregion
 
         private void OnEnable()
@@ -71,8 +72,8 @@ namespace GamePush
             CoreSDK.Achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
             CoreSDK.Achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);
 
-            CoreSDK.Achievements.OnAchievementsProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
-            CoreSDK.Achievements.OnAchievementsProgressError += () => CallAchievementsProgressError();
+            CoreSDK.Achievements.OnAchievementsSetProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
+            CoreSDK.Achievements.OnAchievementsSetProgressError += (string error) => CallAchievementsProgressError(error);
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -131,7 +132,7 @@ namespace GamePush
 #endif
         }
 
-        public static void SetProgress(string idOrTag, int progress, Action<string> onProgress = null, Action onProgressError = null)
+        public static void SetProgress(string idOrTag, int progress, Action<string> onProgress = null, Action<string> onProgressError = null)
         {
             _onAchievementsProgress = onProgress;
             _onAchievementsProgressError = onProgressError;

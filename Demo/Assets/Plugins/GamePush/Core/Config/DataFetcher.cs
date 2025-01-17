@@ -568,7 +568,7 @@ namespace GamePush.Core
 
         #region AchievementsFetchers
 
-        public static async Task<PlayerAchievement> UnlockAchievement(UnlockPlayerAchievementInput input)
+        public static async Task<Achievement> UnlockAchievement(UnlockPlayerAchievementInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -599,10 +599,10 @@ namespace GamePush.Core
                 return null;
             }
 
-            Debug.Log(root.ToString());
+            Debug.Log(resultObject.ToString());
 
             //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
-            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
+            Achievement data = resultObject.ToObject<Achievement>();
 
             return data;
         }

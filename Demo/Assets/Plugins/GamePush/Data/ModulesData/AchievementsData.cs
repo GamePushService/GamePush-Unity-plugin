@@ -69,7 +69,7 @@ namespace GamePush
         public const string LEGENDARY = "LEGENDARY";
         public const string MYTHIC = "MYTHIC";
 
-        public static string GetColor(Rare rare)
+        public static string GetColorHEX(Rare rare)
         {
             return rare switch
             {
@@ -83,7 +83,7 @@ namespace GamePush
             };
         }
 
-        public static string GetColor(string rare)
+        public static string GetColorHEX(string rare)
         {
             return rare switch
             {
@@ -96,7 +96,21 @@ namespace GamePush
                 _ => RareColors.COMMON
             };
         }
+        public static Color GetColor(Rare rare)
+        {
+            string hexColor = GetColorHEX(rare);
+            if (ColorUtility.TryParseHtmlString("#" + hexColor, out Color color))
+                return color;
+            return Color.white;
+        }
 
+        public static Color GetColor(string rare)
+        {
+            string hexColor = GetColorHEX(rare);
+            if (ColorUtility.TryParseHtmlString("#" + hexColor, out Color color))
+                return color;
+            return Color.white;
+        }
     }
 }
 
@@ -123,6 +137,26 @@ namespace GamePush.Data
         public bool isLockedDescriptionVisible;
         public Translations names;
         public Translations descriptions;
+
+        public AchievementData ToAchievementData()
+        {
+            return new AchievementData
+            {
+                id = this.id,
+                tag = this.tag,
+                name = this.name,
+                description = this.description,
+                icon = this.icon,
+                iconSmall = this.iconSmall,
+                lockedIcon = this.lockedIcon,
+                lockedIconSmall = this.lockedIconSmall,
+                rare = this.rare,
+                maxProgress = this.maxProgress,
+                progressStep = this.progressStep,
+                lockedVisible = this.isLockedVisible,
+                lockedDescriptionVisible = this.isLockedDescriptionVisible
+            };
+        }
     }
 
     [System.Serializable]
@@ -135,6 +169,18 @@ namespace GamePush.Data
         public List<int> achievements;
         public Translations names;
         public Translations descriptions;
+
+        public AchievementsGroupData ToAchievementsGruopData()
+        {
+            return new AchievementsGroupData
+            {
+                id = this.id,
+                tag = this.tag,
+                name = this.name,
+                description = this.description,
+                achievements = this.achievements.ToArray()
+            };
+        }
     }
 
     [System.Serializable]

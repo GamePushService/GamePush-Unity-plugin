@@ -30,6 +30,8 @@ namespace GamePush.UI
         {
             _title.text = achievement.name;
             _description.text = achievement.description;
+            if (achievement.description == "")
+                _description.gameObject.SetActive(false);
 
             SetProgress(achievement);
             SetMedal(achievement);
@@ -65,7 +67,6 @@ namespace GamePush.UI
 
         private void SetRare(Achievement achievement)
         {
-            Debug.Log(achievement.rare);
             if(achievement.rare == RareTypes.COMMON)
             {
                 _rareDot.gameObject.SetActive(false);
@@ -73,8 +74,8 @@ namespace GamePush.UI
                 return;
             }
 
-            string hexColor = RareTypes.GetColor(achievement.rare);
-            Debug.Log(hexColor);
+            string hexColor = RareTypes.GetColorHEX(achievement.rare);
+
             Color rareColor = UtilityImage.GetColorByHEX(hexColor);
             _rare.color = rareColor;
             _rareDot.color = rareColor;

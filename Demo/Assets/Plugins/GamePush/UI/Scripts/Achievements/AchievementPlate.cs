@@ -3,10 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using GamePush.Data;
+using System.Threading.Tasks;
+using GamePush.Tools;
 
 namespace GamePush.UI
 {
-    public class AchievementPlate : MonoBehaviour
+    public class AchievementPlate : ModuleUI
     {
         [Header("Text components")]
         [SerializeField]
@@ -14,13 +16,13 @@ namespace GamePush.UI
         [SerializeField]
         private TMP_Text _descriptionText;
         [SerializeField]
-        private TMP_Text _topInfoText;
-        [SerializeField]
-        private TMP_Text _botInfoText;
+        private TMP_Text _topInfoText, _botInfoText;
 
-        [Header("Image component")]
+        [Header("Image components")]
         [SerializeField]
         private Image _achievImage;
+        [SerializeField]
+        private Image _achiveProgress;
 
         [Space]
         [Header("Moving parts")]
@@ -31,38 +33,73 @@ namespace GamePush.UI
         [SerializeField]
         private float _startY = -300f, _endY = 350f;
         [SerializeField]
-        private float _moveUpSpeed = 1500f;
+        private float _moveSpeed = 1500f;
         [Space]
         [SerializeField]
         private RectTransform _topInfo;
         [SerializeField]
         private RectTransform _botInfo;
 
-        void Start()
+        public static string GetTranslate(string rare)
         {
-            
+            return rare switch
+            {
+                RareTypes.COMMON => CoreSDK.Language.localization.rare.COMMON,
+                RareTypes.UNCOMMON => CoreSDK.Language.localization.rare.UNCOMMON,
+                RareTypes.RARE => CoreSDK.Language.localization.rare.RARE,
+                RareTypes.EPIC => CoreSDK.Language.localization.rare.EPIC,
+                RareTypes.LEGENDARY => CoreSDK.Language.localization.rare.LEGENDARY,
+                RareTypes.MYTHIC => CoreSDK.Language.localization.rare.MYTHIC,
+                _ => CoreSDK.Language.localization.rare.COMMON
+            };
         }
 
-        void SetUnlock(AchievementData data)
+        public async Task SetUnlock(Achievement data)
         {
-            //_topInfo.text = CoreSDK.language.localization.achievements.
+            string json = UtilityJSON.ToJson(data);
+            print(json);
+
+            _titleText.text = data.name;
+            _descriptionText.text = data.name;
+
+            _achievImage.color = Color.white;
+            await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
+
+            _topInfoText.text = CoreSDK.Language.localization.achievements.unlocked;
+
+            if(data.rare == RareTypes.COMMON)
+            {
+                foreach (GameObject gameObject in _botInfo.GetComponentsInChildren<GameObject>())
+                    gameObject.SetActive(false);
+            }
+            else
+            {
+                _botInfoText.text = GetTranslate(data.rare);
+
+                _achiveProgress.fillAmount = 1;
+                _achiveProgress.color = RareTypes.GetColor(data.rare);
+            }
+
+            await ShowPlate();
         }
 
-        void SetProgress(AchievementData data)
+        public async Task SetProgress(Achievement data)
         {
+            _titleText.text = data.name;
+            _descriptionText.text = data.name;
 
-        }
+            _achievImage.color = Color.white;
+            await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
 
-        void ShowPlate()
-        {
-            Vector3 endPos = _backPlate.anchoredPosition;
-            endPos.y = _endY;
+            _topInfoText.text = CoreSDK.Language.localization.achievements.progress;
 
-            Vector3 startPos = _backPlate.anchoredPosition;
-            startPos.y = _startY;
+            if (data.rare == RareTypes.COMMON)
+                data.rare = RareTypes.UNCOMMON;
 
-            _backPlate.anchoredPosition = startPos;
-            MoveDown(endPos);
+            _achiveProgress.fillAmount = data.progress / data.maxProgress;
+            _achiveProgress.color = RareTypes.GetColor(data.rare);
+
+            await ShowPlate();
         }
 
         private static string GetAchievementIcon(Achievement achievement)
@@ -78,15 +115,112 @@ namespace GamePush.UI
             }
         }
 
-        IEnumerator MoveDown(Vector3 moveToPos)
+        private async Task VerticalMove(RectTransform rect, float endY, float moveSpeed)
         {
-            while (_backPlate.anchoredPosition.y > moveToPos.y)
+            bool isUp = endY > rect.anchoredPosition.y;
+
+
+            while (rect && isUp ? rect.anchoredPosition.y < endY : rect.anchoredPosition.y > endY)
             {
-                _backPlate.Translate(Vector2.up * _moveUpSpeed * Time.deltaTime);
-                yield return new WaitForEndOfFrame();
+                float newY = isUp ?
+                    rect.anchoredPosition.y + moveSpeed * Time.deltaTime :
+                    rect.anchoredPosition.y - moveSpeed * Time.deltaTime;
+
+                rect.SetLocalPositionAndRotation(new Vector2(rect.anchoredPosition.x, newY), rect.rotation);
+                await Task.Delay(1);
             }
         }
 
-       
+        public async void TestPlate() => await ShowPlate();
+
+        private async Task ShowPlate()
+        {
+            SetStartState();
+            await MoveDown();
+            await Task.Delay(300);
+            await OpenUp();
+            ChangeTextVisibility(true);
+            await Task.Delay(300);
+            await ShowWings();
+            ChangeTextVisibility(false);
+            await CloseUp();
+            await Task.Delay(200);
+            await MoveUp();
+        }
+
+        private void SetStartState()
+        {
+            Vector3 startPos = _backPlate.anchoredPosition;
+            startPos.y = _startY;
+
+            _backPlate.anchoredPosition = startPos;
+
+
+            _backPlate.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _startSize);
+
+            ChangeTextVisibility(false);
+            _topInfo.gameObject.SetActive(false);
+            _botInfo.gameObject.SetActive(false);
+        }
+
+        private async Task MoveDown() => await VerticalMove(_backPlate, _endY, _moveSpeed);
+        private async Task MoveUp() => await VerticalMove(_backPlate, _startY, _moveSpeed);
+
+        private async Task OpenUp()
+        {
+            while (_backPlate.rect.width < _endSize)
+            {
+                _backPlate.SetSizeWithCurrentAnchors(
+                    RectTransform.Axis.Horizontal,
+                    _backPlate.rect.width + 1 * _moveSpeed * Time.deltaTime);
+                await Task.Delay(1);
+            }
+        }
+
+        private void ChangeTextVisibility(bool isShown)
+        {
+            _titleText.gameObject.SetActive(isShown);
+            _descriptionText.gameObject.SetActive(isShown);
+        }
+
+        private async Task ShowWings()
+        {
+            _topInfo.gameObject.SetActive(true);
+            _botInfo.gameObject.SetActive(true);
+
+            float moveTopToY = _topInfo.anchoredPosition.y;
+            print(moveTopToY);
+            float moveBotToY = _botInfo.anchoredPosition.y;
+
+            _topInfo.SetLocalPositionAndRotation(Vector2.zero, _topInfo.rotation);
+            _botInfo.SetLocalPositionAndRotation(Vector2.zero, _botInfo.rotation);
+
+            float showSpeed = 0.5f * _moveSpeed;
+
+            print(_topInfo.anchoredPosition.y);
+            await VerticalMove(_topInfo, moveTopToY, showSpeed);
+            await VerticalMove(_botInfo, moveBotToY, showSpeed);
+
+            await Task.Delay(2000);
+
+            await VerticalMove(_botInfo, 0, showSpeed);
+            await VerticalMove(_topInfo, 0, showSpeed);
+
+            _topInfo.gameObject.SetActive(false);
+            _botInfo.gameObject.SetActive(false);
+        }
+
+        private async Task CloseUp()
+        {
+
+            while (_backPlate.rect.width > _startSize)
+            {
+                _backPlate.SetSizeWithCurrentAnchors(
+                    RectTransform.Axis.Horizontal,
+                    _backPlate.rect.width - 1 * _moveSpeed * Time.deltaTime);
+                await Task.Delay(1);
+            }
+        }
+
     }
 }

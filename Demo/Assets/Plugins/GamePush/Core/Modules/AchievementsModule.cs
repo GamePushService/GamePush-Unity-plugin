@@ -20,11 +20,11 @@ namespace GamePush.Core
         public event Action<string> OnAchievementsUnlock;
         public event Action<string> OnAchievementsUnlockError;
 
-        public event Action<string> OnAchievementsProgress;
-        public event Action OnAchievementsProgressError;
+        public event Action<string> OnAchievementsSetProgress;
+        public event Action<string> OnAchievementsSetProgressError;
 
-        public event Action OnShowAcievementUnlock;
-        public event Action OnShowAcievementProgress;
+        public event Action<Achievement> OnShowAcievementUnlock;
+        public event Action<Achievement> OnShowAcievementProgress;
 
         public event Action<FetchPlayerAchievementsOutput, AchievementsSettings, Action, Action> OnShowAcievementsList;
 
@@ -49,11 +49,6 @@ namespace GamePush.Core
         {
             _settings = config.project.achievements;
 
-            _achievements = new List<Achievement>(config.achievements);
-            _achievementsGroups = new List<AchievementsGroup>(config.achievementsGroups);
-            RefreshAchievementsMap();
-            RefreshAchievementsGroupsMap();
-
             string langKey = CoreSDK.currentLang.ToLower();
 
             foreach (var a in config.achievements)
@@ -67,6 +62,11 @@ namespace GamePush.Core
                 a.lockedIcon = UtilityImage.ResizeImage(a.lockedIcon, 256, 256, false);
                 a.lockedIconSmall = UtilityImage.ResizeImage(a.lockedIcon, 48, 48, false);
             }
+
+            _achievements = new List<Achievement>(config.achievements);
+            _achievementsGroups = new List<AchievementsGroup>(config.achievementsGroups);
+            RefreshAchievementsMap();
+            RefreshAchievementsGroupsMap();
 
             CoreSDK.Language.OnChangeLanguage += RenameOnLanguageChange;
         }
@@ -148,6 +148,7 @@ namespace GamePush.Core
 
         public void SetAchievementsList(List<PlayerAchievement> achievements)
         {
+            Logger.Log("Set players achievements " + achievements.Count);
             _playerAchievements = new List<PlayerAchievement>(achievements);
             RefreshPlayerAchievementsMap();
         }
@@ -179,6 +180,7 @@ namespace GamePush.Core
         private PlayerAchievementInfo GetAchievementInfo(object idOrTag)
         {
             var info = new PlayerAchievementInfo();
+
             if (idOrTag is int id && _achievementsMapID.TryGetValue(id, out var achievement))
             {
                 info.Achievement = achievement;
@@ -207,7 +209,6 @@ namespace GamePush.Core
             };
         }
 
-
         public void Open()
         {
             FetchPlayerAchievementsOutput info = new FetchPlayerAchievementsOutput();
@@ -219,12 +220,42 @@ namespace GamePush.Core
             OnShowAcievementsList?.Invoke(info, _settings, OnAchievementsOpen, OnAchievementsClose);
         }
 
-
-
-
         public void Fetch()
         {
+            List<AchievementData> achievementDatas = new List<AchievementData>();
+            List<AchievementsGroupData> achievementsGroupDatas = new List<AchievementsGroupData>();
 
+            foreach(Achievement achievement in _achievements)
+            {
+                AchievementData data = achievement.ToAchievementData();
+                achievementDatas.Add(data);
+            }
+
+            foreach (AchievementsGroup group in _achievementsGroups)
+            {
+                AchievementsGroupData data = group.ToAchievementsGruopData();
+                achievementsGroupDatas.Add(data);
+            }
+
+            OnAchievementsFetch?.Invoke(achievementDatas);
+            OnAchievementsFetchGroups?.Invoke(achievementsGroupDatas);
+            OnAchievementsFetchPlayer?.Invoke(_playerAchievements);
+        }
+
+        public bool Has(string idOrTag)
+        {
+            PlayerAchievementInfo info = GetAchievementInfo(idOrTag);
+            if (info.PlayerAchievement != null)
+                return info.PlayerAchievement.unlocked;
+            else if (info.Achievement != null)
+            {
+                return false;
+            }
+            else
+            {
+                Logger.Error(AchievementNotFoundError);
+                return false;
+            }
         }
 
         public async void Unlock(string idOrTag)
@@ -234,46 +265,117 @@ namespace GamePush.Core
             if (info.Achievement == null)
             {
                 OnAchievementsUnlockError?.Invoke(AchievementNotFoundError);
+                return;
             }
 
             if (info.PlayerAchievement?.unlocked == true)
             {
                 OnAchievementsUnlockError?.Invoke(AlreadyUnlockedError);
+                return;
             }
 
             if (_alreadyUnlocked.Contains(info.Achievement.id))
             {
                 OnAchievementsUnlockError?.Invoke(AlreadyUnlockedError);
+                return;
             }
+
             UnlockPlayerAchievementInput input = new UnlockPlayerAchievementInput();
             input.id = info.Achievement.id;
+            input.tag = info.Achievement.tag;
+
 
             var unlockResult = await DataFetcher.UnlockAchievement(input);
-            //var mergedAchievement = new Achievement
-            //{
-            //    id = unlockResult.Achievement.Id,
-            //    tag = unlockResult.Achievement.Tag,
-            //    unlocked = true,
-            //    progress = unlockResult.PlayerAchievement.Progress,
-            //};
 
-            UpsertInPlayersList(unlockResult);
+            var mergedAchievement = new Achievement
+            {
+                id = unlockResult.id,
+                unlocked = true,
+                progress = unlockResult.maxProgress,
+                icon = info.Achievement.icon,
+                description = info.Achievement.description,
+                rare = info.Achievement.rare,
+            };
+
+            var playerAchievement = new PlayerAchievement
+            {
+                achievementId = unlockResult.id,
+                unlocked = true,
+                progress = unlockResult.maxProgress,
+            };
+
+            UpsertInPlayersList(playerAchievement);
 
             if (_settings.enableUnlockToast)
             {
-                //await Task.WhenAll(overlayPromise, PreloadImage(GetAchievementIcon(mergedAchievement)));
-                //gp.Overlay.UnlockAchievement(mergedAchievement);
+                OnShowAcievementUnlock?.Invoke(mergedAchievement);
             }
+
+            OnAchievementsUnlock?.Invoke(mergedAchievement.id.ToString());
         }
 
-        public bool Has(string idOrTag)
+        public async void SetProgress(string idOrTag, int progress)
         {
-            return GetAchievementInfo(idOrTag).PlayerAchievement.unlocked;
-        }
+            var info = GetAchievementInfo(idOrTag);
 
-        public void SetProgress(string idOrTag, int progress)
-        {
-            
+            if (info.Achievement == null)
+            {
+                OnAchievementsSetProgressError?.Invoke(AchievementNotFoundError);
+                return;
+            }
+
+            if (info.PlayerAchievement?.unlocked == true)
+            {
+                OnAchievementsSetProgressError?.Invoke(AlreadyUnlockedError);
+                return;
+            }
+
+            if (_alreadyUnlocked.Contains(info.Achievement.id))
+            {
+                OnAchievementsSetProgressError?.Invoke(AlreadyUnlockedError);
+                return;
+            }
+
+            var prevProgress = info.PlayerAchievement?.progress ?? 0;
+            if (prevProgress == progress)
+            {
+                OnAchievementsSetProgressError?.Invoke(ProgressTheSameError);
+                return;
+            }
+
+            PlayerSetAchievementProgressInput input = new PlayerSetAchievementProgressInput();
+            input.id = info.Achievement.id;
+            input.tag = info.Achievement.tag;
+            input.progress = progress;
+
+
+            var result = await DataFetcher.SetAchievemntProgress(input);
+            var mergedAchievement = info.Achievement;
+
+            mergedAchievement.id = result.achievementId;
+            mergedAchievement.tag = info.Achievement.tag;
+            mergedAchievement.unlocked = result.unlocked;
+            mergedAchievement.progress = result.progress;
+            mergedAchievement.progressStep = info.Achievement.progressStep;
+
+            var prevStep = prevProgress / mergedAchievement.progressStep;
+            var currentStep = mergedAchievement.progress / mergedAchievement.progressStep;
+
+            UpsertInPlayersList(result);
+
+            if (_settings.enableUnlockToast && (mergedAchievement.unlocked || prevStep < currentStep))
+            {
+                OnShowAcievementProgress?.Invoke(mergedAchievement);
+            }
+
+            //string jsonAchievement = UtilityJSON.ToJson(mergedAchievement.ToAchievementData());
+
+            if (mergedAchievement.unlocked)
+            {
+                OnAchievementsUnlock?.Invoke(mergedAchievement.id.ToString());
+            }
+
+            OnAchievementsSetProgress?.Invoke(mergedAchievement.id.ToString());
         }
 
         public int GetProgress(string idOrTag)

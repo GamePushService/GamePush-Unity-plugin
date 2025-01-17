@@ -111,6 +111,11 @@ namespace GamePush.Tools
 
     public class UtilityJSON
     {
+        public static string ToJson(object data)
+        {
+            return JsonUtility.ToJson(data);
+        }
+
         public static T[] GetArray<T>(string json)
         {
             string newJson = "{\"data\":" + json + "}";
@@ -225,7 +230,40 @@ namespace GamePush.Tools
             }
         }
     }
-    
+
+    public class TaskQueue
+    {
+        private readonly Queue<Func<Task>> taskQueue = new Queue<Func<Task>>();
+        private bool isProcessing = false;
+
+        public void Enqueue(Func<Task> task)
+        {
+            taskQueue.Enqueue(task);
+            if (!isProcessing)
+            {
+                _ = ProcessQueue();
+            }
+        }
+
+        private async Task ProcessQueue()
+        {
+            isProcessing = true;
+            while (taskQueue.Count > 0)
+            {
+                var task = taskQueue.Dequeue();
+                try
+                {
+                    await task();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Ошибка в задаче: {ex}");
+                }
+            }
+            isProcessing = false;
+        }
+    }
+
 
     [System.Serializable]
     public class PlayersIdList

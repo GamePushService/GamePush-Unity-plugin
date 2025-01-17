@@ -202,8 +202,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 67.164734}
-  m_SizeDelta: {x: 924, y: 762.6761}
+  m_AnchoredPosition: {x: 0, y: 83.608}
+  m_SizeDelta: {x: 924, y: 795.56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8405195513628788451
 CanvasRenderer:
@@ -393,8 +393,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GamePush.UI.LeaderboardUI, GamePush.UI
+      - m_Target: {fileID: 6429510865257819984}
+        m_TargetAssemblyTypeName: GamePush.UI.AchievementsUI, GamePush.UI
         m_MethodName: Close
         m_Mode: 1
         m_Arguments:
@@ -442,7 +442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 413.15472}
+  m_AnchoredPosition: {x: 0, y: 420}
   m_SizeDelta: {x: 925, y: 925}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6429510865257819984
@@ -457,7 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565617ec939644a1aa0a9cf7e537df75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startOffset: 400
+  _startOffset: 800
   _moveUpSpeed: 1500
   _achievementsTitle: {fileID: 4623480015271160329}
   _progressInfo: {fileID: 1894331738157617135, guid: de7b0bdb0ffb24d59a4a3e4637daa48d, type: 3}
@@ -622,8 +622,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2113464005616847597}
   m_HandleRect: {fileID: 453399162756597382}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.6835709
+  m_Value: 0.99999964
+  m_Size: 0.7130441
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1088,8 +1088,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 461.905, y: -382.78}
-  m_SizeDelta: {x: 923.81, y: 450.9}
+  m_AnchoredPosition: {x: 461.905, y: -367.54}
+  m_SizeDelta: {x: 923.81, y: 481.39}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &2230616289796298694
 PrefabInstance:
@@ -1549,6 +1549,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7133646853586227882, guid: 5a6f6e30175694006b7921fea3782f2a, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638221422485373067, guid: 5a6f6e30175694006b7921fea3782f2a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638221422485373067, guid: 5a6f6e30175694006b7921fea3782f2a, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
