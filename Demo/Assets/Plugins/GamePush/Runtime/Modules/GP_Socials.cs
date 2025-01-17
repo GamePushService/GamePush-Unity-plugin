@@ -103,7 +103,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsShare() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.IsSupportsShare();
+            return CoreSDK.Socials.IsSupportsShare();
 #else
             ConsoleLog("SOCIALS: IS SUPPORTS SHARE: " + GP_Settings.instance.GetPlatformSettings().IsSupportsShare);
             return GP_Settings.instance.GetPlatformSettings().IsSupportsShare;
@@ -115,7 +115,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeShare() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.IsSupportsNativeShare();
+            return CoreSDK.Socials.IsSupportsNativeShare();
 #else
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeShare;
 #endif
@@ -126,7 +126,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativePosts() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.IsSupportsNativePosts();
+            return CoreSDK.Socials.IsSupportsNativePosts();
 #else
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativePosts;
 #endif
@@ -137,7 +137,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeInvite() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.IsSupportsNativeInvite();
+            return CoreSDK.Socials.IsSupportsNativeInvite();
 #else
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeInvite;
 #endif
@@ -148,7 +148,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_CanJoinCommunity() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.CanJoinCommunity();
+            return CoreSDK.Socials.CanJoinCommunity();
 #else
             return GP_Settings.instance.GetPlatformSettings().CanJoinCommunity;
 #endif
@@ -159,7 +159,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Socials_IsSupportsNativeCommunityJoin() == "true";
 #elif !UNITY_EDITOR
-            return CoreSDK.socials.CanJoinCommunity();
+            return CoreSDK.Socials.CanJoinCommunity();
 #else
             return GP_Settings.instance.GetPlatformSettings().IsSupportsNativeCommunityJoin;
 #endif
