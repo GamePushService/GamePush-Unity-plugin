@@ -61,7 +61,7 @@ namespace GamePush
         private void OnEnable()
         {
             CoreSDK.Achievements.OnAchievementsOpen += () => CallAchievementsOpen();
-            CoreSDK.Achievements.OnAchievementsClose += () => CallAchievementsOpen();
+            CoreSDK.Achievements.OnAchievementsClose += () => CallAchievementsClose();
 
             CoreSDK.Achievements.OnAchievementsFetch += (List<AchievementData> achievementsData) => CallAchievementsFetchList(achievementsData);
             CoreSDK.Achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
