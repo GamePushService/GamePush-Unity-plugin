@@ -293,6 +293,8 @@ namespace GamePush.Core
                 unlocked = true,
                 progress = unlockResult.maxProgress,
                 icon = info.Achievement.icon,
+                iconSmall = info.Achievement.iconSmall,
+                name = info.Achievement.name,
                 description = info.Achievement.description,
                 rare = info.Achievement.rare,
             };
@@ -357,6 +359,8 @@ namespace GamePush.Core
             mergedAchievement.unlocked = result.unlocked;
             mergedAchievement.progress = result.progress;
             mergedAchievement.progressStep = info.Achievement.progressStep;
+            mergedAchievement.name = info.Achievement.name;
+            mergedAchievement.description = info.Achievement.description;
 
             var prevStep = prevProgress / mergedAchievement.progressStep;
             var currentStep = mergedAchievement.progress / mergedAchievement.progressStep;

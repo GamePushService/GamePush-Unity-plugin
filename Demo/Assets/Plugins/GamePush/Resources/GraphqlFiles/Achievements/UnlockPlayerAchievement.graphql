@@ -11,9 +11,6 @@ fragment AchievementFields on Achievement {
   unlocked
   lockedIcon(w: 256, h: 256, crop: false)
   progressStep
-  isPublished
-  isLockedVisible
-  isLockedDescriptionVisible
 }
 
 fragment AchievementResolvers on Achievement {
@@ -41,6 +38,7 @@ mutation UnlockPlayerAchievement($input: UnlockPlayerAchievementInput!, $lang: L
     }
     ... on Achievement{
       ...AchievementFields
+      ...AchievementResolvers
     }
     ... on PlayerAchievement {
       ...PlayerAchievementFields

@@ -234,33 +234,44 @@ namespace GamePush.Tools
     public class TaskQueue
     {
         private readonly Queue<Func<Task>> taskQueue = new Queue<Func<Task>>();
-        private bool isProcessing = false;
+        private Task currentTask = Task.CompletedTask;
 
         public void Enqueue(Func<Task> task)
         {
-            taskQueue.Enqueue(task);
-            if (!isProcessing)
+            lock (taskQueue)
             {
-                _ = ProcessQueue();
+                taskQueue.Enqueue(task);
             }
+
+            ProcessQueue();
         }
 
-        private async Task ProcessQueue()
+        private async void ProcessQueue()
         {
-            isProcessing = true;
+            if (currentTask.Status == TaskStatus.Running || currentTask.Status == TaskStatus.WaitingForActivation)
+            {
+                return;
+            }
+
             while (taskQueue.Count > 0)
             {
-                var task = taskQueue.Dequeue();
+                Func<Task> nextTask;
+                lock (taskQueue)
+                {
+                    if (taskQueue.Count == 0) return;
+                    nextTask = taskQueue.Dequeue();
+                }
+
                 try
                 {
-                    await task();
+                    currentTask = nextTask();
+                    await currentTask;
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"Ошибка в задаче: {ex}");
                 }
             }
-            isProcessing = false;
         }
     }
 

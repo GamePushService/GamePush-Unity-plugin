@@ -60,7 +60,7 @@ namespace GamePush.UI
             print(json);
 
             _titleText.text = data.name;
-            _descriptionText.text = data.name;
+            _descriptionText.text = data.description;
 
             _achievImage.color = Color.white;
             await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
@@ -69,8 +69,10 @@ namespace GamePush.UI
 
             if(data.rare == RareTypes.COMMON)
             {
-                foreach (GameObject gameObject in _botInfo.GetComponentsInChildren<GameObject>())
-                    gameObject.SetActive(false);
+                foreach (Transform child in _botInfo.GetComponentsInChildren<Transform>())
+                {
+                    child.gameObject.SetActive(false);
+                }
             }
             else
             {
@@ -86,7 +88,7 @@ namespace GamePush.UI
         public async Task SetProgress(Achievement data)
         {
             _titleText.text = data.name;
-            _descriptionText.text = data.name;
+            _descriptionText.text = data.description;
 
             _achievImage.color = Color.white;
             await UtilityImage.DownloadImageAsync(GetAchievementIcon(data), _achievImage);
@@ -96,7 +98,8 @@ namespace GamePush.UI
             if (data.rare == RareTypes.COMMON)
                 data.rare = RareTypes.UNCOMMON;
 
-            _achiveProgress.fillAmount = data.progress / data.maxProgress;
+            _botInfoText.text = data.progress + " / " + data.maxProgress;
+            _achiveProgress.fillAmount = (float)data.progress / (float)data.maxProgress;
             _achiveProgress.color = RareTypes.GetColor(data.rare);
 
             await ShowPlate();
@@ -189,7 +192,6 @@ namespace GamePush.UI
             _botInfo.gameObject.SetActive(true);
 
             float moveTopToY = _topInfo.anchoredPosition.y;
-            print(moveTopToY);
             float moveBotToY = _botInfo.anchoredPosition.y;
 
             _topInfo.SetLocalPositionAndRotation(Vector2.zero, _topInfo.rotation);
@@ -197,7 +199,6 @@ namespace GamePush.UI
 
             float showSpeed = 0.5f * _moveSpeed;
 
-            print(_topInfo.anchoredPosition.y);
             await VerticalMove(_topInfo, moveTopToY, showSpeed);
             await VerticalMove(_botInfo, moveBotToY, showSpeed);
 

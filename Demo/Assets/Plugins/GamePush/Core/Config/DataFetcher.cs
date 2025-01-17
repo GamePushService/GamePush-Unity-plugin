@@ -600,8 +600,8 @@ namespace GamePush.Core
             }
 
             Debug.Log(resultObject.ToString());
+            Debug.Log(resultObject["id"].ToString());
 
-            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
             Achievement data = resultObject.ToObject<Achievement>();
 
             return data;

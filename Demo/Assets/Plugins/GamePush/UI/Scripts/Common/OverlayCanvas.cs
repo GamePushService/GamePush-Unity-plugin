@@ -30,6 +30,8 @@ namespace GamePush.UI
         public static OverlayCanvas Controller;
 
 
+        private TaskQueue taskQueue;
+
         private void Awake()
         {
             if (Controller == null)
@@ -40,7 +42,7 @@ namespace GamePush.UI
             DontDestroyOnLoad(gameObject);
             overlayHolder.SetActive(false);
 
-            
+            taskQueue = new TaskQueue();
         }
 
         private void OnEnable()
@@ -80,12 +82,6 @@ namespace GamePush.UI
             return ui;
         }
 
-        public ModuleUI CreateUINotif(ModuleUI UIcomponent)
-        {
-            ModuleUI ui = Instantiate(UIcomponent, transform).GetComponent<ModuleUI>();
-            return ui;
-        }
-
         public void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
             LeaderboardUI leaderboardUI = (LeaderboardUI)CreateUITable(leaderboard);
@@ -104,27 +100,29 @@ namespace GamePush.UI
             achievementsUI.Init(info, settings, onAchievementsOpen, onAchievementsClose);
         }
 
-        private TaskQueue taskQueue = new TaskQueue();
-
-        public async Task PlateAwait(Task plateShow, GameObject plate)
+        public async Task PlateAwait(Task plateShow, AchievementPlate plate)
         {
             await plateShow;
-            Destroy(plate);
+            if (plate != null && plate.gameObject != null)
+            {
+               Destroy(plate.gameObject);
+            }
         }
 
         public void UnlockAchievement(Achievement achievement)
         {
-            AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
+            AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
             Task show = achievementPlateUI.SetUnlock(achievement);
-            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI.gameObject));
 
+            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI));
         }
 
         public void SetProgressAchievement(Achievement achievement)
         {
-            AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
+            AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
             Task show = achievementPlateUI.SetProgress(achievement);
-            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI.gameObject));
+
+            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI));
         }
 
         //private void Update()
