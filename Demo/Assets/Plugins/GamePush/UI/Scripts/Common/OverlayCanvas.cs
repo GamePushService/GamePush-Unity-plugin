@@ -112,27 +112,38 @@ namespace GamePush.UI
         public void UnlockAchievement(Achievement achievement)
         {
             AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
-            Task show = achievementPlateUI.SetUnlock(achievement);
 
-            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI));
+            taskQueue.Enqueue(async () =>
+            {
+                Task show = achievementPlateUI.SetUnlock(achievement);
+                await PlateAwait(show, achievementPlateUI);
+            });
         }
 
         public void SetProgressAchievement(Achievement achievement)
         {
             AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
-            Task show = achievementPlateUI.SetProgress(achievement);
 
-            taskQueue.Enqueue(() => PlateAwait(show, achievementPlateUI));
+            taskQueue.Enqueue(async () =>
+            {
+                Task show = achievementPlateUI.SetProgress(achievement);
+                await PlateAwait(show, achievementPlateUI);
+            });
         }
 
-        //private void Update()
-        //{
-        //    if (Input.GetKeyDown(KeyCode.T))
-        //    {
-        //        AchievementPlate achievementPlateUI = (AchievementPlate)CreateUINotif(achievementPlate);
-        //        achievementPlateUI.TestPlate();
-        //    }
-        //}
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
+
+                taskQueue.Enqueue(async () =>
+                {
+                    Task show = achievementPlateUI.TestPlate();
+                    await PlateAwait(show, achievementPlateUI);
+                });
+            }
+        }
     }
 }
 

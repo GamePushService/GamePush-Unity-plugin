@@ -253,12 +253,18 @@ namespace GamePush.Tools
                 return;
             }
 
-            while (taskQueue.Count > 0)
+            while (true)
             {
                 Func<Task> nextTask;
+
                 lock (taskQueue)
                 {
-                    if (taskQueue.Count == 0) return;
+                    if (taskQueue.Count == 0)
+                    {
+                        currentTask = Task.CompletedTask;
+                        return;
+                    }
+
                     nextTask = taskQueue.Dequeue();
                 }
 

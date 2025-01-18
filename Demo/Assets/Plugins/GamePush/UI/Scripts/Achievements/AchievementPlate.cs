@@ -141,20 +141,21 @@ namespace GamePush.UI
             }
         }
 
-        public async void TestPlate() => await ShowPlate();
-
+        public async Task TestPlate()
+        {
+            await ShowPlate();
+        }
+            
         private async Task ShowPlate()
         {
-            
             await MoveDown();
-            await Task.Delay(300);
+            await Task.Delay(200);
             await OpenUp();
             ChangeTextVisibility(true);
-            await Task.Delay(300);
+            await Task.Delay(200);
             await ShowWings();
             ChangeTextVisibility(false);
             await CloseUp();
-            await Task.Delay(200);
             await MoveUp();
         }
 
@@ -182,7 +183,18 @@ namespace GamePush.UI
             {
                 _backPlate.SetSizeWithCurrentAnchors(
                     RectTransform.Axis.Horizontal,
-                    _backPlate.rect.width + 1 * _moveSpeed * Time.deltaTime);
+                    _backPlate.rect.width + 2 * _moveSpeed * Time.deltaTime);
+                await Task.Delay(1);
+            }
+        }
+
+        private async Task CloseUp()
+        {
+            while (_backPlate.rect.width > _startSize)
+            {
+                _backPlate.SetSizeWithCurrentAnchors(
+                    RectTransform.Axis.Horizontal,
+                    _backPlate.rect.width - 2 * _moveSpeed * Time.deltaTime);
                 await Task.Delay(1);
             }
         }
@@ -211,7 +223,7 @@ namespace GamePush.UI
 
             await Task.WhenAll(moveTop1, moveBot1);
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             Task moveTop2 = VerticalMove(_botInfo, 0, showSpeed);
             Task moveBot2 = VerticalMove(_topInfo, 0, showSpeed);
@@ -222,17 +234,7 @@ namespace GamePush.UI
             _botInfo.gameObject.SetActive(false);
         }
 
-        private async Task CloseUp()
-        {
-
-            while (_backPlate.rect.width > _startSize)
-            {
-                _backPlate.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Horizontal,
-                    _backPlate.rect.width - 1 * _moveSpeed * Time.deltaTime);
-                await Task.Delay(1);
-            }
-        }
+        
 
     }
 }
