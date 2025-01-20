@@ -23,6 +23,7 @@ namespace GamePush
 
         public static PlatformConfig platformConfig;
 
+        #region Modules
         public static GameModule Game;
         public static PlayerModule Player;
         public static PlatformModule Platform;
@@ -37,6 +38,10 @@ namespace GamePush
         public static LanguageModule Language;
         public static UniquesModule Uniques;
         public static AchievementsModule Achievements;
+        public static AnalyticsModule Analytics;
+        public static DocumentsModule Documents;
+
+        #endregion
 
         #region ServerTime
 
@@ -85,6 +90,7 @@ namespace GamePush
         }
         #endregion
 
+        #region Initialization
         public static async void Initialize()
         {
             int id;
@@ -112,38 +118,17 @@ namespace GamePush
             Leaderboard = new LeaderboardModule();
             Uniques = new UniquesModule();
             Achievements = new AchievementsModule();
+            Analytics = new AnalyticsModule();
 
             Payments = new PaymentsModule();
             Socials = new SocialsModule();
 
         }
 
-        public static void SetProjectData(SavedProjectData data)
-        {
-            projectId = data.id;
-            projectToken = data.token;
-        }
-
-        public static void SetProjectData(int id, string token)
-        {
-            projectId = id;
-            projectToken = token;
-        }
-
-        public static void SetAndroidPlatform(string platform)
-            => targetPlatform = platform;
-
         public static async Task InitFetch()
         {
             await FetchCoreConfig();
             await Player.FetchPlayerConfig();
-        }
-
-        public static async Task FetchEditorConfig()
-        {
-            AllConfigData data = await DataFetcher.GetConfig();
-            configData = data;
-            platformConfig = configData.platformConfig;
         }
 
         public static async Task FetchCoreConfig()
@@ -170,6 +155,30 @@ namespace GamePush
             Socials.Init(configData.config);
             Uniques.Init();
             Achievements.Init(configData);
+        }
+        
+        public static async Task FetchEditorConfig()
+        {
+            AllConfigData data = await DataFetcher.GetConfig();
+            configData = data;
+            platformConfig = configData.platformConfig;
+        }
+
+        #endregion
+
+        public static void SetAndroidPlatform(string platform)
+            => targetPlatform = platform;
+
+        public static void SetProjectData(SavedProjectData data)
+        {
+            projectId = data.id;
+            projectToken = data.token;
+        }
+
+        public static void SetProjectData(int id, string token)
+        {
+            projectId = id;
+            projectToken = token;
         }
 
         public static AllConfigData GetConfig()

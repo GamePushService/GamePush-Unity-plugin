@@ -20,20 +20,16 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_Analytics_Hit(url);
 #else
-
-            ConsoleLog("HIT: URL: " + url);
+            CoreSDK.Analytics.Hit(url);
 #endif
         }
-
-
         
         public static void Goal(string eventName, string value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Analytics_Goal(eventName, value);
 #else
-
-            ConsoleLog("GOAL: EVENT: " + eventName + " VALUE: " + value);
+            CoreSDK.Analytics.Goal(eventName, value);
 #endif
         }
         public static void Goal(string eventName, int value)
@@ -41,8 +37,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Analytics_Goal(eventName, value.ToString());
 #else
-
-            ConsoleLog("GOAL: EVENT: " + eventName + " VALUE: " + value);
+            CoreSDK.Analytics.Goal(eventName, value);
 #endif
         }
     }
