@@ -1230,7 +1230,7 @@ namespace GamePush.Core
             Action combinedComplete = () =>
             {
                 onLoginComplete?.Invoke();
-                OnLogoutComplete?.Invoke();
+                OnLoginComplete?.Invoke();
             };
 
             Action<string> combinedError = (string error) =>

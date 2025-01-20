@@ -222,6 +222,9 @@ namespace GamePush.Core
 
         public void Fetch()
         {
+            if (_achievements == null || _achievements.Count == 0)
+                OnAchievementsFetchError?.Invoke();
+
             List<AchievementData> achievementDatas = new List<AchievementData>();
             List<AchievementsGroupData> achievementsGroupDatas = new List<AchievementsGroupData>();
 

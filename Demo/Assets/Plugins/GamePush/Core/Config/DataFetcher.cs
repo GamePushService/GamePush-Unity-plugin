@@ -41,8 +41,8 @@ namespace GamePush.Core
         private static async Task<UnityWebRequest> GetRequest(string url)
         {
             UnityWebRequest webRequest = UnityWebRequest.Get(url);
-            //await webRequest.SendWebRequest();
-            webRequest.SendWebRequest();
+            await webRequest.SendWebRequest();
+            //webRequest.SendWebRequest();
 
             while (!webRequest.isDone)
             {
