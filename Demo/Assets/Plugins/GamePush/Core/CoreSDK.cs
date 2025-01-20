@@ -122,7 +122,6 @@ namespace GamePush
 
             Payments = new PaymentsModule();
             Socials = new SocialsModule();
-
         }
 
         public static async Task InitFetch()

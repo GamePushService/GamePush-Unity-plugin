@@ -148,7 +148,7 @@ namespace GamePush.Core
 
         public void SetAchievementsList(List<PlayerAchievement> achievements)
         {
-            Logger.Log("Set players achievements " + achievements.Count);
+            //Logger.Log("Set players achievements " + achievements.Count);
             _playerAchievements = new List<PlayerAchievement>(achievements);
             RefreshPlayerAchievementsMap();
         }

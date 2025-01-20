@@ -78,8 +78,6 @@ namespace GamePush
 #endif
 
 
-
-
         public static void Open(string orderBy = "score", Order order = Order.DESC, int limit = 10, int showNearest = 5, WithMe withMe = WithMe.none, string includeFields = "", string displayFields = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
