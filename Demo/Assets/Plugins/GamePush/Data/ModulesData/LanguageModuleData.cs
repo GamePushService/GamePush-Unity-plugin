@@ -1,6 +1,25 @@
 
 namespace GamePush
 {
+    [System.Serializable]
+    public class Translations
+    {
+        public string en;
+        public string fr;
+        public string it;
+        public string de;
+        public string es;
+        public string zh;
+        public string pt;
+        public string ko;
+        public string ja;
+        public string ru;
+        public string tr;
+        public string ar;
+        public string id;
+        public string hi;
+    }
+
     public enum Language : byte
     {
         English,
@@ -80,7 +99,7 @@ namespace GamePush
             };
         }
 
-        public static string GetTranslation(string lang, GamePush.Data.Translations translations)
+        public static string GetTranslation(string lang, Translations translations)
         {
             return lang switch
             {
@@ -98,6 +117,28 @@ namespace GamePush
                 Arab => translations.ar,
                 Hindi => translations.hi,
                 Indonesian => translations.id,
+                _ => translations.en
+            };
+        }
+
+        public static string GetTranslation(Language lang, Translations translations)
+        {
+            return lang switch
+            {
+                Language.English => translations.en,
+                Language.Russian => translations.ru,
+                Language.Turkish => translations.tr,
+                Language.French => translations.fr,
+                Language.Italian => translations.it,
+                Language.German => translations.de,
+                Language.Spanish => translations.es,
+                Language.Chineese => translations.zh,
+                Language.Portuguese => translations.pt,
+                Language.Korean => translations.ko,
+                Language.Japanese => translations.ja,
+                Language.Arab => translations.ar,
+                Language.Hindi => translations.hi,
+                Language.Indonesian => translations.id,
                 _ => translations.en
             };
         }

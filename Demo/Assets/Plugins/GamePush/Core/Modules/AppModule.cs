@@ -15,10 +15,14 @@ namespace GamePush.Core
         private Project _project;
         private PlatformConfig _platformConfig;
 
+        private bool _isRewiewSupported;
+
         public void Init(Project project, PlatformConfig platformConfig)
         {
             _project = project;
             _platformConfig = platformConfig;
+
+            _isRewiewSupported = false;
         }
 
         public string Title() => _project.name;
@@ -31,8 +35,16 @@ namespace GamePush.Core
 
         public void ReviewRequest()
         {
-            string error = "Not supported";
-            OnReviewClose?.Invoke(error);
+            if (_isRewiewSupported)
+            {
+                //TODO: Check solutions for rewiew supported platforms
+                OnReviewResult?.Invoke(0);
+            }
+            else
+            {
+                string error = "Not supported";
+                OnReviewClose?.Invoke(error);
+            }
         }
 
         public bool IsAlreadyReviewed() => false;

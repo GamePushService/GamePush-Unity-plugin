@@ -52,11 +52,10 @@ namespace Examples.Achievements
 
         public void Open() => GP_Achievements.Open(OnOpen, OnClose);
         public void Unlock() => GP_Achievements.Unlock(_idOrTag.text, OnUnlock, OnUnlockError);
-        private void SetProgress() => GP_Achievements.SetProgress(_idOrTag.text, 25, OnPogress, OnProgressError);
+        private void SetProgress() => GP_Achievements.SetProgress(_idOrTag.text, GP_Achievements.GetProgress(_idOrTag.text) + 25, OnPogress, OnProgressError);
         private void GetProgress() => ConsoleUI.Instance.Log("PROGRESS: " + GP_Achievements.GetProgress(_idOrTag.text));
         private void Has() => ConsoleUI.Instance.Log("HAS: " + GP_Achievements.Has(_idOrTag.text));
         private void Fetch() => GP_Achievements.Fetch();
-
 
 
         private void OnOpen() => ConsoleUI.Instance.Log("ON OPEN");
@@ -66,9 +65,9 @@ namespace Examples.Achievements
         private void OnUnlockError(string error) => ConsoleUI.Instance.Log("UNLOCK ERROR: " + error);
 
         private void OnPogress(string idOrTag) => ConsoleUI.Instance.Log("ON PROGRESS: SUCCESS: " + idOrTag);
-        private void OnProgressError() => ConsoleUI.Instance.Log("PROGRESS: ERROR");
+        private void OnProgressError(string error) => ConsoleUI.Instance.Log("SET PROGRESS ERROR: " + error);
 
-        private void OnFetchSuccess(List<AchievementsFetch> achievements)
+        private void OnFetchSuccess(List<AchievementData> achievements)
         {
             ConsoleUI.Instance.Log("FETCH: SUCCESS");
 
@@ -90,7 +89,7 @@ namespace Examples.Achievements
             }
         }
 
-        private void OnFetchGroups(List<AchievementsFetchGroups> data)
+        private void OnFetchGroups(List<AchievementsGroupData> data)
         {
             ConsoleUI.Instance.Log("FETCH: GROUP: SUCCESS");
 
@@ -108,7 +107,7 @@ namespace Examples.Achievements
             }
         }
 
-        private void OnFetchPlayer(List<AchievementsFetchPlayer> data)
+        private void OnFetchPlayer(List<PlayerAchievement> data)
         {
             ConsoleUI.Instance.Log("FETCH: PLAYER ACHIEVEMENTS: SUCCESS");
 

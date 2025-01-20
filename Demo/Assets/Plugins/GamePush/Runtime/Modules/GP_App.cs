@@ -51,18 +51,18 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.app.OnAddShortcut += CallAddShortcutBool;
+            CoreSDK.App.OnAddShortcut += CallAddShortcutBool;
 
-            CoreSDK.app.OnReviewResult += CallReviewResult;
-            CoreSDK.app.OnReviewClose += CallReviewClose;
+            CoreSDK.App.OnReviewResult += CallReviewResult;
+            CoreSDK.App.OnReviewClose += CallReviewClose;
         }
 
         private void OnDisable()
         {
-            CoreSDK.app.OnAddShortcut -= CallAddShortcutBool;
+            CoreSDK.App.OnAddShortcut -= CallAddShortcutBool;
 
-            CoreSDK.app.OnReviewResult -= CallReviewResult;
-            CoreSDK.app.OnReviewClose -= CallReviewClose;
+            CoreSDK.App.OnReviewResult -= CallReviewResult;
+            CoreSDK.App.OnReviewClose -= CallReviewClose;
         }
 
         public static string Title()
@@ -70,7 +70,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Title();
 #else
-            return CoreSDK.app.Title();
+            return CoreSDK.App.Title();
 #endif
         }
 
@@ -80,7 +80,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Description();
 #else
-            return CoreSDK.app.Description();
+            return CoreSDK.App.Description();
 #endif
         }
 
@@ -91,7 +91,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             cover = GP_App_Image();
 #else
-            cover = CoreSDK.app.ProjectIcon();
+            cover = CoreSDK.App.ProjectIcon();
 #endif
 
             if (cover == null || cover == "") return;
@@ -103,7 +103,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Image();
 #else
-            return CoreSDK.app.ProjectIcon();
+            return CoreSDK.App.ProjectIcon();
 #endif
         }
 
@@ -112,7 +112,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_Url();
 #else
-            return CoreSDK.app.AppLink();
+            return CoreSDK.App.AppLink();
 #endif
         }
 
@@ -124,7 +124,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_App_ReviewRequest();
 #else
-            CoreSDK.app.ReviewRequest();
+            CoreSDK.App.ReviewRequest();
 #endif
         }
 
@@ -134,7 +134,7 @@ namespace GamePush
             return GP_App_IsAlreadyReviewed() == "true";
 #else
             //bool result = GP_Settings.instance.GetPlatformSettings().IsAlreadyReviewed;
-            bool result = CoreSDK.app.IsAlreadyReviewed();
+            bool result = CoreSDK.App.IsAlreadyReviewed();
             return result;
 #endif
         }
@@ -145,7 +145,7 @@ namespace GamePush
             return GP_App_CanReview() == "true";
 #else
             //bool result = GP_Settings.instance.GetPlatformSettings().CanReview;
-            bool result = CoreSDK.app.CanReview();
+            bool result = CoreSDK.App.CanReview();
             return result;
 #endif
         }
@@ -157,7 +157,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_App_AddShortcut();
 #else
-            CoreSDK.app.AddShortcut();
+            CoreSDK.App.AddShortcut();
 #endif
         }
 
@@ -166,7 +166,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_App_CanAddShortcut() == "true";
 #else
-            return CoreSDK.app.CanAddShortcut();
+            return CoreSDK.App.CanAddShortcut();
 #endif
         }
 

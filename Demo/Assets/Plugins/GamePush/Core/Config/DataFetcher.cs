@@ -30,6 +30,9 @@ namespace GamePush.Core
         private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
         private static string _playerUniquesValues = "PlayerUniquesValues";
 
+        private static string _unlockAchivement = "UnlockPlayerAchievement";
+        private static string _setAchivementProgress = "PlayerSetAchievementProgress";
+
         public static async void Ping(string token)
         {
             UnityWebRequest pingRequest = await GetRequest($"{_apiURL}/ping?t={token}");
@@ -38,20 +41,22 @@ namespace GamePush.Core
         private static async Task<UnityWebRequest> GetRequest(string url)
         {
             UnityWebRequest webRequest = UnityWebRequest.Get(url);
+            //await webRequest.SendWebRequest();
             webRequest.SendWebRequest();
 
             while (!webRequest.isDone)
             {
-                await Task.Yield();
+                await Task.Delay(1);
             }
+
             return webRequest;
         }
 
         private static string GetLang()
         {
             string lang;
-            if (CoreSDK.language != null)
-                lang = CoreSDK.language.CurrentISO().ToUpper();
+            if (CoreSDK.Language != null)
+                lang = CoreSDK.Language.CurrentISO().ToUpper();
             else
                 lang = CoreSDK.currentLang.ToUpper();
 
@@ -448,7 +453,6 @@ namespace GamePush.Core
 
         #region UniquesFetches
 
-
         private static string SUCCESS_TAG = "gp_success";
         private static string ERROR_TAG = "gp_error";
 
@@ -564,6 +568,88 @@ namespace GamePush.Core
             result = new TagValueData(SUCCESS_TAG, resultValue);
 
             return result;
+        }
+
+        #endregion
+
+        #region AchievementsFetchers
+
+        public static async Task<Achievement> UnlockAchievement(UnlockPlayerAchievementInput input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_unlockAchivement, _unlockAchivement, OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(resultObject.ToString());
+            Debug.Log(resultObject["id"].ToString());
+
+            Achievement data = resultObject.ToObject<Achievement>();
+
+            return data;
+        }
+
+        public static async Task<PlayerAchievement> SetAchievemntProgress(PlayerSetAchievementProgressInput input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_setAchivementProgress, _setAchivementProgress, OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(root.ToString());
+
+            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
+            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
+
+            return data;
         }
 
         #endregion

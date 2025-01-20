@@ -27,21 +27,21 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.device.OnFullscreenChange += CallFullscreenChange;
-            CoreSDK.device.OnFullscreenOpen += CallFullscreenOpen;
-            CoreSDK.device.OnFullscreenClose += CallFullscreenClose;
+            CoreSDK.Device.OnFullscreenChange += CallFullscreenChange;
+            CoreSDK.Device.OnFullscreenOpen += CallFullscreenOpen;
+            CoreSDK.Device.OnFullscreenClose += CallFullscreenClose;
         }
 
         private void OnDisable()
         {
-            CoreSDK.device.OnFullscreenChange -= CallFullscreenChange;
-            CoreSDK.device.OnFullscreenOpen -= CallFullscreenOpen;
-            CoreSDK.device.OnFullscreenClose -= CallFullscreenClose;
+            CoreSDK.Device.OnFullscreenChange -= CallFullscreenChange;
+            CoreSDK.Device.OnFullscreenOpen -= CallFullscreenOpen;
+            CoreSDK.Device.OnFullscreenClose -= CallFullscreenClose;
         }
 
         public static bool IsEnabled()
         {
-            return CoreSDK.device.IsFullscreenEnabled();
+            return CoreSDK.Device.IsFullscreenEnabled();
         }
 
         public static void Open(Action onFullscreenOpen = null)
@@ -51,7 +51,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Open();
 #else
-            CoreSDK.device.OpenFullscreen();
+            CoreSDK.Device.OpenFullscreen();
 #endif
         }
 
@@ -62,7 +62,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Close();
 #else
-            CoreSDK.device.CloseFullscreen();
+            CoreSDK.Device.CloseFullscreen();
 #endif
         }
 
@@ -71,7 +71,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Fullscreen_Toggle();
 #else
-            CoreSDK.device.ToggleFullscreen();
+            CoreSDK.Device.ToggleFullscreen();
 #endif
         }
 

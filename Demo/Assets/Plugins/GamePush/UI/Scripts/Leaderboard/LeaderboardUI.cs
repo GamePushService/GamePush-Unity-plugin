@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GamePush.UI
 {
-    public class LeaderboardUI : MonoBehaviour
+    public class LeaderboardUI : ModuleUI
     {
         [SerializeField]
         private float _startOffset = 400f;
@@ -54,16 +54,10 @@ namespace GamePush.UI
 
             StartCoroutine(MoveUp());
 
+            ClearBoard();
             SetUpBoard();
             await SetUpCells();
             SetBotBar();
-        }
-
-
-        private void SetUpBoard()
-        {
-            _leaderboardTitle.text = _ratingData.leaderboard.name;
-            ClearBoard();
         }
 
         private void ClearBoard()
@@ -72,6 +66,11 @@ namespace GamePush.UI
             {
                 Destroy(child.gameObject);
             }
+        }
+
+        private void SetUpBoard()
+        {
+            _leaderboardTitle.text = _ratingData.leaderboard.name;
         }
 
         private async Task SetUpCells()
@@ -83,14 +82,8 @@ namespace GamePush.UI
 
             Enum.TryParse(_query.withMe, out WithMe withMe);
 
-            int playerID = CoreSDK.player.GetID();
+            int playerID = CoreSDK.Player.GetID();
             int lastPlace = 0;
-
-            //if (withMe == WithMe.first && inTop)
-            //{
-            //    Instantiate(_boardCell, _cellHolder).GetComponent<LeaderboardCell>().InitEmpty();
-            //    holderCells++;
-            //}
 
             SetCellHolder(holderCells);
 

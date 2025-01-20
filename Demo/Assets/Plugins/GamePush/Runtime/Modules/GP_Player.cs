@@ -44,44 +44,44 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.player.OnPlayerChange += CallPlayerChange;
+            CoreSDK.Player.OnPlayerChange += CallPlayerChange;
 
-            CoreSDK.player.OnSyncComplete += CallPlayerSyncComplete;
-            CoreSDK.player.OnSyncError += CallPlayerSyncError;
+            CoreSDK.Player.OnSyncComplete += CallPlayerSyncComplete;
+            CoreSDK.Player.OnSyncError += CallPlayerSyncError;
 
-            CoreSDK.player.OnLoadComplete += CallPlayerLoadComplete;
-            CoreSDK.player.OnLoadError += CallPlayerLoadError;
+            CoreSDK.Player.OnLoadComplete += CallPlayerLoadComplete;
+            CoreSDK.Player.OnLoadError += CallPlayerLoadError;
 
-            CoreSDK.player.OnLoginComplete += CallPlayerLoginComplete;
-            CoreSDK.player.OnLoginError += CallPlayerLoginFullError;
+            CoreSDK.Player.OnLoginComplete += CallPlayerLoginComplete;
+            CoreSDK.Player.OnLoginError += CallPlayerLoginFullError;
 
-            CoreSDK.player.OnLogoutComplete += CallPlayerLoginComplete;
-            CoreSDK.player.OnLogoutError += CallPlayerLoginError;
+            CoreSDK.Player.OnLogoutComplete += CallPlayerLoginComplete;
+            CoreSDK.Player.OnLogoutError += CallPlayerLoginError;
 
-            CoreSDK.player.OnFieldMaximum += FieldMaximum;
-            CoreSDK.player.OnFieldMinimum += FieldMinimum;
-            CoreSDK.player.OnFieldIncrement += FieldIncrement;
+            CoreSDK.Player.OnFieldMaximum += FieldMaximum;
+            CoreSDK.Player.OnFieldMinimum += FieldMinimum;
+            CoreSDK.Player.OnFieldIncrement += FieldIncrement;
         }
 
         private void OnDisable()
         {
-            CoreSDK.player.OnPlayerChange -= CallPlayerChange;
+            CoreSDK.Player.OnPlayerChange -= CallPlayerChange;
 
-            CoreSDK.player.OnSyncComplete -= CallPlayerSyncComplete;
-            CoreSDK.player.OnSyncError -= CallPlayerSyncError;
+            CoreSDK.Player.OnSyncComplete -= CallPlayerSyncComplete;
+            CoreSDK.Player.OnSyncError -= CallPlayerSyncError;
 
-            CoreSDK.player.OnLoadComplete -= CallPlayerLoadComplete;
-            CoreSDK.player.OnLoadError -= CallPlayerLoadError;
+            CoreSDK.Player.OnLoadComplete -= CallPlayerLoadComplete;
+            CoreSDK.Player.OnLoadError -= CallPlayerLoadError;
 
-            CoreSDK.player.OnLoginComplete -= CallPlayerLoginComplete;
-            CoreSDK.player.OnLoginError -= CallPlayerLoginFullError;
+            CoreSDK.Player.OnLoginComplete -= CallPlayerLoginComplete;
+            CoreSDK.Player.OnLoginError -= CallPlayerLoginFullError;
 
-            CoreSDK.player.OnLogoutComplete -= CallPlayerLoginComplete;
-            CoreSDK.player.OnLogoutError -= CallPlayerLoginError;
+            CoreSDK.Player.OnLogoutComplete -= CallPlayerLoginComplete;
+            CoreSDK.Player.OnLogoutError -= CallPlayerLoginError;
 
-            CoreSDK.player.OnFieldMaximum -= FieldMaximum;
-            CoreSDK.player.OnFieldMinimum -= FieldMinimum;
-            CoreSDK.player.OnFieldIncrement -= FieldIncrement;
+            CoreSDK.Player.OnFieldMaximum -= FieldMaximum;
+            CoreSDK.Player.OnFieldMinimum -= FieldMinimum;
+            CoreSDK.Player.OnFieldIncrement -= FieldIncrement;
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -178,7 +178,7 @@ namespace GamePush
             return GP_Player_GetID();
 #else
 
-            return CoreSDK.player.GetID();
+            return CoreSDK.Player.GetID();
 #endif
         }
 
@@ -187,7 +187,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetScore();
 #else
-            return CoreSDK.player.GetScore();
+            return CoreSDK.Player.GetScore();
 #endif
         }
 
@@ -196,7 +196,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetName();
 #else
-            return CoreSDK.player.GetName();
+            return CoreSDK.Player.GetName();
 #endif
         }
 
@@ -205,7 +205,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetAvatar();
 #else
-            return CoreSDK.player.GetAvatarUrl();
+            return CoreSDK.Player.GetAvatarUrl();
 #endif
         }
 
@@ -223,7 +223,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldName(key);
 #else
-            return CoreSDK.player.GetFieldName(key);
+            return CoreSDK.Player.GetFieldName(key);
 #endif
         }
 
@@ -232,7 +232,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantName(key, value);
 #else
-            return CoreSDK.player.GetFieldVariantName(key, value);
+            return CoreSDK.Player.GetFieldVariantName(key, value);
 #endif
         }
 
@@ -241,7 +241,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantAt(key, index.ToString());
 #else
-            return CoreSDK.player.GetFieldVariantAt(key, index);
+            return CoreSDK.Player.GetFieldVariantAt(key, index);
 #endif
         }
 
@@ -250,7 +250,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetFieldVariantIndex(key, value);
 #else
-            return CoreSDK.player.GetFieldVariantIndex(key, value);
+            return CoreSDK.Player.GetFieldVariantIndex(key, value);
 #endif
         }
 
@@ -259,7 +259,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetName(name);
 #else
-            CoreSDK.player.SetName(name);
+            CoreSDK.Player.SetName(name);
 #endif
         }
 
@@ -268,7 +268,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetAvatar(src);
 #else
-            CoreSDK.player.SetAvatar(src);
+            CoreSDK.Player.SetAvatar(src);
 #endif
         }
 
@@ -277,7 +277,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetScore(score);
 #else
-            CoreSDK.player.SetScore(score);
+            CoreSDK.Player.SetScore(score);
 #endif
         }
 
@@ -286,7 +286,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetScore(score);
 #else
-            CoreSDK.player.SetScore(score);
+            CoreSDK.Player.SetScore(score);
 #endif
         }
 
@@ -295,7 +295,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_AddScore(score);
 #else
-            CoreSDK.player.AddScore(score);
+            CoreSDK.Player.AddScore(score);
 #endif
         }
 
@@ -304,13 +304,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_AddScore(score);
 #else
-            CoreSDK.player.AddScore(score);
+            CoreSDK.Player.AddScore(score);
 #endif
         }
 
         public static T Get<T>(string key)
         {
-            return CoreSDK.player.Get<T>(key);
+            return CoreSDK.Player.Get<T>(key);
         }
 
         public static int GetInt(string key)
@@ -318,7 +318,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberInt(key);
 #else
-            return CoreSDK.player.Get<int>(key);
+            return CoreSDK.Player.Get<int>(key);
 #endif
         }
 
@@ -327,7 +327,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberFloat(key);
 #else
-            return CoreSDK.player.Get<float>(key);
+            return CoreSDK.Player.Get<float>(key);
 #endif
         }
 
@@ -337,7 +337,7 @@ namespace GamePush
             return GP_Player_GetMaxValue(key);
 #else
             
-            return CoreSDK.player.GetMaxValue(key);
+            return CoreSDK.Player.GetMaxValue(key);
 #endif
         }
 
@@ -347,7 +347,7 @@ namespace GamePush
             return GP_Player_GetMinValue(key);
 #else
 
-            return CoreSDK.player.GetMinValue(key);
+            return CoreSDK.Player.GetMinValue(key);
 #endif
         }
 
@@ -356,7 +356,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberInt($"{key}:secondsLeft");
 #else
-            return CoreSDK.player.GetSecondsLeft(key);
+            return CoreSDK.Player.GetSecondsLeft(key);
 #endif
         }
 
@@ -365,7 +365,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Player_GetNumberInt($"{key}:secondsLeftTotal");
 #else
-            return CoreSDK.player.GetSecondsLeftTotal(key);
+            return CoreSDK.Player.GetSecondsLeftTotal(key);
 #endif
         }
 
@@ -375,7 +375,7 @@ namespace GamePush
             return GP_Player_GetString(key);
 #else
 
-            return CoreSDK.player.Get<string>(key);
+            return CoreSDK.Player.Get<string>(key);
 #endif
         }
 
@@ -385,7 +385,7 @@ namespace GamePush
             return GP_Player_GetBool(key) == "true";
 #else
 
-            return CoreSDK.player.Get<bool>(key);
+            return CoreSDK.Player.Get<bool>(key);
 #endif
         }
 
@@ -395,7 +395,7 @@ namespace GamePush
             GP_Player_Set_String(key, value);
 #else
 
-            CoreSDK.player.Set(key, value);
+            CoreSDK.Player.Set(key, value);
 #endif
         }
         public static void Set(string key, int value)
@@ -403,7 +403,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Set_Number(key, value);
 #else
-            CoreSDK.player.Set(key, value);
+            CoreSDK.Player.Set(key, value);
 #endif
         }
         public static void Set(string key, bool value)
@@ -412,7 +412,7 @@ namespace GamePush
             GP_Player_Set_Bool(key, value.ToString());
 #else
 
-            CoreSDK.player.Set(key, value);
+            CoreSDK.Player.Set(key, value);
 #endif
         }
         public static void Set(string key, float value)
@@ -421,7 +421,7 @@ namespace GamePush
             GP_Player_Set_Number(key, value);
 #else
 
-            CoreSDK.player.Set(key, value);
+            CoreSDK.Player.Set(key, value);
 #endif
         }
 
@@ -430,7 +430,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_SetFlag(key, value);
 #else
-            CoreSDK.player.Set(key, value);
+            CoreSDK.Player.Set(key, value);
 #endif
         }
 
@@ -440,7 +440,7 @@ namespace GamePush
             GP_Player_Add(key, value.ToString());
 #else
 
-            CoreSDK.player.Add(key, value);
+            CoreSDK.Player.Add(key, value);
 #endif
         }
         public static void Add(string key, int value)
@@ -448,7 +448,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
-            CoreSDK.player.Add(key, value);
+            CoreSDK.Player.Add(key, value);
 #endif
         }
 
@@ -457,7 +457,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Toggle(key);
 #else
-            CoreSDK.player.Toggle(key);
+            CoreSDK.Player.Toggle(key);
 #endif
         }
 
@@ -467,7 +467,7 @@ namespace GamePush
             GP_Player_Reset();
 #else
 
-            CoreSDK.player.Reset();
+            CoreSDK.Player.Reset();
 #endif
         }
 
@@ -477,7 +477,7 @@ namespace GamePush
             GP_Player_Remove();
 #else
            
-            CoreSDK.player.Remove();
+            CoreSDK.Player.Remove();
 #endif
         }
 
@@ -487,7 +487,7 @@ namespace GamePush
             GP_Player_Sync(forceOverride: forceOverride, storage: storage.ToString());
 #else
             
-            CoreSDK.player.PlayerSync(storage, forceOverride);
+            CoreSDK.Player.PlayerSync(storage, forceOverride);
 #endif
         }
 
@@ -497,7 +497,7 @@ namespace GamePush
             GP_Player_Sync(forceOverride: forceOverride);
 #else
             
-            CoreSDK.player.PlayerSync(forceOverride);
+            CoreSDK.Player.PlayerSync(forceOverride);
 #endif
         }
 
@@ -507,7 +507,7 @@ namespace GamePush
             GP_Player_EnableAutoSync(interval, storage.ToString());
             return true;
 #else
-            return CoreSDK.player.EnableAutoSync(interval, storage);
+            return CoreSDK.Player.EnableAutoSync(interval, storage);
 #endif
         }
 
@@ -517,7 +517,7 @@ namespace GamePush
             GP_Player_DisableAutoSync(storage.ToString());
             return true;
 #else
-            return CoreSDK.player.DisableAutoSync(storage);
+            return CoreSDK.Player.DisableAutoSync(storage);
 #endif
         }
 
@@ -526,7 +526,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Load();
 #else
-            CoreSDK.player.PlayerLoad();
+            CoreSDK.Player.PlayerLoad();
 #endif
         }
 
@@ -535,7 +535,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Login();
 #else
-            CoreSDK.player.Login(onLoginComplete, onLoginError);
+            CoreSDK.Player.Login(onLoginComplete, onLoginError);
 #endif
         }
 
@@ -546,7 +546,7 @@ namespace GamePush
             GP_Player_Logout();
 #else
 
-            CoreSDK.player.Logout();
+            CoreSDK.Player.Logout();
 #endif
         }
 
@@ -559,7 +559,7 @@ namespace GamePush
 #else
 
             ConsoleLog("FETCH FIELDS");
-            CoreSDK.player.FetchFields(onFetchFields);
+            CoreSDK.Player.FetchFields(onFetchFields);
 #endif
         }
 

@@ -18,6 +18,8 @@ namespace GamePush.Data
         public List<PlayerField> playerFields;
         public List<GameVariableConfigData> gameVariables;
         public List<Product> products;
+        public List<Achievement> achievements;
+        public List<AchievementsGroup> achievementsGroups;
         public string serverTime;
     }
 
@@ -46,17 +48,10 @@ namespace GamePush.Data
         public string icon;
         public int mainChatId;
         public bool enableMainChat;
-        public Achievements achievements;
+        public AchievementsSettings achievements;
         public AdsConfig ads;
     }
 
-    [System.Serializable]
-    public class Achievements
-    {
-        public bool isLockedVisible;
-        public bool isLockedDescriptionVisible;
-        public bool enableUnlockToast;
-    }
 
     [System.Serializable]
     public class RootObject
@@ -196,53 +191,4 @@ namespace GamePush.Data
         public string type;
     }
 
-    [System.Serializable]
-    public class Achievement
-    {
-        public int id;
-        public string icon;
-        public string tag;
-        public string rare;
-        public int progress;
-        public int maxProgress;
-        public bool unlocked;
-        public string lockedIcon;
-        public int progressStep;
-        public bool isPublished;
-        public bool isLockedVisible;
-        public bool isLockedDescriptionVisible;
-        public Translations names;
-        public Translations descriptions;
-    }
-
-    [System.Serializable]
-    public class AchievementsGroup
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public List<int> achievements;
-        public Translations names;
-        public Translations descriptions;
-    }
-
-    [System.Serializable]
-    public class Translations
-    {
-        public string en;
-        public string fr;
-        public string it;
-        public string de;
-        public string es;
-        public string zh;
-        public string pt;
-        public string ko;
-        public string ja;
-        public string ru;
-        public string tr;
-        public string ar;
-        public string id;
-        public string hi;
-    }
 }

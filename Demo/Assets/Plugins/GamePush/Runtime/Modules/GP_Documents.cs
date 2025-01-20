@@ -38,8 +38,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Documents_Open();
 #else
-
-            ConsoleLog("OPEN");
+            CoreSDK.Documents.Open();
 #endif
         }
 
@@ -51,15 +50,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Documents_Fetch();
 #else
-
-            ConsoleLog("FETCH");
+            CoreSDK.Documents.Fetch();
 #endif
         }
 
 
         private void CallOnDocumentsOpen() { OnDocumentsOpen?.Invoke(); _onDocumentsOpen?.Invoke(); }
         private void CallOnDocumentsClose() { OnDocumentsClose?.Invoke(); _onDocumentsClose?.Invoke(); }
-
 
         private void CallOnDocumentsFetchSuccess(string data) { OnFetchSuccess?.Invoke(data); _onFetchSuccess?.Invoke(data); }
         private void CallOnDocumentsFetchError() { OnFetchError?.Invoke(); _onFetchError?.Invoke(); }

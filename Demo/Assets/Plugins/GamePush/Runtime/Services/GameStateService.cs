@@ -34,8 +34,8 @@ namespace GamePush.Services
             yield return new WaitForSecondsRealtime(tickTime);
 
             CoreSDK.AddPlayTime(tickTime);
-            CoreSDK.player.IncrementFields();
-            CoreSDK.player.AutoSync();
+            CoreSDK.Player.IncrementFields();
+            CoreSDK.Player.AutoSync();
 
             StartCoroutine(Tick());
         }
@@ -43,7 +43,7 @@ namespace GamePush.Services
         IEnumerator Ping()
         {
             yield return new WaitForSecondsRealtime(10);
-            CoreSDK.player.Ping();
+            CoreSDK.Player.Ping();
 
             //Debug.Log(CoreSDK.player.GetPlaytimeToday());
             StartCoroutine(Ping());
@@ -57,13 +57,13 @@ namespace GamePush.Services
             {
                 isFocus = false;
                 OnFocusChange?.Invoke(isFocus);
-                CoreSDK.game.SetAutoPause(true);
+                CoreSDK.Game.SetAutoPause(true);
             }
             else if (focus && !isFocus)
             {
                 isFocus = true;
                 OnFocusChange?.Invoke(isFocus);
-                CoreSDK.game.SetAutoPause(false);
+                CoreSDK.Game.SetAutoPause(false);
             }
         }
 

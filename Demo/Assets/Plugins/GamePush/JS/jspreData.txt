@@ -1,5 +1,5 @@
 const dataProjectId = '1';
 const dataPublicToken = 'token';
 const showPreloaderAd = 'False';
-const autocallGameReady = 'False';
-const buildPlatform = 'CUSTOM';
+const autocallGameReady = 'True';
+const buildPlatform = 'NONE';

@@ -15,7 +15,7 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.device.OnChangeOrientation += () => OnChangeOrientation?.Invoke();
+            CoreSDK.Device.OnChangeOrientation += () => OnChangeOrientation?.Invoke();
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -31,7 +31,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "true";
 #else
-            return CoreSDK.device._isMobile;
+            return CoreSDK.Device._isMobile;
 #endif
         }
         public static bool IsDesktop()
@@ -39,7 +39,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsMobile() == "false";
 #else
-            return !CoreSDK.device._isMobile;
+            return !CoreSDK.Device._isMobile;
 #endif
         }
 
@@ -48,7 +48,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_IsPortrait() == "true";
 #else
-            return CoreSDK.device._isPortrait;
+            return CoreSDK.Device._isPortrait;
 #endif
         }
     }

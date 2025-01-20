@@ -14,7 +14,7 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.language.OnChangeLanguage += (Language lang) => CallChangeLanguageEnum(lang);
+            CoreSDK.Language.OnChangeLanguage += (Language lang) => CallChangeLanguageEnum(lang);
         }
 
         private void CallChangeLanguageEnum(Language lang)
@@ -40,7 +40,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return LanguageTypes.ConvertToEnum(GP_Current_Language());
 #else
-            return CoreSDK.language.Current();
+            return CoreSDK.Language.Current();
 #endif
         }
 
@@ -49,7 +49,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Current_Language();
 #else
-            return CoreSDK.language.CurrentISO();
+            return CoreSDK.Language.CurrentISO();
 #endif
         }
 
@@ -59,7 +59,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(LanguageTypes.ConvertToString(lang));
 #else
-            CoreSDK.language.Change(lang);
+            CoreSDK.Language.Change(lang);
 #endif
         }
 
@@ -69,7 +69,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_ChangeLanguage(lang);
 #else
-            CoreSDK.language.Change(lang);
+            CoreSDK.Language.Change(lang);
 #endif
         }
        

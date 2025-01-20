@@ -136,7 +136,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 500
   m_TargetDisplay: 0
 --- !u!114 &535228634241272920
 MonoBehaviour:
@@ -191,4 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayHolder: {fileID: 8650643107392845937}
-  leaderboard: {fileID: 7732667838630816815, guid: 25663fd14cd0e46bead8c62fad5a7a47, type: 3}
+  leaderboard: {fileID: 4653443202742125010, guid: 25663fd14cd0e46bead8c62fad5a7a47, type: 3}
+  socials: {fileID: 794623455137578876, guid: 9411fbbe4caf94deb82c9e857c393465, type: 3}
+  achievements: {fileID: 6429510865257819984, guid: 91900a6204ecf44ccb5062aa2952149a, type: 3}
+  achievementPlate: {fileID: 1007923981373674855, guid: 5ea9377bb1444498b89d7d29d2161b37, type: 3}

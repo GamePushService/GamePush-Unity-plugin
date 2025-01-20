@@ -23,19 +23,25 @@ namespace GamePush
 
         public static PlatformConfig platformConfig;
 
-        public static GameModule game;
-        public static PlayerModule player;
-        public static PlatformModule platform;
-        public static GameVariablesModule variables;
-        public static AdsModule ads;
-        public static DeviceModule device;
-        public static PaymentsModule payments;
-        public static LeaderboardModule leaderboard;
-        public static SystemModule system;
-        public static AppModule app;
-        public static SocialsModule socials;
-        public static LanguageModule language;
-        public static UniquesModule uniques;
+        #region Modules
+        public static GameModule Game;
+        public static PlayerModule Player;
+        public static PlatformModule Platform;
+        public static GameVariablesModule Variables;
+        public static AdsModule Ads;
+        public static DeviceModule Device;
+        public static PaymentsModule Payments;
+        public static LeaderboardModule Leaderboard;
+        public static SystemModule System;
+        public static AppModule App;
+        public static SocialsModule Socials;
+        public static LanguageModule Language;
+        public static UniquesModule Uniques;
+        public static AchievementsModule Achievements;
+        public static AnalyticsModule Analytics;
+        public static DocumentsModule Documents;
+
+        #endregion
 
         #region ServerTime
 
@@ -50,7 +56,7 @@ namespace GamePush
         public static string TestConvert()
         {
             string date = "20.06.2024 09:45:52";
-            DateTime.TryParseExact(date, formats, null, System.Globalization.DateTimeStyles.None, out DateTime dateTime);
+            DateTime.TryParseExact(date, formats, null, global::System.Globalization.DateTimeStyles.None, out DateTime dateTime);
 
             //return dateTime.ToString();
             return dateTime.ToString();
@@ -64,9 +70,8 @@ namespace GamePush
                 return dateTime;
             }
             else
-                return DateTime.ParseExact(time, formats, null, System.Globalization.DateTimeStyles.None);
+                return DateTime.ParseExact(time, formats, null, global::System.Globalization.DateTimeStyles.None);
         }
-
 
         public static DateTime GetServerTime()
         {
@@ -76,7 +81,7 @@ namespace GamePush
         public static void AddPlayTime(float time)
         {
             serverTime = serverTime.AddSeconds(time);
-            player.AddPlayTime(time);
+            Player.AddPlayTime(time);
         }
 
         public static void SetServerTime(string time)
@@ -85,6 +90,7 @@ namespace GamePush
         }
         #endregion
 
+        #region Initialization
         public static async void Initialize()
         {
             int id;
@@ -100,49 +106,28 @@ namespace GamePush
 
         private static void InitModules()
         {
-            platform = new PlatformModule();
-            language = new LanguageModule();
-            game = new GameModule();
-            player = new PlayerModule();
-            variables = new GameVariablesModule();
-            ads = new AdsModule();
-            device = new DeviceModule();
-            system = new SystemModule();
-            app = new AppModule();
-            leaderboard = new LeaderboardModule();
+            Platform = new PlatformModule();
+            Language = new LanguageModule();
+            Game = new GameModule();
+            Player = new PlayerModule();
+            Variables = new GameVariablesModule();
+            Ads = new AdsModule();
+            Device = new DeviceModule();
+            System = new SystemModule();
+            App = new AppModule();
+            Leaderboard = new LeaderboardModule();
+            Uniques = new UniquesModule();
+            Achievements = new AchievementsModule();
+            Analytics = new AnalyticsModule();
 
-            payments = new PaymentsModule();
-            socials = new SocialsModule();
-
-            uniques = new UniquesModule();
+            Payments = new PaymentsModule();
+            Socials = new SocialsModule();
         }
-
-        public static void SetProjectData(SavedProjectData data)
-        {
-            projectId = data.id;
-            projectToken = data.token;
-        }
-
-        public static void SetProjectData(int id, string token)
-        {
-            projectId = id;
-            projectToken = token;
-        }
-
-        public static void SetAndroidPlatform(string platform)
-            => targetPlatform = platform;
 
         public static async Task InitFetch()
         {
             await FetchCoreConfig();
-            await player.FetchPlayerConfig();
-        }
-
-        public static async Task FetchEditorConfig()
-        {
-            AllConfigData data = await DataFetcher.GetConfig();
-            configData = data;
-            platformConfig = configData.platformConfig;
+            await Player.FetchPlayerConfig();
         }
 
         public static async Task FetchCoreConfig()
@@ -158,16 +143,41 @@ namespace GamePush
             SetServerTime(allData.serverTime);
             currentLang = allData.config.lang;
             if (currentLang == "") currentLang = "en";
-            language.Init(currentLang);
+            Language.Init(currentLang);
 
-            player.Init(configData.playerFields);
-            variables.Init(configData.gameVariables);
-            platform.Init(configData.platformConfig);
-            ads.Init(configData.project.ads, configData.platformConfig);
-            payments.Init(configData.products, configData.platformConfig);
-            app.Init(configData.project, configData.platformConfig);
-            socials.Init(configData.config);
-            uniques.Init();
+            Player.Init(configData.playerFields);
+            Variables.Init(configData.gameVariables);
+            Platform.Init(configData.platformConfig);
+            Ads.Init(configData.project.ads, configData.platformConfig);
+            Payments.Init(configData.products, configData.platformConfig);
+            App.Init(configData.project, configData.platformConfig);
+            Socials.Init(configData.config);
+            Uniques.Init();
+            Achievements.Init(configData);
+        }
+        
+        public static async Task FetchEditorConfig()
+        {
+            AllConfigData data = await DataFetcher.GetConfig();
+            configData = data;
+            platformConfig = configData.platformConfig;
+        }
+
+        #endregion
+
+        public static void SetAndroidPlatform(string platform)
+            => targetPlatform = platform;
+
+        public static void SetProjectData(SavedProjectData data)
+        {
+            projectId = data.id;
+            projectToken = data.token;
+        }
+
+        public static void SetProjectData(int id, string token)
+        {
+            projectId = id;
+            projectToken = token;
         }
 
         public static AllConfigData GetConfig()

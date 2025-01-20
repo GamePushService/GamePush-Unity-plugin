@@ -12,6 +12,7 @@ namespace GamePush.Core
         protected Dictionary<string, string> keyTypeData;
         protected Dictionary<string, object> keyValueData;
 
+        protected Dictionary<string, string> platformVariablesData;
         protected List<GameVariable> fetchGameVariables;
 
         public event Action<List<GameVariable>> OnFetchSuccess;
@@ -19,6 +20,8 @@ namespace GamePush.Core
 
         public event Action<Dictionary<string, string>> OnPlatformFetchSuccess;
         public event Action<string> OnPlatformFetchError;
+
+        private bool _isPlatformVariablesSupported;
 
         public List<GameVariable> GetList()
         {
@@ -141,8 +144,14 @@ namespace GamePush.Core
 
         public void FetchPlatformVariables(string optionsDict = null)
         {
-            Logger.Error("Can't fetch platform variables");
-            OnPlatformFetchError?.Invoke("Platform doesn't have variables");
+            //TODO: Check platform variables logic for different platforms
+            if (_isPlatformVariablesSupported)
+                OnPlatformFetchSuccess?.Invoke(platformVariablesData);
+            else
+            {
+                Logger.Error("Can't fetch platform variables");
+                OnPlatformFetchError?.Invoke("Platform doesn't have variables");
+            }
         }
 
     }

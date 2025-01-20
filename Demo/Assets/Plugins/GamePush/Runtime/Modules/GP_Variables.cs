@@ -26,11 +26,11 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.variables.OnFetchSuccess += (List<GameVariable> data) => CallVariablesFetchListSuccess(data);
-            CoreSDK.variables.OnFetchError += () => CallVariablesFetchError();
+            CoreSDK.Variables.OnFetchSuccess += (List<GameVariable> data) => CallVariablesFetchListSuccess(data);
+            CoreSDK.Variables.OnFetchError += () => CallVariablesFetchError();
 
-            CoreSDK.variables.OnPlatformFetchSuccess += (Dictionary<string, string> data) => CallOnFetchPlatformVariablesDictionary(data);
-            CoreSDK.variables.OnPlatformFetchError += (string error) => CallOnFetchPlatformVariablesError(error);
+            CoreSDK.Variables.OnPlatformFetchSuccess += (Dictionary<string, string> data) => CallOnFetchPlatformVariablesDictionary(data);
+            CoreSDK.Variables.OnPlatformFetchError += (string error) => CallOnFetchPlatformVariablesError(error);
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -65,7 +65,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_Fetch();
 #else
-            CoreSDK.variables.Fetch();
+            CoreSDK.Variables.Fetch();
 #endif
         }
 
@@ -74,7 +74,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_Has(key) == "true";
 #else
-            return CoreSDK.variables.Has(key);
+            return CoreSDK.Variables.Has(key);
 #endif
         }
 
@@ -83,7 +83,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetNumberInt(key);
 #else
-            return CoreSDK.variables.Get<int>(key);
+            return CoreSDK.Variables.Get<int>(key);
 #endif
         }
 
@@ -92,7 +92,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetFloat(key);
 #else
-            return CoreSDK.variables.Get<float>(key);
+            return CoreSDK.Variables.Get<float>(key);
 #endif
         }
 
@@ -101,7 +101,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetString(key);
 #else
-            return CoreSDK.variables.Get<string>(key);
+            return CoreSDK.Variables.Get<string>(key);
 #endif
         }
 
@@ -110,7 +110,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetBool(key) == "true";
 #else
-            return CoreSDK.variables.Get<bool>(key);
+            return CoreSDK.Variables.Get<bool>(key);
 #endif
         }
 
@@ -119,7 +119,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetImage(key);
 #else
-            return CoreSDK.variables.Get<string>(key);
+            return CoreSDK.Variables.Get<string>(key);
 #endif
         }
 
@@ -128,13 +128,13 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_GetFile(key);
 #else
-            return CoreSDK.variables.Get<string>(key);
+            return CoreSDK.Variables.Get<string>(key);
 #endif
         }
 
         public static List<GameVariable> GetList()
         {
-            return CoreSDK.variables.GetList();
+            return CoreSDK.Variables.GetList();
         }
 
         public static bool IsPlatformVariablesAvailable()
@@ -142,7 +142,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Variables_IsPlatformVariablesAvailable() == "true";
 #else
-            return CoreSDK.variables.IsPlatformVariablesAvailable();
+            return CoreSDK.Variables.IsPlatformVariablesAvailable();
 #endif
         }
 
@@ -156,7 +156,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables(options);
 #else
-            CoreSDK.variables.FetchPlatformVariables(options);
+            CoreSDK.Variables.FetchPlatformVariables(options);
 #endif
         }
 
@@ -168,7 +168,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Variables_FetchPlatformVariables();
 #else
-            CoreSDK.variables.FetchPlatformVariables();
+            CoreSDK.Variables.FetchPlatformVariables();
 #endif
         }
 

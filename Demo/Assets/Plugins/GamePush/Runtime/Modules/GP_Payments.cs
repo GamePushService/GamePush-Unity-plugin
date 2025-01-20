@@ -63,42 +63,42 @@ namespace GamePush
 #endif
         private void OnEnable()
         {
-            CoreSDK.payments.OnFetchProducts += CallPaymentsFetchProductsList;
-            CoreSDK.payments.OnFetchProductsError += CallPaymentsFetchProductsError;
+            CoreSDK.Payments.OnFetchProducts += CallPaymentsFetchProductsList;
+            CoreSDK.Payments.OnFetchProductsError += CallPaymentsFetchProductsError;
 
-            CoreSDK.payments.OnFetchPlayerPurchases += CallPaymentsFetchPlayerPurcahsesList;
+            CoreSDK.Payments.OnFetchPlayerPurchases += CallPaymentsFetchPlayerPurcahsesList;
 
-            CoreSDK.payments.OnPurchaseSuccess += CallPaymentsPurchase;
-            CoreSDK.payments.OnPurchaseError += CallPaymentsPurchaseError;
+            CoreSDK.Payments.OnPurchaseSuccess += CallPaymentsPurchase;
+            CoreSDK.Payments.OnPurchaseError += CallPaymentsPurchaseError;
 
-            CoreSDK.payments.OnConsumeSuccess += CallPaymentsConsume;
-            CoreSDK.payments.OnConsumeError += CallPaymentsConsumeError;
+            CoreSDK.Payments.OnConsumeSuccess += CallPaymentsConsume;
+            CoreSDK.Payments.OnConsumeError += CallPaymentsConsumeError;
 
-            CoreSDK.payments.OnSubscribeSuccess += CallPaymentsSubscribeSuccess;
-            CoreSDK.payments.OnSubscribeError += CallPaymentsSubscribeError;
+            CoreSDK.Payments.OnSubscribeSuccess += CallPaymentsSubscribeSuccess;
+            CoreSDK.Payments.OnSubscribeError += CallPaymentsSubscribeError;
 
-            CoreSDK.payments.OnUnsubscribeSuccess += CallPaymentsUnsubscribeSuccess;
-            CoreSDK.payments.OnUnsubscribeError += CallPaymentsUnsubscribeError;
+            CoreSDK.Payments.OnUnsubscribeSuccess += CallPaymentsUnsubscribeSuccess;
+            CoreSDK.Payments.OnUnsubscribeError += CallPaymentsUnsubscribeError;
         }
 
         private void OnDisable()
         {
-            CoreSDK.payments.OnFetchProducts -= CallPaymentsFetchProductsList;
-            CoreSDK.payments.OnFetchProductsError -= CallPaymentsFetchProductsError;
+            CoreSDK.Payments.OnFetchProducts -= CallPaymentsFetchProductsList;
+            CoreSDK.Payments.OnFetchProductsError -= CallPaymentsFetchProductsError;
 
-            CoreSDK.payments.OnFetchPlayerPurchases -= CallPaymentsFetchPlayerPurcahsesList;
+            CoreSDK.Payments.OnFetchPlayerPurchases -= CallPaymentsFetchPlayerPurcahsesList;
 
-            CoreSDK.payments.OnPurchaseSuccess -= CallPaymentsPurchase;
-            CoreSDK.payments.OnPurchaseError -= CallPaymentsPurchaseError;
+            CoreSDK.Payments.OnPurchaseSuccess -= CallPaymentsPurchase;
+            CoreSDK.Payments.OnPurchaseError -= CallPaymentsPurchaseError;
 
-            CoreSDK.payments.OnConsumeSuccess -= CallPaymentsConsume;
-            CoreSDK.payments.OnConsumeError -= CallPaymentsConsumeError;
+            CoreSDK.Payments.OnConsumeSuccess -= CallPaymentsConsume;
+            CoreSDK.Payments.OnConsumeError -= CallPaymentsConsumeError;
 
-            CoreSDK.payments.OnSubscribeSuccess -= CallPaymentsSubscribeSuccess;
-            CoreSDK.payments.OnSubscribeError -= CallPaymentsSubscribeError;
+            CoreSDK.Payments.OnSubscribeSuccess -= CallPaymentsSubscribeSuccess;
+            CoreSDK.Payments.OnSubscribeError -= CallPaymentsSubscribeError;
 
-            CoreSDK.payments.OnUnsubscribeSuccess -= CallPaymentsUnsubscribeSuccess;
-            CoreSDK.payments.OnUnsubscribeError -= CallPaymentsUnsubscribeError;
+            CoreSDK.Payments.OnUnsubscribeSuccess -= CallPaymentsUnsubscribeSuccess;
+            CoreSDK.Payments.OnUnsubscribeError -= CallPaymentsUnsubscribeError;
         }
 
         public static void Fetch()
@@ -107,7 +107,7 @@ namespace GamePush
             GP_Payments_FetchProducts();
 #else
             ConsoleLog("FETCH PRODUCTS");
-            CoreSDK.payments.Fetch();
+            CoreSDK.Payments.Fetch();
             //OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
             //OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
 #endif
@@ -122,7 +122,7 @@ namespace GamePush
             GP_Payments_Purchase(idOrTag);
 #else
             ConsoleLog("PURCHASE: " + idOrTag);
-            CoreSDK.payments.Purchase(idOrTag, onPurchaseSuccess, onPurchaseError);
+            CoreSDK.Payments.Purchase(idOrTag, onPurchaseSuccess, onPurchaseError);
             
             //_onPurchaseSuccess?.Invoke(idOrTag);
             //OnPurchaseSuccess?.Invoke(idOrTag);
@@ -149,7 +149,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Payments_IsAvailable() == "true";
 #else
-            return CoreSDK.payments.IsPaymentsAvailable();
+            return CoreSDK.Payments.IsPaymentsAvailable();
 #endif
         }
 
@@ -159,7 +159,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Payments_IsSubscriptionsAvailable() == "true";
 #else
-            return CoreSDK.payments.IsSubscriptionAvailable();
+            return CoreSDK.Payments.IsSubscriptionAvailable();
 #endif
         }
 

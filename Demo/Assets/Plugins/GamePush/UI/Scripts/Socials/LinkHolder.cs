@@ -11,7 +11,7 @@ namespace GamePush.UI
 
         void Start()
         {
-            _link.text = CoreSDK.language.localization.share.link;
+            _link.text = CoreSDK.Language.localization.share.link;
         }
     }
 }
