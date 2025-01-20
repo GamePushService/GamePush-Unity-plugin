@@ -185,6 +185,7 @@ namespace GamePushEditor
 
         private static int _selectedIndex;
         private static string[] _platforms = new string[] {
+             PlatformTypes.NONE,
              PlatformTypes.CUSTOM,
              PlatformTypes.ANDROID,
              PlatformTypes.GOOGLE_PLAY,

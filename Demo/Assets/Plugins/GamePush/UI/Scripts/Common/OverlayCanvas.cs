@@ -29,7 +29,6 @@ namespace GamePush.UI
 
         public static OverlayCanvas Controller;
 
-
         private TaskQueue taskQueue;
 
         private void Awake()
@@ -62,7 +61,7 @@ namespace GamePush.UI
 
         private void OnApplicationFocus(bool focus)
         {
-            //if (!focus) Close();
+            if (!focus) Close();
         }
 
         public void Close()
