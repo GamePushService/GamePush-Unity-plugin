@@ -131,19 +131,6 @@ namespace GamePush.UI
             });
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
-
-                taskQueue.Enqueue(async () =>
-                {
-                    Task show = achievementPlateUI.TestPlate();
-                    await PlateAwait(show, achievementPlateUI);
-                });
-            }
-        }
     }
 }
 
