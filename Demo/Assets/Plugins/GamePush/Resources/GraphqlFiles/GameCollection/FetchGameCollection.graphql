@@ -1,0 +1,31 @@
+fragment ProjectFields on Project {
+  id
+  url(from: $url)
+  name(lang: $lang)
+  description(lang: $lang)
+  assets {
+    icon(lang: $lang) {
+      resources {
+        src(w: 256, h: 256, crop: true)
+      }
+    }
+  }
+}
+
+query FetchGamesCollection($input: FetchPlayerGamesCollectionInput!, $lang: Lang, $url: String) {
+  result: FetchPlayerGamesCollection(input: $input) {
+    __typename
+    ... on GamesCollection {
+      id
+      tag
+      name(lang: $lang)
+      description(lang: $lang)
+      games {
+        ...ProjectFields
+      }
+    }
+    ... on Problem {
+      message
+    }
+  }
+}

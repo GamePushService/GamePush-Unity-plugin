@@ -13,13 +13,13 @@ namespace GamePush
         public static event UnityAction OnGamesCollectionsOpen;
         public static event UnityAction OnGamesCollectionsClose;
 
-        public static event UnityAction<string, GamesCollectionsFetchData> OnGamesCollectionsFetch;
+        public static event UnityAction<string, GamesCollectionsData> OnGamesCollectionsFetch;
         public static event UnityAction OnGamesCollectionsFetchError;
 
         private static event Action _onGamesCollectionsOpen;
         private static event Action _onGamesCollectionsClose;
 
-        private static event Action<string, GamesCollectionsFetchData> _onGamesCollectionsFetch;
+        private static event Action<string, GamesCollectionsData> _onGamesCollectionsFetch;
         private static event Action _onGamesCollectionsFetchError;
         #endregion
 
@@ -34,6 +34,15 @@ namespace GamePush
         #endregion
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.GameCollections.OnGamesCollectionsOpen += () => CallGamesCollectionsOpen();
+            CoreSDK.GameCollections.OnGamesCollectionsClose += () => CallGamesCollectionsClose();
+
+            CoreSDK.GameCollections.OnGamesCollectionsFetch += (string idOrTag, GamesCollectionsData data) => CallGamesCollectionsDataFetch(idOrTag, data);
+            CoreSDK.GameCollections.OnGamesCollectionsFetchError += () => CallGamesCollectionsClose();
+        }
+
         public static void Open(string idOrTag, Action onGamesCollectionsOpen = null, Action onGamesCollectionsClose = null)
         {
             _onGamesCollectionsOpen = onGamesCollectionsOpen;
@@ -42,52 +51,34 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GamesCollections_Open(idOrTag);
 #else
-
-            ConsoleLog("OPEN: " + idOrTag);
+            CoreSDK.GameCollections.Open(idOrTag);
 #endif
         }
 
-        public static void Fetch(string idOrTag, Action<string, GamesCollectionsFetchData> onFetchSuccess = null, Action onFetchError = null)
+        public static void Fetch(string idOrTag, Action<string, GamesCollectionsData> onFetchSuccess = null, Action onFetchError = null)
         {
             _onGamesCollectionsFetch = onFetchSuccess;
             _onGamesCollectionsFetchError = onFetchError;
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GamesCollections_Fetch(idOrTag);
 #else
-
-            ConsoleLog("FETCH: " + idOrTag);
+            CoreSDK.GameCollections.Fetch(idOrTag);
 #endif
         }
-
 
         private void CallGamesCollectionsOpen() { _onGamesCollectionsOpen?.Invoke(); OnGamesCollectionsOpen?.Invoke(); }
         private void CallGamesCollectionsClose() { _onGamesCollectionsClose?.Invoke(); OnGamesCollectionsClose?.Invoke(); }
 
-        private void CallGamesCollectionsFetch(string data) { _onGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsFetchData>(data)); OnGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsFetchData>(data)); }
+        private void CallGamesCollectionsDataFetch(string idOrTag, GamesCollectionsData data) {
+            _gamesCollectionsFetchTag = idOrTag;
+            _onGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, data);
+            OnGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, data); }
+        private void CallGamesCollectionsFetch(string data) {
+            _onGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsData>(data));
+            OnGamesCollectionsFetch?.Invoke(_gamesCollectionsFetchTag, JsonUtility.FromJson<GamesCollectionsData>(data)); }
 
         private void CallGamesCollectionsFetchTag(string idOrTag) => _gamesCollectionsFetchTag = idOrTag;
         private void CallGamesCollectionsFetchError() { _onGamesCollectionsFetchError?.Invoke(); OnGamesCollectionsFetchError?.Invoke(); }
-    }
-
-
-    [System.Serializable]
-    public class GamesCollectionsFetchData
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public Games[] games;
-    }
-
-    [System.Serializable]
-    public class Games
-    {
-        public int id;
-        public string name;
-        public string description;
-        public string icon;
-        public string url;
     }
 
 }

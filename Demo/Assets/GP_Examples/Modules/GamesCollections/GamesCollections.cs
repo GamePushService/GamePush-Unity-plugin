@@ -29,7 +29,7 @@ namespace Examples.GamesCollections
         private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");
         private void OnClose() => Debug.Log("GAMES COLLECTION: ON CLOSE");
 
-        private void OnFetchSuccess(string idOrTag, GamesCollectionsFetchData collection)
+        private void OnFetchSuccess(string idOrTag, GamesCollectionsData collection)
         {
             ConsoleUI.Instance.Log("ID: " + collection.id);
             ConsoleUI.Instance.Log("TAG: " + collection.tag);

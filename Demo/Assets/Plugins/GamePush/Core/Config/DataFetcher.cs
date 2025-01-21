@@ -24,14 +24,8 @@ namespace GamePush.Core
         private static string _fetchPlayerFieldsQueryName = "FetchPlayerFields";
         private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
         private static string _consumeProductQueryName = "ConsumePlayerPurchase";
-        private static string _fetchTopQueryName = "FetchTopQuery";
-        private static string _fetchTopScopedQueryName = "FetchTopScopedQuery";
-        private static string _playerPublishRating = "PlayerPublishRating";
-        private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
-        private static string _playerUniquesValues = "PlayerUniquesValues";
+        
 
-        private static string _unlockAchivement = "UnlockPlayerAchievement";
-        private static string _setAchivementProgress = "PlayerSetAchievementProgress";
 
         public static async void Ping(string token)
         {
@@ -249,6 +243,10 @@ namespace GamePush.Core
 
         #region LeaderboardFetches
 
+        private static string _fetchTopQueryName = "FetchTopQuery";
+        private static string _fetchTopScopedQueryName = "FetchTopScopedQuery";
+        private static string _playerPublishRating = "PlayerPublishRating";
+
         public static async Task<AllRatingData> GetRating(object input, bool withMe)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -456,6 +454,9 @@ namespace GamePush.Core
         private static string SUCCESS_TAG = "gp_success";
         private static string ERROR_TAG = "gp_error";
 
+        private static string _fetchPlayerProjectVariables = "FetchPlayerProjectVariables";
+        private static string _playerUniquesValues = "PlayerUniquesValues";
+
         public static async Task<TagValueData> CheckUniqueValue(object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -574,6 +575,9 @@ namespace GamePush.Core
 
         #region AchievementsFetchers
 
+        private static string _unlockAchivement = "UnlockPlayerAchievement";
+        private static string _setAchivementProgress = "PlayerSetAchievementProgress";
+
         public static async Task<Achievement> UnlockAchievement(UnlockPlayerAchievementInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
@@ -654,7 +658,50 @@ namespace GamePush.Core
 
         #endregion
 
-        #region PurchaseFetches
+        #region GameCollectionsFetchers
+
+        public static async Task<PlayerAchievement> FetchGameCollections(PlayerSetAchievementProgressInput input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            var graphQL = new GraphQLClient(config);
+            Query query = graphQL.FindQuery(_setAchivementProgress, _setAchivementProgress, OperationType.Mutation);
+
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            variables.Add("input", queryTuple.Item2);
+            variables.Add("lang", GetLang());
+
+            Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]["result"];
+
+            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"].ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            Debug.Log(root.ToString());
+
+            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
+            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
+
+            return data;
+        }
+
+        #endregion
+
+        #region PurchaseFetchers
         public static async Task<PurchaseOutput> PurchaseProduct(PurchasePlayerPurchaseInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
