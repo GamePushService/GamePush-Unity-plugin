@@ -7,14 +7,14 @@ namespace GamePush.Core
 {
     public class PlatformModule
     {
-        public string type;
-        public string tag;
-        public string appId;
-        public string gameLink;
-        public string progressSaveFormat;
+        public string Type { get; private set; }
+        public string Tag { get; private set; }
+        public string AppId { get; private set; }
+        public string GameLink { get; private set; }
+        public string ProgressSaveFormat { get; private set; }
 
-        public SyncStorageType prefferedSyncType;
-        public bool alwaysSyncPublicFields;
+        public SyncStorageType PrefferedSyncType { get; private set; }
+        public bool AlwaysSyncPublicFields;
 
         public bool hasIntegratedAuth;
         public bool isLogoutAvailable;
@@ -29,15 +29,15 @@ namespace GamePush.Core
 
         public void Init(PlatformConfig config)
         {
-            type = config.type;
-            tag = config.tag;
-            appId = config.appId;
-            gameLink = config.gameLink;
-            progressSaveFormat = config.progressSaveFormat;
+            Type = config.type;
+            Tag = config.tag;
+            AppId = config.appId;
+            GameLink = config.gameLink;
+            ProgressSaveFormat = config.progressSaveFormat;
 
             SetPrefferedSync(config.progressSaveFormat);
-            alwaysSyncPublicFields = config.alwaysSyncPublicFields;
-
+            AlwaysSyncPublicFields = config.alwaysSyncPublicFields;
+            
 #if UNITY_ANDROID
             hasIntegratedAuth = false;
             isLogoutAvailable = false;
@@ -56,14 +56,13 @@ namespace GamePush.Core
 
             private void SetPrefferedSync(string type)
         {
-            if (type == ProgressSaveFormat.Local)
-                prefferedSyncType = SyncStorageType.local;
-
-            if (type == ProgressSaveFormat.Cloud)
-                prefferedSyncType = SyncStorageType.cloud;
-
-            if (type == ProgressSaveFormat.Platform)
-                prefferedSyncType = SyncStorageType.platform;
+            PrefferedSyncType = type switch
+            {
+                GamePush.ProgressSaveFormat.Local => SyncStorageType.local,
+                GamePush.ProgressSaveFormat.Cloud => SyncStorageType.cloud,
+                GamePush.ProgressSaveFormat.Platform => SyncStorageType.platform,
+                _ => SyncStorageType.cloud,
+            };
         }
     }
 }

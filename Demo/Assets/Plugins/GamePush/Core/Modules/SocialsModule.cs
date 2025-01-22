@@ -23,7 +23,7 @@ namespace GamePush.Core
             Translations links = config.communityLinks;
             _communityLink = LanguageTypes.GetTranslation(CoreSDK.currentLang, links);
 
-            _gameLink = CoreSDK.Platform.gameLink;
+            _gameLink = CoreSDK.Platform.GameLink;
         }
 
         public void OpenPanel(string title = "", string text = "", string url = "", string image = "") =>

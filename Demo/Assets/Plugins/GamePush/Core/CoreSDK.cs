@@ -94,15 +94,18 @@ namespace GamePush
         #region Initialization
         public static async void Initialize()
         {
-            int id;
+            int id = 0;
             int.TryParse(ProjectData.ID, out id);
             SetProjectData(id, ProjectData.TOKEN);
 
             InitModules();
+#if UNITY_EDITOR || !UNITY_WEBGL
             await InitFetch();
+#endif
 
             isInit = true;
             OnInit?.Invoke();
+            await Task.Delay(1);
         }
 
         private static void InitModules()
@@ -165,7 +168,7 @@ namespace GamePush
             platformConfig = configData.platformConfig;
         }
 
-        #endregion
+#endregion
 
         public static void SetAndroidPlatform(string platform)
             => targetPlatform = platform;

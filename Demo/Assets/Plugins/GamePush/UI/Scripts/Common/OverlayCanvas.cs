@@ -21,6 +21,8 @@ namespace GamePush.UI
         private SocialsUI socials;
         [SerializeField]
         private AchievementsUI achievements;
+        [SerializeField]
+        private GameCollectionsUI gameCollections;
 
         [Space]
         [Header("[ Notification UI ]")]

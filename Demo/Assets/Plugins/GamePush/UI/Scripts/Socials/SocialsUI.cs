@@ -30,7 +30,7 @@ namespace GamePush.UI
             _title.text = title;
 
             _text = text == "" ? CoreSDK.Language.localization.leaderboard.inviteDivider : text;
-            _url = url == "" ? CoreSDK.Platform.gameLink : url;
+            _url = url == "" ? CoreSDK.Platform.GameLink : url;
             _image = image == "" ? CoreSDK.App.ProjectIcon() : image;
 
             SocialCallback = callback;

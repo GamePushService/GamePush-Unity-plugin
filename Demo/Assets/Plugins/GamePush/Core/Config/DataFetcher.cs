@@ -14,8 +14,8 @@ namespace GamePush.Core
 {
     public class DataFetcher
     {
-        private static string _apiURL = "https://api.gamepush.com/gs/api";
-        private static string _configName = "GP_GraphQL";
+        private const string API_URL = "https://api.gamepush.com/gs/api";
+        private const string ConfigName = "GP_GraphQL";
         private static string _resultOperation = "result";
 
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
@@ -25,11 +25,9 @@ namespace GamePush.Core
         private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
         private static string _consumeProductQueryName = "ConsumePlayerPurchase";
         
-
-
         public static async void Ping(string token)
         {
-            UnityWebRequest pingRequest = await GetRequest($"{_apiURL}/ping?t={token}");
+            UnityWebRequest pingRequest = await GetRequest($"{API_URL}/ping?t={token}");
         }
 
         private static async Task<UnityWebRequest> GetRequest(string url)
@@ -60,7 +58,7 @@ namespace GamePush.Core
 
         public static Query GetQuery(string queryName, OperationType operationType)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(queryName, _resultOperation, operationType);
             return query;
@@ -68,7 +66,7 @@ namespace GamePush.Core
 
         private static async Task<JObject> SendQueryRequest(string queryName, OperationType operationType, object input, bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(queryName, "result", operationType);
 
@@ -108,7 +106,7 @@ namespace GamePush.Core
 
         public static async Task<AllConfigData> GetConfig()
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchConfigQueryName, "result", OperationType.Query);
 
@@ -136,7 +134,7 @@ namespace GamePush.Core
         public static async Task<JObject> GetPlayer(GetPlayerInput input, bool withToken)
         {
             //Debug.Log("Get player");
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_getPlayerQueryName, "result", OperationType.Query);
 
@@ -179,7 +177,7 @@ namespace GamePush.Core
 
         public static async Task<List<PlayerField>> FetchPlayerFields(bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchPlayerFieldsQueryName, "result", OperationType.Query);
 
@@ -207,7 +205,7 @@ namespace GamePush.Core
 
         public static async Task<List<GameVariable>> FetchPlayerProjectVariables(bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchPlayerProjectVariables, "result", OperationType.Query);
 
@@ -249,7 +247,7 @@ namespace GamePush.Core
 
         public static async Task<AllRatingData> GetRating(object input, bool withMe)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopQueryName, _fetchTopQueryName, OperationType.Query);
 
@@ -289,7 +287,7 @@ namespace GamePush.Core
 
         public static async Task<PlayerRatingData> GetPlayerRating(GetLeaderboardQuery input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopQueryName, _fetchTopQueryName, OperationType.Query);
 
@@ -319,7 +317,7 @@ namespace GamePush.Core
 
         public static async Task<AllRatingData> GetRatingVariant(GetLeaderboardVariantQuery input, bool withMe)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
 
@@ -367,7 +365,7 @@ namespace GamePush.Core
 
         public static async Task<PlayerRatingData> GetPlayerRatingVariant(GetLeaderboardVariantQuery input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_fetchTopScopedQueryName, _fetchTopScopedQueryName, OperationType.Query);
 
@@ -410,7 +408,7 @@ namespace GamePush.Core
 
         public static async Task<PlayerRecordData> PublishRecord(PublishRecordQuery input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_playerPublishRating, _playerPublishRating, OperationType.Mutation);
           
@@ -459,7 +457,7 @@ namespace GamePush.Core
 
         public static async Task<TagValueData> CheckUniqueValue(object input, bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_playerUniquesValues, "Check", OperationType.Query);
 
@@ -497,7 +495,7 @@ namespace GamePush.Core
 
         public static async Task<TagValueData> RegisterUniqueValue(object input, bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_playerUniquesValues, "Register", OperationType.Mutation);
 
@@ -535,7 +533,7 @@ namespace GamePush.Core
 
         public static async Task<TagValueData> DeleteUniqueValue(object input, bool withToken)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_playerUniquesValues, "Delete", OperationType.Mutation);
 
@@ -580,7 +578,7 @@ namespace GamePush.Core
 
         public static async Task<Achievement> UnlockAchievement(UnlockPlayerAchievementInput input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_unlockAchivement, _unlockAchivement, OperationType.Mutation);
 
@@ -619,7 +617,7 @@ namespace GamePush.Core
 
         public static async Task<PlayerAchievement> SetAchievemntProgress(PlayerSetAchievementProgressInput input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_setAchivementProgress, _setAchivementProgress, OperationType.Mutation);
 
@@ -660,18 +658,24 @@ namespace GamePush.Core
 
         #region GameCollectionsFetchers
 
-        public static async Task<PlayerAchievement> FetchGameCollections(PlayerSetAchievementProgressInput input)
+        private const string FetchGamesCollection = "FetchGamesCollection";
+        public static async Task<FetchPlayerGamesCollectionOutput> FetchGameCollections(FetchPlayerGamesCollectionInput input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(_setAchivementProgress, _setAchivementProgress, OperationType.Mutation);
-
+            
+            Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
+            Debug.Log(query.ToString());
+            
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
-
-            Dictionary<string, object> variables = new Dictionary<string, object>();
-
-            variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", GetLang());
+            Debug.Log(queryTuple.Item1.ToString());
+            
+            Dictionary<string, object> variables = new Dictionary<string, object>
+            {
+                { "input", queryTuple.Item2 },
+                { "lang", GetLang() },
+                { "url", input.urlFrom}
+            };
 
             Debug.Log(JsonConvert.SerializeObject(variables));
 
@@ -682,20 +686,18 @@ namespace GamePush.Core
             );
 
             JObject root = JObject.Parse(results);
-            JObject resultObject = (JObject)root["data"]["result"];
+            JObject resultObject = (JObject)root["data"]?["result"];
 
-            if (resultObject["__typename"].ToObject<string>() == "Problem")
+            if (resultObject["__typename"]?.ToObject<string>() == "Problem")
             {
-                string error = resultObject["message"].ToObject<string>();
+                string error = resultObject["message"]?.ToObject<string>();
                 Logger.Error(error);
                 return null;
             }
 
             Debug.Log(root.ToString());
 
-            //PurchaseOutput purchaseOutput = resultObject.ToObject<PurchaseOutput>();
-            PlayerAchievement data = resultObject.ToObject<PlayerAchievement>();
-
+            FetchPlayerGamesCollectionOutput data = resultObject.ToObject<FetchPlayerGamesCollectionOutput>();
             return data;
         }
 
@@ -704,7 +706,7 @@ namespace GamePush.Core
         #region PurchaseFetchers
         public static async Task<PurchaseOutput> PurchaseProduct(PurchasePlayerPurchaseInput input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Query query = graphQL.FindQuery(_purchaseProductQueryName, "result", OperationType.Mutation);
         
@@ -735,7 +737,7 @@ namespace GamePush.Core
 
         public static async Task<PurchaseOutput> ConsumeProduct(ConsumePlayerPurchaseInput input)
         {
-            GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             Debug.Log(graphQL.ToString());
 

@@ -42,9 +42,9 @@ public class WebGLCopyAndPasteAPI
 
 #if UNITY_WEBGL
 
-    [DllImport("libARWrapper.so")]
+    [DllImport("__Internal")]
     private static extern void initWebGLCopyAndPaste(StringCallback cutCopyCallback, StringCallback pasteCallback);
-    [DllImport("libARWrapper.so")]
+    [DllImport("__Internal")]
     private static extern void passCopyToBrowser(string str);
 
     delegate void StringCallback( string content );

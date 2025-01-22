@@ -30,7 +30,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return PlatformTypes.ConvertToEnum(GP_Platform_Type());
 #else
-            return PlatformTypes.ConvertToEnum(CoreSDK.Platform.type);
+            return PlatformTypes.ConvertToEnum(CoreSDK.Platform.Type);
 #endif
         }
 
@@ -39,7 +39,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Type();
 #else
-            return CoreSDK.Platform.type;
+            return CoreSDK.Platform.Type;
 #endif
         }
 
@@ -52,18 +52,18 @@ namespace GamePush
             return GP_Platform_Tag();
 #else
 
-            return CoreSDK.Platform.tag;
+            return CoreSDK.Platform.Tag;
 #endif
         }
 
         public static string ProgressSaveFormat()
         {
-            return CoreSDK.Platform.progressSaveFormat;
+            return CoreSDK.Platform.ProgressSaveFormat;
         }
 
         public static SyncStorageType PrefferedSyncType()
         {
-            return CoreSDK.Platform.prefferedSyncType;
+            return CoreSDK.Platform.PrefferedSyncType;
         }
 
         
@@ -117,7 +117,7 @@ namespace GamePush
 
         public static bool IsAlwaysSyncPublicFields()
         {
-            return CoreSDK.Platform.alwaysSyncPublicFields;
+            return CoreSDK.Platform.AlwaysSyncPublicFields;
         }
 
     }

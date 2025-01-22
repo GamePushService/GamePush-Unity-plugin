@@ -15,14 +15,14 @@ namespace GamePush.Core
         private Project _project;
         private PlatformConfig _platformConfig;
 
-        private bool _isRewiewSupported;
+        private bool _isReviewSupported;
 
         public void Init(Project project, PlatformConfig platformConfig)
         {
             _project = project;
             _platformConfig = platformConfig;
 
-            _isRewiewSupported = false;
+            _isReviewSupported = false;
         }
 
         public string Title() => _project.name;
@@ -35,7 +35,7 @@ namespace GamePush.Core
 
         public void ReviewRequest()
         {
-            if (_isRewiewSupported)
+            if (_isReviewSupported)
             {
                 //TODO: Check solutions for rewiew supported platforms
                 OnReviewResult?.Invoke(0);
