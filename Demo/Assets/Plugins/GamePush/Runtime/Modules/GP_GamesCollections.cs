@@ -55,14 +55,14 @@ namespace GamePush
 #endif
         }
 
-        public static void Fetch(string idOrTag, Action<string, GamesCollectionsData> onFetchSuccess = null, Action onFetchError = null)
+        public async static void Fetch(string idOrTag, Action<string, GamesCollectionsData> onFetchSuccess = null, Action onFetchError = null)
         {
             _onGamesCollectionsFetch = onFetchSuccess;
             _onGamesCollectionsFetchError = onFetchError;
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_GamesCollections_Fetch(idOrTag);
 #else
-            CoreSDK.GameCollections.Fetch(idOrTag);
+            await CoreSDK.GameCollections.Fetch(idOrTag);
 #endif
         }
 

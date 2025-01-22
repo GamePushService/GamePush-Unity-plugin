@@ -21,10 +21,8 @@ namespace Examples.GamesCollections
             _fetchButton.onClick.RemoveListener(Fetch);
         }
 
-
         public void Open() => GP_GamesCollections.Open("ALL", OnOpen, OnClose);
         public void Fetch() => GP_GamesCollections.Fetch("ALL", OnFetchSuccess, OnFetchError);
-
 
         private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");
         private void OnClose() => Debug.Log("GAMES COLLECTION: ON CLOSE");
@@ -46,8 +44,6 @@ namespace Examples.GamesCollections
             }
         }
         private void OnFetchError() => Debug.Log("GAMES COLLECTION: FETCH ERROR");
-
-
 
     }
 }
