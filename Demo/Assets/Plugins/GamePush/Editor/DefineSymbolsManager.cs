@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class DefineSymbolsManager
 {
+    private static NamedBuildTarget GetBuildTarget()// Получаем текущую группу сборки
+    {
+        BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+        NamedBuildTarget buildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+        return buildTarget;
+    }
+    private static string GetSymbols()// Получаем текущие символы для группы сборки
+    {
+        // Получаем текущие символы для группы сборки
+        string currentSymbols = PlayerSettings.GetScriptingDefineSymbols(GetBuildTarget());
+        return currentSymbols;
+    }
+
+    private static void SetSymbols(string symbols)
+    {
+        PlayerSettings.SetScriptingDefineSymbols(GetBuildTarget(), symbols);
+    }
     // Метод для добавления символа компиляции
     public static void AddScriptingDefineSymbol(string symbol)
     {
-        // Получаем текущую группу сборки
-        BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-        NamedBuildTarget buildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
-        
         // Получаем текущие символы для группы сборки
-        string currentSymbols = PlayerSettings.GetScriptingDefineSymbols(buildTarget);
+        string currentSymbols = GetSymbols();
 
         // Проверяем, если символ уже существует, то выходим
         if (currentSymbols.Contains(symbol))
@@ -23,19 +36,15 @@ public class DefineSymbolsManager
 
         // Добавляем новый символ
         string newSymbols = string.IsNullOrEmpty(currentSymbols) ? symbol : $"{currentSymbols};{symbol}";
-        PlayerSettings.SetScriptingDefineSymbols(buildTarget, newSymbols);
+        SetSymbols(newSymbols);
 
-        //Debug.Log($"Символ '{symbol}' успешно добавлен.");
     }
 
     // Метод для удаления символа компиляции
     public static void RemoveScriptingDefineSymbol(string symbol)
     {
-        // Получаем текущую группу сборки
-        BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-
         // Получаем текущие символы для группы сборки
-        string currentSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+        string currentSymbols = GetSymbols();
 
         // Проверяем, если символ не существует, то выходим
         if (!currentSymbols.Contains(symbol))
@@ -46,8 +55,6 @@ public class DefineSymbolsManager
 
         // Удаляем символ и обновляем список
         string newSymbols = currentSymbols.Replace(symbol, "").Replace(";;", ";").Trim(';');
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, newSymbols);
-
-        //Debug.Log($"Символ '{symbol}' успешно удален.");
+        SetSymbols(newSymbols);
     }
 }

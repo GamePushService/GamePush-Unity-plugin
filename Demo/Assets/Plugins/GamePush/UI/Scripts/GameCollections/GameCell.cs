@@ -30,6 +30,7 @@ namespace GamePush.UI
         
             string iconLink = UtilityImage.ReplaceWebpWithPng(game.Icon);
             await UtilityImage.DownloadImageAsync(iconLink, logo);
+            logo.color = Color.white;
         }
 
         private void OnDestroy()
