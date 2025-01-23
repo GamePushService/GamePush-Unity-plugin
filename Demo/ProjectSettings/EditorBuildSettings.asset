@@ -11,5 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/GP_Examples/Scenes/ExamplesScene.unity
     guid: 2f1f74b392018a645acd08e42b82cb86
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: ce573dce2cb294b6e8d670f9bf61503f, type: 2}
   m_UseUCBPForAssetBundles: 0
