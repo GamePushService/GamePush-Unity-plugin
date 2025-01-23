@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class DefineSymbolsManager
@@ -8,9 +9,10 @@ public class DefineSymbolsManager
     {
         // Получаем текущую группу сборки
         BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-
+        NamedBuildTarget buildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+        
         // Получаем текущие символы для группы сборки
-        string currentSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+        string currentSymbols = PlayerSettings.GetScriptingDefineSymbols(buildTarget);
 
         // Проверяем, если символ уже существует, то выходим
         if (currentSymbols.Contains(symbol))
@@ -21,7 +23,7 @@ public class DefineSymbolsManager
 
         // Добавляем новый символ
         string newSymbols = string.IsNullOrEmpty(currentSymbols) ? symbol : $"{currentSymbols};{symbol}";
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, newSymbols);
+        PlayerSettings.SetScriptingDefineSymbols(buildTarget, newSymbols);
 
         //Debug.Log($"Символ '{symbol}' успешно добавлен.");
     }

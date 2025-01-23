@@ -87,7 +87,7 @@ namespace GamePush
 
     public class GamesCollectionOutput : GamesCollection
     {
-        public new List<GameProject> Games { get; set; }
+        public List<GameProject> Games { get; set; }
     }
 }
 

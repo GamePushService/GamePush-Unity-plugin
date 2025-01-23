@@ -142,7 +142,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 2.0.4
+  bundleVersion: 2.0.6
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -680,13 +680,13 @@ PlayerSettings:
   spritePackerPolicy: 
   webGLMemorySize: 32
   webGLExceptionSupport: 3
-  webGLNameFilesAsHashes: 0
+  webGLNameFilesAsHashes: 1
   webGLShowDiagnostics: 0
   webGLDataCaching: 0
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: PROJECT:GamePush
+  webGLTemplate: APPLICATION:PWA
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 0
@@ -709,7 +709,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     Android: STEAMWORKS_NET
     Standalone: STEAMWORKS_NET;CUSTOM_ADS_MOBILE;XSOLLA_SERVICE
-    WebGL: STEAMWORKS_NET
+    WebGL: STEAMWORKS_NET;CUSTOM_ADS_MOBILE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
