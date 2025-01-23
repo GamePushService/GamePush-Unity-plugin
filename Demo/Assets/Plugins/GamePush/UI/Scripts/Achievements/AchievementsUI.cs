@@ -41,7 +41,7 @@ namespace GamePush.UI
         private event Action _OnAchievementsOpen;
         private event Action _OnAchievementsClose;
 
-        public void Init(FetchPlayerAchievementsOutput info, AchievementsSettings settings, Action onAchievementsOpen, Action onAchievementsClose)
+        public void Show(FetchPlayerAchievementsOutput info, AchievementsSettings settings, Action onAchievementsOpen, Action onAchievementsClose)
         {
             _info = info;
             _settings = settings;
@@ -161,7 +161,7 @@ namespace GamePush.UI
             _OnAchievementsOpen?.Invoke();
         }
 
-        public void Close()
+        public override void Close()
         {
             _OnAchievementsClose?.Invoke();
             OverlayCanvas.Controller.Close();

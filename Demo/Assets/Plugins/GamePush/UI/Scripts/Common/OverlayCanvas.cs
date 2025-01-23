@@ -5,6 +5,7 @@ using GamePush;
 using GamePush.Data;
 using GamePush.Tools;
 using System.Threading.Tasks;
+using UnityEngine.Serialization;
 
 namespace GamePush.UI
 {
@@ -16,13 +17,13 @@ namespace GamePush.UI
         [Header("[ UI panels ]")]
         [Space]
         [SerializeField]
-        private LeaderboardUI leaderboard;
+        private ModuleUI leaderboard;
         [SerializeField]
-        private SocialsUI socials;
+        private ModuleUI socials;
         [SerializeField]
-        private AchievementsUI achievements;
+        private ModuleUI achievements;
         [SerializeField]
-        private GameCollectionsUI gameCollections;
+        private ModuleUI gamesCollection;
 
         [Space]
         [Header("[ Notification UI ]")]
@@ -30,8 +31,7 @@ namespace GamePush.UI
         AchievementPlate achievementPlate;
 
         public static OverlayCanvas Controller;
-
-        private TaskQueue taskQueue;
+        private TaskQueue _taskQueue;
 
         private void Awake()
         {
@@ -43,7 +43,7 @@ namespace GamePush.UI
             DontDestroyOnLoad(gameObject);
             overlayHolder.SetActive(false);
 
-            taskQueue = new TaskQueue();
+            _taskQueue = new TaskQueue();
         }
 
         private void OnEnable()
@@ -51,11 +51,13 @@ namespace GamePush.UI
             CoreSDK.Leaderboard.OpenLeaderboard += OpenLeaderboard;
             CoreSDK.Socials.OnOpenOverlay += OpenSocials;
 
-            CoreSDK.Achievements.OnShowAcievementsList += OpenAchivements;
+            CoreSDK.Achievements.OnShowAcievementsList += OpenAchievements;
             CoreSDK.Achievements.OnShowAcievementUnlock += UnlockAchievement;
             CoreSDK.Achievements.OnShowAcievementProgress += SetProgressAchievement;
-        }
 
+            CoreSDK.GameCollections.OnShowGamesCollection += OpenGamesCollection;
+        }
+        
         private void OnDisable()
         {
             CoreSDK.Leaderboard.OpenLeaderboard -= OpenLeaderboard;
@@ -75,7 +77,8 @@ namespace GamePush.UI
             }
         }
 
-        public ModuleUI CreateUITable(ModuleUI UIcomponent)
+        #region UI Tables
+        private ModuleUI CreateUITable(ModuleUI UIcomponent)
         {
             Close();
             overlayHolder.SetActive(true);
@@ -83,30 +86,41 @@ namespace GamePush.UI
             return ui;
         }
 
-        public void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
+        private void OpenLeaderboard(RatingData data, GetOpenLeaderboardQuery query, Action onLeaderboardOpen = null, Action onLeaderboardClose = null)
         {
             LeaderboardUI leaderboardUI = (LeaderboardUI)CreateUITable(leaderboard);
-            leaderboardUI.Init(data, query, onLeaderboardOpen, onLeaderboardClose);
+            leaderboardUI.Show(data, query, onLeaderboardOpen, onLeaderboardClose);
         }
 
-        public void OpenSocials(string title, string text, string url, string image, Action<bool> callback)
+        private void OpenSocials(string title, string text, string url, string image, Action<bool> callback)
         {
             SocialsUI socialsUI = (SocialsUI)CreateUITable(socials);
-            socialsUI.Init(title, text, url, image, callback);
+            socialsUI.Show(title, text, url, image, callback);
         }
 
-        public void OpenAchivements(FetchPlayerAchievementsOutput info, AchievementsSettings settings, Action onAchievementsOpen = null, Action onAchievementsClose = null)
+        private void OpenAchievements(FetchPlayerAchievementsOutput info, AchievementsSettings settings, 
+            Action onAchievementsOpen = null, Action onAchievementsClose = null)
         {
             AchievementsUI achievementsUI = (AchievementsUI)CreateUITable(achievements);
-            achievementsUI.Init(info, settings, onAchievementsOpen, onAchievementsClose);
+            achievementsUI.Show(info, settings, onAchievementsOpen, onAchievementsClose);
         }
 
-        public async Task PlateAwait(Task plateShow, AchievementPlate plate)
+        private void OpenGamesCollection(GamesCollection collection, Action onCollectionOpen = null,
+            Action onCollectionClose = null)
+        {
+            GamesCollectionUI gamesCollectionUI = (GamesCollectionUI)CreateUITable(gamesCollection); 
+            gamesCollectionUI.Show(collection, onCollectionOpen, onCollectionClose);
+        }
+
+        #endregion
+
+        #region UI Plates
+        private async Task PlateAwait(Task plateShow, AchievementPlate plate)
         {
             await plateShow;
             if (plate != null && plate.gameObject != null)
             {
-               Destroy(plate.gameObject);
+                Destroy(plate.gameObject);
             }
         }
 
@@ -114,7 +128,7 @@ namespace GamePush.UI
         {
             AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
 
-            taskQueue.Enqueue(async () =>
+            _taskQueue.Enqueue(async () =>
             {
                 Task show = achievementPlateUI.SetUnlock(achievement);
                 await PlateAwait(show, achievementPlateUI);
@@ -125,13 +139,14 @@ namespace GamePush.UI
         {
             AchievementPlate achievementPlateUI = Instantiate(achievementPlate, transform);
 
-            taskQueue.Enqueue(async () =>
+            _taskQueue.Enqueue(async () =>
             {
                 Task show = achievementPlateUI.SetProgress(achievement);
                 await PlateAwait(show, achievementPlateUI);
             });
         }
-
+        #endregion
+        
     }
 }
 

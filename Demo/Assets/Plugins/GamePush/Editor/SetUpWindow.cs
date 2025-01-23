@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -59,7 +61,6 @@ namespace GamePushEditor
             _gameReadyAuto = _projectData.gameReadyAuto;
             _selectedIndex = _projectData.buildPlatformId;
         }
-
 
         private static SavedProjectData GetSavedProjectData()
         {
@@ -157,22 +158,10 @@ namespace GamePushEditor
 
         #region GUI
 
-        
         private void OnGUI()
         {
             OnLoginGUI();
-            //_menuOpened = GUILayout.Toolbar(_menuOpened, new[] { "Setup", "Settings" });
-
-            //switch (_menuOpened)
-            //{
-            //    case 0:
-            //        OnLoginGUI();
-            //        break;
-            //    case 1:
-            //        OnSettingsGUI();
-            //        break;
-            //}
-
+            
             GUILayout.Space(30);
             DrawSeparator();
 
@@ -184,20 +173,11 @@ namespace GamePushEditor
         }
 
         private static int _selectedIndex;
-        private static string[] _platforms = new string[] {
-             PlatformTypes.NONE,
-             PlatformTypes.CUSTOM,
-             PlatformTypes.ANDROID,
-             PlatformTypes.GOOGLE_PLAY,
-             PlatformTypes.APP_GALLERY,
-             PlatformTypes.GALAXY_STORE,
-             PlatformTypes.ONE_STORE,
-             PlatformTypes.AMAZON_APPSTORE,
-             PlatformTypes.XIAOMI_GETAPPS,
-             PlatformTypes.APTOIDE,
-             PlatformTypes.RUSTORE,
-             PlatformTypes.CUSTOM_ANDROID,
-        };
+        private static string[] _platforms = Enum.GetValues(typeof(Platform))
+            .Cast<Platform>()
+            .Select(x => x.ToString())
+            .ToArray(); 
+        
         private enum AndroidPlatform { ANDROID, GOOGLE_PLAY, HUAWEI}
 
         private void OnLoginGUI()
@@ -332,7 +312,6 @@ namespace GamePushEditor
             {
                 GP_Logger.SystemLog("Add Define Symbols: " + symbols);
                 DefineSymbolsManager.AddScriptingDefineSymbol(symbols);
-                
             }
             else
             {

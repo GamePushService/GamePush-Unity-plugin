@@ -10,9 +10,9 @@ namespace GamePush.Tools
 {
     public class UtilityImage
     {
-        public async static Task<bool> DownloadImageAsync(string url, Image image)
+        public static async Task<bool> DownloadImageAsync(string url, Image image)
         {
-            if (url == "" || url == null)
+            if (string.IsNullOrEmpty(url))
                 return false;
 
             var request = UnityWebRequestTexture.GetTexture(url);
@@ -41,6 +41,15 @@ namespace GamePush.Tools
                 Debug.Log("Download Image : Failed");
                 return false;
             }
+        }
+        
+        public static string ReplaceWebpWithPng(string url)
+        {
+            if (url.EndsWith(".webp", StringComparison.OrdinalIgnoreCase))
+            {
+                return url.Substring(0, url.Length - 5) + ".png";
+            }
+            return url;
         }
 
         private const int MaxSize = 2048;

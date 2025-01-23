@@ -37,17 +37,17 @@ namespace GamePush.UI
         private string _playerPosition;
         private bool _hasPlayer = false;
 
-        private event Action _OnLeaderboardOpen;
-        private event Action _OnLeaderboardClose;
+        private event Action OnOpenBoard;
+        private event Action OnCloseBoard;
 
-        public async void Init(RatingData ratingData, GetOpenLeaderboardQuery query, Action onLeaderboardOpen, Action onLeaderboardClose)
+        public async void Show(RatingData ratingData, GetOpenLeaderboardQuery query, Action onLeaderboardOpen, Action onLeaderboardClose)
         {
             _ratingData = ratingData;
             _query = query;
             _playerPosition = ratingData.player["position"].ToString();
 
-            _OnLeaderboardOpen = onLeaderboardOpen;
-            _OnLeaderboardClose = onLeaderboardClose;
+            OnOpenBoard = onLeaderboardOpen;
+            OnCloseBoard = onLeaderboardClose;
 
             //print(ratingData.players.Count);
             //print(ratingData.topPlayers.Count);
@@ -169,16 +169,14 @@ namespace GamePush.UI
                 yield return new WaitForEndOfFrame();
             }
 
-            _OnLeaderboardOpen?.Invoke();
+            OnOpenBoard?.Invoke();
         }
 
-        public void Close()
+        public override void Close()
         {
-            _OnLeaderboardClose?.Invoke();
+            OnCloseBoard?.Invoke();
             OverlayCanvas.Controller.Close();
         }
-
-
     }
 
 }

@@ -25,7 +25,7 @@ namespace GamePush.UI
         private string _text, _url, _image;
         private event Action<bool> SocialCallback;
 
-        public void Init(string title, string text, string url, string image, Action<bool> callback)
+        public void Show(string title, string text, string url, string image, Action<bool> callback)
         {
             _title.text = title;
 
@@ -48,7 +48,7 @@ namespace GamePush.UI
             _link.GetComponentInChildren<Button>().onClick.AddListener(() => CopyToClickboard());
         }
 
-        public void Close()
+        public override void Close()
         {
             SocialCallback?.Invoke(false);
             OverlayCanvas.Controller.Close();

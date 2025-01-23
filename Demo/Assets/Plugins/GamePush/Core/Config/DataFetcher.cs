@@ -122,7 +122,7 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            //Debug.Log(resultObject["platformConfig"].ToString());
+            Debug.Log(resultObject["platformConfig"].ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 
@@ -665,10 +665,10 @@ namespace GamePush.Core
             var graphQL = new GraphQLClient(config);
             
             Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
-            Debug.Log(query.ToString());
+            // Debug.Log(query.ToString());
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
-            Debug.Log(queryTuple.Item1.ToString());
+            // Debug.Log(queryTuple.Item1);
             
             Dictionary<string, object> variables = new Dictionary<string, object>
             {

@@ -16,6 +16,8 @@ namespace GamePush.Core
         public event Action<string, GamesCollectionsData> OnGamesCollectionsFetch;
         public event Action OnGamesCollectionsFetchError;
 
+        public event Action<GamesCollection, Action, Action> OnShowGamesCollection;
+
         private List<string> availablePlatforms = new List<string>{
             PlatformTypes.YANDEX,
             PlatformTypes.VK,
@@ -33,27 +35,18 @@ namespace GamePush.Core
             #endif
         }
 
-        public void Open(string idOrTag)
+        public async void Open(string idOrTag)
         {
-           
+            if (!IsAvailable())
+            {
+                Logger.Warn($"Not available on {CoreSDK.Platform.Type}");
+                return;
+            }
+            
+            GamesCollection gamesCollection = await Fetch(idOrTag);
+            OnShowGamesCollection?.Invoke(gamesCollection, OnGamesCollectionsOpen, OnGamesCollectionsClose);
         }
 
-        
-        private GamePreview MapProjectToGamePreview(GameProject project)
-        {
-            return new GamePreview
-            {
-                Id = project.Id,
-                Name = project.Name,
-                Description = project.Description,
-                Url = project.Url,
-                Icon = project.Assets.Icon
-                // Icon4x3 = GetAssetImage(project.Assets.Icon4x3),
-                // Cover = GetAssetImage(project.Assets.Cover),
-                // AlbumScreenshots = GetAssetImages(project.Assets.AlbumScreenshots),
-                // PortraitScreenshots = GetAssetImages(project.Assets.PortraitScreenshots),
-            };
-        }
         public async Task<GamesCollection> Fetch(string idOrTag = "ALL")
         {
             if (!IsAvailable())
@@ -92,22 +85,61 @@ namespace GamePush.Core
                 Tag = result.Tag,
                 Name = result.Name,
                 Description = result.Description,
-                Games = mappedGames
+                GamesData = mappedGames
                     .Where(p => !string.IsNullOrEmpty(p.Url))
                     .Select(MapProjectToGamePreview)
                     .ToList()
             };
 
-            if (collection.Games == null || collection.Games.Count == 0)
+            if (collection.GamesData == null || collection.GamesData.Count == 0)
             {
                 Logger.Warn("Empty games collection");
             }
 
-            // OnGamesCollectionsFetch?.Invoke(idOrTag, collection);
-            // Генерируем событие завершения
+            OnGamesCollectionsFetch?.Invoke(idOrTag, MapCollectionToCollectionsData(collection));
 
             return collection;
 
+        }
+
+        private GamePreview MapProjectToGamePreview(GameProject project)
+        {
+            return new GamePreview
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                Url = project.Url,
+                Icon = project.Assets.Icon.Resources[0].Src
+                // Icon4x3 = GetAssetImage(project.Assets.Icon4x3),
+                // Cover = GetAssetImage(project.Assets.Cover),
+                // AlbumScreenshots = GetAssetImages(project.Assets.AlbumScreenshots),
+                // PortraitScreenshots = GetAssetImages(project.Assets.PortraitScreenshots),
+            };
+        }
+        private GamesCollectionsData MapCollectionToCollectionsData(GamesCollection collection)
+        {
+            GamesCollectionsData data = new GamesCollectionsData
+            {
+                id = collection.Id,
+                tag = collection.Tag,
+                name = collection.Name,
+                description = collection.Description
+            };
+            
+            if (collection.GamesData == null)
+                return data;
+            
+            data.games = collection.GamesData.Select(gamePreview => new GamesData
+            {
+                id = gamePreview.Id,
+                name = gamePreview.Name,
+                description = gamePreview.Description,
+                icon = gamePreview.Icon,
+                url = gamePreview.Url
+            }).ToArray();
+
+            return data;
         }
     }
 }

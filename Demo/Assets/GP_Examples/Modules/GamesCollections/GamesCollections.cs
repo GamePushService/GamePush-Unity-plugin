@@ -2,11 +2,13 @@ using UnityEngine;
 using GamePush;
 using Examples.Console;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Examples.GamesCollections
 {
     public class GamesCollections : MonoBehaviour
     {
+        [SerializeField] private TMP_InputField _idOrTagInput;
         [SerializeField] private Button _openButton;
         [SerializeField] private Button _fetchButton;
 
@@ -21,8 +23,12 @@ namespace Examples.GamesCollections
             _fetchButton.onClick.RemoveListener(Fetch);
         }
 
-        public void Open() => GP_GamesCollections.Open("ALL", OnOpen, OnClose);
-        public void Fetch() => GP_GamesCollections.Fetch("ALL", OnFetchSuccess, OnFetchError);
+        private string GetIdOrTag()
+        {
+            return _idOrTagInput.text == "" ? "ALL" : _idOrTagInput.text;
+        }
+        public void Open() => GP_GamesCollections.Open(GetIdOrTag(), OnOpen, OnClose);
+        public void Fetch() => GP_GamesCollections.Fetch(GetIdOrTag(), OnFetchSuccess, OnFetchError);
 
         private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");
         private void OnClose() => Debug.Log("GAMES COLLECTION: ON CLOSE");
@@ -36,12 +42,14 @@ namespace Examples.GamesCollections
 
             for (int i = 0; i < collection.games.Length; i++)
             {
+                ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("GAME ID: " + collection.games[i].id);
                 ConsoleUI.Instance.Log("GAME NAME: " + collection.games[i].name);
                 ConsoleUI.Instance.Log("GAME DESCRIPTION: " + collection.games[i].description);
                 ConsoleUI.Instance.Log("GAME ICON: " + collection.games[i].icon);
                 ConsoleUI.Instance.Log("GAME URL: " + collection.games[i].url);
             }
+            ConsoleUI.Instance.Log(" ");
         }
         private void OnFetchError() => Debug.Log("GAMES COLLECTION: FETCH ERROR");
 

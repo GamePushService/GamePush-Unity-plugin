@@ -42,10 +42,10 @@ namespace GamePush
         public string Description { get; set; }
         public string Url { get; set; }
         public string Icon { get; set; }
-        // public string Icon4x3 { get; set; } // Закомментировано
-        // public string Cover { get; set; } // Закомментировано
-        // public List<string> AlbumScreenshots { get; set; } // Закомментировано
-        // public List<string> PortraitScreenshots { get; set; } // Закомментировано
+        // public string Icon4x3 { get; set; }
+        // public string Cover { get; set; }
+        // public List<string> AlbumScreenshots { get; set; }
+        // public List<string> PortraitScreenshots { get; set; }
     }
 
     public class ImageAsset
@@ -69,11 +69,11 @@ namespace GamePush
 
     public class GameProjectAssets
     {
-        public string Icon { get; set; }
-        // public ImageAsset Icon4x3 { get; set; } // Закомментировано
-        // public ImageAsset Cover { get; set; } // Закомментировано
-        // public List<ImageAsset> AlbumScreenshots { get; set; } // Закомментировано
-        // public List<ImageAsset> PortraitScreenshots { get; set; } // Закомментировано
+        public ImageAsset Icon { get; set; }
+        // public ImageAsset Icon4x3 { get; set; }
+        // public ImageAsset Cover { get; set; }
+        // public List<ImageAsset> AlbumScreenshots { get; set; }
+        // public List<ImageAsset> PortraitScreenshots { get; set; }
     }
 
     public class GamesCollection
@@ -82,7 +82,7 @@ namespace GamePush
         public string Tag { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<GamePreview> Games { get; set; }
+        public List<GamePreview> GamesData { get; set; }
     }
 
     public class GamesCollectionOutput : GamesCollection
