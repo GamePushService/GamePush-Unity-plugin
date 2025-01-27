@@ -27,8 +27,18 @@ namespace Examples.GamesCollections
         {
             return _idOrTagInput.text == "" ? "ALL" : _idOrTagInput.text;
         }
-        public void Open() => GP_GamesCollections.Open(GetIdOrTag(), OnOpen, OnClose);
-        public void Fetch() => GP_GamesCollections.Fetch(GetIdOrTag(), OnFetchSuccess, OnFetchError);
+
+        public void Open()
+        {
+            Debug.Log("GAMES COLLECTION: OPEN: " + GetIdOrTag());
+            GP_GamesCollections.Open(GetIdOrTag(), OnOpen, OnClose);
+        }
+
+        public void Fetch()
+        {
+            Debug.Log("GAMES COLLECTION: FETCH: " + GetIdOrTag());
+            GP_GamesCollections.Fetch(GetIdOrTag(), OnFetchSuccess, OnFetchError);
+        }
 
         private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");
         private void OnClose() => Debug.Log("GAMES COLLECTION: ON CLOSE");

@@ -24,6 +24,7 @@ namespace GamePush.Core
             PlatformTypes.OK,
             PlatformTypes.GAMEPIX,
             PlatformTypes.Y8,
+            PlatformTypes.CUSTOM
         };
 
         public bool IsAvailable()
