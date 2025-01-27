@@ -1,4 +1,4 @@
-package com.xsolla.sdk.unity.Example.wxapi;
+package com.GamePush.GamePushDemo.wxapi;
 
 import android.app.Activity;
 import android.os.Bundle;

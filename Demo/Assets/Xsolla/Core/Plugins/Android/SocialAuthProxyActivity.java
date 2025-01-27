@@ -1,4 +1,4 @@
-package com.xsolla.sdk.unity.Example.androidProxies;
+package com.GamePush.GamePushDemo.androidProxies;
 
 import android.app.Activity;
 import android.content.Intent;

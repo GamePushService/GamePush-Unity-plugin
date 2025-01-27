@@ -4,6 +4,9 @@
     <activity android:name="com.unity3d.player.appui.AppUIActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:theme="@style/UnityThemeSelector" />
     <activity android:name="com.GamePush.GamePushDemo.androidProxies.SocialAuthProxyActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" />
     <activity android:name="com.GamePush.GamePushDemo.androidProxies.PaymentsProxyActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" />
+    <activity android:name="com.unity3d.player.appui.AppUIActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:theme="@style/UnityThemeSelector" />
+    <activity android:name="com.unity3d.player.appui.AppUIActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:theme="@style/UnityThemeSelector" />
+    <activity android:name="com.unity3d.player.appui.AppUIActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:theme="@style/UnityThemeSelector" />
     <activity android:name="com.unity3d.player.UnityPlayerActivity" android:theme="@style/UnityThemeSelector" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

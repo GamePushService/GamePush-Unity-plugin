@@ -1,5 +1,6 @@
 {
     "name": "XsollaBrowser.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:ae0cf701846f0cc4bbd067c4edd4fe90"
     ],
@@ -11,7 +12,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "XSOLLA_SERVICE"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

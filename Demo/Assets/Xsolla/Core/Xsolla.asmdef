@@ -1,5 +1,6 @@
 {
     "name": "Xsolla",
+    "rootNamespace": "",
     "references": [
         "GUID:602e03bad41311146a1c3f38522cea6d",
         "GUID:2e75b7162656543468fd7cacc853237e",
@@ -11,7 +12,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "XSOLLA_SERVICE"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
