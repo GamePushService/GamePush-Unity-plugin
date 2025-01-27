@@ -37,7 +37,8 @@ namespace GamePush
         APTOIDE,
         RUSTORE,
         CUSTOM_ANDROID,
-        Y8
+        Y8,
+        GAMEPUSH
     }
 
     public static class PlatformTypes
@@ -69,6 +70,7 @@ namespace GamePush
         public const string RUSTORE = "RUSTORE";
         public const string CUSTOM_ANDROID = "CUSTOM_ANDROID";
         public const string Y8 = "Y8";
+        public const string GAMEPUSH = "GAMEPUSH";
 
         public static Platform ConvertToEnum(string platform)
         {
@@ -100,6 +102,7 @@ namespace GamePush
                 RUSTORE => Platform.RUSTORE,
                 CUSTOM_ANDROID => Platform.CUSTOM_ANDROID,
                 Y8 => Platform.Y8,
+                GAMEPUSH => Platform.GAMEPUSH,
                 _ => Platform.NONE
             };
 

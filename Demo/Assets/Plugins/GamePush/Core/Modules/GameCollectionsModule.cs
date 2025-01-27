@@ -44,6 +44,12 @@ namespace GamePush.Core
             }
             
             GamesCollection gamesCollection = await Fetch(idOrTag);
+            if (gamesCollection == null)
+            {
+                Logger.Warn("Can't find GamesCollection");
+                OnGamesCollectionsClose?.Invoke();
+                return;
+            }
             OnShowGamesCollection?.Invoke(gamesCollection, OnGamesCollectionsOpen, OnGamesCollectionsClose);
         }
 

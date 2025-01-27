@@ -708,8 +708,8 @@ PlayerSettings:
   webWasm2023: 0
   scriptingDefineSymbols:
     Android: STEAMWORKS_NET
-    Standalone: STEAMWORKS_NET;CUSTOM_ADS_MOBILE;XSOLLA_SERVICE
-    WebGL: STEAMWORKS_NET;XSOLLA_SERVICE
+    Standalone: STEAMWORKS_NET
+    WebGL: STEAMWORKS_NET
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

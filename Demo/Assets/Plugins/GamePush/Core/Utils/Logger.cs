@@ -20,6 +20,7 @@ namespace GamePush.Core
         {
             string log = text == null || text == "" ? title : $"{title}: {text}";
             Debug.LogWarning($"<color=#{color}> {type}: </color> {log}");
+            OnLog?.Invoke(log);
         }
             
 
@@ -27,6 +28,7 @@ namespace GamePush.Core
         {
             string log = text == null || text == "" ? title : $"{title}: {text}";
             Debug.LogError($"<color=#{color}> {type}: </color> {log}");
+            OnLog?.Invoke(log);
         }
             
 
