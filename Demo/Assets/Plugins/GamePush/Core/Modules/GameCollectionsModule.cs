@@ -44,7 +44,7 @@ namespace GamePush.Core
                 return;
             }
             
-            GamesCollection gamesCollection = await Fetch(idOrTag);
+            GamesCollection gamesCollection = await FetchCollection(idOrTag);
             if (gamesCollection == null)
             {
                 Logger.Warn("Can't find GamesCollection");
@@ -63,6 +63,29 @@ namespace GamePush.Core
                 return null;
             }
 
+            var collection = await FetchCollection(idOrTag);
+            
+            if (collection == null)
+            {
+                Logger.Warn("Can't fetch GamesCollections list");
+                OnGamesCollectionsFetchError?.Invoke();
+                return null;
+            }
+            
+            if (collection.GamesData == null || collection.GamesData.Count == 0)
+            {
+                Logger.Warn("Empty games collection");
+                OnGamesCollectionsFetchError?.Invoke();
+            }
+
+            OnGamesCollectionsFetch?.Invoke(idOrTag, MapCollectionToCollectionsData(collection));
+
+            return collection;
+
+        }
+
+        private async Task<GamesCollection> FetchCollection(string idOrTag = "ALL")
+        {
             FetchPlayerGamesCollectionInput input = new FetchPlayerGamesCollectionInput();
             if (int.TryParse(idOrTag, out var id))
             {
@@ -78,11 +101,7 @@ namespace GamePush.Core
             var result = await DataFetcher.FetchGameCollections(input);
             
             if (result == null)
-            {
-                Logger.Warn("Can't fetch GamesCollections list");
-                OnGamesCollectionsFetchError?.Invoke();
                 return null;
-            }
 
             var mappedGames = result.Games;
             
@@ -97,16 +116,8 @@ namespace GamePush.Core
                     .Select(MapProjectToGamePreview)
                     .ToList()
             };
-
-            if (collection.GamesData == null || collection.GamesData.Count == 0)
-            {
-                Logger.Warn("Empty games collection");
-            }
-
-            OnGamesCollectionsFetch?.Invoke(idOrTag, MapCollectionToCollectionsData(collection));
-
+            
             return collection;
-
         }
 
         private GamePreview MapProjectToGamePreview(GameProject project)

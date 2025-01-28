@@ -30,18 +30,18 @@ namespace Examples.GamesCollections
 
         public void Open()
         {
-            Debug.Log("GAMES COLLECTION: OPEN: " + GetIdOrTag());
+            ConsoleUI.Instance.Log("GAMES COLLECTION: OPEN: " + GetIdOrTag());
             GP_GamesCollections.Open(GetIdOrTag(), OnOpen, OnClose);
         }
 
         public void Fetch()
         {
-            Debug.Log("GAMES COLLECTION: FETCH: " + GetIdOrTag());
+            ConsoleUI.Instance.Log("GAMES COLLECTION: FETCH: " + GetIdOrTag());
             GP_GamesCollections.Fetch(GetIdOrTag(), OnFetchSuccess, OnFetchError);
         }
 
-        private void OnOpen() => Debug.Log("GAMES COLLECTION: ON OPEN");
-        private void OnClose() => Debug.Log("GAMES COLLECTION: ON CLOSE");
+        private void OnOpen() => ConsoleUI.Instance.Log("GAMES COLLECTION: ON OPEN");
+        private void OnClose() => ConsoleUI.Instance.Log("GAMES COLLECTION: ON CLOSE");
 
         private void OnFetchSuccess(string idOrTag, GamesCollectionsData collection)
         {
@@ -61,7 +61,7 @@ namespace Examples.GamesCollections
             }
             ConsoleUI.Instance.Log(" ");
         }
-        private void OnFetchError() => Debug.Log("GAMES COLLECTION: FETCH ERROR");
+        private void OnFetchError() => ConsoleUI.Instance.Log("GAMES COLLECTION: FETCH ERROR");
 
     }
 }
