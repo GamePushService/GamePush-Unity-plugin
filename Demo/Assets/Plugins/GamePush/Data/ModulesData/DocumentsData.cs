@@ -2,7 +2,7 @@ namespace GamePush.Data
 {
     public class FetchDocumentInput
     {
-        public DocumentType Type { get; set; }
+        public string Type { get; set; }
         public DocumentFormat? Format { get; set; }
     }
 

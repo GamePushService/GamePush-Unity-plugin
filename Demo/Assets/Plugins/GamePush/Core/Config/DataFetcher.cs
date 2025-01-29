@@ -660,13 +660,13 @@ namespace GamePush.Core
 
         #region GameCollectionsFetchers
 
-        private const string FetchGamesCollection = "FetchGamesCollection";
-        public static async Task<FetchPlayerGamesCollectionOutput> FetchGameCollections(FetchPlayerGamesCollectionInput input)
+        private const string FetchGamesCollectionQuery = "FetchGamesCollection";
+        public static async Task<FetchPlayerGamesCollectionOutput> FetchGamesCollection(FetchPlayerGamesCollectionInput input)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             
-            Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
+            Query query = graphQL.FindQuery(FetchGamesCollectionQuery, FetchGamesCollectionQuery, OperationType.Query);
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
             
@@ -705,12 +705,16 @@ namespace GamePush.Core
 
         #region DocumentFetchers
 
+        private const string FetchDocumentQuery = "FetchDocument";
         public static async Task<DocumentData> FetchDocument(FetchDocumentInput input)
         {
+            Debug.Log("FetchDocument");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
+            Debug.Log(graphQL);
             
-            Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
+            Query query = graphQL.FindQuery(FetchDocumentQuery, FetchDocumentQuery, OperationType.Query);
+            Debug.Log(query);
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
             
@@ -718,11 +722,12 @@ namespace GamePush.Core
             {
                 { "input", queryTuple.Item2 },
                 { "lang", GetLang() },
-                { "formet", input.Format },
+                { "format", input.Format },
             };
 
-            // Debug.Log(JsonConvert.SerializeObject(variables));
-
+            Debug.Log(JsonConvert.SerializeObject(variables));
+            Debug.Log(queryTuple.Item1);
+            
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,
@@ -730,6 +735,8 @@ namespace GamePush.Core
             );
 
             JObject root = JObject.Parse(results);
+            Debug.Log(root.ToString());
+            
             JObject resultObject = (JObject)root["data"]?["result"];
 
             if (resultObject["__typename"]?.ToObject<string>() == "Problem")
@@ -738,9 +745,7 @@ namespace GamePush.Core
                 Logger.Error(error);
                 return null;
             }
-
-            Debug.Log(root.ToString());
-
+            
             DocumentData data = resultObject.ToObject<DocumentData>();
             return data;
         }

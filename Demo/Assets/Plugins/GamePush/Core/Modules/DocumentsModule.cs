@@ -17,8 +17,7 @@ namespace GamePush.Core
         public event Action OnFetchError;
         public async Task Open(DocumentType type = DocumentType.PLAYER_PRIVACY_POLICY)
         {
-            Logger.Log("Try open");
-            var fetchTask = Fetch(new FetchDocumentInput { Type = type });
+            var fetchTask = Fetch(new FetchDocumentInput { Type = type.ToString() });
             
             var document = await fetchTask;
 
@@ -35,10 +34,8 @@ namespace GamePush.Core
 
         public async Task<DocumentData> Fetch(FetchDocumentInput input = null)
         {
-            Logger.Log("Try fetch");
-            
             if (input == null)
-                input = new FetchDocumentInput { Type = DocumentType.PLAYER_PRIVACY_POLICY};
+                input = new FetchDocumentInput { Type = DocumentType.PLAYER_PRIVACY_POLICY.ToString()};
             
             var result = await DataFetcher.FetchDocument(input);
             if (result == null)

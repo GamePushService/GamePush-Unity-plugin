@@ -98,7 +98,7 @@ namespace GamePush.Core
 
             input.urlFrom = CoreSDK.App.AppLink() == null ? "" : CoreSDK.App.AppLink();
             
-            var result = await DataFetcher.FetchGameCollections(input);
+            var result = await DataFetcher.FetchGamesCollection(input);
             
             if (result == null)
                 return null;
