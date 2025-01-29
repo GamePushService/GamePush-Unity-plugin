@@ -16,6 +16,7 @@ namespace Examples.Documents
             _openButton.onClick.AddListener(Open);
             _fetchButton.onClick.AddListener(Fetch);
         }
+
         private void OnDisable()
         {
             _openButton.onClick.RemoveListener(Open);
@@ -23,11 +24,20 @@ namespace Examples.Documents
         }
 
 
-        public void Open() => GP_Documents.Open(OnOpen, OnClose);
+        public void Open()
+        {
+            ConsoleUI.Instance.Log("Open Document");
+            GP_Documents.Open(OnOpen, OnClose);
+        }
+
         private void OnOpen() => ConsoleUI.Instance.Log("On Documents: OPEN");
         private void OnClose() => ConsoleUI.Instance.Log("On Documents: CLOSE");
 
-        public void Fetch() => GP_Documents.Fetch(OnFetchSuccess, OnFetchError);
+        public void Fetch()
+        { 
+            ConsoleUI.Instance.Log("Fetch Document");
+            GP_Documents.Fetch(OnFetchSuccess, OnFetchError);
+        }
         private void OnFetchSuccess(string privacy) => ConsoleUI.Instance.Log(privacy);
         private void OnFetchError() => ConsoleUI.Instance.Log("Documents Fetch: ERROR");
     }

@@ -706,15 +706,12 @@ namespace GamePush.Core
         #region DocumentFetchers
 
         private const string FetchDocumentQuery = "FetchDocument";
-        public static async Task<DocumentData> FetchDocument(FetchDocumentInput input)
+        public static async Task<DocumentData> FetchDocument(FetchDocumentInput input, string Format)
         {
-            Debug.Log("FetchDocument");
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
-            Debug.Log(graphQL);
-            
+           
             Query query = graphQL.FindQuery(FetchDocumentQuery, FetchDocumentQuery, OperationType.Query);
-            Debug.Log(query);
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
             
@@ -722,32 +719,35 @@ namespace GamePush.Core
             {
                 { "input", queryTuple.Item2 },
                 { "lang", GetLang() },
-                { "format", input.Format },
+                { "format",Format },
             };
-
-            Debug.Log(JsonConvert.SerializeObject(variables));
-            Debug.Log(queryTuple.Item1);
             
-            string results = await graphQL.Send(
-                query.ToRequest(variables),
-                null,
-                Headers.GetHeaders(queryTuple.Item1)
-            );
-
-            JObject root = JObject.Parse(results);
-            Debug.Log(root.ToString());
-            
-            JObject resultObject = (JObject)root["data"]?["result"];
-
-            if (resultObject["__typename"]?.ToObject<string>() == "Problem")
+            try
             {
-                string error = resultObject["message"]?.ToObject<string>();
-                Logger.Error(error);
+                string results = await graphQL.Send(
+                    query.ToRequest(variables),
+                    null,
+                    Headers.GetHeaders(queryTuple.Item1)
+                );
+                JObject root = JObject.Parse(results);
+                
+                JObject resultObject = (JObject)root["data"]?["result"];
+
+                if (resultObject["__typename"]?.ToObject<string>() == "Problem")
+                {
+                    string error = resultObject["message"]?.ToObject<string>();
+                    Logger.Error(error);
+                    return null;
+                }
+
+                DocumentData data = resultObject.ToObject<DocumentData>();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex.Message);
                 return null;
             }
-            
-            DocumentData data = resultObject.ToObject<DocumentData>();
-            return data;
         }
 
 

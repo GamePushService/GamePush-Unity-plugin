@@ -295,7 +295,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3506797423808588970}
-  - component: {fileID: 9166713989796035363}
   - component: {fileID: 758641787740617129}
   - component: {fileID: 8419958219083969208}
   m_Layer: 5
@@ -326,21 +325,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 49.622437}
   m_SizeDelta: {x: 0, y: 99.2449}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &9166713989796035363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184431483843762713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9463af4a1f78b44f6aead437d72e75d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inviteDivider: {fileID: 0}
-  _shareRecord: {fileID: 0}
-  _shareButton: {fileID: 0}
 --- !u!222 &758641787740617129
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -558,6 +542,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5583611342520543018}
+  - component: {fileID: 5165776977554150920}
+  - component: {fileID: 3393219406184036168}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -580,11 +566,51 @@ RectTransform:
   - {fileID: 8872266591889965363}
   m_Father: {fileID: 931217080308471271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000015258789}
-  m_SizeDelta: {x: 0, y: 973.5224}
+  m_AnchoredPosition: {x: 20, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &5165776977554150920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392009370763887567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &3393219406184036168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392009370763887567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &4584730265376604276
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +622,7 @@ GameObject:
   - component: {fileID: 8872266591889965363}
   - component: {fileID: 9001461725446906038}
   - component: {fileID: 2570789464496023930}
+  - component: {fileID: 2687219086313621746}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -617,10 +644,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5583611342520543018}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -91.51474}
-  m_SizeDelta: {x: -40, y: 183.0295}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 545.8046, y: -0}
+  m_SizeDelta: {x: 1091.6094, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9001461725446906038
 CanvasRenderer:
@@ -650,57 +677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "1. General Provisions.\n1.1. This Privacy Policy (hereinafter referred
-    to as the \u201CPolicy\u201D) applies to all information that a individual (hereinafter
-    referred to as the \u201CDeveloper\u201D) can receive about the User during the
-    time of use of the\u201CTestGP in Unity\u201D computer game, owned by the Developer
-    and placed on specialized playgrounds (hereinafter referred to as the \u201CGame\u201D).\n\n1.2.
-    This Policy is applied by the Developer to all information about the User that
-    the Developer may receive during the use of the Game by the User.\n\n1.3. The
-    Developer is a client of GAMEPUSH FZCO, the owner of https://gamepush.com (hereinafter
-    referred to as the \u201CService\u201D), through which the Developer carries
-    out its direct activities. For this reason, the transfer of User\u2019s data
-    is possible only in cases established by applicable law and carried out on the
-    basis of a special agreement between the Developer and GAMEPUSH FZCO.\n\n1.4.
-    To ensure the capability of using the Game by the User, User information is collected,
-    used by the Developer and placed (stored) on the servers of GAMEPUSH FZCO, followed
-    by an automatic data request from the Service in the process of using the Game
-    and showing the results of the Game to the User. The User gives its express consent
-    to the above operations.\n\n1.5. The start of the use of the Game means the unconditional
-    consent of the User with this Policy and the conditions for processing information
-    about it and its device specified in it. In case of disagreement with these conditions,
-    the User should refrain from using the Game.\n\n1.6. The User is prohibited from
-    using the Game if it has not reached the legal age at which it has the right
-    to enter into agreements with the Developer. The Developer does not knowingly
-    collect personally identifiable information from children of any age. If the
-    Developer discovers that a child has provided it with personal information, such
-    information is immediately deleted from the servers of GAMEPUSH FZCO.\n\n2. Information
-    that the Developer collects (gets access) and processes:\n2.1. Information that
-    the User provides about itself independently in the process of data entry into
-    the forms located in the Game and the process of the Game, including data (including
-    personal: name (login); image (real or imaginary), as well as other data that
-    the User wishes to reflect about itself when filling out the forms posted in
-    the Game (if any).\n\n2.2. Mandatory information is marked with a special sign
-    \u201C*\u201D. Other information is provided by the User at its own discretion
-    (including in the process of using the Game).\n\n2.3. Details of errors occurring
-    in the Game.\n\n2.4. The Developer does not carry out a special collection or
-    request for other User personal data than those specified in clause 2.1. of this
-    Policy (including data on religious confession, nationality, marital status).
-    However, the Developer can use the User\u2019s personal information to maintain
-    communication with the User (for example, if the User sends a written message,
-    the Developer can use User personal information to respond to the request and/or
-    make a telephone call using the contacts specified in clause 5.1 of the Policy).\n\n2.5.
-    In general, the Developer does not verify the accuracy of personal information
-    provided by the User and does not exercise control over its legal capacity. However,
-    the Developer assumes that the User provides reliable and sufficient personal
-    information on the issues proposed in the forms posted in the Game, and keeps
-    this information up to date.\n\n2.6. No anonymized visitors\u2019 data (cookies
-    of User\u2019s device) collection and processing occurs in the Game.\n\n2.7.
-    The Developer uses Yandex.Metrica to analyze the traffic of the Game. The received
-    data is stored in Yandex LLC (16 Lev Tolstoy st., Moscow 119021 Russia).\n\n2.8.
-    This Policy is applied only to the Game. The Developer does not control and is
-    not responsible for third-party websites which the User can visit following any
-    links available in the Game.\n\n"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fc57296a764054d98b34becf5d93fa46, type: 2}
   m_sharedMaterial: {fileID: -8139458507419809818, guid: fc57296a764054d98b34becf5d93fa46, type: 2}
@@ -745,11 +722,11 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656b6b72616d
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -771,6 +748,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2687219086313621746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4584730265376604276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &4761727751573955575
 GameObject:
   m_ObjectHideFlags: 0
@@ -1044,8 +1035,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 362.23755, y: -69.855}
-  m_SizeDelta: {x: 650.7669, y: 88.263}
+  m_AnchoredPosition: {x: 349.47394, y: -74.061}
+  m_SizeDelta: {x: 633.7487, y: 96.675}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7629151126572427469
 CanvasRenderer:
@@ -1108,7 +1099,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1302,8 +1293,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7100911692918458755}
   m_HandleRect: {fileID: 6910520641977465503}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.790863
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1523,12 +1514,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6987444453350140711, guid: cdde2d1f7fa6f469498bd1ac0904d3e3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8970117993680720744}
+    - target: {fileID: 6987444453350140711, guid: cdde2d1f7fa6f469498bd1ac0904d3e3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Close
       objectReference: {fileID: 0}
     - target: {fileID: 6987444453350140711, guid: cdde2d1f7fa6f469498bd1ac0904d3e3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GamePush.UI.LeaderboardUI, GamePush.UI
+      value: GamePush.UI.DocumentUI, GamePush.UI
       objectReference: {fileID: 0}
     - target: {fileID: 8203524373256575513, guid: cdde2d1f7fa6f469498bd1ac0904d3e3, type: 3}
       propertyPath: m_Name

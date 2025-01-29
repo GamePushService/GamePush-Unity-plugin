@@ -36,7 +36,7 @@ namespace GamePush.UI
         private void SetUpPanel()
         {
             documentTitle.text = CoreSDK.Language.localization.documents.PLAYER_PRIVACY_POLICY.title;
-            documentBody.text = _documentData.Content;
+            documentBody.text = _documentData.content;
         }
         
         private IEnumerator MoveUp()

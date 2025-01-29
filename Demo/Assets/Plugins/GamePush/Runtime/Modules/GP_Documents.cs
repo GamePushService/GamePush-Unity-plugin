@@ -35,7 +35,7 @@ namespace GamePush
         {
             CoreSDK.Documents.OnDocumentsOpen += CallOnDocumentsOpen;
             CoreSDK.Documents.OnDocumentsClose += CallOnDocumentsClose;
-            CoreSDK.Documents.OnFetchSuccess += (DocumentData data) => CallOnDocumentsFetchSuccess(data.Content);
+            CoreSDK.Documents.OnFetchSuccess += (DocumentData data) => CallOnDocumentsFetchSuccess(data.content);
             CoreSDK.Documents.OnFetchError += CallOnDocumentsFetchError;
         }
 

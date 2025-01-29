@@ -17,13 +17,14 @@ namespace GamePush.Core
         public event Action OnFetchError;
         public async Task Open(DocumentType type = DocumentType.PLAYER_PRIVACY_POLICY)
         {
-            var fetchTask = Fetch(new FetchDocumentInput { Type = type.ToString() });
+            var fetchTask = Fetch(DocumentFormat.HTML, type);
             
             var document = await fetchTask;
-
+            
             if (document != null)
             {
                 document.Format = DocumentFormat.HTML;
+                document.content = ParseHTML(document.content);
                 OnShowDocument?.Invoke(document, OnDocumentsOpen, OnDocumentsClose);
             }
             else
@@ -32,23 +33,43 @@ namespace GamePush.Core
             }
         }
 
-        public async Task<DocumentData> Fetch(FetchDocumentInput input = null)
+        public async Task<DocumentData> Fetch(DocumentFormat format = DocumentFormat.HTML, DocumentType type = DocumentType.PLAYER_PRIVACY_POLICY)
         {
-            if (input == null)
-                input = new FetchDocumentInput { Type = DocumentType.PLAYER_PRIVACY_POLICY.ToString()};
-            
-            var result = await DataFetcher.FetchDocument(input);
+            FetchDocumentInput input = new FetchDocumentInput
+                {
+                    type = type.ToString(),
+                };
+
+            var result = await DataFetcher.FetchDocument(input, format.ToString());
             if (result == null)
             {
                 Logger.Error("Can't fetch privacy policy");
                 OnFetchError?.Invoke();
             }
 
-            result.Format = input.Format ?? DocumentFormat.HTML;
+            result.Format = format;
             
             OnFetchSuccess?.Invoke(result);
 
             return result;
+        }
+        
+        string ParseHTML(string html)
+        {
+            html = html.Replace("<h1>", "<size=50><b>");
+            html = html.Replace("</h1>", "</b></size>");
+
+            html = html.Replace("<h2>", "<size=45><b>");
+            html = html.Replace("</h2>", "</b></size>");
+            
+            html = html.Replace("<h3>", "<size=40><b>");
+            html = html.Replace("</h3>", "</b></size>");
+
+            html = html.Replace("<p>", "<size=30>");
+            html = html.Replace("</p>", "</size>\n");
+
+            html += "\n\n\n";
+            return html;
         }
     }
 }

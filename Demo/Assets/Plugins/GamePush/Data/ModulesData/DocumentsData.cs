@@ -2,8 +2,8 @@ namespace GamePush.Data
 {
     public class FetchDocumentInput
     {
-        public string Type { get; set; }
-        public DocumentFormat? Format { get; set; }
+        public string type { get; set; }
+        // public string? Format { get; set; }
     }
 
     public enum DocumentFormat
@@ -20,8 +20,8 @@ namespace GamePush.Data
 
     public class DocumentData
     {
-        public string Type { get; set; }
-        public string Content { get; set; }
+        public string type { get; set; }
+        public string content { get; set; }
         public DocumentFormat Format { get; set; }
     }
 }
