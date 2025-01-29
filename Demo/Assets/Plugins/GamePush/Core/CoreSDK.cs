@@ -124,6 +124,7 @@ namespace GamePush
             Achievements = new AchievementsModule();
             Analytics = new AnalyticsModule();
             GameCollections = new GameCollectionsModule();
+            Documents = new DocumentsModule();
 
             Payments = new PaymentsModule();
             Socials = new SocialsModule();

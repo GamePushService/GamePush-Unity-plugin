@@ -1,0 +1,12 @@
+query FetchDocument($input: FetchPlayerDocumentInput!, $lang: Lang, $format: DocumentFormat) {
+  result: FetchPlayerDocument(input: $input) {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on Document {
+      type
+      content(lang: $lang, format: $format)
+    }
+  }
+}

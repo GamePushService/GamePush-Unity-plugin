@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using GamePush.ConsoleController;
+using GamePush.Data;
 
 namespace GamePush
 {
@@ -29,6 +30,14 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_Documents_Fetch();
 #endif
+
+        private void OnEnable()
+        {
+            CoreSDK.Documents.OnDocumentsOpen += CallOnDocumentsOpen;
+            CoreSDK.Documents.OnDocumentsClose += CallOnDocumentsClose;
+            CoreSDK.Documents.OnFetchSuccess += (DocumentData data) => CallOnDocumentsFetchSuccess(data.Content);
+            CoreSDK.Documents.OnFetchError += CallOnDocumentsFetchError;
+        }
 
         public static void Open(Action onDocumentsOpen = null, Action onDocumentsClose = null)
         {

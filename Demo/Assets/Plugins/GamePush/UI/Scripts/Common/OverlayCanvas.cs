@@ -24,6 +24,8 @@ namespace GamePush.UI
         private ModuleUI achievements;
         [SerializeField]
         private ModuleUI gamesCollection;
+        [SerializeField]
+        private ModuleUI document;
 
         [Space]
         [Header("[ Notification UI ]")]
@@ -56,6 +58,7 @@ namespace GamePush.UI
             CoreSDK.Achievements.OnShowAcievementProgress += SetProgressAchievement;
 
             CoreSDK.GameCollections.OnShowGamesCollection += OpenGamesCollection;
+            CoreSDK.Documents.OnShowDocument += OpenDocument;
         }
         
         private void OnDisable()
@@ -110,6 +113,13 @@ namespace GamePush.UI
         {
             GamesCollectionUI gamesCollectionUI = (GamesCollectionUI)CreateUITable(gamesCollection); 
             gamesCollectionUI.Show(collection, onCollectionOpen, onCollectionClose);
+        }
+        
+        private void OpenDocument(DocumentData documentData, Action onDocumentOpen = null,
+            Action onDocumentClose = null)
+        {
+            DocumentUI documentUI = (DocumentUI)CreateUITable(document);
+            documentUI.Show(documentData, onDocumentOpen, onDocumentClose);
         }
 
         #endregion

@@ -117,7 +117,8 @@ namespace GamePush.Core
                 null, Headers.GetHeaders(queryTuple.Item1)
             );
 
-            if (results == "" || results == null) return null;
+            if (string.IsNullOrEmpty(results)) 
+                return null;
 
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
@@ -152,7 +153,8 @@ namespace GamePush.Core
                 Headers.GetHeaders(queryTuple.Item1)
             );
 
-            if (results == "" || results == null) return null;
+            if (string.IsNullOrEmpty(results)) 
+                return null;
 
             JObject root = JObject.Parse(results);
             if ((JObject)root["data"].ToObject<object>() == null)
@@ -665,10 +667,8 @@ namespace GamePush.Core
             var graphQL = new GraphQLClient(config);
             
             Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
-            // Debug.Log(query.ToString());
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
-            // Debug.Log(queryTuple.Item1);
             
             Dictionary<string, object> variables = new Dictionary<string, object>
             {
@@ -677,7 +677,51 @@ namespace GamePush.Core
                 { "url", input.urlFrom}
             };
 
-            Debug.Log(JsonConvert.SerializeObject(variables));
+            // Debug.Log(JsonConvert.SerializeObject(variables));
+
+            string results = await graphQL.Send(
+                query.ToRequest(variables),
+                null,
+                Headers.GetHeaders(queryTuple.Item1)
+            );
+
+            JObject root = JObject.Parse(results);
+            JObject resultObject = (JObject)root["data"]?["result"];
+
+            if (resultObject["__typename"]?.ToObject<string>() == "Problem")
+            {
+                string error = resultObject["message"]?.ToObject<string>();
+                Logger.Error(error);
+                return null;
+            }
+
+            // Debug.Log(root.ToString());
+
+            FetchPlayerGamesCollectionOutput data = resultObject.ToObject<FetchPlayerGamesCollectionOutput>();
+            return data;
+        }
+
+        #endregion
+
+        #region DocumentFetchers
+
+        public static async Task<DocumentData> FetchDocument(FetchDocumentInput input)
+        {
+            GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
+            var graphQL = new GraphQLClient(config);
+            
+            Query query = graphQL.FindQuery(FetchGamesCollection, FetchGamesCollection, OperationType.Query);
+            
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+            
+            Dictionary<string, object> variables = new Dictionary<string, object>
+            {
+                { "input", queryTuple.Item2 },
+                { "lang", GetLang() },
+                { "formet", input.Format },
+            };
+
+            // Debug.Log(JsonConvert.SerializeObject(variables));
 
             string results = await graphQL.Send(
                 query.ToRequest(variables),
@@ -697,9 +741,10 @@ namespace GamePush.Core
 
             Debug.Log(root.ToString());
 
-            FetchPlayerGamesCollectionOutput data = resultObject.ToObject<FetchPlayerGamesCollectionOutput>();
+            DocumentData data = resultObject.ToObject<DocumentData>();
             return data;
         }
+
 
         #endregion
 
