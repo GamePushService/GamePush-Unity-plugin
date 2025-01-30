@@ -291,15 +291,5 @@ namespace GamePush.Tools
     }
 
 
-    [System.Serializable]
-    public class PlayersIdList
-    {
-        public List<int> idsList;
-    }
-
-    [System.Serializable]
-    public class PlayersIdArray
-    {
-        public int[] idsArray;
-    }
+    
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GamePush.Data;
 
 namespace GamePush
 {
@@ -151,16 +152,85 @@ namespace GamePush
         public string value; // string | number
         public string name;
     }
-
-    //[Serializable]
-    //public class PlayerPurchase
-    //{
-    //    public int productId;
-    //    public string payload;
-    //    public bool gift;
-    //    public bool subscribed;
-    //    public string createdAt;
-    //    public string expiredAt;
-    //}
     
+    public class PlayerState
+    {
+        public int Id { get; set; }
+        public bool Active { get; set; }
+        public bool Removed { get; set; }
+        public bool Test { get; set; }
+        public string Name { get; set; }
+        public string Avatar { get; set; }
+        public int Score { get; set; }
+        public string? SecretCode { get; set; }
+
+        // Для хранения дополнительных данных с динамическими ключами
+        public Dictionary<string, object> AdditionalProperties { get; set; } = new();
+    }
+
+    public class PlayerOutput
+    {
+        public PlayerState State { get; set; }
+        public PlayerStats Stats { get; set; }
+        public List<PlayerAchievement> AchievementsList { get; set; } = new();
+        public List<PlayerPurchase> PurchasesListV2 { get; set; } = new();
+        public List<PlayerReward> Rewards { get; set; } = new();
+        // public List<PlayerTrigger> Triggers { get; set; } = new();
+        public string Token { get; set; }
+        public string FirstReqHash { get; set; }
+        public string SessionStart { get; set; }
+        // public List<PlayerScheduler> PlayerSchedulers { get; set; } = new();
+
+        public RewardsData RewardsData { get; set; }
+        // public List<PlayerEvent> PlayerEvents { get; set; } = new();
+        // public List<PlayerExperiment> Experiments { get; set; } = new();
+        public List<string> Segments { get; set; } = new();
+        public List<string> NewSegments { get; set; } = new();
+        public List<string> LeftSegments { get; set; } = new();
+         public List<UniquesData> Uniques { get; set; } = new();
+        public string ServerTime { get; set; }
+    }
+
+    public class RewardsData
+    {
+        public List<string> ActivatedTriggersNow { get; set; } = new();
+        public List<string> ClaimedTriggersNow { get; set; } = new();
+        // public List<ClaimSchedulerDayOutput> ClaimedSchedulersDaysNow { get; set; } = new();
+        public List<int> GivenAchievements { get; set; } = new();
+        public List<int> GivenRewards { get; set; } = new();
+        public List<int> GivenProducts { get; set; } = new();
+    }
+    
+    // public class PlayerEvents
+    // {
+    //     public object? Change { get; set; }
+    //     public bool Sync { get; set; }
+    //     public bool Load { get; set; }
+    //     public bool Login { get; set; }
+    //     public bool Logout { get; set; }
+    //     public bool FetchFields { get; set; }
+    //     public bool CheckUnique { get; set; }
+    //     public bool RegisterUnique { get; set; }
+    //
+    //     // В TypeScript `void` означает отсутствие данных, в C# можно использовать `Action`
+    //     public Action? Ready { get; set; }
+    //     public Action? SyncBefore { get; set; }
+    //
+    //     public FieldIncrementEvent? FieldIncrement { get; set; }
+    //     public FieldEvent? FieldMaximum { get; set; }
+    //     public FieldEvent? FieldMinimum { get; set; }
+    // }
+
+    public class FieldIncrementEvent
+    {
+        public PlayerField Field { get; set; }
+        public int OldValue { get; set; }
+        public int NewValue { get; set; }
+    }
+
+    public class FieldEvent
+    {
+        public PlayerField Field { get; set; }
+    }
+
 }

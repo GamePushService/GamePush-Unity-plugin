@@ -20,7 +20,7 @@ namespace GamePush.Core
 
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";
-        private static string _syncPlayerQueryName = "SyncPlayer";
+        private static string SyncPlayerQueryName = "SyncPlayer";
         private static string _fetchPlayerFieldsQueryName = "FetchPlayerFields";
         private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
         private static string _consumeProductQueryName = "ConsumePlayerPurchase";
@@ -44,7 +44,7 @@ namespace GamePush.Core
             return webRequest;
         }
 
-        private static string GetLang()
+        public static string GetLang()
         {
             string lang;
             if (CoreSDK.Language != null)
@@ -60,34 +60,30 @@ namespace GamePush.Core
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(queryName, _resultOperation, operationType);
+            Query query = graphQL.FindQuery(queryName, queryName, operationType);
             return query;
         }
 
-        private static async Task<JObject> SendQueryRequest(string queryName, OperationType operationType, object input, bool withToken)
+        public static async Task<JObject> SendQueryRequest(Query query, string headers, Dictionary<string, object> variables)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(queryName, "result", operationType);
-
-            Tuple<string, object> queryTuple = Hash.SingQuery(input);
-
-            Dictionary<string, object> variables = new Dictionary<string, object>();
-
-            variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", GetLang());
-            variables.Add("withToken", withToken);
-
+            
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,
-                Headers.GetHeaders(queryTuple.Item1)
+                Headers.GetHeaders(headers)
             );
 
-            if (results == "" || results == null) return null;
+            if (string.IsNullOrEmpty(results)) 
+                return null;
 
             JObject root = JObject.Parse(results);
-            Debug.Log(root.ToString());
+            return root;
+        }
+
+        private static JObject RootToResult(JObject root)
+        {
             if ((JObject)root["data"].ToObject<object>() == null)
             {
                 string error = root["errors"][0]["message"].ToObject<string>();
@@ -140,11 +136,10 @@ namespace GamePush.Core
             Query query = graphQL.FindQuery(_getPlayerQueryName, "result", OperationType.Query);
 
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
-
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             variables.Add("input", queryTuple.Item2);
-            variables.Add("lang", "EN");
+            variables.Add("lang", GetLang());
             variables.Add("withToken", withToken);
 
             string results = await graphQL.Send(
@@ -169,10 +164,19 @@ namespace GamePush.Core
 
         public static async Task<JObject> SyncPlayer(SyncPlayerInput input, bool withToken)
         {
-            JObject resultObject = await SendQueryRequest(_syncPlayerQueryName, OperationType.Mutation, input, withToken);
+            Query query = GetQuery(SyncPlayerQueryName, OperationType.Mutation);
+            
+            Tuple<string, object> queryTuple = Hash.SingQuery(input);
+            string headers = queryTuple.Item1;
+            Dictionary<string, object> variables = new Dictionary<string, object>
+            {
+                { "input", queryTuple.Item2 },
+                { "lang", GetLang() },
+                { "withToken", withToken }
+            };
 
-            //Debug.Log("Sync result");
-            //Debug.Log(resultObject["uniques"].ToString());
+            JObject root = await SendQueryRequest(query, headers, variables);
+            JObject resultObject = RootToResult(root);
 
             return resultObject;
         }
@@ -749,8 +753,6 @@ namespace GamePush.Core
                 return null;
             }
         }
-
-
         #endregion
 
         #region PurchaseFetchers

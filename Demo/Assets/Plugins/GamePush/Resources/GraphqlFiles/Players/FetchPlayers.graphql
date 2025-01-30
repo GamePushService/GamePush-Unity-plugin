@@ -1,0 +1,22 @@
+fragment ProblemFields on Problem {
+  message
+}
+
+fragment PlayersListFields on FullPlayersList {
+  players {
+    state
+    isOnline
+  }
+}
+
+query FetchPlayers($input: PlayerFetchPlayersInput!) {
+  result: PlayerFetchPlayers(input: $input) {
+    __typename
+    ... on Problem {
+      ...ProblemFields
+    }
+    ... on FullPlayersList {
+      ...PlayersListFields
+    }
+  }
+}

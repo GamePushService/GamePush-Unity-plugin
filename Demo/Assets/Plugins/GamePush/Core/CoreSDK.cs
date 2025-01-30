@@ -41,6 +41,7 @@ namespace GamePush
         public static AnalyticsModule Analytics;
         public static DocumentsModule Documents;
         public static GameCollectionsModule GameCollections;
+        public static PlayersModule Players;
 
         #endregion
 
@@ -125,6 +126,7 @@ namespace GamePush
             Analytics = new AnalyticsModule();
             GameCollections = new GameCollectionsModule();
             Documents = new DocumentsModule();
+            Players = new PlayersModule();
 
             Payments = new PaymentsModule();
             Socials = new SocialsModule();
