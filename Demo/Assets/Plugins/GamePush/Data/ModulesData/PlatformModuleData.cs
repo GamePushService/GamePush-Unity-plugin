@@ -40,6 +40,7 @@ namespace GamePush
         CUSTOM_ANDROID,
         FOTOSTRANA,
         Y8,
+        BEELINE,
         PARTNER
     }
 
@@ -73,7 +74,9 @@ namespace GamePush
         public const string CUSTOM_ANDROID = "CUSTOM_ANDROID";
         public const string FOTOSTRANA = "FOTOSTRANA";
         public const string Y8 = "Y8";
+        public const string BEELINE = "BEELINE";
         public const string PARTNER = "PARTNER";
+        
 
 
         public static Platform ConvertToEnum(string platform)
@@ -107,6 +110,7 @@ namespace GamePush
                 CUSTOM_ANDROID => Platform.CUSTOM_ANDROID,
                 FOTOSTRANA => Platform.FOTOSTRANA,
                 Y8 => Platform.Y8,
+                BEELINE => Platform.BEELINE,
                 PARTNER => Platform.PARTNER,
                 _ => Platform.NONE
             };
