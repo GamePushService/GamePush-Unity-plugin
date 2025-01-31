@@ -15,7 +15,15 @@ namespace GamePush
         public static event UnityAction<PlayerEvents> OnEventJoin;
         public static event UnityAction<string> OnEventJoinError;
 
-        private void CallOnEventJoin(string eventData) { OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData)); }
+        private void CallOnEventJoinData(PlayerEvents eventData)
+        {
+            OnEventJoin?.Invoke(eventData);
+        }
+
+        private void CallOnEventJoin(string eventData)
+        {
+            OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData));
+        }
         private void CallOnEventJoinError(string error) { OnEventJoinError?.Invoke(error); }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -33,13 +41,19 @@ namespace GamePush
         private static extern string GP_Events_IsJoined(string idOrTag);
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.Events.OnEventJoin += CallOnEventJoinData;
+            CoreSDK.Events.OnEventJoinError += CallOnEventJoinError;
+        }
+
         public static void Join(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Events_Join(idOrTag);
 #else
 
-            ConsoleLog("Join");
+            CoreSDK.Events.Join(idOrTag);
 #endif
         }
 
@@ -47,12 +61,9 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string eventsData = GP_Events_List();
-            return UtilityJSON.GetArray<EventData>(eventsData );
+            return UtilityJSON.GetArray<EventData>(eventsData);
 #else
-
-            ConsoleLog("LIST");
-
-            return null;
+            return CoreSDK.Events.List();
 #endif
         }
 
@@ -62,10 +73,7 @@ namespace GamePush
             string activeEvents = GP_Events_ActiveList();
             return UtilityJSON.GetArray<PlayerEvents>(activeEvents);
 #else
-
-            ConsoleLog("Active List");
-
-            return null;
+            return CoreSDK.Events.ActiveList();
 #endif
         }
 
@@ -75,10 +83,7 @@ namespace GamePush
             string data = GP_Events_GetEvent(idOrTag);
             return UtilityJSON.Get<EventData>(data);
 #else
-
-            ConsoleLog("Get Event");
-
-            return null;
+            return CoreSDK.Events.GetEvent(idOrTag);
 #endif
         }
 
@@ -87,8 +92,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Events_IsActive(idOrTag) == "true";
 #else
-            ConsoleLog("IsActive");
-            return false;
+            return CoreSDK.Events.IsActive(idOrTag);
 #endif
         }
 
@@ -97,8 +101,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Events_IsJoined(idOrTag) == "true";
 #else
-            ConsoleLog("IsJoined");
-            return false;
+            return CoreSDK.Events.IsJoined(idOrTag);
 #endif
         }
 
