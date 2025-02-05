@@ -71,6 +71,16 @@ namespace GamePush.Core
             CoreSDK.Language.OnChangeLanguage += RenameOnLanguageChange;
         }
 
+        public Achievement GetAchievement(int id)
+        {
+            return _achievementsMapID[id];
+        }
+        
+        public Achievement GetAchievement(string tag)
+        {
+            return _achievementsMapTag[tag];
+        }
+
         public void UnlockAchievements(IEnumerable<int> ids)
         {
             foreach (var id in ids)
@@ -396,5 +406,7 @@ namespace GamePush.Core
 
             return 0;
         }
+
+       
     }
 }

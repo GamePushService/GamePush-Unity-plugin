@@ -174,23 +174,6 @@ query result($lang: Lang) {
                 period
                 trialPeriod
                 yandexId
-
-                names {
-                    ...translations
-                }
-                descriptions {
-                    ...translations
-                }
-            }
-            products {
-                id
-                icon
-                tag
-                price
-                isSubscription
-                period
-                trialPeriod
-                yandexId
                 xsollaId
                 currency
                 currencySymbol

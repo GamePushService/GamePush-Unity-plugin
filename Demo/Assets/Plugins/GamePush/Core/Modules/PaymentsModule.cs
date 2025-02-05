@@ -17,9 +17,9 @@ namespace GamePush.Core
 
         private PaymentsConfig paymentsConfig;
 
-        private List<Product> _allProducts;
-        private Dictionary<int, Product> _allProductsWithId;
-        private Dictionary<string, Product> _allProductsWithTag;
+        private List<ProductData> _allProducts;
+        private Dictionary<int, ProductData> _allProductsWithId;
+        private Dictionary<string, ProductData> _allProductsWithTag;
 
         private List<FetchProduct> _fetchProducts;
         private Dictionary<int, FetchProduct> _fetchProductsWithId;
@@ -40,18 +40,18 @@ namespace GamePush.Core
         public event Action OnUnsubscribeError;
 
 
-        public void Init(List<Product> products, PlatformConfig platformConfig)
+        public void Init(List<ProductData> products, PlatformConfig platformConfig)
         {
             paymentsConfig = platformConfig.paymentsConfig;
             SetAvailables();
 
-            _allProducts = new List<Product>();
-            _allProductsWithId = new Dictionary<int, Product>();
-            _allProductsWithTag = new Dictionary<string, Product>();
+            _allProducts = new List<ProductData>();
+            _allProductsWithId = new Dictionary<int, ProductData>();
+            _allProductsWithTag = new Dictionary<string, ProductData>();
             _fetchProducts = new List<FetchProduct>();
             _fetchProductsWithId = new Dictionary<int, FetchProduct>();
 
-            foreach (Product product in products)
+            foreach (ProductData product in products)
             {
                 _allProducts.Add(product);
                 _allProductsWithId.Add(product.id, product);
@@ -62,6 +62,16 @@ namespace GamePush.Core
                 _fetchProductsWithId.Add(product.id, fetchProduct);
             }
         }
+        
+        public ProductData GetProduct(int id)
+        {
+            return new ProductData();
+        }
+        
+        public ProductData GetProduct(string id)
+        {
+            return new ProductData();
+        }
 
         private void SetAvailables()
         {
@@ -69,14 +79,14 @@ namespace GamePush.Core
             isSubscriptionAvailable = paymentsConfig.id != "";
         }
 
-        private FetchProduct ProductToFetchProduct(Product product)
+        private FetchProduct ProductToFetchProduct(ProductData productData)
         {
             string lang = CoreSDK.currentLang;
 
-            FetchProduct fetchProduct = new FetchProduct(product);
+            FetchProduct fetchProduct = new FetchProduct(productData);
 
-            fetchProduct.name = product.names[lang];
-            fetchProduct.description = product.descriptions[lang];
+            fetchProduct.name = productData.names[lang];
+            fetchProduct.description = productData.descriptions[lang];
 
             return fetchProduct;
         }
@@ -116,6 +126,8 @@ namespace GamePush.Core
             onPurchaseError?.Invoke();
 #endif
         }
+
+       
 
         public void FetchPlayerPurchases()
         {

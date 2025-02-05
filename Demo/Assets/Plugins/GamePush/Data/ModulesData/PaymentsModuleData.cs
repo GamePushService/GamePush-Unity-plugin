@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePush
 {
     [Serializable]
-    public class Product
+    public class ProductData
     {
         public int id;
         public string icon;
@@ -39,18 +40,18 @@ namespace GamePush
         public int trialPeriod;
 
         public FetchProduct() { }
-        public FetchProduct(Product product)
+        public FetchProduct(ProductData productData)
         {
-            id = product.id;
-            tag = product.tag;
-            icon = product.icon;
-            iconSmall = product.icon;
-            price = product.price;
-            currency = product.currency;
-            currencySymbol = product.currencySymbol;
-            isSubscription = product.isSubscription;
-            period = product.period;
-            trialPeriod = product.trialPeriod;
+            id = productData.id;
+            tag = productData.tag;
+            icon = productData.icon;
+            iconSmall = productData.icon;
+            price = productData.price;
+            currency = productData.currency;
+            currencySymbol = productData.currencySymbol;
+            isSubscription = productData.isSubscription;
+            period = productData.period;
+            trialPeriod = productData.trialPeriod;
         }
     }
 
@@ -105,7 +106,7 @@ namespace GamePush
     [Serializable]
     public class PurchaseOutput
     {
-        public Product product;
+        [FormerlySerializedAs("product")] public ProductData productData;
         public PlayerPurchase purchase;
     }
 }

@@ -83,8 +83,8 @@ namespace Examples.Events
 
         public void ActiveList()
         {
-            PlayerEvents[] playerEvents = GP_Events.ActiveList();
-            foreach (PlayerEvents playerEvent in playerEvents)
+            PlayerEvent[] playerEvents = GP_Events.ActiveList();
+            foreach (PlayerEvent playerEvent in playerEvents)
             {
                 ConsoleUI.Instance.Log("ID: " + playerEvent.eventId);
                 ConsoleUI.Instance.Log("Active Days: " + playerEvent.stats.activeDays);
@@ -132,9 +132,9 @@ namespace Examples.Events
             ConsoleUI.Instance.Log(" ");
         }
 
-        public void OnJoin(PlayerEvents Event)
+        public void OnJoin(PlayerEvent @event)
         {
-            ConsoleUI.Instance.Log("Join event: " + JsonUtility.ToJson(Event));
+            ConsoleUI.Instance.Log("Join event: " + JsonUtility.ToJson(@event));
             ConsoleUI.Instance.Log(" ");
         }
 

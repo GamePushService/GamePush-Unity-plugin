@@ -17,6 +17,9 @@ namespace GamePush.Core
         private const string API_URL = "https://api.gamepush.com/gs/api";
         private const string ConfigName = "GP_GraphQL";
         private static string _resultOperation = "result";
+        
+        public static PlayersFetchers Players = new PlayersFetchers();
+        public static EventsFetchers Events = new EventsFetchers();
 
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";

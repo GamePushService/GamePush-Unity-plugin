@@ -43,6 +43,7 @@ namespace GamePush
         public static GameCollectionsModule GameCollections;
         public static PlayersModule Players;
         public static EventsModule Events;
+        public static RewardsModule Rewards;
 
         #endregion
 
@@ -164,6 +165,7 @@ namespace GamePush
             Socials.Init(configData.config);
             Uniques.Init();
             Achievements.Init(configData);
+            Events.Init(configData.events);
         }
         
         public static async Task FetchEditorConfig()

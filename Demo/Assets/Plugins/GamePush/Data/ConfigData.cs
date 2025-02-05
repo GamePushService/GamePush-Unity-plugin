@@ -17,9 +17,11 @@ namespace GamePush.Data
         public PlatformConfig platformConfig;
         public List<PlayerField> playerFields;
         public List<GameVariableConfigData> gameVariables;
-        public List<Product> products;
+        public List<ProductData> products;
         public List<Achievement> achievements;
         public List<AchievementsGroup> achievementsGroups;
+        public List<EventData> events;
+        public List<RewardData> rewards;
         public string serverTime;
     }
 

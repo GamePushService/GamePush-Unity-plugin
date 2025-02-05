@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,17 +13,17 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Events);
 
-        public static event UnityAction<PlayerEvents> OnEventJoin;
+        public static event UnityAction<PlayerEvent> OnEventJoin;
         public static event UnityAction<string> OnEventJoinError;
 
-        private void CallOnEventJoinData(PlayerEvents eventData)
+        private void CallOnEventJoinData(PlayerEvent eventData)
         {
             OnEventJoin?.Invoke(eventData);
         }
 
         private void CallOnEventJoin(string eventData)
         {
-            OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData));
+            OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvent>(eventData));
         }
         private void CallOnEventJoinError(string error) { OnEventJoinError?.Invoke(error); }
 
@@ -56,6 +57,17 @@ namespace GamePush
             CoreSDK.Events.Join(idOrTag);
 #endif
         }
+        
+//         public static async Task<PlayerEventInfo> Join(string idOrTag)
+//         {
+// #if !UNITY_EDITOR && UNITY_WEBGL
+//             return null;
+// #else
+//
+//             PlayerEventInfo info = await CoreSDK.Events.Join(idOrTag);
+//             return info;
+// #endif
+//         }
 
         public static EventData[] List()
         {
@@ -67,7 +79,7 @@ namespace GamePush
 #endif
         }
 
-        public static PlayerEvents[] ActiveList()
+        public static PlayerEvent[] ActiveList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string activeEvents = GP_Events_ActiveList();
@@ -83,7 +95,7 @@ namespace GamePush
             string data = GP_Events_GetEvent(idOrTag);
             return UtilityJSON.Get<EventData>(data);
 #else
-            return CoreSDK.Events.GetEvent(idOrTag);
+            return CoreSDK.Events.GetEvent(idOrTag).Event;
 #endif
         }
 

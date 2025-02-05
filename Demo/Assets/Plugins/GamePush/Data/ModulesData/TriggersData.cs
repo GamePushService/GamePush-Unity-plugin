@@ -32,7 +32,7 @@ namespace GamePush
     public class TriggerBonus
     {
         public string type;
-        public string id;
+        public int id;
     }
 
     [System.Serializable]
