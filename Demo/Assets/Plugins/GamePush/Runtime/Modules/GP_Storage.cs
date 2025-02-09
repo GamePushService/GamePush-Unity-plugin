@@ -78,6 +78,7 @@ namespace GamePush
 #endif
         }
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         private static void StorageSetValue<T>(string key, T value) where T : IConvertible
         {
             var result = value.GetTypeCode() switch
@@ -90,6 +91,19 @@ namespace GamePush
             };
 
         }
+        
+         private static void StorageSetGlobalValue<T>(string key, T value)
+        {
+            var result = value.GetTypeCode() switch
+            {
+                TypeCode.Boolean => GP_StorageSetGlobalBool(key, value.ToBoolean(null)),
+                TypeCode.Int32 => GP_StorageSetGlobalNumber(key, value.ToInt32(null)),
+                TypeCode.Single => GP_StorageSetGlobalNumber(key, value.ToSingle(null)),
+                TypeCode.String => GP_StorageSetGlobalString(key, value.ToString()),
+                _ => throw new InvalidOperationException($"Unsupported type: {typeof(T)}")
+            };
+        }
+#endif
 
 
         public static void GetGlobal(string key, Action<object> onGetGlobalValue)
@@ -105,42 +119,18 @@ namespace GamePush
         }
 
 
-        public static void SetGlobal(string key, object value, Action<StorageField> onSetGlobalValue = null)
+        public static void SetGlobal<T>(string key, T value, Action<StorageField> onSetGlobalValue = null)
         {
             _onSetGlobalValue = onSetGlobalValue;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            StorageSetGlobalValue(key, value);
+            StorageSetGlobalValue<T>(key, value);
 #else
             ConsoleLog($"SET GLOBAL: KEY: {key}, VALUE: {value}");
             SetPref(key, value);
 #endif
         }
 
-        private static void StorageSetGlobalValue(string key, object value)
-        {
-            if (value.GetType() == typeof(int))
-            {
-                GP_StorageSetGlobalNumber(key, (int)value);
-                return;
-            }
-            if (value.GetType() == typeof(float))
-            {
-                GP_StorageSetGlobalNumber(key, (float)value);
-                return;
-            }
-            if (value.GetType() == typeof(bool))
-            {
-                GP_StorageSetGlobalBool(key, (bool)value);
-                return;
-            }
-            if (value.GetType() == typeof(string))
-            {
-                GP_StorageSetGlobalString(key, (string)value);
-                return;
-            }
-            GP_StorageSetGlobalString(key, (string)value);
-
-        }
+       
 
         private static T GetPref<T>(string key)
         {
