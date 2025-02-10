@@ -327,6 +327,9 @@ namespace GamePush.Core
             //Set achievements
             List<PlayerAchievement> achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
             CoreSDK.Achievements.SetAchievementsList(achievements);
+            
+            List<PlayerEvent> playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
+            CoreSDK.Events.SetPlayerEvents(playerEvents);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)

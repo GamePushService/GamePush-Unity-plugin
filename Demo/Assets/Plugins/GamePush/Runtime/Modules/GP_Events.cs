@@ -58,6 +58,12 @@ namespace GamePush
 #endif
         }
         
+        public static async Task<PlayerEventInfo> JoinAsync(string idOrTag)
+        {
+            PlayerEventInfo info = await CoreSDK.Events.Join(idOrTag);
+            return info;
+        }
+        
 //         public static async Task<PlayerEventInfo> Join(string idOrTag)
 //         {
 // #if !UNITY_EDITOR && UNITY_WEBGL

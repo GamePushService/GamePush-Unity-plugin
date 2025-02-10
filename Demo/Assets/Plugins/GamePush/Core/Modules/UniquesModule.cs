@@ -69,7 +69,7 @@ namespace GamePush.Core
         {
             UniquesData data = new UniquesData(tag, value);
 
-            TagValueData result = await DataFetcher.CheckUniqueValue(data, false);
+            TagValueData result = await DataFetcher.Uniques.CheckUniqueValue(data, false);
             if (result.tag == ERROR_TAG)
                 OnUniqueValueCheckError?.Invoke(result.value.ToString());
 
@@ -83,7 +83,7 @@ namespace GamePush.Core
         {
             UniquesData data = new UniquesData(tag, value);
 
-            TagValueData result = await DataFetcher.RegisterUniqueValue(data, false);
+            TagValueData result = await DataFetcher.Uniques.RegisterUniqueValue(data, false);
             
             if (result.tag == ERROR_TAG)
                 OnUniqueValueRegisterError?.Invoke(result.value.ToString());
@@ -104,7 +104,7 @@ namespace GamePush.Core
                 return;
             }
 
-            TagValueData result = await DataFetcher.DeleteUniqueValue(new TagData(tag), false);
+            TagValueData result = await DataFetcher.Uniques.DeleteUniqueValue(new TagData(tag), false);
 
             if (result.tag == ERROR_TAG)
                 OnUniqueValueDeleteError?.Invoke(result.value.ToString());

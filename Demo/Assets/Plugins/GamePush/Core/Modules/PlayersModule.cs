@@ -12,7 +12,8 @@ namespace GamePush.Core
         public void Fetch(string jsonIds)
         {
 
-            
+            OnFetchSuccess?.Invoke(new GP_Data(jsonIds));
+            OnFetchError?.Invoke();
         }
     }
 }

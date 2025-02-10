@@ -13,17 +13,17 @@ namespace GamePush.Core
 {
     public class UniquesFetcher
     {
-        private static string _configName = "GP_GraphQL";
-        private static string _resultOperation = "result";
+        private const string _configName = "GP_GraphQL";
+        private const string _resultOperation = "result";
 
-        private static string _checkUnique = "CheckUniques";
-        private static string _deleteUnique = "DeleteUniques";
-        private static string _registerUnique = "RegisterUniques";
+        private const string _checkUnique = "CheckUniques";
+        private const string _deleteUnique = "DeleteUniques";
+        private const string _registerUnique = "RegisterUniques";
 
         private static string SUCCESS_TAG = "gp_success";
         private static string ERROR_TAG = "gp_error";
 
-        public static async Task<TagValueData> CheckUniqueValue(object input, bool withToken)
+        public async Task<TagValueData> CheckUniqueValue(object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -61,7 +61,7 @@ namespace GamePush.Core
             return result;
         }
 
-        public static async Task<TagValueData> RegisterUniqueValue(object input, bool withToken)
+        public async Task<TagValueData> RegisterUniqueValue(object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);
@@ -99,7 +99,7 @@ namespace GamePush.Core
             return result;
         }
 
-        public static async Task<TagValueData> DeleteUniqueValue(object input, bool withToken)
+        public async Task<TagValueData> DeleteUniqueValue(object input, bool withToken)
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(_configName);
             var graphQL = new GraphQLClient(config);

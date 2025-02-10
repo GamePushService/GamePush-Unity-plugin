@@ -57,6 +57,7 @@ namespace Examples.Events
 
         public void List()
         {
+            ConsoleUI.Instance.Log("All events: \n");
             EventData[] eventsData = GP_Events.List();
             foreach (EventData data in eventsData)
             {
@@ -72,7 +73,7 @@ namespace Examples.Events
                 ConsoleUI.Instance.Log("Time left: " + data.timeLeft);
                 ConsoleUI.Instance.Log("Is Auto join: " + data.isAutoJoin);
 
-                if (data.triggers.Length > 0)
+                if (data.triggers?.Length > 0)
                 {
                     foreach (TriggerData trigger in data.triggers)
                     {

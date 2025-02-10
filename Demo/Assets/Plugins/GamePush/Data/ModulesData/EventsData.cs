@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace GamePush
 {
@@ -15,7 +16,7 @@ namespace GamePush
         public string dateStart;
         public string dateEnd;
         public bool isActive;
-        public int timeLeft;
+        public double timeLeft;
         public bool isAutoJoin;
         public TriggerData[] triggers;
         public Translations names;

@@ -14,7 +14,7 @@ namespace GamePush.UI
         [SerializeField]
         private GameObject overlayHolder;
         [Space]
-        [Header("[ UI panels ]")]
+        [Header("[ Module Panels ]")]
         [Space]
         [SerializeField]
         private ModuleUI leaderboard;
@@ -28,7 +28,7 @@ namespace GamePush.UI
         private ModuleUI document;
 
         [Space]
-        [Header("[ Notification UI ]")]
+        [Header("[ Notifications ]")]
         [SerializeField]
         AchievementPlate achievementPlate;
 
