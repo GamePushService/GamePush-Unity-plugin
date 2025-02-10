@@ -18,7 +18,7 @@ namespace GamePush.Core
         {
             if (events == null || events.Count == 0)
             {
-                Logger.Log("Events list is empty");
+                Logger.Warn("Events list is empty");
                 _eventsList = new List<EventData>();
                 _playerEvents = new List<PlayerEvent>();
                 return;
@@ -96,7 +96,7 @@ namespace GamePush.Core
             var playerEventInfo = GetEventInfo(idOrTag);
            
             var ev = playerEventInfo.Event;
-            Logger.Log("Join event:" + ev.id);
+            // Logger.Log("Join event:" + ev.id);
             var playerEvent = playerEventInfo.PlayerEvent;
 
             if (ev == null)
