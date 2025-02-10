@@ -130,6 +130,7 @@ namespace GamePush
             Documents = new DocumentsModule();
             Players = new PlayersModule();
             Events = new EventsModule();
+            Rewards = new RewardsModule();
 
             Payments = new PaymentsModule();
             Socials = new SocialsModule();

@@ -72,10 +72,14 @@ namespace Examples.Events
                 ConsoleUI.Instance.Log("Time left: " + data.timeLeft);
                 ConsoleUI.Instance.Log("Is Auto join: " + data.isAutoJoin);
 
-                foreach (TriggerData trigger in data.triggers)
+                if (data.triggers.Length > 0)
                 {
-                    ConsoleUI.Instance.Log("Trigger: " + JsonUtility.ToJson(trigger));
+                    foreach (TriggerData trigger in data.triggers)
+                    {
+                        ConsoleUI.Instance.Log("Trigger: " + JsonUtility.ToJson(trigger));
+                    }
                 }
+                
 
                 ConsoleUI.Instance.Log(" ");
             }
@@ -96,7 +100,7 @@ namespace Examples.Events
 
         public void GetEvent()
         {
-            EventData data= GP_Events.GetEvent(_eventTag.text);
+            EventData data = GP_Events.GetEvent(_eventTag.text);
 
             ConsoleUI.Instance.Log("ID: " + data.id);
             ConsoleUI.Instance.Log("Tag: " + data.tag);

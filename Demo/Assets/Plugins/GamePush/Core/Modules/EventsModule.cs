@@ -16,7 +16,7 @@ namespace GamePush.Core
 
         public void Init(List<EventData> events)
         {
-            Logger.Log(events.ToString());
+            Logger.Log(events.Count);
             _eventsList = events.Select(e => new EventData
             {
                 id = e.id,
@@ -30,6 +30,8 @@ namespace GamePush.Core
             }).ToList();
 
             CoreSDK.Language.OnChangeLanguage += ChangeTranslation;
+
+            _playerEvents = new List<PlayerEvent>();
         }
 
         
@@ -46,7 +48,7 @@ namespace GamePush.Core
             return CoreSDK.GetServerTime() >= timeStart && e.timeLeft > 0;
         }
         
-        public void SetEvents(List<EventData> events)
+        public void SetPlayerEvents(List<PlayerEvent> events)
         {
             
         }
@@ -125,55 +127,55 @@ namespace GamePush.Core
         }
 
         public EventInfo GetEvent(string idOrTag)
-    {
-        var playerEventInfo = GetEventInfo(idOrTag);
-        var ev = playerEventInfo.Event;
-        var playerEvent = playerEventInfo.PlayerEvent;
-        var info = new EventInfo
         {
-            Event = ev,
-            Stats = playerEvent?.stats ?? new EventStats { activeDays = 0, activeDaysConsecutive = 0 },
-            IsJoined = ev?.isActive == true && playerEvent != null,
-            Rewards = new List<RewardData>(),
-            Achievements = new List<AchievementData>(),
-            Products = new List<ProductData>()
-        };
-
-        if (ev == null) return info;
-
-        foreach (var trigger in ev.triggers)
-        {
-            foreach (var bonus in trigger.bonuses)
+            var playerEventInfo = GetEventInfo(idOrTag);
+            var ev = playerEventInfo.Event;
+            var playerEvent = playerEventInfo.PlayerEvent;
+            var info = new EventInfo
             {
-                switch (bonus.type)
+                Event = ev,
+                Stats = playerEvent?.stats ?? new EventStats { activeDays = 0, activeDaysConsecutive = 0 },
+                IsJoined = ev?.isActive == true && playerEvent != null,
+                Rewards = new List<RewardData>(),
+                Achievements = new List<AchievementData>(),
+                Products = new List<ProductData>()
+            };
+
+            if (ev == null) return info;
+
+            foreach (var trigger in ev.triggers)
+            {
+                foreach (var bonus in trigger.bonuses)
                 {
-                    case BonusType.Reward:
-                        var reward = CoreSDK.Rewards.GetReward(bonus.id);
-                        if (reward != null)
-                        {
-                            info.Rewards.Add(new RewardData { /* Копирование данных */ });
-                        }
-                        break;
-                    case BonusType.Achievement:
-                        var achievement = CoreSDK.Achievements.GetAchievement(bonus.id);
-                        if (achievement != null)
-                        {
-                            info.Achievements.Add(new AchievementData { /* Копирование данных */ });
-                        }
-                        break;
-                    case BonusType.Product:
-                        var product = CoreSDK.Payments.GetProduct(bonus.id);
-                        if (product != null)
-                        {
-                            info.Products.Add(new ProductData { /* Копирование данных */ });
-                        }
-                        break;
+                    switch (bonus.type)
+                    {
+                        case BonusType.Reward:
+                            var reward = CoreSDK.Rewards.GetReward(bonus.id);
+                            if (reward != null)
+                            {
+                                info.Rewards.Add(new RewardData { /* Копирование данных */ });
+                            }
+                            break;
+                        case BonusType.Achievement:
+                            var achievement = CoreSDK.Achievements.GetAchievement(bonus.id);
+                            if (achievement != null)
+                            {
+                                info.Achievements.Add(new AchievementData { /* Копирование данных */ });
+                            }
+                            break;
+                        case BonusType.Product:
+                            var product = CoreSDK.Payments.GetProduct(bonus.id);
+                            if (product != null)
+                            {
+                                info.Products.Add(new ProductData { /* Копирование данных */ });
+                            }
+                            break;
+                    }
                 }
             }
-        }
 
-        return info;
-    }
+            return info;
+        }
 
     public bool IsActive(string eventId) => GetEventInfo(eventId).Event?.isActive == true;
     public bool IsJoined(string eventId) => GetEventInfo(eventId).Event?.isActive == true && GetEventInfo(eventId).PlayerEvent != null;

@@ -107,7 +107,7 @@ namespace GamePush.Core
         {
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
-            Query query = graphQL.FindQuery(_fetchConfigQueryName, "result", OperationType.Query);
+            Query query = graphQL.FindQuery(_fetchConfigQueryName, _fetchConfigQueryName, OperationType.Query);
 
             Tuple<string, object> queryTuple = Hash.SingQuery(null);
 
@@ -122,7 +122,8 @@ namespace GamePush.Core
             JObject root = JObject.Parse(results);
             JObject resultObject = (JObject)root["data"]["result"];
 
-            // Debug.Log(resultObject["platformConfig"].ToString());
+            Debug.Log(resultObject["events"].ToString());
+            // Debug.Log(resultObject.ToString());
 
             AllConfigData configData = resultObject.ToObject<AllConfigData>();
 

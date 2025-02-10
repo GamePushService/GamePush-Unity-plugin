@@ -714,7 +714,7 @@ PlayerSettings:
   webWasm2023: 0
   scriptingDefineSymbols:
     Android: STEAMWORKS_NET;CUSTOM_ADS_MOBILE
-    Standalone: STEAMWORKS_NET
+    Standalone: STEAMWORKS_NET;CUSTOM_ADS_MOBILE
     WebGL: STEAMWORKS_NET
   additionalCompilerArguments: {}
   platformArchitecture: {}

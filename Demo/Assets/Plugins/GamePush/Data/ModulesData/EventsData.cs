@@ -24,8 +24,8 @@ namespace GamePush
 
     public class PlayerEventInfo
     {
-        public EventData? Event { get; set; }
-        public PlayerEvent? PlayerEvent { get; set; }
+        public EventData Event { get; set; }
+        public PlayerEvent PlayerEvent { get; set; }
     }
 
     public class EventInfo
