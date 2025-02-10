@@ -114,7 +114,7 @@ namespace GamePush.Core
             if (limit <= 0) limit = 10;
 
             GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order, limit, showNearest, includeFields);
-            AllRatingData data = await DataFetcher.GetRating(input, withMe: true);
+            AllRatingData data = await DataFetcher.Leaderboards.GetRating(input, withMe: true);
             if (data == null) return null;
 
             ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, GetLimitValue(limit, data.ratingData.leaderboard));
@@ -154,7 +154,7 @@ namespace GamePush.Core
         {
             //Logger.Log("FETCH PLAYER RATING");
             GetLeaderboardQuery input = new GetLeaderboardQuery(orderBy, order);
-            PlayerRatingData data = await DataFetcher.GetPlayerRating(input);
+            PlayerRatingData data = await DataFetcher.Leaderboards.GetPlayerRating(input);
 
             return data;
         }
@@ -218,7 +218,7 @@ namespace GamePush.Core
             if(limit <= 0) limit = 10;
 
             GetLeaderboardVariantQuery input = new GetLeaderboardVariantQuery(idOrTag, variant, order, limit, showNearest, includeFields);
-            AllRatingData data = await DataFetcher.GetRatingVariant(input, withMe: true);
+            AllRatingData data = await DataFetcher.Leaderboards.GetRatingVariant(input, withMe: true);
             if (data == null) return null;
 
             ProcessLeaderboardResult(data.ratingData, data.playerRatingData, showNearest, withMeString, GetLimitValue(limit, data.ratingData.leaderboard));
@@ -267,7 +267,7 @@ namespace GamePush.Core
         {
             showNearest = GetShowNearestValue(showNearest);
             GetLeaderboardVariantQuery input = new GetLeaderboardVariantQuery(idOrTag, variant, order, limit, showNearest, includeFields);
-            PlayerRatingData data = await DataFetcher.GetPlayerRatingVariant(input);
+            PlayerRatingData data = await DataFetcher.Leaderboards.GetPlayerRatingVariant(input);
 
             return data;
         }
@@ -289,7 +289,7 @@ namespace GamePush.Core
         {
             //Logger.Log("PUBLICH RECORD");
             PublishRecordQuery input = new PublishRecordQuery(idOrTag, variant, Override, record);
-            PlayerRecordData data = await DataFetcher.PublishRecord(input);
+            PlayerRecordData data = await DataFetcher.Leaderboards.PublishRecord(input);
 
             return data;
         }
