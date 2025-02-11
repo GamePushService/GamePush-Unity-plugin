@@ -42,8 +42,9 @@ namespace GamePush
         public static DocumentsModule Documents;
         public static GameCollectionsModule GameCollections;
         public static PlayersModule Players;
-        public static EventsModule Events;
         public static RewardsModule Rewards;
+        public static TriggersModule Triggers;
+        public static EventsModule Events;
 
         #endregion
 
@@ -136,19 +137,19 @@ namespace GamePush
             Socials = new SocialsModule();
         }
 
-        public static async Task InitFetch()
+        private static async Task InitFetch()
         {
             await FetchCoreConfig();
             await Player.FetchPlayerConfig();
         }
 
-        public static async Task FetchCoreConfig()
+        private static async Task FetchCoreConfig()
         {
             AllConfigData data = await DataFetcher.GetConfig();
             SetConfig(data);
         }
 
-        public static void SetConfig(AllConfigData allData)
+        private static void SetConfig(AllConfigData allData)
         {
             configData = allData;
 
@@ -164,7 +165,8 @@ namespace GamePush
             Payments.Init(configData.products, configData.platformConfig);
             App.Init(configData.project, configData.platformConfig);
             Socials.Init(configData.config);
-            Rewards.Init(configData.rewards);
+            // Rewards.Init(configData.rewards);
+            Triggers.Init(configData);
             Uniques.Init();
             Achievements.Init(configData);
             Events.Init(configData.events);
