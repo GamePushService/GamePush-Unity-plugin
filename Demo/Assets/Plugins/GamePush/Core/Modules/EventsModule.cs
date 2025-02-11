@@ -114,7 +114,6 @@ namespace GamePush.Core
             {
                 var playerEventResult = await DataFetcher.Events.JoinEvent(new PlayerJoinEventInput(ev.id));
 
-                playerEventResult = new PlayerEvent();
                 if (_playerEvents.All(pe => pe.eventId != playerEventResult.eventId))
                 {
                     _playerEvents.Add(playerEventResult);
