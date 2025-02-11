@@ -56,7 +56,7 @@ namespace GamePush
 #endif
         }
 
-        public static TriggerActive[] ActivatedList()
+        public static PlayerTrigger[] ActivatedList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string triggers = GP_Triggers_ActivatedList();
@@ -69,7 +69,7 @@ namespace GamePush
 #endif
         }
 
-        public static TriggerAllData GetTrigger(string idOrTag)
+        public static PlayerTriggerInfo GetTrigger(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Triggers_GetTrigger(idOrTag);

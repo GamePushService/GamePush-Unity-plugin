@@ -83,8 +83,8 @@ namespace Examples.Triggers
 
         public void ActivatedList()
         {
-            TriggerActive[] triggers = GP_Triggers.ActivatedList();
-            foreach (TriggerActive trigger in triggers)
+            PlayerTrigger[] triggers = GP_Triggers.ActivatedList();
+            foreach (PlayerTrigger trigger in triggers)
             {
                 ConsoleUI.Instance.Log("ID: " + trigger.triggerId);
                 ConsoleUI.Instance.Log("Claimed: " + trigger.claimed);

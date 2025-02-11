@@ -22,6 +22,7 @@ namespace GamePush.Data
         public List<AchievementsGroup> achievementsGroups;
         public List<EventData> events;
         public List<RewardData> rewards;
+        public List<Trigger> triggers;
         public string serverTime;
     }
 

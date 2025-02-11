@@ -129,48 +129,49 @@ namespace GamePush.Core
 
         #region Sync/Load
 
+        
+
+        public async void PlayerSync(bool forceOverride) 
+            => await Sync(forceOverride);
+
+        // ReSharper disable Unity.PerformanceAnalysis
+        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+            => await Sync(storage, forceOverride);
+        
         private async Task Sync(bool forceOverride)
             => await Sync(forceOverride: forceOverride);
 
-        public async void PlayerSync(bool forceOverride)
-            => await Sync(forceOverride);
-        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
-            => await Sync(storage, forceOverride);
-
         private async Task Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
         {
-            if (autoSyncList.TryGetValue(storage, out AutoSyncData autoSyncData))
+            if (autoSyncList.TryGetValue(storage, out var autoSyncData))
                 autoSyncData.lastSync = CoreSDK.GetServerTime().ToString();
 
             if (storage == SyncStorageType.preffered)
                 storage = CoreSDK.Platform.PrefferedSyncType;
 
             //Logger.Log($"Sync storage", $"{storage}");
-            bool isCloudSave = storage == SyncStorageType.cloud;
-
-            bool isNeedSyncPublicFields = CoreSDK.Platform.AlwaysSyncPublicFields && _isPublicFieldsDirty;
-
-            bool isNeedToSyncWithServer =
+            var isCloudSave = storage == SyncStorageType.cloud;
+            var isNeedSyncPublicFields = CoreSDK.Platform.AlwaysSyncPublicFields && _isPublicFieldsDirty;
+            var isNeedToSyncWithServer =
                  isNeedSyncPublicFields ||
                  isCloudSave ||
                 _isFirstRequest;
 
             if (isNeedToSyncWithServer)
             {
-                Dictionary<string, object> secondState = _playerState;
-
-                bool isNeedToSyncOnlyPublicFields = !isCloudSave && isNeedSyncPublicFields;
+                var secondState = _playerState;
+                var isNeedToSyncOnlyPublicFields = !isCloudSave && isNeedSyncPublicFields;
 
                 if (isNeedToSyncOnlyPublicFields)
                 {
-                    foreach(string key in playerDataFields.Keys)
+                    foreach(var key in playerDataFields.Keys)
                     {
                         if (!playerDataFields[key].@public)
                             secondState.Remove(key);
                     }
                 }
 
-                JObject playerStateData = GetJObjectPlayerState(secondState);
+                var playerStateData = GetJObjectPlayerState(secondState);
                 await CloudSync(playerStateData, storage, forceOverride);
             }
             else if(!isCloudSave)
@@ -218,13 +219,14 @@ namespace GamePush.Core
 
         private async Task CloudSync(JObject playerState, SyncStorageType storage, bool forceOverride = false)
         {
-            SyncPlayerInput playerInput = new SyncPlayerInput();
-            playerInput.playerState = playerState;
+            var playerInput = new SyncPlayerInput
+            {
+                playerState = playerState,
+                isFirstRequest = _isFirstRequest,
+                @override = forceOverride
+            };
 
-            playerInput.isFirstRequest = _isFirstRequest;
-            playerInput.@override = forceOverride;
-
-            JObject resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
+            var resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
 
             if (resultObject == null)
             {
@@ -255,10 +257,9 @@ namespace GamePush.Core
                 _token = token.ToString();
             }
 
-            bool isServerHasNewProgress = false;
+            var isServerHasNewProgress = false;
 
-            DateTime newModifTime;
-            if(DateTime.TryParse(playerData["state"][MODIFIED_AT_KEY].ToString(), out newModifTime))
+            if(DateTime.TryParse(playerData["state"][MODIFIED_AT_KEY].ToString(), out var newModifTime))
             {
                 if (_playerState.TryGetValue("modifiedAt", out object oldModifTime))
                 {
@@ -272,7 +273,7 @@ namespace GamePush.Core
             int playerID = GetPlayerSavedID();
 
             bool isNeedToLoadFromServer =
-                (credentials != null && credentials != "" && credentials != playerData["state"]["credentials"].ToString()) ||
+                (!string.IsNullOrEmpty(credentials) && credentials != playerData["state"]["credentials"].ToString()) ||
                 (secretCode != "" && secretCode != playerData["state"]["secretCode"].ToString()) ||
                 playerID == 0 ||
                 syncStorage == SyncStorageType.cloud;
@@ -288,7 +289,7 @@ namespace GamePush.Core
                 {
                     Dictionary<string, object> storageState = GetPlayerStateFromPrefs();
 
-                    foreach (PlayerField playerField in dataFields)
+                    foreach (var playerField in dataFields)
                     {
                         if (!playerField.@public)
                         {
@@ -321,29 +322,26 @@ namespace GamePush.Core
         private void SetDataFromSync(JObject playerData)
         {
             //Set uniques
-            List<UniquesData> uniques = playerData["uniques"].ToObject<List<UniquesData>>();
+            var uniques = playerData["uniques"].ToObject<List<UniquesData>>();
             CoreSDK.Uniques.SetUniques(uniques);
 
             //Set achievements
-            List<PlayerAchievement> achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
+            var achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
             CoreSDK.Achievements.SetAchievementsList(achievements);
             
             //Set player events
-            List<PlayerEvent> playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
+            var playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
             CoreSDK.Events.SetPlayerEvents(playerEvents);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)
         {
-            JObject stateObject = (JObject)playerData["state"];
-            Dictionary<string, object> tempState = stateObject.ToObject<Dictionary<string, object>>();
+            var stateObject = (JObject)playerData["state"];
+            var tempState = stateObject.ToObject<Dictionary<string, object>>();
 
-            foreach (PlayerField playerField in dataFields)
+            foreach (var playerField in dataFields.Where(playerField => playerField.@public))
             {
-                if (playerField.@public)
-                {
-                    _playerState[playerField.key] = tempState[playerField.key];
-                }
+                _playerState[playerField.key] = tempState[playerField.key];
             }
         }
 
@@ -367,9 +365,9 @@ namespace GamePush.Core
                 }
             }
 
-            string lastSyncTime = (CoreSDK.GetServerTime().AddSeconds(-interval)).ToString();
+            var lastSyncTime = (CoreSDK.GetServerTime().AddSeconds(-interval)).ToString();
 
-            AutoSyncData data = new AutoSyncData(true, storage, interval, isOverride, lastSyncTime);
+            var data = new AutoSyncData(true, storage, interval, isOverride, lastSyncTime);
             autoSyncList.Add(storage, data);
             Logger.Log($"AutoSync for {storage} storage enabled, interval: {interval}");
             AutoSync();
@@ -395,7 +393,7 @@ namespace GamePush.Core
             }
             else
             {
-                AutoSyncData data = new AutoSyncData(false, storage);
+                var data = new AutoSyncData(false, storage);
                 autoSyncList.Add(storage, data);
                 Logger.Warn($"AutoSync for {storage} storage already disabled");
                 return false;

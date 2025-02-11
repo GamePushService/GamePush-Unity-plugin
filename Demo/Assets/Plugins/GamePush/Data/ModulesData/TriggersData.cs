@@ -1,7 +1,7 @@
 namespace GamePush
 {
     [System.Serializable]
-    public class TriggerAllData
+    public class PlayerTriggerInfo
     {
         public TriggerData trigger;
         public bool isActivated;
@@ -36,7 +36,7 @@ namespace GamePush
     }
 
     [System.Serializable]
-    public class TriggerActive
+    public class PlayerTrigger
     {
         public string triggerId;
         public bool claimed;
