@@ -43,7 +43,7 @@ namespace GamePush.Core
         public void Init(List<ProductData> products, PlatformConfig platformConfig)
         {
             paymentsConfig = platformConfig.paymentsConfig;
-            SetAvailables();
+            SetIsAvailables();
 
             _allProducts = new List<ProductData>();
             _allProductsWithId = new Dictionary<int, ProductData>();
@@ -65,15 +65,15 @@ namespace GamePush.Core
         
         public ProductData GetProduct(int id)
         {
-            return new ProductData();
+            return _allProductsWithId[id];
         }
         
-        public ProductData GetProduct(string id)
+        public ProductData GetProduct(string tag)
         {
-            return new ProductData();
+            return _allProductsWithTag[tag];
         }
 
-        private void SetAvailables()
+        private void SetIsAvailables()
         {
             isPaymentsAvailable = paymentsConfig.id != "";
             isSubscriptionAvailable = paymentsConfig.id != "";

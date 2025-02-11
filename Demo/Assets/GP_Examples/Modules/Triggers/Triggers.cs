@@ -67,7 +67,7 @@ namespace Examples.Triggers
                 ConsoleUI.Instance.Log("AutoClaim: " + trigger.isAutoClaim);
                 ConsoleUI.Instance.Log("Description: " + trigger.description);
 
-                foreach (TriggerCondition condition in trigger.conditions)
+                foreach (TriggerCondition condition in trigger.conditions[0])
                 {
                     ConsoleUI.Instance.Log("Condition: " + JsonUtility.ToJson(condition));
                 }
@@ -102,7 +102,7 @@ namespace Examples.Triggers
             ConsoleUI.Instance.Log("AutoClaim: " + trigger.isAutoClaim);
             ConsoleUI.Instance.Log("Description: " + trigger.description);
 
-            foreach(TriggerCondition condition in trigger.conditions)
+            foreach(TriggerCondition condition in trigger.conditions[0])
             {
                 ConsoleUI.Instance.Log("Condition: " + JsonUtility.ToJson(condition));
             }

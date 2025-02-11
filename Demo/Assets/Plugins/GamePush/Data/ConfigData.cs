@@ -174,7 +174,7 @@ namespace GamePush.Data
         public bool isAutoClaim;
         public string description;
         public Translations descriptions;
-        public List<List<Condition>> conditions;
+        public Condition[][] conditions;
         public List<Bonus> bonuses;
     }
 

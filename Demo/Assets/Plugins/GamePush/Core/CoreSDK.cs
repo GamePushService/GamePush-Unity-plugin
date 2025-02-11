@@ -164,6 +164,7 @@ namespace GamePush
             Payments.Init(configData.products, configData.platformConfig);
             App.Init(configData.project, configData.platformConfig);
             Socials.Init(configData.config);
+            Rewards.Init(configData.rewards);
             Uniques.Init();
             Achievements.Init(configData);
             Events.Init(configData.events);

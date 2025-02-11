@@ -15,16 +15,16 @@ namespace GamePush
         public string tag;
         public bool isAutoClaim;
         public string description;
-        public TriggerCondition[] conditions;
+        public TriggerCondition[][] conditions;
         public TriggerBonus[] bonuses;
     }
 
     [System.Serializable]
     public class TriggerCondition
     {
-        public string conditionType;
+        public string @type;
         public string key;
-        public string operatorType;
+        public string @operator;
         public string[] value;
     }
 
