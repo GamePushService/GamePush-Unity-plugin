@@ -33,13 +33,17 @@ namespace GamePush
         private static extern string GP_Triggers_IsClaimed(string idOrTag);
 #endif
 
+        private void OnEnable()
+        {
+            
+        }
+
         public static void Claim(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Triggers_Claim(idOrTag);
 #else
-
-            ConsoleLog("CLAIM");
+            CoreSDK.Triggers.ClaimAsync(idOrTag);
 #endif
         }
 
@@ -50,9 +54,7 @@ namespace GamePush
             return UtilityJSON.GetArray<TriggerData>(triggers);
 #else
 
-            ConsoleLog("LIST");
-
-            return null;
+            return CoreSDK.Triggers.List.ToArray();
 #endif
         }
 
@@ -62,10 +64,7 @@ namespace GamePush
             string triggers = GP_Triggers_ActivatedList();
             return UtilityJSON.GetArray<TriggerActive>(triggers);
 #else
-
-            ConsoleLog("Activated List");
-
-            return null;
+            return CoreSDK.Triggers.ActivatedList.ToArray();
 #endif
         }
 
@@ -75,10 +74,7 @@ namespace GamePush
             string data = GP_Triggers_GetTrigger(idOrTag);
             return UtilityJSON.Get<TriggerAllData>(data);
 #else
-
-            ConsoleLog("Get Trigger");
-
-            return null;
+            return CoreSDK.Triggers.GetTrigger(idOrTag);
 #endif
         }
 
@@ -87,8 +83,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Triggers_IsActivated(idOrTag) == "true";
 #else
-            ConsoleLog("IsActivated");
-            return false;
+            return CoreSDK.Triggers.IsActivated(idOrTag);
 #endif
         }
 
@@ -97,9 +92,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Triggers_IsClaimed(idOrTag) == "true";
 #else
-
-            ConsoleLog("IsClaimed");
-            return false;
+            return CoreSDK.Triggers.IsClaimed(idOrTag);
 #endif
         }
 
