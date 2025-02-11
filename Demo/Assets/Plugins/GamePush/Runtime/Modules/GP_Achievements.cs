@@ -60,20 +60,20 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.Achievements.OnAchievementsOpen += () => CallAchievementsOpen();
-            CoreSDK.Achievements.OnAchievementsClose += () => CallAchievementsClose();
+            CoreSDK.Achievements.OnAchievementsOpen += CallAchievementsOpen;
+            CoreSDK.Achievements.OnAchievementsClose += CallAchievementsClose;
 
-            CoreSDK.Achievements.OnAchievementsFetch += (List<AchievementData> achievementsData) => CallAchievementsFetchList(achievementsData);
-            CoreSDK.Achievements.OnAchievementsFetchError += () => CallAchievementsFetchError();
+            CoreSDK.Achievements.OnAchievementsFetch += CallAchievementsFetchList;
+            CoreSDK.Achievements.OnAchievementsFetchError += CallAchievementsFetchError;
 
-            CoreSDK.Achievements.OnAchievementsFetchGroups += (List<AchievementsGroupData> achievementsData) => CallAchievementsFetchGroupsList(achievementsData);
-            CoreSDK.Achievements.OnAchievementsFetchPlayer += (List<PlayerAchievement> achievementsData) => CallPlayerAchievementsFetchList(achievementsData);
+            CoreSDK.Achievements.OnAchievementsFetchGroups += CallAchievementsFetchGroupsList;
+            CoreSDK.Achievements.OnAchievementsFetchPlayer += CallPlayerAchievementsFetchList;
 
-            CoreSDK.Achievements.OnAchievementsUnlock += (string achievement) => CallAchievementsUnlock(achievement);
-            CoreSDK.Achievements.OnAchievementsUnlockError += (string error) => CallAchievementsUnlockError(error);
+            CoreSDK.Achievements.OnAchievementsUnlock += CallAchievementsUnlock;
+            CoreSDK.Achievements.OnAchievementsUnlockError += CallAchievementsUnlockError;
 
-            CoreSDK.Achievements.OnAchievementsSetProgress += (string idOrTag) => CallAchievementsProgress(idOrTag);
-            CoreSDK.Achievements.OnAchievementsSetProgressError += (string error) => CallAchievementsProgressError(error);
+            CoreSDK.Achievements.OnAchievementsSetProgress += CallAchievementsProgress;
+            CoreSDK.Achievements.OnAchievementsSetProgressError += CallAchievementsProgressError;
         }
 
 #if !UNITY_EDITOR && UNITY_WEBGL

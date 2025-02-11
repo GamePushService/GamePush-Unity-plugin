@@ -24,27 +24,28 @@ namespace GamePush
         public static PlatformConfig platformConfig;
 
         #region Modules
-        public static GameModule Game;
-        public static PlayerModule Player;
-        public static PlatformModule Platform;
-        public static GameVariablesModule Variables;
-        public static AdsModule Ads;
-        public static DeviceModule Device;
-        public static PaymentsModule Payments;
-        public static LeaderboardModule Leaderboard;
-        public static SystemModule System;
-        public static AppModule App;
-        public static SocialsModule Socials;
-        public static LanguageModule Language;
-        public static UniquesModule Uniques;
-        public static AchievementsModule Achievements;
-        public static AnalyticsModule Analytics;
-        public static DocumentsModule Documents;
-        public static GameCollectionsModule GameCollections;
-        public static PlayersModule Players;
-        public static RewardsModule Rewards;
-        public static TriggersModule Triggers;
-        public static EventsModule Events;
+
+        public static readonly GameModule Game = new GameModule();
+        public static readonly PlayerModule Player = new PlayerModule();
+        public static readonly PlatformModule Platform = new PlatformModule();
+        public static readonly GameVariablesModule Variables = new GameVariablesModule();
+        public static readonly AdsModule Ads = new AdsModule();
+        public static readonly DeviceModule Device = new DeviceModule();
+        public static readonly PaymentsModule Payments = new PaymentsModule();
+        public static readonly LeaderboardModule Leaderboard = new LeaderboardModule();
+        public static readonly SystemModule System = new SystemModule();
+        public static readonly AppModule App = new AppModule();
+        public static readonly SocialsModule Socials = new SocialsModule();
+        public static readonly LanguageModule Language = new LanguageModule();
+        public static readonly UniquesModule Uniques = new UniquesModule();
+        public static readonly AchievementsModule Achievements = new AchievementsModule();
+        public static readonly AnalyticsModule Analytics = new AnalyticsModule();
+        public static readonly DocumentsModule Documents = new DocumentsModule();
+        public static readonly GameCollectionsModule GameCollections = new GameCollectionsModule();
+        public static readonly PlayersModule Players = new PlayersModule();
+        public static readonly RewardsModule Rewards = new RewardsModule();
+        public static readonly TriggersModule Triggers = new TriggersModule();
+        public static readonly EventsModule Events = new EventsModule();
 
         #endregion
 
@@ -69,8 +70,7 @@ namespace GamePush
 
         public static DateTime ConvertToDateTime(string time)
         {
-            DateTime dateTime;
-            if (DateTime.TryParse(time, out dateTime))
+            if (DateTime.TryParse(time, out var dateTime))
             {
                 return dateTime;
             }
@@ -98,11 +98,10 @@ namespace GamePush
         #region Initialization
         public static async void Initialize()
         {
-            int id = 0;
-            int.TryParse(ProjectData.ID, out id);
+            int.TryParse(ProjectData.ID, out var id);
             SetProjectData(id, ProjectData.TOKEN);
 
-            InitModules();
+            // InitModules();
 #if UNITY_EDITOR || !UNITY_WEBGL
             await InitFetch();
 #endif
@@ -112,31 +111,31 @@ namespace GamePush
             await Task.Delay(1);
         }
 
-        private static void InitModules()
-        {
-            Platform = new PlatformModule();
-            Language = new LanguageModule();
-            Game = new GameModule();
-            Player = new PlayerModule();
-            Variables = new GameVariablesModule();
-            Ads = new AdsModule();
-            Device = new DeviceModule();
-            System = new SystemModule();
-            App = new AppModule();
-            Leaderboard = new LeaderboardModule();
-            Uniques = new UniquesModule();
-            Achievements = new AchievementsModule();
-            Analytics = new AnalyticsModule();
-            GameCollections = new GameCollectionsModule();
-            Documents = new DocumentsModule();
-            Players = new PlayersModule();
-            Events = new EventsModule();
-            Rewards = new RewardsModule();
-            Triggers = new TriggersModule();
-
-            Payments = new PaymentsModule();
-            Socials = new SocialsModule();
-        }
+        // private static void InitModules()
+        // {
+        //     Platform = new PlatformModule();
+        //     Language = new LanguageModule();
+        //     Game = new GameModule();
+        //     Player = new PlayerModule();
+        //     Variables = new GameVariablesModule();
+        //     Ads = new AdsModule();
+        //     Device = new DeviceModule();
+        //     System = new SystemModule();
+        //     App = new AppModule();
+        //     Leaderboard = new LeaderboardModule();
+        //     Uniques = new UniquesModule();
+        //     Achievements = new AchievementsModule();
+        //     Analytics = new AnalyticsModule();
+        //     GameCollections = new GameCollectionsModule();
+        //     Documents = new DocumentsModule();
+        //     Players = new PlayersModule();
+        //     Events = new EventsModule();
+        //     Rewards = new RewardsModule();
+        //     Triggers = new TriggersModule();
+        //
+        //     Payments = new PaymentsModule();
+        //     Socials = new SocialsModule();
+        // }
 
         private static async Task InitFetch()
         {

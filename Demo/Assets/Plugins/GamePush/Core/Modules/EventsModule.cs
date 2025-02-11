@@ -103,24 +103,28 @@ namespace GamePush.Core
             {
                 Logger.Error("EventNotFoundError");
                 OnEventJoinError?.Invoke(idOrTag);
+                return null;
             }
             if (playerEvent != null)
             {
                 Logger.Error("AlreadyJoinedError");
                 OnEventJoinError?.Invoke(idOrTag);
+                return null;
             }
 
             try
             {
                 var playerEventResult = await DataFetcher.Events.JoinEvent(new PlayerJoinEventInput(ev.id));
-
+                if(playerEventResult == null)
+                    return null;
+                
                 if (_playerEvents.All(pe => pe.eventId != playerEventResult.eventId))
                 {
                     _playerEvents.Add(playerEventResult);
                 }
 
                 var result = new PlayerEventInfo { Event = ev, PlayerEvent = playerEventResult };
-
+                
                 OnEventJoin?.Invoke(playerEventResult);
                 return result;
             }

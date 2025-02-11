@@ -438,6 +438,7 @@ namespace GamePush.Core
         private static string SCORE_STATE_KEY = "score";
         private static string NAME_STATE_KEY = "name";
         private static string AVATAR_STATE_KEY = "avatar";
+        private static string CUSTOM_PLATFROM_KEY = "customPlatformTag";
 
         private static string MODIFIED_AT_KEY = "modifiedAt";
         private static string PLATFORM_TYPE_KEY = "platformType";
