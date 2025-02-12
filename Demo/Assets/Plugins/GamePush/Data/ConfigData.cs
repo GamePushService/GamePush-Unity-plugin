@@ -63,7 +63,7 @@ namespace GamePush.Data
         public List<PlayerField> playerFields;
         public string serverTime;
         public List<GameVariableConfigData> gameVariables;
-        public List<PlayerReward> rewards;
+        public List<Reward> rewards;
         public List<Trigger> triggers;
         public List<Achievement> achievements;
         public List<AchievementsGroup> achievementsGroups;
@@ -112,7 +112,7 @@ namespace GamePush.Data
         public string name;
         public string description;
         public bool sandbox;
-        public PlatfromServiceConfigs configs;
+        public PlatformServiceConfigs configs;
     }
 
     [System.Serializable]
@@ -122,7 +122,7 @@ namespace GamePush.Data
         public string name;
         public string description;
         public XsollaAuthConfig xsollaConfig;
-        public PlatfromServiceConfigs configs;
+        public PlatformServiceConfigs configs;
     }
 
     [System.Serializable]
@@ -133,20 +133,20 @@ namespace GamePush.Data
     }
 
     [System.Serializable]
-    public class PlatfromServiceConfigs
+    public class PlatformServiceConfigs
     {
-        public PlatfromServiceConfig web;
-        public PlatfromServiceConfig android;
+        public PlatformServiceConfig web;
+        public PlatformServiceConfig android;
     }
 
     [System.Serializable]
-    public class PlatfromServiceConfig
+    public class PlatformServiceConfig
     {
         public string activeService;
     }
 
     [System.Serializable]
-    public class PlayerReward
+    public class Reward
     {
         public int id;
         public string icon;

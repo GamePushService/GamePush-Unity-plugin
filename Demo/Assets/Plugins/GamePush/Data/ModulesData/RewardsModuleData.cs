@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace GamePush
 {
@@ -34,12 +35,28 @@ namespace GamePush
     [System.Serializable]
     public class DataMutation
     {
-        public string type;
+        public MutationType type;
         public string key;
         public MutationAction action;
         public string value;
     }
 
-    public enum MutationAction { ADD, REMOVE, SET };
+    public enum MutationAction
+    {
+        [EnumMember(Value = "ADD")]
+        Add,
+    
+        [EnumMember(Value = "REMOVE")]
+        Remove,
+    
+        [EnumMember(Value = "SET")]
+        Set
+    }
+    
+    public enum MutationType
+    {
+        [EnumMember(Value = "PLAYER_FIELD")]
+        PlayerField
+    }
 }
 

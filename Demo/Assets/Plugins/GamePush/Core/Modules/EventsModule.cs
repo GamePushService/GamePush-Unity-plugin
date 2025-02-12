@@ -174,7 +174,7 @@ namespace GamePush.Core
                     switch (bonus.type)
                     {
                         case BonusType.Reward:
-                            var reward = CoreSDK.Rewards.GetReward(bonus.id);
+                            RewardData reward = CoreSDK.Rewards.GetReward(bonus.id);
                             if (reward != null)
                             {
                                 info.Rewards.Add(reward);
