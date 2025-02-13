@@ -92,7 +92,7 @@ namespace GamePush
 
         }
         
-         private static void StorageSetGlobalValue<T>(string key, T value)
+        private static void StorageSetGlobalValue<T>(string key, T value) where T : IConvertible
         {
             var result = value.GetTypeCode() switch
             {
@@ -119,7 +119,7 @@ namespace GamePush
         }
 
 
-        public static void SetGlobal<T>(string key, T value, Action<StorageField> onSetGlobalValue = null)
+        public static void SetGlobal<T>(string key, T value, Action<StorageField> onSetGlobalValue = null) where T : IConvertible
         {
             _onSetGlobalValue = onSetGlobalValue;
 #if !UNITY_EDITOR && UNITY_WEBGL
