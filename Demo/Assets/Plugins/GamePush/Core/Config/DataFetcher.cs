@@ -25,7 +25,7 @@ namespace GamePush.Core
 
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";
-        private static string SyncPlayerQueryName = "SyncPlayer";
+        private static string SyncPlayerQuery = "SyncPlayer";
         private static string _fetchPlayerFieldsQueryName = "FetchPlayerFields";
         private static string _purchaseProductQueryName = "PurchasePlayerPurchase";
         private static string _consumeProductQueryName = "ConsumePlayerPurchase";
@@ -171,7 +171,8 @@ namespace GamePush.Core
 
         public static async Task<JObject> SyncPlayer(SyncPlayerInput input, bool withToken)
         {
-            Query query = GetQuery(SyncPlayerQueryName, OperationType.Mutation);
+            Query query = GetQuery(SyncPlayerQuery, OperationType.Mutation);
+
             
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
             string headers = queryTuple.Item1;
@@ -183,6 +184,7 @@ namespace GamePush.Core
             };
 
             JObject root = await SendQueryRequest(query, headers, variables);
+
             JObject resultObject = RootToResult(root);
 
             return resultObject;

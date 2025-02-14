@@ -16,8 +16,10 @@ namespace GamePush
         public static event UnityAction<string> OnRewardsAcceptError;
 
         private void CallOnRewardsGive(string data) { OnRewardsGive?.Invoke(JsonUtility.FromJson<AllRewardData>(data)); }
+        private void CallOnRewardsGiveData(AllRewardData data) { OnRewardsGive?.Invoke(data); }
         private void CallOnRewardsGiveError(string error) { OnRewardsGiveError?.Invoke(error); }
         private void CallOnRewardsAccept(string data) { OnRewardsAccept?.Invoke(JsonUtility.FromJson<AllRewardData>(data)); }
+        private void CallOnRewardsAcceptData(AllRewardData data) { OnRewardsAccept?.Invoke(data); }
         private void CallOnRewardsAcceptError(string error) { OnRewardsAcceptError?.Invoke(error); }
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -41,24 +43,21 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.Rewards.OnRewardsGive += (AllRewardData data) => OnRewardsGive?.Invoke(data);
-            CoreSDK.Rewards.OnRewardsGiveError += (string error) => OnRewardsGiveError?.Invoke(error);
-            CoreSDK.Rewards.OnRewardsAccept += (AllRewardData data) => OnRewardsAccept?.Invoke(data);
-            CoreSDK.Rewards.OnRewardsAcceptError += (string error) => OnRewardsAcceptError?.Invoke(error);
+            CoreSDK.Rewards.OnRewardsGive += CallOnRewardsGiveData;
+            CoreSDK.Rewards.OnRewardsGiveError += CallOnRewardsGiveError;
+            CoreSDK.Rewards.OnRewardsAccept += CallOnRewardsAcceptData;
+            CoreSDK.Rewards.OnRewardsAcceptError += CallOnRewardsAcceptError;
         }
         
         private void OnDisable()
         {
-            CoreSDK.Rewards.OnRewardsGive -= (AllRewardData data) => OnRewardsGive?.Invoke(data);
-            CoreSDK.Rewards.OnRewardsGiveError -= (string error) => OnRewardsGiveError?.Invoke(error);
-            CoreSDK.Rewards.OnRewardsAccept -= (AllRewardData data) => OnRewardsAccept?.Invoke(data);
-            CoreSDK.Rewards.OnRewardsAcceptError -= (string error) => OnRewardsAcceptError?.Invoke(error);
+            CoreSDK.Rewards.OnRewardsGive -= CallOnRewardsGiveData;
+            CoreSDK.Rewards.OnRewardsGiveError -= CallOnRewardsGiveError;
+            CoreSDK.Rewards.OnRewardsAccept -= CallOnRewardsAcceptData;
+            CoreSDK.Rewards.OnRewardsAcceptError -= CallOnRewardsAcceptError;
         }
 
-        private static int GetID(string idOrTag)
-        {
-            return int.TryParse(idOrTag, out var id) ? id : CoreSDK.Rewards.GetReward(idOrTag).reward.id;
-        }
+        
         public static void Give(string idOrTag, bool lazy = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -103,7 +102,7 @@ namespace GamePush
             string data = GP_Rewards_GetReward(idOrTag);
             return UtilityJSON.Get<AllRewardData>(data);
 #else
-           return CoreSDK.Rewards.GetReward(GetID(idOrTag));
+           return CoreSDK.Rewards.GetReward(idOrTag);
 #endif
         }
 
@@ -112,7 +111,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_Has(idOrTag) == "true";
 #else
-            return CoreSDK.Rewards.Has(GetID(idOrTag));
+            return CoreSDK.Rewards.Has(idOrTag);
 #endif
         }
 
@@ -121,7 +120,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_HasAccepted(idOrTag) == "true";
 #else
-            return CoreSDK.Rewards.HasAccepted(GetID(idOrTag));
+            return CoreSDK.Rewards.HasAccepted(idOrTag);
 #endif
         }
 
@@ -130,7 +129,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_HasUnaccepted(idOrTag) == "true";
 #else
-            return CoreSDK.Rewards.HasUnaccepted(GetID(idOrTag));
+            return CoreSDK.Rewards.HasUnaccepted(idOrTag);
 #endif
         }
 

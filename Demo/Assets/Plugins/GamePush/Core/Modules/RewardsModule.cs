@@ -32,7 +32,6 @@ namespace GamePush.Core
             SetRewardDataList(rewards);
             RefreshRewardsMap();
 
-            
             CoreSDK.Language.OnChangeLanguage += ChangeTranslations;
             CoreSDK.OnInit += AcceptOnStart;
         }
@@ -59,7 +58,7 @@ namespace GamePush.Core
 
         private void SetRewardDataList(List<Reward> rewards)
         {
-            _rewardsDataList = new List<RewardData>();
+            List<RewardData> rewardsDataList = new List<RewardData>();
             
             foreach (var reward in rewards)
             {
@@ -74,8 +73,10 @@ namespace GamePush.Core
                     iconSmall = UtilityImage.ResizeImage(reward.icon, 48, 48, false)
                 };
 
-                _rewardsDataList.Add(data);
+                rewardsDataList.Add(data);
             }
+            
+            _rewardsDataList = rewardsDataList;
         }
 
         private void ChangeTranslations(Language lang)
@@ -204,13 +205,13 @@ namespace GamePush.Core
                 return null;
             }
 
-            if (!HasUnaccepted(rewardID))
+            if (!HasUnaccepted(rewardID.ToString()))
             {
                 HandleError(RewardAlreadyAcceptedError);
                 return null;
             }
 
-            var rewardInfo = GetRewardInfo(rewardID);
+            var rewardInfo = GetRewardInfo(rewardID.ToString());
             
             if (rewardInfo.playerReward == null)
             {
@@ -228,17 +229,19 @@ namespace GamePush.Core
         
         public List<RewardData> List() => _rewardsDataList;
         public List<PlayerReward> GivenList() => _playerRewardsList;
-
-        public bool Has(int id) => GetRewardInfo(id).playerReward?.countTotal > 0;
-        public bool HasAccepted(int id) => GetRewardInfo(id).playerReward?.countAccepted > 0;
-        public bool HasUnaccepted(int id)
+        public bool Has(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countTotal > 0;
+       
+        public bool HasAccepted(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countAccepted > 0;
+        
+        public bool HasUnaccepted(string idOrTag)
         {
-            var info = GetRewardInfo(id);
+            var info = GetRewardInfo(idOrTag);
             return info.playerReward != null && info.playerReward.countTotal > info.playerReward.countAccepted;
         }
 
-        public AllRewardData GetReward(int id) => GetRewardInfo(id);
-        public AllRewardData GetReward(string tag) => GetRewardInfo(GetRewardData(tag).id);
+        public AllRewardData GetReward(int id) => GetRewardInfo(id.ToString());
+        public AllRewardData GetReward(string idOrTag) => GetRewardInfo(idOrTag);
+        
 
         private RewardData GetRewardData(int id)
         {
@@ -258,17 +261,27 @@ namespace GamePush.Core
             return reward;
         }
 
-        private AllRewardData GetRewardInfo(int id)
+        private AllRewardData GetRewardInfo(string idOrTag)
         {
             var info = new AllRewardData();
-            var reward = GetRewardData(id);
-            if (reward == null) return info;
+            var reward = new RewardData();
+            if (int.TryParse(idOrTag, out var id))
+            {
+                reward = GetRewardData(id);
+            }
+            else
+            {
+                reward = GetRewardData(idOrTag);
+            }
+            
+            if (reward.id <= 0) return info;
             info.reward = reward;
             var playerReward = GetPlayerRewardById(reward.id);
             info.playerReward = playerReward ?? new PlayerReward { rewardId = reward.id, countAccepted = 0, countTotal = 0 };
 
             return info;
         }
+        
 
         public void SetRewardsList(
             List<PlayerReward> playerRewards,

@@ -82,7 +82,7 @@ fragment SYNC_PLAYER_RESULT on Player{
     token @include(if: $withToken)
 }
 
-mutation result($input: SyncPlayerInput!, $lang: Lang, $withToken: Boolean!) {
+mutation SyncPlayer($input: SyncPlayerInput!, $lang: Lang, $withToken: Boolean!) {
     result: SyncPlayer(input: $input) {
         __typename
         ... SYNC_PLAYER_RESULT
