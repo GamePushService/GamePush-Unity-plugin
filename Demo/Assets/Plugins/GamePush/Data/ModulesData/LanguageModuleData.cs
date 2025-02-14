@@ -99,7 +99,7 @@ namespace GamePush
             };
         }
 
-        public static string GetTranslation(string lang, Translations translations)
+        public static string GetTranslation(Translations translations, string lang)
         {
             return lang switch
             {
@@ -121,7 +121,7 @@ namespace GamePush
             };
         }
 
-        public static string GetTranslation(Language lang, Translations translations)
+        public static string GetTranslation(Translations translations, Language lang)
         {
             return lang switch
             {
@@ -142,6 +142,6 @@ namespace GamePush
                 _ => translations.en
             };
         }
-        
+
     }
 }

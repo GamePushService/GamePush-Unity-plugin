@@ -28,8 +28,8 @@ namespace GamePush.Core
             {
                 id = e.id,
                 tag = e.tag,
-                name = LanguageTypes.GetTranslation(CoreSDK.currentLang, e.names) == "" ? e.names.en : LanguageTypes.GetTranslation(CoreSDK.currentLang, e.names),
-                description = LanguageTypes.GetTranslation(CoreSDK.currentLang, e.descriptions) == "" ? e.descriptions.en : LanguageTypes.GetTranslation(CoreSDK.currentLang, e.descriptions),
+                name = CoreSDK.Language.GetTranslation(e.names),
+                description = CoreSDK.Language.GetTranslation(e.descriptions),
                 iconSmall = UtilityImage.ResizeImage(e.icon, 48, 48, false),
                 icon = UtilityImage.ResizeImage(e.icon, 256, 256, false),
                 triggers = e.triggers,
@@ -69,8 +69,8 @@ namespace GamePush.Core
         {
             foreach (var eventItem in _eventsList)
             {
-                eventItem.name = LanguageTypes.GetTranslation(lang, eventItem.names) == "" ? eventItem.names.en : LanguageTypes.GetTranslation(lang, eventItem.names);
-                eventItem.description = LanguageTypes.GetTranslation(lang, eventItem.descriptions) == "" ? eventItem.descriptions.en : LanguageTypes.GetTranslation(lang, eventItem.descriptions);
+                eventItem.name = CoreSDK.Language.GetTranslation(eventItem.names);
+                eventItem.description = CoreSDK.Language.GetTranslation(eventItem.descriptions);
             }
         }
         
@@ -174,7 +174,7 @@ namespace GamePush.Core
                     switch (bonus.type)
                     {
                         case BonusType.Reward:
-                            RewardData reward = CoreSDK.Rewards.GetReward(bonus.id);
+                            RewardData reward = CoreSDK.Rewards.GetReward(bonus.id).reward;
                             if (reward != null)
                             {
                                 info.Rewards.Add(reward);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using GamePush.Data;
 
 namespace GamePush
 {
@@ -9,6 +10,12 @@ namespace GamePush
     {
         public RewardData reward;
         public PlayerReward playerReward;
+
+        public AllRewardData(RewardData reward = null, PlayerReward playerReward = null)
+        {
+            this.reward = reward;
+            this.playerReward = playerReward;
+        }
     }
 
     [System.Serializable]
@@ -52,11 +59,22 @@ namespace GamePush
         [EnumMember(Value = "SET")]
         Set
     }
-    
+
     public enum MutationType
     {
-        [EnumMember(Value = "PLAYER_FIELD")]
-        PlayerField
+        [EnumMember(Value = "PLAYER_FIELD")] PlayerField
+    }
+
+    public class GivePlayerRewardInput
+    {
+        public int? id { get; set; }
+        public string? tag { get; set; }
+    }
+
+    public class FetchPlayerRewardsOutput
+    {
+        public List<Reward> Rewards { get; set; } = new();
+        public List<PlayerReward> PlayerRewards { get; set; } = new();
     }
 }
 

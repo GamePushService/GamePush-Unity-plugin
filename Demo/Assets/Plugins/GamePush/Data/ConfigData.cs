@@ -21,7 +21,7 @@ namespace GamePush.Data
         public List<Achievement> achievements;
         public List<AchievementsGroup> achievementsGroups;
         public List<EventData> events;
-        public List<RewardData> rewards;
+        public List<Reward> rewards;
         public List<Trigger> triggers;
         public string serverTime;
     }
@@ -152,19 +152,19 @@ namespace GamePush.Data
         public string icon;
         public string tag;
         public bool isAutoAccept;
-        public List<Mutation> mutations;
+        public List<DataMutation> mutations;
         public Translations names;
         public Translations descriptions;
     }
 
-    [System.Serializable]
-    public class Mutation
-    {
-        public string type;
-        public string key;
-        public string action;
-        public string value;
-    }
+    // [System.Serializable]
+    // public class Mutation
+    // {
+    //     public string type;
+    //     public string key;
+    //     public string action;
+    //     public string value;
+    // }
 
     [System.Serializable]
     public class Trigger

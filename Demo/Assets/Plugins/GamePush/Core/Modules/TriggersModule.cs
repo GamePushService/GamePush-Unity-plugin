@@ -91,10 +91,7 @@ namespace GamePush.Core
         {
             _triggersList.ForEach(trigger =>
             {
-                trigger.description =
-                    LanguageTypes.GetTranslation(language, trigger.descriptions) == ""
-                        ? LanguageTypes.GetTranslation(Language.English, trigger.descriptions)
-                        : LanguageTypes.GetTranslation(language, trigger.descriptions);
+                trigger.description = CoreSDK.Language.GetTranslation(trigger.descriptions);
             });
             RefreshTriggersMap();
         }

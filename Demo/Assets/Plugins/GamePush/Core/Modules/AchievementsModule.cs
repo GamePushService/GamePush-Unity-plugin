@@ -53,8 +53,8 @@ namespace GamePush.Core
 
             foreach (var a in config.achievements)
             {
-                a.name = LanguageTypes.GetTranslation(langKey, a.names) != "" ? LanguageTypes.GetTranslation(langKey, a.names) : LanguageTypes.GetTranslation(LanguageTypes.English, a.names);
-                a.description = LanguageTypes.GetTranslation(langKey, a.descriptions) != "" ? LanguageTypes.GetTranslation(langKey, a.descriptions) : LanguageTypes.GetTranslation(LanguageTypes.English, a.descriptions);
+                a.name = CoreSDK.Language.GetTranslation(a.names);
+                a.description = CoreSDK.Language.GetTranslation(a.descriptions);
 
                 a.icon = UtilityImage.ResizeImage(a.icon, 256, 256, false);
                 a.iconSmall = UtilityImage.ResizeImage(a.icon, 48, 48, false);
@@ -141,17 +141,13 @@ namespace GamePush.Core
         {
             foreach (var achievement in _achievements)
             {
-                string name = LanguageTypes.GetTranslation(language, achievement.names);
-                achievement.name = name != "" ? name : achievement.names.en;
-                string description = LanguageTypes.GetTranslation(language, achievement.descriptions);
-                achievement.description = description != "" ? description : achievement.descriptions.en;
+                achievement.name = CoreSDK.Language.GetTranslation(achievement.names);
+                achievement.description = CoreSDK.Language.GetTranslation(achievement.descriptions);
             }
             foreach (var group in _achievementsGroups)
             {
-                string name = LanguageTypes.GetTranslation(language, group.names);
-                group.name = name != "" ? name : group.names.en;
-                string description = LanguageTypes.GetTranslation(language, group.descriptions);
-                group.description = description != "" ? description : group.descriptions.en;
+                group.name = CoreSDK.Language.GetTranslation(group.names);
+                group.description = CoreSDK.Language.GetTranslation(group.descriptions);
             }
             RefreshAchievementsMap();
         }
@@ -221,11 +217,12 @@ namespace GamePush.Core
 
         public void Open()
         {
-            FetchPlayerAchievementsOutput info = new FetchPlayerAchievementsOutput();
-
-            info.Achievements = _achievements;
-            info.AchievementsGroups = _achievementsGroups;
-            info.PlayerAchievements = _playerAchievements;
+            FetchPlayerAchievementsOutput info = new FetchPlayerAchievementsOutput
+            {
+                Achievements = _achievements,
+                AchievementsGroups = _achievementsGroups,
+                PlayerAchievements = _playerAchievements
+            };
 
             OnShowAcievementsList?.Invoke(info, _settings, OnAchievementsOpen, OnAchievementsClose);
         }

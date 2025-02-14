@@ -61,17 +61,6 @@ namespace GamePush
         public bool isFirstRequest;
     }
 
-    //[Serializable]
-    //public class RewardData
-    //{
-    //    public object[] activatedTriggersNow = { };
-    //    public object[] claimedTriggersNow = { };
-    //    public object[] claimedSchedulersDaysNow = { };
-    //    public object[] givenAchievements = { };
-    //    public object[] givenRewards = { };
-    //    public object[] givenProducts = { };
-    //}
-
     [Serializable]
     public class SyncPlayerInput
     {

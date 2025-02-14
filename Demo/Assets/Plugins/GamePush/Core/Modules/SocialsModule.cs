@@ -21,7 +21,7 @@ namespace GamePush.Core
         public void Init(Config config)
         {
             Translations links = config.communityLinks;
-            _communityLink = LanguageTypes.GetTranslation(CoreSDK.currentLang, links);
+            _communityLink = LanguageTypes.GetTranslation(links, CoreSDK.currentLang);
 
             _gameLink = CoreSDK.Platform.GameLink;
         }

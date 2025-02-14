@@ -15,6 +15,7 @@ namespace GamePush.Core
     [System.Serializable]
     public class PlayerModule
     {
+        #region PlayerActions
         public event Action OnPlayerChange;
         public event Action OnSyncComplete;
         public event Action OnSyncError;
@@ -30,11 +31,16 @@ namespace GamePush.Core
         public event Action<PlayerFetchFieldsData> OnFieldMaximum;
         public event Action<PlayerFetchFieldsData> OnFieldMinimum;
         public event Action<PlayerFetchFieldsData> OnFieldIncrement;
+        
+        #endregion
 
         private bool _isFirstRequest = false;
         private string _token;
 
         private DateTime _playerUpdateTime;
+        
+        private List<RewardToIncrement> _acceptedRewards = new List<RewardToIncrement>();
+        private List<RewardToIncrement> _givenRewards = new List<RewardToIncrement>();
 
         private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
         private Dictionary<SyncStorageType, DateTime> lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
@@ -129,8 +135,6 @@ namespace GamePush.Core
 
         #region Sync/Load
 
-        
-
         public async void PlayerSync(bool forceOverride) 
             => await Sync(forceOverride);
 
@@ -223,7 +227,9 @@ namespace GamePush.Core
             {
                 playerState = playerState,
                 isFirstRequest = _isFirstRequest,
-                @override = forceOverride
+                @override = forceOverride,
+                acceptedRewards = _acceptedRewards.ToArray(),
+                givenRewards = _givenRewards.ToArray(),
             };
 
             var resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
@@ -248,6 +254,8 @@ namespace GamePush.Core
             //Logger.Log("Sync Data", playerData);
             
             SetPlayerStats(playerData);
+            
+            MarkDataFromSync(playerData);
             SetDataFromSync(playerData);
 
             SetStartTime(playerData["sessionStart"].ToString());
@@ -319,6 +327,12 @@ namespace GamePush.Core
             SavePlayerStateToPrefs();
         }
 
+        private void MarkDataFromSync(JObject playerData)
+        {
+            var rewardsData = playerData["rewardsData"]["givenRewards"].ToObject<List<int>>();
+            CoreSDK.Rewards.MarkRewardsGiven(rewardsData);
+        }
+        
         private void SetDataFromSync(JObject playerData)
         {
             //Set uniques
@@ -332,6 +346,10 @@ namespace GamePush.Core
             //Set player events
             var playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
             CoreSDK.Events.SetPlayerEvents(playerEvents);
+            
+            //Set player rewards
+            var playerRewards = playerData["rewards"].ToObject<List<PlayerReward>>();
+            CoreSDK.Rewards.SetRewardsList(playerRewards, _acceptedRewards, _givenRewards);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)
@@ -492,7 +510,7 @@ namespace GamePush.Core
 
             foreach (string key in _playerState.Keys.ToList())
             {
-                if (typeState[key] == "service") continue;
+                if (typeState.Keys.Contains(key) && typeState[key] == "service") continue;
 
                 if (PlayerPrefs.HasKey(SAVE_STATE_MODIFICATOR + key))
                 {
@@ -709,7 +727,8 @@ namespace GamePush.Core
                     where variant.value == value.ToString()
                     select variant;
 
-                if (variantQuery.Count() == 0) return;
+                if (!variantQuery.Any()) 
+                    return;
             }
 
             _playerUpdateTime = CoreSDK.GetServerTime();
@@ -790,8 +809,8 @@ namespace GamePush.Core
                 _playerState[key] = defaultState[key];
             }
 
-            //acceptedRewards = [];
-            //givenRewards = [];
+            _acceptedRewards = new List<RewardToIncrement>();
+            _givenRewards = new List<RewardToIncrement>();
             //claimedTriggers = [];
             //claimedSchedulersDays = [];
         }
@@ -1135,6 +1154,32 @@ namespace GamePush.Core
             float oldValue = Get<float>(key);
             float newValue = oldValue + value;
             SetStateValue(key, newValue);
+        }
+        
+        public void AddGivenReward(RewardToIncrement info)
+        {
+            var rewardInfo = _givenRewards.FirstOrDefault(r => r.id == info.id);
+            if (rewardInfo != null)
+            {
+                rewardInfo.count += info.count;
+            }
+            else
+            {
+                _givenRewards.Add(info);
+            }
+        }
+
+        public void AddAcceptedReward(RewardToIncrement info)
+        {
+            var rewardInfo = _acceptedRewards.FirstOrDefault(r => r.id == info.id);
+            if (rewardInfo != null)
+            {
+                rewardInfo.count += info.count;
+            }
+            else
+            {
+                _acceptedRewards.Add(info);
+            }
         }
         #endregion
 

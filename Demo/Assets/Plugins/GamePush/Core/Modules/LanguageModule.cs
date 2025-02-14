@@ -60,5 +60,12 @@ namespace GamePush.Core
             SetLang(lang);
             OnChangeLanguage?.Invoke(LanguageTypes.ConvertToEnum(lang));
         }
+
+        public string GetTranslation(Translations translations)
+        {
+            Language lang = Current();
+            string translation = LanguageTypes.GetTranslation(translations, lang) == "" ? translations.en : LanguageTypes.GetTranslation(translations, lang);
+            return translation;
+        }
     }
 }

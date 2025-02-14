@@ -21,6 +21,7 @@ namespace GamePush.Core
         public static readonly UniquesFetcher Uniques = new UniquesFetcher();
         public static readonly LeaderboardFetcher Leaderboards = new LeaderboardFetcher();
         public static readonly EventsFetcher Events = new EventsFetcher();
+        public static readonly RewardsFetcher Rewards = new RewardsFetcher();
 
         private static string _fetchConfigQueryName = "FetchPlayerProjectConfig";
         private static string _getPlayerQueryName = "GetPlayer";

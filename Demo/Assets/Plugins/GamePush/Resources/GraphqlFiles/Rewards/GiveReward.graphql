@@ -1,0 +1,41 @@
+
+fragment RewardFields on Reward {
+  id
+  icon
+  tag
+  isAutoAccept
+  mutations {
+    type
+    key
+    action
+    value
+  }
+}
+
+fragment RewardResolvers on Reward {
+  name(lang: $lang)
+  description(lang: $lang)
+  iconSmall: icon(w: 48, h: 48, crop: false)
+}
+
+fragment PlayerRewardFields on PlayerReward {
+  rewardId
+  countTotal
+  countAccepted
+}
+
+mutation GiveReward($input: GivePlayerRewardInput!, $lang: Lang) {
+  result: GivePlayerReward(input: $input) {
+    __typename
+    ... on Problem {
+      message
+    }
+    ... on PlayerReward {
+      ...PlayerRewardFields
+      reward {
+        ...RewardFields
+        ...RewardResolvers
+      }
+    }
+  }
+}

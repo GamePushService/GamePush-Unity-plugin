@@ -111,32 +111,6 @@ namespace GamePush
             await Task.Delay(1);
         }
 
-        // private static void InitModules()
-        // {
-        //     Platform = new PlatformModule();
-        //     Language = new LanguageModule();
-        //     Game = new GameModule();
-        //     Player = new PlayerModule();
-        //     Variables = new GameVariablesModule();
-        //     Ads = new AdsModule();
-        //     Device = new DeviceModule();
-        //     System = new SystemModule();
-        //     App = new AppModule();
-        //     Leaderboard = new LeaderboardModule();
-        //     Uniques = new UniquesModule();
-        //     Achievements = new AchievementsModule();
-        //     Analytics = new AnalyticsModule();
-        //     GameCollections = new GameCollectionsModule();
-        //     Documents = new DocumentsModule();
-        //     Players = new PlayersModule();
-        //     Events = new EventsModule();
-        //     Rewards = new RewardsModule();
-        //     Triggers = new TriggersModule();
-        //
-        //     Payments = new PaymentsModule();
-        //     Socials = new SocialsModule();
-        // }
-
         private static async Task InitFetch()
         {
             await FetchCoreConfig();
@@ -165,7 +139,7 @@ namespace GamePush
             Payments.Init(configData.products, configData.platformConfig);
             App.Init(configData.project, configData.platformConfig);
             Socials.Init(configData.config);
-            // Rewards.Init(configData.rewards);
+            Rewards.Init(configData.rewards);
             Triggers.Init(configData);
             Uniques.Init();
             Achievements.Init(configData);

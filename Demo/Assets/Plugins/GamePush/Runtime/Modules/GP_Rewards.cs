@@ -39,13 +39,32 @@ namespace GamePush
         private static extern string GP_Rewards_HasUnaccepted(string idOrTag);
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.Rewards.OnRewardsGive += (AllRewardData data) => OnRewardsGive?.Invoke(data);
+            CoreSDK.Rewards.OnRewardsGiveError += (string error) => OnRewardsGiveError?.Invoke(error);
+            CoreSDK.Rewards.OnRewardsAccept += (AllRewardData data) => OnRewardsAccept?.Invoke(data);
+            CoreSDK.Rewards.OnRewardsAcceptError += (string error) => OnRewardsAcceptError?.Invoke(error);
+        }
+        
+        private void OnDisable()
+        {
+            CoreSDK.Rewards.OnRewardsGive -= (AllRewardData data) => OnRewardsGive?.Invoke(data);
+            CoreSDK.Rewards.OnRewardsGiveError -= (string error) => OnRewardsGiveError?.Invoke(error);
+            CoreSDK.Rewards.OnRewardsAccept -= (AllRewardData data) => OnRewardsAccept?.Invoke(data);
+            CoreSDK.Rewards.OnRewardsAcceptError -= (string error) => OnRewardsAcceptError?.Invoke(error);
+        }
+
+        private static int GetID(string idOrTag)
+        {
+            return int.TryParse(idOrTag, out var id) ? id : CoreSDK.Rewards.GetReward(idOrTag).reward.id;
+        }
         public static void Give(string idOrTag, bool lazy = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Rewards_Give(idOrTag, lazy);
 #else
-
-            ConsoleLog("Give");
+            CoreSDK.Rewards.Give(idOrTag, lazy);
 #endif
         }
 
@@ -54,8 +73,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Rewards_Accept(idOrTag);
 #else
-
-            ConsoleLog("Accept");
+            CoreSDK.Rewards.Accept(idOrTag);
 #endif
         }
 
@@ -65,10 +83,7 @@ namespace GamePush
             string data = GP_Rewards_List();
             return UtilityJSON.GetArray<RewardData>(data);
 #else
-
-            ConsoleLog("LIST");
-
-            return null;
+            return CoreSDK.Rewards.List().ToArray();
 #endif
         }
 
@@ -78,10 +93,7 @@ namespace GamePush
             string data = GP_Rewards_GivenList();
             return UtilityJSON.GetArray<PlayerReward>(data);
 #else
-
-            ConsoleLog("Given List");
-
-            return null;
+            return CoreSDK.Rewards.GivenList().ToArray();
 #endif
         }
 
@@ -91,10 +103,7 @@ namespace GamePush
             string data = GP_Rewards_GetReward(idOrTag);
             return UtilityJSON.Get<AllRewardData>(data);
 #else
-
-            ConsoleLog("Get Reward");
-
-            return null;
+           return CoreSDK.Rewards.GetReward(GetID(idOrTag));
 #endif
         }
 
@@ -103,10 +112,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_Has(idOrTag) == "true";
 #else
-
-            ConsoleLog("Has");
-
-            return true;
+            return CoreSDK.Rewards.Has(GetID(idOrTag));
 #endif
         }
 
@@ -115,10 +121,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_HasAccepted(idOrTag) == "true";
 #else
-
-            ConsoleLog("Has Accepted");
-
-            return true;
+            return CoreSDK.Rewards.HasAccepted(GetID(idOrTag));
 #endif
         }
 
@@ -127,10 +130,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Rewards_HasUnaccepted(idOrTag) == "true";
 #else
-
-            ConsoleLog("Has Unaccepted");
-
-            return true;
+            return CoreSDK.Rewards.HasUnaccepted(GetID(idOrTag));
 #endif
         }
 
