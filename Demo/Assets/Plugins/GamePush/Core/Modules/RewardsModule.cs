@@ -38,22 +38,22 @@ namespace GamePush.Core
 
         public void MarkRewardsGiven(List<int> ids)
         {
-                foreach (var id in ids)
+            foreach (var id in ids)
+            {
+                var reward = GetRewardData(id);
+                if (reward == null)
                 {
-                    var reward = GetRewardData(id);
-                    if (reward == null)
-                    {
-                        Logger.Error($"Reward not found, ID {id}");
-                        continue;
-                    }
-                    AddReward(reward.id);
-
-                    Give(reward.tag);
-                    if (reward.isAutoAccept)
-                    {
-                        Accept(reward.tag);
-                    }
+                    Logger.Error($"Reward not found, ID {id}");
+                    continue;
                 }
+                AddReward(reward.id);
+
+                Give(reward.tag);
+                if (reward.isAutoAccept)
+                {
+                    Accept(reward.tag);
+                }
+            }
         }
 
         private void SetRewardDataList(List<Reward> rewards)
@@ -106,26 +106,28 @@ namespace GamePush.Core
         
         public async Task<AllRewardData> Give(string input, bool lazy = false)
         {
-            var rewardID = int.TryParse(input, out var id) ? id : GetRewardData(input).id;
-
             void HandleError(string reason)
             {
                 Logger.Error(reason);
                 OnRewardsGiveError?.Invoke(reason);
             }
-        
-            if (_notFoundList.Contains(rewardID))
-            {
-                HandleError(RewardNotFoundError);
-                return null;
-            }
-        
-            var reward = GetRewardData(rewardID);
+            
+            var reward = GetRewardInfo(input).reward;
+            
             if (reward == null)
             {
                 HandleError(RewardNotFoundError);
                 return null;
             }
+            
+            if (int.TryParse(input, out var id) && _notFoundList.Contains(id))
+            {
+                HandleError(RewardNotFoundError);
+                return null;
+            }
+            
+            int rewardID = reward.id;
+        
         
             if (lazy)
             {
@@ -274,7 +276,8 @@ namespace GamePush.Core
                 reward = GetRewardData(idOrTag);
             }
             
-            if (reward.id <= 0) return info;
+            if (reward == null) return info;
+            
             info.reward = reward;
             var playerReward = GetPlayerRewardById(reward.id);
             info.playerReward = playerReward ?? new PlayerReward { rewardId = reward.id, countAccepted = 0, countTotal = 0 };

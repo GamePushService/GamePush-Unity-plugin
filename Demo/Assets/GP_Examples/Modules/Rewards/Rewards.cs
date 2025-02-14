@@ -103,13 +103,12 @@ namespace Examples.Rewards
         public void GetReward()
         {
             RewardData data = GP_Rewards.GetReward(_rewardTag.text).reward;
-            if(data.tag == null)
+            if(data == null)
             {
                 ConsoleUI.Instance.Log("No such reward");
                 return;
             }
 
-            
             ConsoleUI.Instance.Log("Tag: " + data.tag);
             ConsoleUI.Instance.Log("Name: " + data.name);
             ConsoleUI.Instance.Log("Description: " + data.description);
