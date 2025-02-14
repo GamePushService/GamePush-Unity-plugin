@@ -48,10 +48,10 @@ namespace GamePush.Core
                 }
                 AddReward(reward.id);
 
-                Give(reward.tag);
+                Give(reward.id.ToString());
                 if (reward.isAutoAccept)
                 {
-                    Accept(reward.tag);
+                    Accept(reward.id.ToString());
                 }
             }
         }
@@ -70,7 +70,8 @@ namespace GamePush.Core
                     description = CoreSDK.Language.GetTranslation(reward.descriptions),
                     mutations = reward.mutations.ToArray(),
                     icon = UtilityImage.ResizeImage(reward.icon, 256, 256, false),
-                    iconSmall = UtilityImage.ResizeImage(reward.icon, 48, 48, false)
+                    iconSmall = UtilityImage.ResizeImage(reward.icon, 48, 48, false),
+                    isAutoAccept = reward.isAutoAccept,
                 };
 
                 rewardsDataList.Add(data);
