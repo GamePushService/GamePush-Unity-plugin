@@ -230,8 +230,8 @@ namespace GamePush.Core
                 playerState = playerState,
                 isFirstRequest = _isFirstRequest,
                 @override = forceOverride,
-                // acceptedRewards = new List<RewardToIncrement>(),
-                // givenRewards = new List<RewardToIncrement>(_givenRewards),
+                acceptedRewards = new List<RewardToIncrement>(_acceptedRewards),
+                givenRewards = new List<RewardToIncrement>(_givenRewards),
             };
 
             // Logger.Log(JsonConvert.SerializeObject(playerInput));

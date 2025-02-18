@@ -71,8 +71,8 @@ namespace GamePush
 
         public bool isFirstRequest;
 
-        // public List<RewardToIncrement> acceptedRewards;
-        // public List<RewardToIncrement> givenRewards;
+        public List<RewardToIncrement> acceptedRewards;
+        public List<RewardToIncrement> givenRewards;
         
         // public string[] claimedTriggers = { };
         // public ClaimSchedulerDayInput[] claimedSchedulersDays = { };

@@ -11,12 +11,28 @@ namespace GamePush.Core
     {
         private static readonly Dictionary<MutationAction, Mutator> PlayerStateMutators = new Dictionary<MutationAction, Mutator>
         {
-            { MutationAction.Add, (mutation) => CoreSDK.Player.Add(mutation.key, float.TryParse(mutation.value, out float result) ? result : 0) },
-            { MutationAction.Remove, (mutation) => CoreSDK.Player.Add(mutation.key, -Convert.ToSingle(mutation.value)) },
+            { MutationAction.Add, (mutation) =>
+                {
+                    if(int.TryParse(mutation.value, out int resultInt))
+                        CoreSDK.Player.Add(mutation.key, resultInt);
+                    else if(float.TryParse(mutation.value, out float resultFloat))
+                        CoreSDK.Player.Add(mutation.key, resultFloat);
+                }
+            },
+            { MutationAction.Remove, (mutation) =>
+                {
+                    if(int.TryParse(mutation.value, out int resultInt))
+                        CoreSDK.Player.Add(mutation.key, -resultInt);
+                    else if(float.TryParse(mutation.value, out float resultFloat))
+                        CoreSDK.Player.Add(mutation.key, -resultFloat);
+                }
+            },
             { MutationAction.Set, (mutation) =>
                 {
-                    if(float.TryParse(mutation.value, out float result))
-                        CoreSDK.Player.Set(mutation.key, result);
+                    if(int.TryParse(mutation.value, out int resultInt))
+                        CoreSDK.Player.Set(mutation.key, resultInt);
+                    else if(float.TryParse(mutation.value, out float resultFloat))
+                        CoreSDK.Player.Set(mutation.key, resultFloat);
                     else
                         CoreSDK.Player.Set(mutation.key, mutation.value.ToString());
                 }
