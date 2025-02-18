@@ -74,6 +74,7 @@ namespace GamePush.Core
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             
+            Debug.Log(JsonConvert.SerializeObject(variables["input"]));
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,
@@ -173,7 +174,6 @@ namespace GamePush.Core
         {
             Query query = GetQuery(SyncPlayerQuery, OperationType.Mutation);
 
-            
             Tuple<string, object> queryTuple = Hash.SingQuery(input);
             string headers = queryTuple.Item1;
             Dictionary<string, object> variables = new Dictionary<string, object>

@@ -223,15 +223,18 @@ namespace GamePush.Core
 
         private async Task CloudSync(JObject playerState, SyncStorageType storage, bool forceOverride = false)
         {
+            // Logger.Log("To sync AcceptedRewards count " + _acceptedRewards.Count);
+            // Logger.Log("To sync GivenRewards count " + _givenRewards.Count);
             var playerInput = new SyncPlayerInput
             {
                 playerState = playerState,
                 isFirstRequest = _isFirstRequest,
                 @override = forceOverride,
-                acceptedRewards = _acceptedRewards.ToArray(),
-                givenRewards = _givenRewards.ToArray(),
+                // acceptedRewards = new List<RewardToIncrement>(),
+                // givenRewards = new List<RewardToIncrement>(_givenRewards),
             };
 
+            // Logger.Log(JsonConvert.SerializeObject(playerInput));
             var resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
 
             if (resultObject == null)
@@ -1158,6 +1161,7 @@ namespace GamePush.Core
         
         public void AddGivenReward(RewardToIncrement info)
         {
+            // Logger.Log("Add given");
             var rewardInfo = _givenRewards.FirstOrDefault(r => r.id == info.id);
             if (rewardInfo != null)
             {
@@ -1167,10 +1171,13 @@ namespace GamePush.Core
             {
                 _givenRewards.Add(info);
             }
+            // Logger.Log("GivenRewards Count: " + _givenRewards.Count);
+            // Logger.Log("Rewards Count: " + _givenRewards.FirstOrDefault(r => r.id == info.id).count);
         }
 
         public void AddAcceptedReward(RewardToIncrement info)
         {
+            // Logger.Log("Add accepted");
             var rewardInfo = _acceptedRewards.FirstOrDefault(r => r.id == info.id);
             if (rewardInfo != null)
             {
@@ -1180,6 +1187,8 @@ namespace GamePush.Core
             {
                 _acceptedRewards.Add(info);
             }
+            // Logger.Log("AcceptedRewards Count: " + _acceptedRewards.Count);
+            // Logger.Log("Rewards Count: " + _acceptedRewards.FirstOrDefault(r => r.id == info.id).count);
         }
         #endregion
 
@@ -1399,6 +1408,8 @@ namespace GamePush.Core
         }
         #endregion
 
+        #region PrintFields
+
         private void PrintPlayerFields(List<PlayerField> fields)
         {
             foreach (PlayerField field in fields)
@@ -1436,6 +1447,9 @@ namespace GamePush.Core
             }
             Logger.Log(log);
         }
+
+        #endregion
+        
 
     }
 }

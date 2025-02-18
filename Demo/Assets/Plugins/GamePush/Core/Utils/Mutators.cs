@@ -12,8 +12,15 @@ namespace GamePush.Core
         private static readonly Dictionary<MutationAction, Mutator> PlayerStateMutators = new Dictionary<MutationAction, Mutator>
         {
             { MutationAction.Add, (mutation) => CoreSDK.Player.Add(mutation.key, float.TryParse(mutation.value, out float result) ? result : 0) },
-            { MutationAction.Remove, (mutation) => CoreSDK.Player.Add(mutation.key, (float)-Convert.ToDouble(mutation.value)) },
-            { MutationAction.Set, (mutation) => CoreSDK.Player.Set(mutation.key, float.TryParse(mutation.value, out float result) ? result : 0) }
+            { MutationAction.Remove, (mutation) => CoreSDK.Player.Add(mutation.key, -Convert.ToSingle(mutation.value)) },
+            { MutationAction.Set, (mutation) =>
+                {
+                    if(float.TryParse(mutation.value, out float result))
+                        CoreSDK.Player.Set(mutation.key, result);
+                    else
+                        CoreSDK.Player.Set(mutation.key, mutation.value.ToString());
+                }
+            }
         };
 
         private static readonly Dictionary<MutationType, Dictionary<MutationAction, Mutator>> MutatorsByType = new()

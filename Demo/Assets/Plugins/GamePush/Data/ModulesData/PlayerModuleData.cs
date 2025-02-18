@@ -71,10 +71,11 @@ namespace GamePush
 
         public bool isFirstRequest;
 
-        public RewardToIncrement[] acceptedRewards = { };
-        public RewardToIncrement[] givenRewards = { };
-        public string[] claimedTriggers = { };
-        public ClaimSchedulerDayInput[] claimedSchedulersDays = { };
+        // public List<RewardToIncrement> acceptedRewards;
+        // public List<RewardToIncrement> givenRewards;
+        
+        // public string[] claimedTriggers = { };
+        // public ClaimSchedulerDayInput[] claimedSchedulersDays = { };
     }
 
     [Serializable]
@@ -87,8 +88,8 @@ namespace GamePush
     [Serializable]
     public class RewardToIncrement
     {
-        public int id;
         public int count;
+        public int id;
     }
 
     [Serializable]

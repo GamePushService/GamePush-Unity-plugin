@@ -17,11 +17,14 @@ namespace GamePush.Core
         private Dictionary<int, RewardData> _rewardsMapID = new Dictionary<int, RewardData>();
         private Dictionary<string, RewardData> _rewardsMapTag = new Dictionary<string, RewardData>();
         private Dictionary<int, PlayerReward> _playerRewardsMap = new Dictionary<int, PlayerReward>();
-        
+
+        #region Actions
         public event Action<AllRewardData> OnRewardsGive;
         public event Action<string> OnRewardsGiveError;
         public event Action<AllRewardData> OnRewardsAccept;
         public event Action<string> OnRewardsAcceptError;
+
+        #endregion
         
         private const string RewardNotFoundError = "reward_not_found";
         private const string PlayerRewardNotFoundError = "player_reward_not_found";
@@ -36,28 +39,37 @@ namespace GamePush.Core
             CoreSDK.OnInit += AcceptOnStart;
         }
 
-        public void MarkRewardsGiven(List<int> ids)
+        public async void MarkRewardsGiven(List<int> ids)
         {
-            foreach (var id in ids)
+            try
             {
-                var reward = GetRewardData(id);
-                if (reward == null)
+                foreach (var id in ids)
                 {
-                    Logger.Error($"Reward not found, ID {id}");
-                    continue;
-                }
-                AddReward(reward.id);
+                    Logger.Log("Set given: " + id);
+                    var reward = GetRewardData(id);
+                    if (reward == null)
+                    {
+                        Logger.Error($"Reward not found, ID {id}");
+                        continue;
+                    }
+                    AddReward(reward.id);
 
-                Give(reward.id.ToString());
-                if (reward.isAutoAccept)
-                {
-                    Accept(reward.id.ToString());
+                    await Give(reward.id.ToString());
+                    if (reward.isAutoAccept)
+                    {
+                        await Accept(reward.id.ToString());
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e.Message);
             }
         }
 
         private void SetRewardDataList(List<Reward> rewards)
         {
+            Logger.Log("Set reward data list: " + rewards.Count);
             List<RewardData> rewardsDataList = new List<RewardData>();
             
             foreach (var reward in rewards)
@@ -86,212 +98,15 @@ namespace GamePush.Core
             RefreshRewardsMap();
         }
 
-        private void AcceptOnStart()
-        {
-            foreach (var playerReward in _playerRewardsList)
-            {
-                var reward = GetRewardData(playerReward.rewardId);
-                if (reward?.isAutoAccept == true)
-                {
-                    int countLeft = playerReward.countTotal - playerReward.countAccepted;
-                    if (countLeft > 0)
-                    {
-                        for (int i = 0; i < countLeft; i++)
-                        {
-                            Accept(reward.id.ToString());
-                        }
-                    }
-                }
-            }
-        }
-        
-        public async Task<AllRewardData> Give(string input, bool lazy = false)
-        {
-            void HandleError(string reason)
-            {
-                Logger.Error(reason);
-                OnRewardsGiveError?.Invoke(reason);
-            }
-            
-            var reward = GetRewardInfo(input).reward;
-            
-            if (reward == null)
-            {
-                HandleError(RewardNotFoundError);
-                return null;
-            }
-            
-            if (int.TryParse(input, out var id) && _notFoundList.Contains(id))
-            {
-                HandleError(RewardNotFoundError);
-                return null;
-            }
-            
-            int rewardID = reward.id;
-        
-        
-            if (lazy)
-            {
-                var playerReward = new PlayerReward
-                {
-                    rewardId = reward.id,
-                    countTotal = 1,
-                    countAccepted = 0
-                };
-        
-                AddReward(reward.id);
-                
-                CoreSDK.Player.AddGivenReward(new RewardToIncrement { id = reward.id, count = 1 });
-                
-                var updatedPlayerReward = GetPlayerRewardById(reward.id);
-                playerReward.countTotal = updatedPlayerReward.countTotal;
-                playerReward.countAccepted = updatedPlayerReward.countAccepted;
-        
-                AllRewardData rewardInfo = new AllRewardData(reward, playerReward);
-                OnRewardsGive?.Invoke(rewardInfo);
-        
-                if (reward.isAutoAccept)
-                {
-                    await Accept(input);
-                }
-        
-                return rewardInfo;
-            }
-        
-            try
-            {
-                var playerRewardResult =
-                    await DataFetcher.Rewards.GiveReward(new GivePlayerRewardInput { id = rewardID });
-                var playerReward = playerRewardResult.playerReward;
-        
-                AddReward(reward.id);
-        
-                var updatedPlayerReward = GetPlayerRewardById(reward.id);
-                playerReward.countTotal = updatedPlayerReward.countTotal;
-                playerReward.countAccepted = updatedPlayerReward.countAccepted;
-        
-                AllRewardData rewardInfo = new AllRewardData(reward, playerReward);
-                OnRewardsGive?.Invoke(rewardInfo);
-        
-                if (reward.isAutoAccept)
-                {
-                    await Accept(input);
-                }
-                return rewardInfo;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message == RewardNotFoundError)
-                {
-                    _notFoundList.Add(rewardID);
-                }
-        
-                HandleError(ex.Message);
-            }
-            
-            return null;
-        }
-        
-        public async Task<AllRewardData> Accept(string input)
-        {
-            var rewardID = int.TryParse(input, out var id) ? id : GetRewardData(input).id;
-
-            void HandleError(string reason)
-            {
-                Logger.Error(reason);
-                OnRewardsAcceptError?.Invoke(reason);
-            }
-
-            if (_notFoundList.Contains(rewardID))
-            {
-                HandleError(RewardNotFoundError);
-                return null;
-            }
-
-            if (!HasUnaccepted(rewardID.ToString()))
-            {
-                HandleError(RewardAlreadyAcceptedError);
-                return null;
-            }
-
-            var rewardInfo = GetRewardInfo(rewardID.ToString());
-            
-            if (rewardInfo.playerReward == null)
-            {
-                HandleError(PlayerRewardNotFoundError);
-                return null;
-            }
-
-            AcceptReward(rewardInfo.playerReward);
-            
-            CoreSDK.Player.AddAcceptedReward(new RewardToIncrement { id = rewardInfo.playerReward.rewardId, count = 1 });
-            OnRewardsAccept?.Invoke(rewardInfo);
-            return rewardInfo;
-        }
-
-        
-        public List<RewardData> List() => _rewardsDataList;
-        public List<PlayerReward> GivenList() => _playerRewardsList;
-        public bool Has(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countTotal > 0;
-       
-        public bool HasAccepted(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countAccepted > 0;
-        
-        public bool HasUnaccepted(string idOrTag)
-        {
-            var info = GetRewardInfo(idOrTag);
-            return info.playerReward != null && info.playerReward.countTotal > info.playerReward.countAccepted;
-        }
-
-        public AllRewardData GetReward(int id) => GetRewardInfo(id.ToString());
-        public AllRewardData GetReward(string idOrTag) => GetRewardInfo(idOrTag);
-        
-
-        private RewardData GetRewardData(int id)
-        {
-            _rewardsMapID.TryGetValue(id, out var reward);
-            return reward;
-        }
-        
-        private RewardData GetRewardData(string tag)
-        {
-            _rewardsMapTag.TryGetValue(tag, out var reward);
-            return reward;
-        }
-
-        private PlayerReward GetPlayerRewardById(int id)
-        {
-            _playerRewardsMap.TryGetValue(id, out var reward);
-            return reward;
-        }
-
-        private AllRewardData GetRewardInfo(string idOrTag)
-        {
-            var info = new AllRewardData();
-            var reward = new RewardData();
-            if (int.TryParse(idOrTag, out var id))
-            {
-                reward = GetRewardData(id);
-            }
-            else
-            {
-                reward = GetRewardData(idOrTag);
-            }
-            
-            if (reward == null) return info;
-            
-            info.reward = reward;
-            var playerReward = GetPlayerRewardById(reward.id);
-            info.playerReward = playerReward ?? new PlayerReward { rewardId = reward.id, countAccepted = 0, countTotal = 0 };
-
-            return info;
-        }
-        
-
         public void SetRewardsList(
             List<PlayerReward> playerRewards,
             List<RewardToIncrement> notSentGivenRewards,
             List<RewardToIncrement> notSentAcceptedRewards)
         {
+            Logger.Log("SetRewardsList");
+            Logger.Log("notSentGivenRewards: " + notSentAcceptedRewards.Count);
+            Logger.Log("notSentAcceptedRewards: " + notSentAcceptedRewards.Count);
+            
             var notSentAcceptedLeft = new List<RewardToIncrement>(notSentAcceptedRewards);
 
             var notSentRewards = notSentGivenRewards
@@ -342,10 +157,207 @@ namespace GamePush.Core
             RefreshPlayerRewardsMap();
         }
 
-        private void MakeRewardAccepted(PlayerReward reward, int count = 1)
+        
+        
+        private async void AcceptOnStart()
         {
-            reward.countAccepted += count;
+            foreach (var playerReward in _playerRewardsList)
+            {
+                var reward = GetRewardData(playerReward.rewardId);
+                if (reward?.isAutoAccept == true)
+                {
+                    int countLeft = playerReward.countTotal - playerReward.countAccepted;
+                    if (countLeft > 0)
+                    {
+                        for (int i = 0; i < countLeft; i++)
+                        {
+                            await Accept(reward.id.ToString());
+                        }
+                    }
+                }
+            }
         }
+        
+        public async Task Give(string input, bool lazy = false)
+        {
+            void HandleError(string reason)
+            {
+                Logger.Error(reason);
+                OnRewardsGiveError?.Invoke(reason);
+            }
+            
+            var reward = GetRewardInfo(input).reward;
+            
+            if (reward == null)
+            {
+                HandleError(RewardNotFoundError);
+                return;
+            }
+            
+            if (int.TryParse(input, out var id) && _notFoundList.Contains(id))
+            {
+                HandleError(RewardNotFoundError);
+                return;
+            }
+            
+            int rewardID = reward.id;
+        
+        
+            if (lazy)
+            {
+                var playerReward = new PlayerReward
+                {
+                    rewardId = reward.id,
+                    countTotal = 1,
+                    countAccepted = 0
+                };
+        
+                AddReward(reward.id);
+                
+                CoreSDK.Player.AddGivenReward(new RewardToIncrement { id = reward.id, count = 1 });
+                
+                var updatedPlayerReward = GetPlayerRewardById(reward.id);
+                playerReward.countTotal = updatedPlayerReward.countTotal;
+                playerReward.countAccepted = updatedPlayerReward.countAccepted;
+        
+                AllRewardData rewardInfo = new AllRewardData(reward, playerReward);
+                OnRewardsGive?.Invoke(rewardInfo);
+        
+                if (reward.isAutoAccept)
+                {
+                    await Accept(input);
+                }
+
+                return;
+            }
+        
+            try
+            {
+                var playerRewardResult =
+                    await DataFetcher.Rewards.GiveReward(new GivePlayerRewardInput { id = rewardID });
+                var playerReward = playerRewardResult.playerReward;
+        
+                AddReward(reward.id);
+        
+                var updatedPlayerReward = GetPlayerRewardById(reward.id);
+                playerReward.countTotal = updatedPlayerReward.countTotal;
+                playerReward.countAccepted = updatedPlayerReward.countAccepted;
+        
+                AllRewardData rewardInfo = new AllRewardData(reward, playerReward);
+                OnRewardsGive?.Invoke(rewardInfo);
+        
+                if (reward.isAutoAccept)
+                {
+                    await Accept(input);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == RewardNotFoundError)
+                {
+                    _notFoundList.Add(rewardID);
+                }
+        
+                HandleError(ex.Message);
+            }
+        }
+        
+        public async Task Accept(string input)
+        {
+            var rewardID = int.TryParse(input, out var id) ? id : GetRewardData(input).id;
+
+            void HandleError(string reason)
+            {
+                Logger.Error(reason);
+                OnRewardsAcceptError?.Invoke(reason);
+            }
+
+            if (_notFoundList.Contains(rewardID))
+            {
+                HandleError(RewardNotFoundError);
+                return;
+            }
+
+            if (!HasUnaccepted(rewardID.ToString()))
+            {
+                HandleError(RewardAlreadyAcceptedError);
+                return;
+            }
+
+            var rewardInfo = GetRewardInfo(rewardID.ToString());
+            
+            if (rewardInfo.playerReward == null)
+            {
+                HandleError(PlayerRewardNotFoundError);
+                return;
+            }
+
+            AcceptReward(rewardInfo.playerReward);
+            
+            CoreSDK.Player.AddAcceptedReward(new RewardToIncrement { id = rewardInfo.playerReward.rewardId, count = 1 });
+            OnRewardsAccept?.Invoke(rewardInfo);
+        }
+
+        #region Getters
+
+        public List<RewardData> List() => _rewardsDataList;
+        public List<PlayerReward> GivenList() => _playerRewardsList;
+        public bool Has(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countTotal > 0;
+        
+        public bool HasAccepted(string idOrTag) => GetRewardInfo(idOrTag).playerReward?.countAccepted > 0;
+        
+        public bool HasUnaccepted(string idOrTag)
+        {
+            var info = GetRewardInfo(idOrTag);
+            return info.playerReward != null && info.playerReward.countTotal > info.playerReward.countAccepted;
+        }
+
+        public AllRewardData GetReward(int id) => GetRewardInfo(id.ToString());
+        public AllRewardData GetReward(string idOrTag) => GetRewardInfo(idOrTag);
+        
+        private RewardData GetRewardData(int id)
+        {
+            _rewardsMapID.TryGetValue(id, out var reward);
+            return reward;
+        }
+        
+        private RewardData GetRewardData(string tag)
+        {
+            _rewardsMapTag.TryGetValue(tag, out var reward);
+            return reward;
+        }
+
+        private PlayerReward GetPlayerRewardById(int id)
+        {
+            _playerRewardsMap.TryGetValue(id, out var reward);
+            return reward;
+        }
+
+        private AllRewardData GetRewardInfo(string idOrTag)
+        {
+            var info = new AllRewardData();
+            var reward = new RewardData();
+            if (int.TryParse(idOrTag, out var id))
+            {
+                reward = GetRewardData(id);
+            }
+            else
+            {
+                reward = GetRewardData(idOrTag);
+            }
+            
+            if (reward == null) return info;
+            
+            info.reward = reward;
+            var playerReward = GetPlayerRewardById(reward.id);
+            info.playerReward = playerReward ?? new PlayerReward { rewardId = reward.id, countAccepted = 0, countTotal = 0 };
+
+            return info;
+        }
+
+        #endregion
+        
 
         private void AddReward(int id)
         {
@@ -375,6 +387,11 @@ namespace GamePush.Core
             MakeRewardAccepted(playerReward);
             ApplyRewardMutations(reward);
         }
+        
+        private void MakeRewardAccepted(PlayerReward reward, int count = 1)
+        {
+            reward.countAccepted += count;
+        }
 
         private void ApplyRewardMutations(RewardData reward)
         {
@@ -388,6 +405,7 @@ namespace GamePush.Core
             }
         }
 
+        #region Maps Refresh
         private void RefreshRewardsMap()
         {
             _rewardsMapID.Clear();
@@ -408,5 +426,7 @@ namespace GamePush.Core
                 _playerRewardsMap[pr.rewardId] = pr;
             }
         }
+        
+        #endregion
     }
 }
