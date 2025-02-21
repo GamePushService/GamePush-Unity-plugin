@@ -23,6 +23,7 @@ namespace GamePush.Data
         public List<EventData> events;
         public List<Reward> rewards;
         public List<Trigger> triggers;
+        public List<SchedulerData> schedulers;
         public string serverTime;
     }
 
@@ -84,6 +85,24 @@ namespace GamePush.Data
         public bool isDev;
         public bool isAllowedOrigin;
         public Config config;
+    }
+    
+    public class Event
+    {
+        public int id;
+        public string tag;
+        public string name;
+        public string description;
+        public string icon;
+        public string iconSmall;
+        public string dateStart;
+        public string dateEnd;
+        public bool isActive;
+        public double timeLeft;
+        public bool isAutoJoin;
+        public Trigger[] triggers;
+        public Translations names;
+        public Translations descriptions;
     }
 
     [System.Serializable]
@@ -157,14 +176,6 @@ namespace GamePush.Data
         public Translations descriptions;
     }
 
-    // [System.Serializable]
-    // public class Mutation
-    // {
-    //     public string type;
-    //     public string key;
-    //     public string action;
-    //     public string value;
-    // }
 
     [System.Serializable]
     public class Trigger

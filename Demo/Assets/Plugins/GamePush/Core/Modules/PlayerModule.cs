@@ -332,6 +332,12 @@ namespace GamePush.Core
 
         private void MarkDataFromSync(JObject playerData)
         {
+            var activeIds = playerData["rewardsData"]["activatedTriggersNow"].ToObject<List<string>>();
+            CoreSDK.Triggers.MarkTriggersAsActivated(activeIds);
+            
+            var claimedIds = playerData["rewardsData"]["claimedTriggersNow"].ToObject<List<string>>();
+            CoreSDK.Triggers.MarkTriggersAsClaimed(claimedIds);
+            
             var rewardsData = playerData["rewardsData"]["givenRewards"].ToObject<List<int>>();
             CoreSDK.Rewards.MarkRewardsGiven(rewardsData);
         }

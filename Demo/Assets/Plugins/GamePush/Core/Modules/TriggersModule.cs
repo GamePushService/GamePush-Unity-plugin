@@ -10,81 +10,26 @@ namespace GamePush.Core
 {
     public class TriggersModule 
     {
-        private readonly List<Trigger> _triggersList = new();
-        private readonly List<TriggerData> _triggersDataList = new();
+        private List<Trigger> _triggersList = new();
+        private List<TriggerData> _triggersDataList = new();
         private List<PlayerTrigger> _activatedTriggersList = new();
         private Dictionary<string, TriggerData> _triggersMapID = new();
         private Dictionary<string, TriggerData> _triggersMapTag = new();
         private Dictionary<string, PlayerTrigger> _activatedTriggersMap = new();
         
+        public event Action<TriggerData> OnTriggerActivate;
+        public event Action<TriggerData> OnTriggerClaim;
+        public event Action<string> OnTriggerClaimError;
+        
         public void Init(AllConfigData config)
         {
-        // _triggersList = config.triggers
-        //     .Concat(config.schedulers.SelectMany(it => it.Triggers))
-        //     .Concat(config.Events.SelectMany(it => it.Triggers))
-        //     .ToList();
-        RefreshTriggersMap();
+            _triggersList = config.triggers
+                .Concat(config.schedulers.SelectMany(it => it.triggers))
+                .Concat(config.events.SelectMany(it => it.triggers))
+                .ToList();
+            RefreshTriggersMap();
 
-        // _syncManager.On("setTriggersList", payload =>
-        // {
-        //     if (payload is not Dictionary<string, object> eventArgs ||
-        //         !eventArgs.TryGetValue("playerTriggers", out var playerTriggersObj) ||
-        //         playerTriggersObj is not List<PlayerTrigger> playerTriggers)
-        //     {
-        //         return;
-        //     }
-        //
-        //     _activatedTriggersList = playerTriggers
-        //         .Where(tr => _triggersMapID.ContainsKey(tr.TriggerId))
-        //         .ToList();
-        //     RefreshActivatedTriggersMap();
-        // });
-
-        // _syncManager.On("markTriggersActivated", ids =>
-        // {
-        //     foreach (var id in (List<string>)ids)
-        //     {
-        //         var (trigger, isActivated, _) = GetTriggerInfo(id);
-        //         if (trigger == null)
-        //         {
-        //             Logger.Error($"Trigger not found, ID: {id}");
-        //             continue;
-        //         }
-        //
-        //         if (!isActivated)
-        //         {
-        //             _activatedTriggersList.Add(new PlayerTrigger { TriggerId = id, Claimed = false });
-        //             RefreshActivatedTriggersMap();
-        //             Emit("activate", new { trigger });
-        //             Logger.Info($"🎉 Trigger activated, ID: {id}, Tag: {trigger.Tag}");
-        //         }
-        //     }
-        // });
-
-        // _syncManager.On("markTriggersClaimed", ids =>
-        // {
-        //     foreach (var id in (List<string>)ids)
-        //     {
-        //         var (trigger, _, isClaimed) = GetTriggerInfo(id);
-        //         if (trigger == null)
-        //         {
-        //             Logger.Error($"Trigger not found, ID: {id}");
-        //             continue;
-        //         }
-        //
-        //         if (!isClaimed)
-        //         {
-        //             _activatedTriggersList = _activatedTriggersList
-        //                 .Select(t => t.TriggerId == id ? new PlayerTrigger { TriggerId = id, Claimed = true } : t)
-        //                 .ToList();
-        //             RefreshActivatedTriggersMap();
-        //             Emit("claim", new { trigger });
-        //             Logger.Info($"🎉 Trigger claimed, ID: {id}, Tag: {trigger.Tag}");
-        //         }
-        //     }
-        // });
-
-        CoreSDK.Language.OnChangeLanguage += ChangeLanguage;
+            CoreSDK.Language.OnChangeLanguage += ChangeLanguage;
         }
 
         private void ChangeLanguage(Language language)
@@ -94,6 +39,60 @@ namespace GamePush.Core
                 trigger.description = CoreSDK.Language.GetTranslation(trigger.descriptions);
             });
             RefreshTriggersMap();
+        }
+
+        public void SetTriggersList(List<PlayerTrigger> triggers)
+        {
+            _activatedTriggersList = triggers
+                .Where(tr => _triggersMapID.ContainsKey(tr.triggerId))
+                .ToList();
+            RefreshActivatedTriggersMap();
+        }
+
+        public void MarkTriggersAsActivated(List<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                PlayerTriggerInfo info = GetTriggerInfo(id);
+                
+                if (info.trigger == null)
+                {
+                    Logger.Error($"Trigger not found, ID: {id}");
+                    continue;
+                }
+            
+                if (!info.isActivated)
+                {
+                    _activatedTriggersList.Add(new PlayerTrigger { triggerId = id, claimed = false });
+                    RefreshActivatedTriggersMap();
+                    OnTriggerActivate?.Invoke(info.trigger);
+                    
+                    Logger.Info($"🎉 Trigger activated, ID: {id}, Tag: {info.trigger.tag}");
+                }
+            }
+        }
+
+        public void MarkTriggersAsClaimed(List<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                PlayerTriggerInfo info = GetTriggerInfo(id);
+                if (info.trigger == null)
+                {
+                    Logger.Error($"Trigger not found, ID: {id}");
+                    continue;
+                }
+            
+                if (!info.isClaimed)
+                {
+                    _activatedTriggersList = _activatedTriggersList
+                        .Select(t => t.triggerId == id ? new PlayerTrigger { triggerId = id, claimed = true } : t)
+                        .ToList();
+                    RefreshActivatedTriggersMap();
+                    OnTriggerClaim?.Invoke(info.trigger);
+                    Logger.Info($"🎉 Trigger claimed, ID: {id}, Tag: {info.trigger.tag}");
+                }
+            }
         }
 
         
