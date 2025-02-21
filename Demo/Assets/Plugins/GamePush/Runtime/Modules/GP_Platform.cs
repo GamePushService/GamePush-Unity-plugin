@@ -30,8 +30,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return PlatformTypes.ConvertToEnum(GP_Platform_Type());
 #else
+            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
             //return PlatformTypes.ConvertToEnum(CoreSDK.platform.type);
-            return Platform.NONE;
+            return platform;
 #endif
         }
 
@@ -40,8 +41,9 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Type();
 #else
+            Platform platform = GP_Settings.instance.GetFromPlatformSettings().PlatformToEmulate;
             //return CoreSDK.platform.type;
-            return "";
+            return platform.ToString();
 #endif
         }
 
@@ -53,7 +55,6 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Platform_Tag();
 #else
-
             //return CoreSDK.platform.tag;
             return "";
 #endif
@@ -77,7 +78,8 @@ namespace GamePush
             return GP_Platform_HasIntegratedAuth() == "true";
 #else
             //return CoreSDK.platform.hasIntegratedAuth;
-            return false;
+            
+            return GP_Settings.instance.GetFromPlatformSettings().HasIntegratedAuth;
 #endif
         }
 
@@ -88,7 +90,7 @@ namespace GamePush
             return GP_Platform_IsLogoutAvailable() == "true";
 #else
             //return CoreSDK.platform.isLogoutAvailable;
-            return false;
+            return GP_Settings.instance.GetFromPlatformSettings().IsLogoutAvailable;
 #endif
         }
 
@@ -99,7 +101,7 @@ namespace GamePush
             return GP_Platform_IsExternalLinksAllowed() == "true";
 #else
             //return CoreSDK.platform.isExternalLinksAllowed;
-            return false;
+            return GP_Settings.instance.GetFromPlatformSettings().IsExternalLinksAllowed;
 #endif
         }
 
@@ -109,7 +111,7 @@ namespace GamePush
             return GP_Platform_IsSecretCodeAuthAvailable() == "true";
 #else
             //return CoreSDK.platform.isSecretCodeAuthAvailable;
-            return false;
+            return GP_Settings.instance.GetFromPlatformSettings().IsSecretCodeAuthAvailable;
 #endif
         }
 
@@ -120,7 +122,7 @@ namespace GamePush
             return GP_Platform_IsSupportsCloudSaves() == "true";
 #else
             //return CoreSDK.platform.isSupportsCloudSaves;
-            return false;
+            return GP_Settings.instance.GetFromPlatformSettings().IsSupportsCloudSaves;
 #endif
         }
 
