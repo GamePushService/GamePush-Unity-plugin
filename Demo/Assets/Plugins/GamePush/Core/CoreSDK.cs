@@ -101,7 +101,6 @@ namespace GamePush
             int.TryParse(ProjectData.ID, out var id);
             SetProjectData(id, ProjectData.TOKEN);
 
-            // InitModules();
 #if UNITY_EDITOR || !UNITY_WEBGL
             await InitFetch();
 #endif
@@ -113,6 +112,7 @@ namespace GamePush
 
         private static async Task InitFetch()
         {
+            
             await FetchCoreConfig();
             await Player.FetchPlayerConfig();
         }

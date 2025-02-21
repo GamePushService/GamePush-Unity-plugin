@@ -32,12 +32,14 @@ namespace GamePush.Initialization
 #if UNITY_EDITOR
             SDK.AddComponent<GP_ConsoleController>();
 #endif
+            SDK.AddComponent<GP_Init>();
             SDK.AddComponent<GP_Logger>();
 
-            SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
 
+#if !UNITY_WEBGL
             CoreSDK.Initialize();
+#endif
 
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
