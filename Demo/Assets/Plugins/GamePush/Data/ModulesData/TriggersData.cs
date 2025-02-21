@@ -15,8 +15,9 @@ namespace GamePush
         public string tag;
         public bool isAutoClaim;
         public string description;
+        public Translations descriptions;
         public TriggerCondition[][] conditions;
-        public TriggerBonus[] bonuses;
+        public BonusData[] bonuses;
     }
 
     [System.Serializable]
@@ -26,13 +27,6 @@ namespace GamePush
         public string key;
         public string @operator;
         public string[] value;
-    }
-
-    [System.Serializable]
-    public class TriggerBonus
-    {
-        public string type;
-        public int id;
     }
 
     [System.Serializable]

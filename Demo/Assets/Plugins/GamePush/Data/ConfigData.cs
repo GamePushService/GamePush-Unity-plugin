@@ -22,7 +22,7 @@ namespace GamePush.Data
         public List<AchievementsGroup> achievementsGroups;
         public List<EventData> events;
         public List<Reward> rewards;
-        public List<Trigger> triggers;
+        public List<TriggerData> triggers;
         public List<SchedulerData> schedulers;
         public string serverTime;
     }
@@ -65,7 +65,7 @@ namespace GamePush.Data
         public string serverTime;
         public List<GameVariableConfigData> gameVariables;
         public List<Reward> rewards;
-        public List<Trigger> triggers;
+        public List<TriggerData> triggers;
         public List<Achievement> achievements;
         public List<AchievementsGroup> achievementsGroups;
     }
@@ -87,23 +87,7 @@ namespace GamePush.Data
         public Config config;
     }
     
-    public class Event
-    {
-        public int id;
-        public string tag;
-        public string name;
-        public string description;
-        public string icon;
-        public string iconSmall;
-        public string dateStart;
-        public string dateEnd;
-        public bool isActive;
-        public double timeLeft;
-        public bool isAutoJoin;
-        public Trigger[] triggers;
-        public Translations names;
-        public Translations descriptions;
-    }
+    
 
     [System.Serializable]
     public class PlatformConfig
@@ -175,34 +159,28 @@ namespace GamePush.Data
         public Translations names;
         public Translations descriptions;
     }
+    
 
 
-    [System.Serializable]
-    public class Trigger
-    {
-        public string id;
-        public string tag;
-        public bool isAutoClaim;
-        public string description;
-        public Translations descriptions;
-        public Condition[][] conditions;
-        public List<Bonus> bonuses;
-    }
-
-    [System.Serializable]
-    public class Condition
-    {
-        public string type;
-        public string key;
-        public string @operator;
-        public List<string> value;
-    }
-
-    [System.Serializable]
-    public class Bonus
-    {
-        public int id;
-        public string type;
-    }
+    // [System.Serializable]
+    // public class Trigger
+    // {
+    //     public string id;
+    //     public string tag;
+    //     public bool isAutoClaim;
+    //     public string description;
+    //     public Translations descriptions;
+    //     public Condition[][] conditions;
+    //     public List<Bonus> bonuses;
+    // }
+    //
+    // [System.Serializable]
+    // public class Condition
+    // {
+    //     public string type;
+    //     public string key;
+    //     public string @operator;
+    //     public List<string> value;
+    // }
 
 }

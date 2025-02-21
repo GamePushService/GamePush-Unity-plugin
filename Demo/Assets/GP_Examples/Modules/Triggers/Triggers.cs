@@ -51,13 +51,13 @@ namespace Examples.Triggers
             GP_Triggers.OnTriggerClaimError -= OnClaimError;
         }
 
-        public void Claim()
+        private void Claim()
         {
             ConsoleUI.Instance.Log("Claim: " + _triggerTag.text);
             GP_Triggers.Claim(_triggerTag.text);
         }
 
-        public void List()
+        private void List()
         {
             TriggerData[] triggers = GP_Triggers.List();
             foreach(TriggerData trigger in triggers)
@@ -72,7 +72,7 @@ namespace Examples.Triggers
                     ConsoleUI.Instance.Log("Condition: " + JsonUtility.ToJson(condition));
                 }
 
-                foreach (TriggerBonus bonus in trigger.bonuses)
+                foreach (BonusData bonus in trigger.bonuses)
                 {
                     ConsoleUI.Instance.Log("Bonus: " + JsonUtility.ToJson(bonus));
                 }
@@ -81,7 +81,7 @@ namespace Examples.Triggers
             }
         }
 
-        public void ActivatedList()
+        private void ActivatedList()
         {
             PlayerTrigger[] triggers = GP_Triggers.ActivatedList();
             foreach (PlayerTrigger trigger in triggers)
@@ -93,7 +93,7 @@ namespace Examples.Triggers
             }
         }
 
-        public void GetTrigger()
+        private void GetTrigger()
         {
             TriggerData trigger = GP_Triggers.GetTrigger(_triggerTag.text).trigger;
 
@@ -107,37 +107,37 @@ namespace Examples.Triggers
                 ConsoleUI.Instance.Log("Condition: " + JsonUtility.ToJson(condition));
             }
 
-            foreach (TriggerBonus bonus in trigger.bonuses)
+            foreach (BonusData bonus in trigger.bonuses)
             {
                 ConsoleUI.Instance.Log("Bonus: " + JsonUtility.ToJson(bonus));
             }
             ConsoleUI.Instance.Log(" ");
         }
 
-        public void IsActivated()
+        private void IsActivated()
         {
             bool isActivated = GP_Triggers.IsActivated(_triggerTag.text);
             ConsoleUI.Instance.Log(isActivated);
         }
 
-        public void IsClaimed()
+        private void IsClaimed()
         {
             bool isClaimed = GP_Triggers.IsClaimed(_triggerTag.text);
             ConsoleUI.Instance.Log(isClaimed);
         }
 
 
-        public void OnActivate(TriggerData trigger)
+        private void OnActivate(TriggerData trigger)
         {
             ConsoleUI.Instance.Log("Activate: " + JsonUtility.ToJson(trigger));
         }
 
-        public void OnClaim(TriggerData trigger)
+        private void OnClaim(TriggerData trigger)
         {
             ConsoleUI.Instance.Log("Activate: " + JsonUtility.ToJson(trigger));
         }
 
-        public void OnClaimError(string error)
+        private void OnClaimError(string error)
         {
             ConsoleUI.Instance.Log(error);
         }

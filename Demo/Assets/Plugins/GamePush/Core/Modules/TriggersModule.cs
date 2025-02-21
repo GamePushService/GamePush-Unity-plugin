@@ -10,7 +10,7 @@ namespace GamePush.Core
 {
     public class TriggersModule 
     {
-        private List<Trigger> _triggersList = new();
+        // private List<Trigger> _triggersList = new();
         private List<TriggerData> _triggersDataList = new();
         private List<PlayerTrigger> _activatedTriggersList = new();
         private Dictionary<string, TriggerData> _triggersMapID = new();
@@ -23,7 +23,7 @@ namespace GamePush.Core
         
         public void Init(AllConfigData config)
         {
-            _triggersList = config.triggers
+            _triggersDataList = config.triggers
                 .Concat(config.schedulers.SelectMany(it => it.triggers))
                 .Concat(config.events.SelectMany(it => it.triggers))
                 .ToList();
@@ -34,7 +34,7 @@ namespace GamePush.Core
 
         private void ChangeLanguage(Language language)
         {
-            _triggersList.ForEach(trigger =>
+            _triggersDataList.ForEach(trigger =>
             {
                 trigger.description = CoreSDK.Language.GetTranslation(trigger.descriptions);
             });
@@ -128,64 +128,64 @@ namespace GamePush.Core
             return null;
         }
 
-    private async Task<PlayerTriggerInfo> ClaimTriggerAsync(string idOrTag)
-    {
-        var (isActivated, isClaimed) = GetTriggerState(idOrTag);
-
-        if (!isActivated)
+        private async Task<PlayerTriggerInfo> ClaimTriggerAsync(string idOrTag)
         {
-            Logger.Error($"Trigger is not activated, ID: {idOrTag}");
-            // throw new Exception(TriggerNotActivatedError);
+            var (isActivated, isClaimed) = GetTriggerState(idOrTag);
+
+            if (!isActivated)
+            {
+                Logger.Error($"Trigger is not activated, ID: {idOrTag}");
+                // throw new Exception(TriggerNotActivatedError);
+            }
+
+            if (isClaimed)
+            {
+                Logger.Error($"Trigger is already claimed, ID: {idOrTag}");
+                // throw new Exception(TriggerAlreadyClaimedError);
+            }
+
+            // _syncManager.AddClaimedTrigger(idOrTag);
+            // await _syncManager.SyncPlayer();
+            CoreSDK.Player.PlayerSync();
+
+            return GetTriggerInfo(idOrTag);
         }
 
-        if (isClaimed)
+        private TriggerData GetTriggerByIdOrTag(string idOrTag) =>
+            _triggersMapID.TryGetValue(idOrTag, out var byId) ? byId :
+            _triggersMapTag.TryGetValue(idOrTag, out var byTag) ? byTag :
+            null;
+
+        private PlayerTriggerInfo GetTriggerInfo(string idOrTag)
         {
-            Logger.Error($"Trigger is already claimed, ID: {idOrTag}");
-            // throw new Exception(TriggerAlreadyClaimedError);
+            var trigger = GetTriggerByIdOrTag(idOrTag);
+            var info = new PlayerTriggerInfo { trigger = trigger, isActivated = false, isClaimed = false };
+
+            if (trigger != null && _activatedTriggersMap.TryGetValue(trigger.id, out var playerTrigger))
+            {
+                info.isActivated = true;
+                info.isClaimed = playerTrigger.claimed;
+            }
+
+            return info;
         }
 
-        // _syncManager.AddClaimedTrigger(idOrTag);
-        // await _syncManager.SyncPlayer();
-        CoreSDK.Player.PlayerSync();
-
-        return GetTriggerInfo(idOrTag);
-    }
-
-    private TriggerData GetTriggerByIdOrTag(string idOrTag) =>
-        _triggersMapID.TryGetValue(idOrTag, out var byId) ? byId :
-        _triggersMapTag.TryGetValue(idOrTag, out var byTag) ? byTag :
-        null;
-
-    private PlayerTriggerInfo GetTriggerInfo(string idOrTag)
-    {
-        var trigger = GetTriggerByIdOrTag(idOrTag);
-        var info = new PlayerTriggerInfo { trigger = trigger, isActivated = false, isClaimed = false };
-
-        if (trigger != null && _activatedTriggersMap.TryGetValue(trigger.id, out var playerTrigger))
+        private (bool IsActivated, bool IsClaimed) GetTriggerState(string idOrTag)
         {
-            info.isActivated = true;
-            info.isClaimed = playerTrigger.claimed;
+            return _activatedTriggersMap.TryGetValue(idOrTag, out var playerTrigger)
+                ? (true, playerTrigger.claimed)
+                : (false, false);
         }
 
-        return info;
-    }
+        private void RefreshTriggersMap()
+        {
+            _triggersMapID = _triggersDataList.ToDictionary(trigger => trigger.id);
+            _triggersMapTag = _triggersDataList.ToDictionary(trigger => trigger.tag);
+        }
 
-    private (bool IsActivated, bool IsClaimed) GetTriggerState(string idOrTag)
-    {
-        return _activatedTriggersMap.TryGetValue(idOrTag, out var playerTrigger)
-            ? (true, playerTrigger.claimed)
-            : (false, false);
-    }
-
-    private void RefreshTriggersMap()
-    {
-        _triggersMapID = _triggersDataList.ToDictionary(trigger => trigger.id);
-        _triggersMapTag = _triggersDataList.ToDictionary(trigger => trigger.tag);
-    }
-
-    private void RefreshActivatedTriggersMap()
-    {
-        _activatedTriggersMap = _activatedTriggersList.ToDictionary(pt => pt.triggerId);
-    }
+        private void RefreshActivatedTriggersMap()
+        {
+            _activatedTriggersMap = _activatedTriggersList.ToDictionary(pt => pt.triggerId);
+        }
     }
 }

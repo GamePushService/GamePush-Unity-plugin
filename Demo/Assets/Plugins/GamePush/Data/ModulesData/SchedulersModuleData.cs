@@ -22,7 +22,7 @@ namespace GamePush.Data
         public bool isRepeat { get; set; }
         public bool isPublished { get; set; }
         public bool isAutoRegister { get; set; }
-        public List<Trigger> triggers { get; set; } = new();
+        public List<TriggerData> triggers { get; set; } = new();
         public List<SchedulerDaysBonuses> daysBonuses { get; set; } = new();
     }
 
@@ -30,9 +30,9 @@ namespace GamePush.Data
     public class SchedulerDaysBonuses
     {
         public int day { get; set; }
-        public List<Bonus> bonuses { get; set; } = new();
+        public List<BonusData> bonuses { get; set; } = new();
     }
-
+    
     // public class SchedulerTriggersInput
     // {
     //     public int Day { get; set; }
@@ -47,15 +47,15 @@ namespace GamePush.Data
 
     public class SchedulersList
     {
-        public List<SchedulerData> Items { get; set; } = new();
-        public int Count { get; set; }
+        public List<SchedulerData> items { get; set; } = new();
+        public int count { get; set; }
     }
 
     public class SchedulersTriggersOnDayList
     {
-        public int SchedulerId { get; set; }
-        public int Day { get; set; }
-        public List<Bonus> Bonuses { get; set; } = new();
-        public List<Trigger> Triggers { get; set; } = new();
+        public int schedulerId { get; set; }
+        public int day { get; set; }
+        public List<BonusData> bonuses { get; set; } = new();
+        public List<TriggerData> triggers { get; set; } = new();
     }
 }
