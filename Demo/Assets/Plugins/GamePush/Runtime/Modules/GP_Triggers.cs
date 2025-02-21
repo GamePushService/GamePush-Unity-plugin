@@ -62,7 +62,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string triggers = GP_Triggers_ActivatedList();
-            return UtilityJSON.GetArray<TriggerActive>(triggers);
+            return UtilityJSON.GetArray<PlayerTrigger>(triggers);
 #else
             return CoreSDK.Triggers.ActivatedList.ToArray();
 #endif
@@ -72,7 +72,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string data = GP_Triggers_GetTrigger(idOrTag);
-            return UtilityJSON.Get<TriggerAllData>(data);
+            return UtilityJSON.Get<PlayerTriggerInfo>(data);
 #else
             return CoreSDK.Triggers.GetTrigger(idOrTag);
 #endif

@@ -89,7 +89,7 @@ namespace GamePush
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             string activeEvents = GP_Events_ActiveList();
-            return UtilityJSON.GetArray<PlayerEvents>(activeEvents);
+            return UtilityJSON.GetArray<PlayerEvent>(activeEvents);
 #else
             return CoreSDK.Events.ActiveList();
 #endif
