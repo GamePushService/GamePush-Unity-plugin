@@ -69,7 +69,6 @@ namespace GamePush.Core
 
         private void SetRewardDataList(List<Reward> rewards)
         {
-            Logger.Log("Set reward data list: " + rewards.Count);
             List<RewardData> rewardsDataList = new List<RewardData>();
             
             foreach (var reward in rewards)
@@ -103,9 +102,6 @@ namespace GamePush.Core
             List<RewardToIncrement> notSentGivenRewards,
             List<RewardToIncrement> notSentAcceptedRewards)
         {
-            Logger.Log("SetRewardsList");
-            Logger.Log("notSentGivenRewards: " + notSentAcceptedRewards.Count);
-            Logger.Log("notSentAcceptedRewards: " + notSentAcceptedRewards.Count);
             
             var notSentAcceptedLeft = new List<RewardToIncrement>(notSentAcceptedRewards);
 

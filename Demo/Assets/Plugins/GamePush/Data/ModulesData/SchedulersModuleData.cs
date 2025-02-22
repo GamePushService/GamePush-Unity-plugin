@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace GamePush.Data
 {
@@ -39,9 +40,12 @@ namespace GamePush.Data
     //     public List<EntityTriggerInput> Triggers { get; set; } = new();
     // }
 
+    [Serializable]
     public enum SchedulerType
     {
+        [EnumMember(Value = "ACTIVE_DAYS")]
         ActiveDays,
+        [EnumMember(Value = "ACTIVE_DAYS_CONSECUTIVE")]
         ActiveDaysConsecutive
     }
 

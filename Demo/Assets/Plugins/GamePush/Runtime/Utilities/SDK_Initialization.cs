@@ -37,7 +37,7 @@ namespace GamePush.Initialization
 
             SetUpInitAwaiter();
 
-#if !UNITY_WEBGL
+#if UNITY_EDITOR || !UNITY_WEBGL
             CoreSDK.Initialize();
 #endif
 
