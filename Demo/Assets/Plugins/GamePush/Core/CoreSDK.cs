@@ -46,6 +46,8 @@ namespace GamePush
         public static readonly RewardsModule Rewards = new RewardsModule();
         public static readonly TriggersModule Triggers = new TriggersModule();
         public static readonly EventsModule Events = new EventsModule();
+        public static readonly SegmentsModule Segments = new SegmentsModule();
+        public static readonly ExperimentsModule Experiments = new ExperimentsModule();
 
         #endregion
 
@@ -141,7 +143,6 @@ namespace GamePush
             Socials.Init(configData.config);
             Rewards.Init(configData.rewards);
             Triggers.Init(configData);
-            Uniques.Init();
             Achievements.Init(configData);
             Events.Init(configData.events);
         }

@@ -13,17 +13,11 @@ namespace GamePush.Core
         public event Action<UniquesData> OnUniqueValueDelete;
         public event Action<string> OnUniqueValueDeleteError;
 
-        private List<UniquesData> uniquesList;
-        private Dictionary<string, string> uniquesDict;
+        private List<UniquesData> uniquesList = new List<UniquesData>();
+        private Dictionary<string, string> uniquesDict = new Dictionary<string, string>();
 
         private static string SUCCESS_TAG = "gp_success";
         private static string ERROR_TAG = "gp_error";
-
-        public void Init()
-        {
-            uniquesDict = new Dictionary<string, string>();
-            uniquesList = new List<UniquesData>();
-        }
 
         public void SetUniques(List<UniquesData> uniquesData)
         {

@@ -18,7 +18,7 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern string GP_Experiments_Has(string tag, string cohort);
 #endif
-
+        
         public static string Map()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -26,9 +26,7 @@ namespace GamePush
             return map;
 #else
 
-            ConsoleLog("MAP");
-
-            return null;
+            return CoreSDK.Experiments.Map().ToString();
 #endif
         }
 
@@ -37,9 +35,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Experiments_Has(tag, cohort) == "true";
 #else
-
-            ConsoleLog(tag + " | " + cohort);
-            return false;
+            return CoreSDK.Experiments.Has(tag, cohort);
 #endif
         }
     }

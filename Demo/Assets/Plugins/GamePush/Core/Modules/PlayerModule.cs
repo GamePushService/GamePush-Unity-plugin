@@ -252,14 +252,8 @@ namespace GamePush.Core
 
         private void HandleSync(JObject playerData, SyncStorageType syncStorage)
         {
-            //Logger.Log("Handle Sync", syncStorage);
-            //Logger.Log("Sync Data", playerData);
-            
             SetPlayerStats(playerData);
             
-            MarkDataFromSync(playerData);
-            SetDataFromSync(playerData);
-
             SetStartTime(playerData["sessionStart"].ToString());
 
             if (playerData.TryGetValue("token", out JToken token) && token.ToString() != "")
@@ -327,6 +321,9 @@ namespace GamePush.Core
 
             _playerUpdateTime = CoreSDK.GetServerTime();
             SavePlayerStateToPrefs();
+            
+            MarkDataFromSync(playerData);
+            SetDataFromSync(playerData);
         }
 
         private void MarkDataFromSync(JObject playerData)
@@ -343,24 +340,29 @@ namespace GamePush.Core
         
         private void SetDataFromSync(JObject playerData)
         {
-            //Set uniques
-            var uniques = playerData["uniques"].ToObject<List<UniquesData>>();
-            CoreSDK.Uniques.SetUniques(uniques);
-
-            //Set achievements
+            var segments = playerData["segments"].ToObject<List<string>>();
+            var enterSegments = playerData["newSegments"].ToObject<List<string>>();
+            var leaveSegments = playerData["leftSegments"].ToObject<List<string>>();
+            CoreSDK.Segments.SetSegments(segments, enterSegments, leaveSegments);
+            
             var achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
             CoreSDK.Achievements.SetAchievementsList(achievements);
             
-            //Set player rewards
             var playerRewards = playerData["rewards"].ToObject<List<PlayerReward>>();
             CoreSDK.Rewards.SetRewardsList(playerRewards, _acceptedRewards, _givenRewards);
             
             var playerTriggers = playerData["triggers"].ToObject<List<PlayerTrigger>>();
             CoreSDK.Triggers.SetTriggersList(playerTriggers);
             
-            //Set player events
             var playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
             CoreSDK.Events.SetPlayerEvents(playerEvents);
+            
+            var experiments = playerData["experiments"].ToObject<List<PlayerExperiment>>();
+            CoreSDK.Experiments.SetExperiments(experiments);
+            
+            var uniques = playerData["uniques"].ToObject<List<UniquesData>>();
+            CoreSDK.Uniques.SetUniques(uniques);
+            
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)

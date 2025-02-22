@@ -22,15 +22,18 @@ namespace GamePush
         private static extern string GP_Segments_Has(string tag);
 #endif
 
+        private void OnEnable()
+        {
+            CoreSDK.Segments.OnSegmentEnter += CallOnSegmentEnter;
+            CoreSDK.Segments.OnSegmentLeave += CallOnSegmentLeave;
+        }
+
         public static string List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Segments_List();
 #else
-
-            ConsoleLog("LIST");
-
-            return null;
+            return CoreSDK.Segments.GetList().ToString();
 #endif
         }
 
@@ -39,9 +42,7 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL
             return GP_Segments_Has(tag) == "true";
 #else
-
-            ConsoleLog("HAS: " + tag);
-            return false;
+            return CoreSDK.Segments.Has(tag);
 #endif
         }
     }
