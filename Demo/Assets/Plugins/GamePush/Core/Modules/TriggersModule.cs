@@ -10,16 +10,19 @@ namespace GamePush.Core
 {
     public class TriggersModule 
     {
-        // private List<Trigger> _triggersList = new();
         private List<TriggerData> _triggersDataList = new();
         private List<PlayerTrigger> _activatedTriggersList = new();
         private Dictionary<string, TriggerData> _triggersMapID = new();
         private Dictionary<string, TriggerData> _triggersMapTag = new();
         private Dictionary<string, PlayerTrigger> _activatedTriggersMap = new();
+
+        #region Events
         
         public event Action<TriggerData> OnTriggerActivate;
         public event Action<TriggerData> OnTriggerClaim;
         public event Action<string> OnTriggerClaimError;
+
+        #endregion
         
         public void Init(AllConfigData config)
         {
@@ -112,8 +115,9 @@ namespace GamePush.Core
             {
                 if (trigger == null)
                 {
-                    Logger.Error($"Trigger not found, ID: {idOrTag}");
-                    // throw new Exception(TriggerNotFoundError);
+                    string error = $"Trigger not found, ID: {idOrTag}";
+                    // Logger.Error(error);
+                    OnTriggerClaimError?.Invoke(error);
                 }
 
                 var result = await ClaimTriggerAsync(trigger.id);
@@ -122,7 +126,7 @@ namespace GamePush.Core
             catch (Exception error)
             {
                 var err = error.Message;
-                // Emit("error:claim", new { Error = err, Input = new { id, tag } });
+                OnTriggerClaimError?.Invoke(err);
             }
             
             return null;
@@ -134,19 +138,20 @@ namespace GamePush.Core
 
             if (!isActivated)
             {
-                Logger.Error($"Trigger is not activated, ID: {idOrTag}");
-                // throw new Exception(TriggerNotActivatedError);
+                string error = $"Trigger is not activated, ID: {idOrTag}";
+                Logger.Error(error);
+                OnTriggerClaimError?.Invoke(error);
             }
 
             if (isClaimed)
             {
-                Logger.Error($"Trigger is already claimed, ID: {idOrTag}");
-                // throw new Exception(TriggerAlreadyClaimedError);
+                string error = $"Trigger is already claimed, ID: {idOrTag}";
+                Logger.Error(error);
+                OnTriggerClaimError?.Invoke(error);
             }
 
-            // _syncManager.AddClaimedTrigger(idOrTag);
-            // await _syncManager.SyncPlayer();
-            CoreSDK.Player.PlayerSync();
+            CoreSDK.Player.AddClaimedTrigger(idOrTag);
+            await CoreSDK.Player.PlayerSync();
 
             return GetTriggerInfo(idOrTag);
         }

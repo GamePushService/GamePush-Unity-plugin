@@ -41,6 +41,8 @@ namespace GamePush.Core
         
         private List<RewardToIncrement> _acceptedRewards = new List<RewardToIncrement>();
         private List<RewardToIncrement> _givenRewards = new List<RewardToIncrement>();
+        private List<string> _claimedTriggers = new List<string>();
+        private List<ClaimSchedulerDayInput> _claimedSchedulersDays = new List<ClaimSchedulerDayInput>();
 
         private Dictionary<SyncStorageType, AutoSyncData> autoSyncList = new Dictionary<SyncStorageType, AutoSyncData>();
         private Dictionary<SyncStorageType, DateTime> lastSyncTimeList = new Dictionary<SyncStorageType, DateTime>();
@@ -49,11 +51,6 @@ namespace GamePush.Core
         private bool _isPublicFieldsDirty = false;
 
         #region PlayerInit
-
-        public PlayerModule()
-        {
-            playerDataFields = new Dictionary<string, PlayerField>();
-        }
 
         public void Init(List<PlayerField> playerFields)
         {
@@ -135,11 +132,11 @@ namespace GamePush.Core
 
         #region Sync/Load
 
-        public async void PlayerSync(bool forceOverride) 
+        public async Task PlayerSync(bool forceOverride) 
             => await Sync(forceOverride);
 
         // ReSharper disable Unity.PerformanceAnalysis
-        public async void PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+        public async Task PlayerSync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
             => await Sync(storage, forceOverride);
         
         private async Task Sync(bool forceOverride)
@@ -232,6 +229,8 @@ namespace GamePush.Core
                 @override = forceOverride,
                 acceptedRewards = new List<RewardToIncrement>(_acceptedRewards),
                 givenRewards = new List<RewardToIncrement>(_givenRewards),
+                claimedTriggers = new List<string>(_claimedTriggers),
+                claimedSchedulersDays = new List<ClaimSchedulerDayInput>(_claimedSchedulersDays)
             };
 
             // Logger.Log(JsonConvert.SerializeObject(playerInput));
@@ -352,13 +351,16 @@ namespace GamePush.Core
             var achievements = playerData["achievementsList"].ToObject<List<PlayerAchievement>>();
             CoreSDK.Achievements.SetAchievementsList(achievements);
             
-            //Set player events
-            var playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
-            CoreSDK.Events.SetPlayerEvents(playerEvents);
-            
             //Set player rewards
             var playerRewards = playerData["rewards"].ToObject<List<PlayerReward>>();
             CoreSDK.Rewards.SetRewardsList(playerRewards, _acceptedRewards, _givenRewards);
+            
+            var playerTriggers = playerData["triggers"].ToObject<List<PlayerTrigger>>();
+            CoreSDK.Triggers.SetTriggersList(playerTriggers);
+            
+            //Set player events
+            var playerEvents = playerData["playerEvents"].ToObject<List<PlayerEvent>>();
+            CoreSDK.Events.SetPlayerEvents(playerEvents);
         }
 
         private void UpdateOnlyPublicFields(JObject playerData)
@@ -647,8 +649,8 @@ namespace GamePush.Core
         #region DataFields
 
         protected List<PlayerField> dataFields;
-        private Dictionary<string, PlayerField> playerDataFields;
-        private Dictionary<string, PlayerField> limitsFields;
+        private Dictionary<string, PlayerField> playerDataFields = new Dictionary<string, PlayerField>();
+        private Dictionary<string, PlayerField> limitsFields = new Dictionary<string, PlayerField>();
 
         private Dictionary<string, object> defaultState;
         private Dictionary<string, string> typeState = new Dictionary<string, string>
@@ -820,7 +822,7 @@ namespace GamePush.Core
 
             _acceptedRewards = new List<RewardToIncrement>();
             _givenRewards = new List<RewardToIncrement>();
-            //claimedTriggers = [];
+            _claimedTriggers = new List<string>();
             //claimedSchedulersDays = [];
         }
 
@@ -1196,6 +1198,12 @@ namespace GamePush.Core
             // Logger.Log("AcceptedRewards Count: " + _acceptedRewards.Count);
             // Logger.Log("Rewards Count: " + _acceptedRewards.FirstOrDefault(r => r.id == info.id).count);
         }
+
+        public void AddClaimedTrigger(string triggerId)
+        {
+            _claimedTriggers.Add(triggerId);
+        }
+        
         #endregion
 
         #region IsFuncs

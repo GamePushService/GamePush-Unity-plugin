@@ -74,8 +74,8 @@ namespace GamePush
         public List<RewardToIncrement> acceptedRewards;
         public List<RewardToIncrement> givenRewards;
         
-        // public string[] claimedTriggers = { };
-        // public ClaimSchedulerDayInput[] claimedSchedulersDays = { };
+        public List<string> claimedTriggers;
+        public List<ClaimSchedulerDayInput> claimedSchedulersDays;
     }
 
     [Serializable]
