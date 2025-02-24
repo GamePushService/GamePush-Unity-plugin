@@ -64,6 +64,8 @@ namespace GamePush.Core
             SyncTimeListInit();
 
             _isFirstRequest = true;
+            _acceptedRewards = new List<RewardToIncrement>();
+            _givenRewards = new List<RewardToIncrement>();
         }
 
         private void SyncTimeListInit()
@@ -1187,7 +1189,7 @@ namespace GamePush.Core
 
         public void AddAcceptedReward(RewardToIncrement info)
         {
-            // Logger.Log("Add accepted");
+            // Logger.Log("Add accepted: " + info.count);
             var rewardInfo = _acceptedRewards.FirstOrDefault(r => r.id == info.id);
             if (rewardInfo != null)
             {

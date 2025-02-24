@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GamePush.Data;
 using GamePush.Tools;
+using UnityEngine;
 
 namespace GamePush.Core
 {
@@ -101,15 +102,17 @@ namespace GamePush.Core
             List<RewardToIncrement> notSentGivenRewards,
             List<RewardToIncrement> notSentAcceptedRewards)
         {
-            
             var notSentAcceptedLeft = new List<RewardToIncrement>(notSentAcceptedRewards);
 
             var notSentRewards = notSentGivenRewards
                 .Aggregate(new List<PlayerReward>(), (list, rewardIncrement) =>
                 {
+                    
                     var playerReward = playerRewards.FirstOrDefault(r => r.rewardId == rewardIncrement.id);
                     if (playerReward != null)
                     {
+                        Logger.Log("Reward Increment " + rewardIncrement.count);
+                        Logger.Log("Reward count total " + playerReward.countTotal);
                         playerReward.countTotal += rewardIncrement.count;
                         return list;
                     }
