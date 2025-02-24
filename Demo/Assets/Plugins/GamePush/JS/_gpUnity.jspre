@@ -880,12 +880,18 @@ class GamePushUnityInner {
     PlayerHas(key) {
         return this.toUnity(this.gp.player.has(key));
     }
+    
+    
 
     PlayerSetFlag(key, value) {
         this.gp.player.set(key, !Boolean(value));
     }
     PlayerToggle(key) {
         this.gp.player.toggle(key);
+    }
+
+    PlayerGetField(key){
+        return this.toUnity(this.gp.player.getField(key));
     }
 
     PlayerGetFieldName(key) {

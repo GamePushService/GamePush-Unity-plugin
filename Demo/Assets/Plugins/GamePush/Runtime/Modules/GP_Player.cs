@@ -14,6 +14,8 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Player);
         
+        public static List<PlayerFieldData> PlayerFields = new List<PlayerFieldData>();
+        
         #region  Events
         public static event UnityAction OnConnect;
         public static event UnityAction OnPlayerChange;
@@ -27,14 +29,14 @@ namespace GamePush
         public static event UnityAction OnLogoutComplete;
         public static event UnityAction OnLogoutError;
 
-        public static event UnityAction<List<PlayerFetchFieldsData>> OnPlayerFetchFieldsComplete;
+        public static event UnityAction<List<PlayerFieldData>> OnPlayerFetchFieldsComplete;
         public static event UnityAction OnPlayerFetchFieldsError;
 
-        public static event UnityAction<PlayerFetchFieldsData> OnFieldMaximum;
-        public static event UnityAction<PlayerFetchFieldsData> OnFieldMinimum;
-        public static event UnityAction<PlayerFetchFieldsData> OnFieldIncrement;
+        public static event UnityAction<PlayerFieldData> OnFieldMaximum;
+        public static event UnityAction<PlayerFieldData> OnFieldMinimum;
+        public static event UnityAction<PlayerFieldData> OnFieldIncrement;
 
-        private static event Action<List<PlayerFetchFieldsData>> _onFetchFields;
+        private static event Action<List<PlayerFieldData>> _onFetchFields;
 
         #endregion
 
@@ -57,17 +59,17 @@ namespace GamePush
 
         private void CallPlayerFetchFieldsComplete(string data)
         {
-            OnPlayerFetchFieldsComplete?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
-            _onFetchFields?.Invoke(UtilityJSON.GetList<PlayerFetchFieldsData>(data));
+            OnPlayerFetchFieldsComplete?.Invoke(UtilityJSON.GetList<PlayerFieldData>(data));
+            _onFetchFields?.Invoke(UtilityJSON.GetList<PlayerFieldData>(data));
         }
         private void CallPlayerFetchFieldsError() => OnPlayerFetchFieldsError?.Invoke();
 
         private void CallPlayerFieldReachMaximum(string field) =>
-            OnFieldMaximum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+            OnFieldMaximum?.Invoke(UtilityJSON.Get<PlayerFieldData>(field));
         private void CallPlayerFieldReachMinimum(string field) =>
-            OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+            OnFieldMinimum?.Invoke(UtilityJSON.Get<PlayerFieldData>(field));
         private void CallPlayerFieldIncrement(string field) =>
-            OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFetchFieldsData>(field));
+            OnFieldIncrement?.Invoke(UtilityJSON.Get<PlayerFieldData>(field));
 
         #endregion
         
@@ -192,6 +194,15 @@ namespace GamePush
         private static extern int GP_Player_GetPlaytimeAll();
         
         #endregion
+        
+        private async void Start()
+        {
+            await GP_Init.Ready;
+            FetchFields(fields =>
+            {
+                PlayerFields = fields;
+            });
+        }
 
         #region Getters
 
@@ -710,7 +721,7 @@ namespace GamePush
 
         #endregion
         
-        public static void FetchFields(Action<List<PlayerFetchFieldsData>> onFetchFields = null)
+        public static void FetchFields(Action<List<PlayerFieldData>> onFetchFields = null)
         {
             _onFetchFields = onFetchFields;
 
@@ -735,7 +746,7 @@ namespace GamePush
     }
 
     [System.Serializable]
-    public class PlayerFetchFieldsData
+    public class PlayerFieldData
     {
         public string name;
         public string key;
