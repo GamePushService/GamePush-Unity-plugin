@@ -111,8 +111,6 @@ namespace GamePush.Core
                     var playerReward = playerRewards.FirstOrDefault(r => r.rewardId == rewardIncrement.id);
                     if (playerReward != null)
                     {
-                        Logger.Log("Reward Increment " + rewardIncrement.count);
-                        Logger.Log("Reward count total " + playerReward.countTotal);
                         playerReward.countTotal += rewardIncrement.count;
                         return list;
                     }

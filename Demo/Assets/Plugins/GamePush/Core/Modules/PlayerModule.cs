@@ -64,8 +64,15 @@ namespace GamePush.Core
             SyncTimeListInit();
 
             _isFirstRequest = true;
+            ListsReset();
+        }
+
+        private void ListsReset()
+        {
             _acceptedRewards = new List<RewardToIncrement>();
             _givenRewards = new List<RewardToIncrement>();
+            _claimedTriggers = new List<string>();
+            _claimedSchedulersDays = new List<ClaimSchedulerDayInput>();
         }
 
         private void SyncTimeListInit()
@@ -234,7 +241,7 @@ namespace GamePush.Core
                 claimedTriggers = new List<string>(_claimedTriggers),
                 claimedSchedulersDays = new List<ClaimSchedulerDayInput>(_claimedSchedulersDays)
             };
-
+            ListsReset();
             // Logger.Log(JsonConvert.SerializeObject(playerInput));
             var resultObject = await DataFetcher.SyncPlayer(playerInput, _isFirstRequest);
 
