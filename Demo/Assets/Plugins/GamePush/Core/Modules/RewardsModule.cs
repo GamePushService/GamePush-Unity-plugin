@@ -33,10 +33,8 @@ namespace GamePush.Core
         {
             _rewardsList = rewards;
             SetRewardDataList(rewards);
-            RefreshRewardsMap();
-
+            
             CoreSDK.Language.OnChangeLanguage += ChangeTranslations;
-            CoreSDK.OnInit += AcceptOnStart;
         }
 
         public async void MarkRewardsGiven(List<int> ids)
@@ -89,12 +87,13 @@ namespace GamePush.Core
             }
             
             _rewardsDataList = rewardsDataList;
+            
+            RefreshRewardsMap();
         }
 
         private void ChangeTranslations(Language lang)
         {
             SetRewardDataList(_rewardsList);
-            RefreshRewardsMap();
         }
 
         public void SetRewardsList(
@@ -151,11 +150,10 @@ namespace GamePush.Core
                 });
 
             RefreshPlayerRewardsMap();
+            AcceptOnStart();
         }
 
-        
-        
-        private async void AcceptOnStart()
+        private async Task AcceptOnStart()
         {
             foreach (var playerReward in _playerRewardsList)
             {
@@ -197,7 +195,6 @@ namespace GamePush.Core
             }
             
             int rewardID = reward.id;
-        
         
             if (lazy)
             {
