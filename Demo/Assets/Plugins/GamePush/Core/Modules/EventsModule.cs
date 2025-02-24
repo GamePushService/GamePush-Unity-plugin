@@ -206,7 +206,5 @@ namespace GamePush.Core
     public bool IsJoined(string eventId) => 
         GetEventInfo(eventId).Event?.isActive == true && GetEventInfo(eventId).PlayerEvent != null;
 
-        
-        
     }
 }
