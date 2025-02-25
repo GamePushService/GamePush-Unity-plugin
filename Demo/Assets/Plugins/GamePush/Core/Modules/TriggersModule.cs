@@ -70,7 +70,7 @@ namespace GamePush.Core
                     RefreshActivatedTriggersMap();
                     OnTriggerActivate?.Invoke(info.trigger);
                     
-                    Logger.Info($"🎉 Trigger activated, ID: {id}, Tag: {info.trigger.tag}");
+                    Logger.Info($"Trigger activated, ID: {id}, Tag: {info.trigger.tag}");
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace GamePush.Core
                         .ToList();
                     RefreshActivatedTriggersMap();
                     OnTriggerClaim?.Invoke(info.trigger);
-                    Logger.Info($"🎉 Trigger claimed, ID: {id}, Tag: {info.trigger.tag}");
+                    Logger.Info($"Trigger claimed, ID: {id}, Tag: {info.trigger.tag}");
                 }
             }
         }
