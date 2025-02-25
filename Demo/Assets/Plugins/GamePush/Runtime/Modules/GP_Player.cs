@@ -74,6 +74,7 @@ namespace GamePush
         #endregion
         
         #region DLL Imports
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern int GP_Player_GetID();
         
@@ -115,6 +116,7 @@ namespace GamePush
         
         [DllImport("__Internal")]
         private static extern float GP_Player_GetNumberFloat(string key);
+
         [DllImport("__Internal")]
         private static extern float GP_Player_GetMaxValue(string key);
         
@@ -129,8 +131,10 @@ namespace GamePush
         
         [DllImport("__Internal")]
         private static extern void GP_Player_Set_Number(string key, float value);
+
         [DllImport("__Internal")]
         private static extern void GP_Player_Set_Bool(string key, string value);
+
         [DllImport("__Internal")]
         private static extern void GP_Player_Set_String(string key, string value);
         
@@ -190,9 +194,10 @@ namespace GamePush
         
         [DllImport("__Internal")]
         private static extern int GP_Player_GetPlaytimeToday();
+
         [DllImport("__Internal")]
         private static extern int GP_Player_GetPlaytimeAll();
-        
+#endif
         #endregion
         
         private async void Start()

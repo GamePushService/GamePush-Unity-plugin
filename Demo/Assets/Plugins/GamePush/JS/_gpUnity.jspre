@@ -726,6 +726,12 @@ class GamePushUnityInner {
         return (query = id > 0 ? { id } : { tag: idOrTag });
     }
 
+    getBoolean(value){
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        return value;
+    }
+    
     toUnity(value) {
         switch (typeof value) {
             case 'boolean': {
@@ -1314,7 +1320,7 @@ class GamePushUnityInner {
                     JSON.stringify(result.products)
                 );
                 this.trigger(
-                    'CallPaymentsFetchPlayerPurcahses',
+                    'CallPaymentsFetchPlayerPurchases',
                     JSON.stringify(result.playerPurchases)
                 );
             })
@@ -2748,7 +2754,37 @@ class GamePushUnityInner {
         await this.gp.storage.setGlobal(key, value);
     }
     //Storage
+    
+    //Windows
+
+    async WindowsShowConfirmDefault(){
+        this.gp.windows
+            .showConfirm()
+            .then((result) => {
+            this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+        });
+    }
+    
+    async WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
+        invertButtonColors == 'True' ? invertButtonColors = true : invertButtonColors = false;
+        
+        this.gp.windows
+            .showConfirm(
+                title,
+                description,
+                textConfirm,
+                textCancel,
+                invertButtonColors,
+            )
+            .then((result) => {
+                this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+            });
+    }
+    
+    //Windows
 }
+
+
 
 function formatCustomValue(value) {
     switch (typeof value) {

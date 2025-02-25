@@ -32,10 +32,10 @@ namespace GamePush
         public static event UnityAction<string> OnUnsubscribeSuccess;
         public static event UnityAction OnUnsubscribeError;
         
-        public static event Action<List<FetchProducts>> _onFetchProducts;
-        public static event Action _onFetchProductsError;
+        private static event Action<List<FetchProducts>> _onFetchProducts;
+        private static event Action _onFetchProductsError;
 
-        public static event Action<List<FetchPlayerPurchases>> _onFetchPlayerPurchases;
+        private static event Action<List<FetchPlayerPurchases>> _onFetchPlayerPurchases;
 
         private static event Action<string> _onPurchaseSuccess;
         private static event Action _onPurchaseError;
@@ -51,7 +51,7 @@ namespace GamePush
         #endregion
 
         #region DLL Import
-
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void GP_Payments_FetchProducts();
         [DllImport("__Internal")]
@@ -66,7 +66,7 @@ namespace GamePush
         private static extern void GP_Payments_Subscribe(string idOrTag);
         [DllImport("__Internal")]
         private static extern void GP_Payments_Unsubscribe(string idOrTag);
-        
+#endif
         #endregion
         
         #region Callbacks
@@ -76,7 +76,7 @@ namespace GamePush
             _onFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
             OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
         }
-        private void CallPaymentsFetchPlayerPurcahses(string data)
+        private void CallPaymentsFetchPlayerPurchases(string data)
         { 
             _onFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
             OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
