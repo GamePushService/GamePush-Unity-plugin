@@ -2756,26 +2756,31 @@ class GamePushUnityInner {
     //Storage
     
     //Windows
-
-    async WindowsShowConfirmDefault(){
-        this.gp.windows
-            .showConfirm()
+    
+    WindowsShowConfirmDefault(){
+        this.gp.windows.showConfirm({})
             .then((result) => {
             this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
         });
     }
     
-    async WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
+    WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
         invertButtonColors == 'True' ? invertButtonColors = true : invertButtonColors = false;
         
-        this.gp.windows
-            .showConfirm(
-                title,
-                description,
-                textConfirm,
-                textCancel,
-                invertButtonColors,
-            )
+        console.log("Data: " 
+            + "\n " + title 
+            + "\n " + description 
+            + "\n " + textConfirm 
+            + "\n " + textCancel 
+            + "\n " + invertButtonColors);
+        
+        this.gp.windows.showConfirm({
+            title: title,
+            description: description,
+            textConfirm: textConfirm,
+            textCancel: textCancel,
+            invertButtonColors: invertButtonColors
+        })
             .then((result) => {
                 this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
             });

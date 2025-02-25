@@ -39,7 +39,6 @@ namespace GamePush.Initialization
 
             SDK.AddComponent<GP_Init>();
             SetUpInitAwaiter();
-            
 
             SDK.AddComponent<GP_Achievements>();
             SDK.AddComponent<GP_Ads>();
@@ -74,6 +73,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Custom>();
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
+            SDK.AddComponent<GP_Windows>();
 
 
             EndInit();

@@ -36,13 +36,13 @@ namespace Examples.Windows
             ConsoleUI.Instance.Log($" Description: {_descriptionInput.text}");
             ConsoleUI.Instance.Log($" Confirm text: {_textConfirmInput.text}");
             ConsoleUI.Instance.Log($" Cancel text: {_textCancelInput.text}");
-            ConsoleUI.Instance.Log($" Invert Colors: {_invertButtonColors.isOn}");
+            ConsoleUI.Instance.Log($" Invert Colors: {_invertButtonColors.isOn} \n");
             GP_Windows.ShowConfirm(GetConfirmWindowDataData(), OnConfirm);
         }
         
         private void ShowConfirmDefault()
         {
-            ConsoleUI.Instance.Log($"Show default confirm window");
+            ConsoleUI.Instance.Log($"Show default confirm window \n");
             GP_Windows.ShowConfirm(OnConfirm);
         }
         

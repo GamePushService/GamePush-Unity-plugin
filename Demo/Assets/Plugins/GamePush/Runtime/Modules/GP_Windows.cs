@@ -12,7 +12,6 @@ namespace GamePush
         public static event UnityAction<bool> OnConfirm;
         private static event Action<bool> _onConfirm;
         
-        
         private void CallWindowsShowConfirm(string success)
         { 
             _onConfirm?.Invoke(success == "true");
