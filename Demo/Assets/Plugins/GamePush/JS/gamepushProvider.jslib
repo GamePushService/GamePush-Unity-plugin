@@ -1155,7 +1155,7 @@ mergeInto(LibraryManager.library, {
         _GP().WindowsShowConfirmDefault();
     },
 
-    GP_Windows_ShowDefaultConfirm: function (
+    GP_Windows_ShowConfirm: function (
         title, 
         description, 
         textConfirm, 
