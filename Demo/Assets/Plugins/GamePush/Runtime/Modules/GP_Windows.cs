@@ -29,11 +29,11 @@ namespace GamePush
         
         [DllImport("__Internal")]
         private static extern void GP_Windows_ShowConfirm(
-            string title = "",
-            string description = "",
-            string textConfirm = "Confirm",
-            string textCancel = "Cancel",
-            bool invertButtonColors = false
+            string title,
+            string description,
+            string textConfirm,
+            string textCancel,
+            string invertButtonColors
             );
 
         public static void ShowConfirm(Action<bool> confirmCallback = null)
@@ -52,7 +52,12 @@ namespace GamePush
         {
             _onConfirm = confirmCallback;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Windows_ShowConfirm(data.title, data.description, data.textConfirm, data.textCancel, data.invertButtonColors);
+            GP_Windows_ShowConfirm(
+                data.title, 
+                data.description, 
+                data.textConfirm, 
+                data.textCancel, 
+                data.invertButtonColors.ToString());
 #else
             ConsoleLog("ShowConfirm called");
             _onConfirm?.Invoke(true);

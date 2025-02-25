@@ -727,8 +727,10 @@ class GamePushUnityInner {
     }
 
     getBoolean(value){
+        console.log("Format value " + value);
         if (value == 'True') value = true;
         else if (value == 'False') value = false;
+        console.log("New value " + value);
         return value;
     }
     
@@ -2765,7 +2767,7 @@ class GamePushUnityInner {
     }
     
     WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
-        invertButtonColors == 'True' ? invertButtonColors = true : invertButtonColors = false;
+        invertButtonColors = this.getBoolean(invertButtonColors)
         
         console.log("Data: " 
             + "\n " + title 
@@ -2775,11 +2777,11 @@ class GamePushUnityInner {
             + "\n " + invertButtonColors);
         
         this.gp.windows.showConfirm({
-            title: title,
-            description: description,
-            textConfirm: textConfirm,
-            textCancel: textCancel,
-            invertButtonColors: invertButtonColors
+            title,
+            description,
+            textConfirm,
+            textCancel,
+            invertButtonColors
         })
             .then((result) => {
                 this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
