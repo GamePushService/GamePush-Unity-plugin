@@ -139,14 +139,14 @@ namespace GamePush.Core
             if (!isActivated)
             {
                 string error = $"Trigger is not activated, ID: {idOrTag}";
-                Logger.Error(error);
+                // Logger.Error(error);
                 OnTriggerClaimError?.Invoke(error);
             }
 
             if (isClaimed)
             {
                 string error = $"Trigger is already claimed, ID: {idOrTag}";
-                Logger.Error(error);
+                // Logger.Error(error);
                 OnTriggerClaimError?.Invoke(error);
             }
 

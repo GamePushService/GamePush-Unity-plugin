@@ -40,6 +40,14 @@ namespace GamePush
             CoreSDK.Triggers.OnTriggerClaimError += (string error) => OnTriggerClaimError?.Invoke(error);
         }
 
+        private void OnDisable()
+        {
+            CoreSDK.Triggers.OnTriggerActivate -= (TriggerData data) => OnTriggerActivate?.Invoke(data);
+            CoreSDK.Triggers.OnTriggerClaim -= (TriggerData data) => OnTriggerClaim?.Invoke(data);
+            CoreSDK.Triggers.OnTriggerClaimError -= (string error) => OnTriggerClaimError?.Invoke(error);
+
+        }
+
         public static void Claim(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
