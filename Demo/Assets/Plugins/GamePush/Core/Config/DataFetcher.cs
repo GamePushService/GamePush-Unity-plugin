@@ -74,7 +74,7 @@ namespace GamePush.Core
             GraphQLConfig config = Resources.Load<GraphQLConfig>(ConfigName);
             var graphQL = new GraphQLClient(config);
             
-            Debug.Log(JsonConvert.SerializeObject(variables["input"]));
+            // Debug.Log(JsonConvert.SerializeObject(variables["input"]));
             string results = await graphQL.Send(
                 query.ToRequest(variables),
                 null,

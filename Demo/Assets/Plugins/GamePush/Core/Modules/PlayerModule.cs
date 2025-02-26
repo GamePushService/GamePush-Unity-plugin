@@ -337,6 +337,7 @@ namespace GamePush.Core
 
         private void MarkDataFromSync(JObject playerData)
         {
+            
             var activeIds = playerData["rewardsData"]["activatedTriggersNow"].ToObject<List<string>>();
             CoreSDK.Triggers.MarkTriggersAsActivated(activeIds);
             
@@ -1212,7 +1213,9 @@ namespace GamePush.Core
 
         public void AddClaimedTrigger(string triggerId)
         {
+            Logger.Log("Add claimed trigger: " + triggerId);
             _claimedTriggers.Add(triggerId);
+            Logger.Log("Claimed triggers count: "+ _claimedTriggers.Count);
         }
         
         #endregion

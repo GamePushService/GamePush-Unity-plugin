@@ -54,8 +54,10 @@ namespace GamePush.Core
 
         public void MarkTriggersAsActivated(List<string> ids)
         {
+            
             foreach (var id in ids)
             {
+                Logger.Info($"Marking trigger as activated, ID: {id}");
                 PlayerTriggerInfo info = GetTriggerInfo(id);
                 
                 if (info.trigger == null)
@@ -79,6 +81,7 @@ namespace GamePush.Core
         {
             foreach (var id in ids)
             {
+                Logger.Info($"Marking trigger as claimed, ID: {id}");
                 PlayerTriggerInfo info = GetTriggerInfo(id);
                 if (info.trigger == null)
                 {
