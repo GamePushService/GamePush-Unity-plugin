@@ -230,7 +230,7 @@ namespace GamePush.Core
         private async Task CloudSync(JObject playerState, SyncStorageType storage, bool forceOverride = false)
         {
             // Logger.Log("To sync AcceptedRewards count " + _acceptedRewards.Count);
-            // Logger.Log("To sync GivenRewards count " + _givenRewards.Count);
+            Logger.Log("To sync claimedTriggers count " + _claimedTriggers.Count);
             var playerInput = new SyncPlayerInput
             {
                 playerState = playerState,
@@ -337,7 +337,6 @@ namespace GamePush.Core
 
         private void MarkDataFromSync(JObject playerData)
         {
-            
             var activeIds = playerData["rewardsData"]["activatedTriggersNow"].ToObject<List<string>>();
             CoreSDK.Triggers.MarkTriggersAsActivated(activeIds);
             

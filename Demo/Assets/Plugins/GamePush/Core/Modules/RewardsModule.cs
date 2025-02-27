@@ -54,10 +54,6 @@ namespace GamePush.Core
                     AddReward(reward.id);
 
                     await Give(reward.id.ToString());
-                    if (reward.isAutoAccept)
-                    {
-                        await Accept(reward.id.ToString());
-                    }
                 }
             }
             catch (Exception e)
