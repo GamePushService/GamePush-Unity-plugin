@@ -105,15 +105,16 @@ namespace GamePush.Core
             List<RewardToIncrement> notSentGivenRewards,
             List<RewardToIncrement> notSentAcceptedRewards)
         {
+            playerRewards = CleanPlayerRewardsList(playerRewards);
             var notSentAcceptedLeft = new List<RewardToIncrement>(notSentAcceptedRewards);
 
             var notSentRewards = notSentGivenRewards
                 .Aggregate(new List<PlayerReward>(), (list, rewardIncrement) =>
                 {
-                    
                     var playerReward = playerRewards.FirstOrDefault(r => r.rewardId == rewardIncrement.id);
                     if (playerReward != null)
                     {
+                        Logger.Log("Find player reward");
                         playerReward.countTotal += rewardIncrement.count;
                         return list;
                     }
@@ -121,6 +122,7 @@ namespace GamePush.Core
                     var reward = _rewardsList.FirstOrDefault(r => r.id == rewardIncrement.id);
                     if (reward != null)
                     {
+                        Logger.Log("Find reward");
                         list.Add(new PlayerReward
                         {
                             rewardId = rewardIncrement.id,
@@ -152,9 +154,22 @@ namespace GamePush.Core
                     return list;
                 });
             
-            
-            
             RefreshPlayerRewardsMap();
+        }
+
+        private List<PlayerReward> CleanPlayerRewardsList(List<PlayerReward> playerRewards)
+        {
+            Dictionary<int, PlayerReward> cleanList = new Dictionary<int, PlayerReward>();
+            foreach (var reward in playerRewards)
+            {
+                if (!cleanList.TryAdd(reward.rewardId, reward))
+                {
+                    cleanList[reward.rewardId].countTotal += reward.countTotal;
+                    cleanList[reward.rewardId].countAccepted += reward.countAccepted;
+                }
+            }
+            
+            return cleanList.Values.ToList();
         }
 
         private async void AcceptOnStart()
@@ -363,12 +378,10 @@ namespace GamePush.Core
 
             if (_playerRewardsMap.TryGetValue(id, out var existingReward))
             {
-                Logger.Log("Old reward: " + id);
                 existingReward.countTotal += 1;
             }
             else
             {
-                Logger.Log("New reward: " + id);
                 _playerRewardsList.Insert(0, new PlayerReward { rewardId = id, countTotal = 1, countAccepted = 0 });
                 RefreshPlayerRewardsMap();
             }

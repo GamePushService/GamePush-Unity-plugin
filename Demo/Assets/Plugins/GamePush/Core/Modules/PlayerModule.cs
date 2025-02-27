@@ -360,9 +360,7 @@ namespace GamePush.Core
             
             var playerRewards = playerData["rewards"].ToObject<List<PlayerReward>>();
             
-            // Logger.Log(playerRewards.Count);
-            // Logger.Log(_acceptedRewards.Count);
-            // Logger.Log(_givenRewards.Count);
+            Logger.Log("player rewards: " + playerRewards.Count);
             CoreSDK.Rewards.SetRewardsList(playerRewards, _acceptedRewards, _givenRewards);
             
             var playerTriggers = playerData["triggers"].ToObject<List<PlayerTrigger>>();
