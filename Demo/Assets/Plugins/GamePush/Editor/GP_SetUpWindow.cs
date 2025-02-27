@@ -17,16 +17,6 @@ namespace GamePushEditor
 
         private const string INIT_SCENE = "Assets/Plugins/GamePush/InitScene/AwaitInit.unity";
 
-        //private static bool _isDataFetch;
-
-        private static int _id;
-        private static string _token;
-
-        private static bool _showPreloaderAd;
-        private static bool _showStickyOnStart;
-        private static bool _waitPluginReady;
-        private static bool _gameReadyAuto;
-
         private static SavedProjectData _projectData;
 
         private static Vector2 _scrollPos;
@@ -45,8 +35,6 @@ namespace GamePushEditor
             window.minSize = new Vector2(300, 350);
             window.titleContent = new GUIContent("GamePush Settings");
             window.Show();
-
-            //CheckVersion();
         }
 
         private void OnBecameVisible()
@@ -59,13 +47,6 @@ namespace GamePushEditor
             };
 
             _projectData = GetSavedProjectData();
-            _id = _projectData.id;
-
-            _token = _projectData.token;
-            _showPreloaderAd = _projectData.showPreAd;
-            _showStickyOnStart = _projectData.showStickyOnStart;
-            _waitPluginReady = _projectData.waitPluginReady;
-            _gameReadyAuto = _projectData.gameReadyAuto;
         }
 
 
@@ -79,7 +60,7 @@ namespace GamePushEditor
             if (string.IsNullOrWhiteSpace(json))
             {
                 SaveProjectData();
-                return new SavedProjectData(_id, _token);
+                return new SavedProjectData(){ id = _projectData.id, token = _projectData.token };
             }
 
             var savedProjectData = JsonUtility.FromJson<SavedProjectData>(json);
@@ -88,15 +69,16 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            _projectData = new SavedProjectData(
-                _id,
-                _token,
-                _showPreloaderAd,
-                _showStickyOnStart,
-                _waitPluginReady,
-                _gameReadyAuto
-                );
-
+            // _projectData = new SavedProjectData()
+            // {
+            //     id = _id,
+            //     token = _token,
+            //     showPreloadAd = _showPreloaderAd,
+            //     showStickyOnStart = _showStickyOnStart,
+            //     waitPluginReady = _waitPluginReady,
+            //     gameReadyAuto = _gameReadyAuto,
+            // };
+            
             var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
 
@@ -106,10 +88,10 @@ namespace GamePushEditor
 
         private static void SetProjectDataToWebTemplate()
         {
-            PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _id.ToString());
-            PlayerSettings.SetTemplateCustomValue("TOKEN", _token.ToString());
-            PlayerSettings.SetTemplateCustomValue("SHOW_PRELOADER_AD", _showPreloaderAd.ToString());
-            PlayerSettings.SetTemplateCustomValue("GAMEREADY_AUTOCALL", _gameReadyAuto.ToString());
+            PlayerSettings.SetTemplateCustomValue("PROJECT_ID", _projectData.id.ToString());
+            PlayerSettings.SetTemplateCustomValue("TOKEN", _projectData.token.ToString());
+            PlayerSettings.SetTemplateCustomValue("SHOW_PRELOADER_AD", _projectData.showPreloadAd.ToString());
+            PlayerSettings.SetTemplateCustomValue("GAMEREADY_AUTOCALL", _projectData.gameReadyAuto.ToString());
         }
 
         private static void SaveProjectDataToScript()
@@ -123,17 +105,17 @@ namespace GamePushEditor
             var path = AssetDatabase.GetAssetPath(DataLinker.projectData);
             var file = new System.IO.StreamWriter(path);
 
-            string gameReadyBool = _gameReadyAuto.ToString().ToLower();
-            string showStickyBool = _showStickyOnStart.ToString().ToLower();
-            string waitPluginBool = _waitPluginReady.ToString().ToLower();
+            string gameReadyBool = _projectData.gameReadyAuto.ToString().ToLower();
+            string showStickyBool = _projectData.showStickyOnStart.ToString().ToLower();
+            string waitPluginBool = _projectData.waitPluginReady.ToString().ToLower();
 
             file.WriteLine("namespace GamePush.Data");
             file.WriteLine("{");
             file.WriteLine("    public static class ProjectData");
             file.WriteLine("    {");
             file.WriteLine($"        public static string SDK_VERSION = \"{VERSION}\";");
-            file.WriteLine($"        public static string ID = \"{_id}\";");
-            file.WriteLine($"        public static string TOKEN = \"{_token}\";");
+            file.WriteLine($"        public static string ID = \"{_projectData.id}\";");
+            file.WriteLine($"        public static string TOKEN = \"{_projectData.token}\";");
             file.WriteLine($"        public static bool GAMEREADY_AUTOCALL = {gameReadyBool};");
             file.WriteLine($"        public static bool SHOW_STICKY_ON_START = {showStickyBool};");
             file.WriteLine($"        public static bool WAIT_PLAGIN_READY = {waitPluginBool};");
@@ -148,15 +130,14 @@ namespace GamePushEditor
             var pathToJS = AssetDatabase.GetAssetPath(DataLinker.jsAnchor);
             var pathJspre = pathToJS.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(DataLinker.jsAnchor)), "_dataFields.jspre");
             
-
             var filePre = new StreamWriter(pathJspre);
 
-            filePre.WriteLine($"const dataProjectId = \'{_id}\';");
-            filePre.WriteLine($"const dataPublicToken = \'{_token}\';");
-            filePre.WriteLine($"const showPreloaderAd = \'{_showPreloaderAd}\';");
-            filePre.WriteLine($"const showStickyOnStart = \'{_showStickyOnStart}\';");
-            filePre.WriteLine($"const waitPluginReady = \'{_waitPluginReady}\';");
-            filePre.WriteLine($"const autocallGameReady = \'{_gameReadyAuto}\';");
+            filePre.WriteLine($"const dataProjectId = \'{_projectData.id}\';");
+            filePre.WriteLine($"const dataPublicToken = \'{_projectData.token}\';");
+            filePre.WriteLine($"const showPreloaderAd = \'{_projectData.showPreloadAd}\';");
+            filePre.WriteLine($"const showStickyOnStart = \'{_projectData.showStickyOnStart}\';");
+            filePre.WriteLine($"const waitPluginReady = \'{_projectData.waitPluginReady}\';");
+            filePre.WriteLine($"const autocallGameReady = \'{_projectData.gameReadyAuto}\';");
 
             filePre.Close();
 
@@ -198,21 +179,21 @@ namespace GamePushEditor
             GUILayout.Label(" Enter project ID and token", _titleStyle);
             GUILayout.Space(10);
 
-            _id = EditorGUILayout.IntField("Project ID", _id);
+            _projectData.id = EditorGUILayout.IntField("Project ID", _projectData.id);
             GUILayout.Space(5);
-            _token = EditorGUILayout.TextField("Token", _token);
+            _projectData.token = EditorGUILayout.TextField("Token", _projectData.token);
 
             GUILayout.Space(15);
             GUILayout.Label(" Additional settings", _titleStyle);
             GUILayout.Space(10);
 
-            _showPreloaderAd = EditorGUILayout.Toggle("Show Preloader Ad", _showPreloaderAd);
+            _projectData.showPreloadAd = EditorGUILayout.Toggle("Show Preloader Ad", _projectData.showPreloadAd);
             GUILayout.Space(5);
-            _showStickyOnStart = EditorGUILayout.Toggle("Show Sticky on Start", _showStickyOnStart);
+            _projectData.showStickyOnStart = EditorGUILayout.Toggle("Show Sticky on Start", _projectData.showStickyOnStart);
             GUILayout.Space(5);
-            _gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _gameReadyAuto);
+            _projectData.gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _projectData.gameReadyAuto);
             GUILayout.Space(5);
-            _waitPluginReady = EditorGUILayout.Toggle("Await plugin ready", _waitPluginReady);
+            _projectData.waitPluginReady = EditorGUILayout.Toggle("Await plugin ready", _projectData.waitPluginReady);
 
             GUILayout.Space(25);
 
@@ -245,13 +226,13 @@ namespace GamePushEditor
         private static void SaveConfig()
         {
             //Console.Log("Saving data");
-            if (_id == 0 || string.IsNullOrEmpty(_token))
+            if (_projectData.id == 0 || string.IsNullOrEmpty(_projectData.token))
             {
                 EditorUtility.DisplayDialog("GamePush Error", "Please fill all the fields.", "OK");
                 return;
             }
 
-            if (!ValidateToken(_token)) return;
+            if (!ValidateToken(_projectData.token)) return;
 
             SaveProjectData();
 
@@ -281,7 +262,7 @@ namespace GamePushEditor
 
         private static void IniSceneHandle()
         {
-            if (_waitPluginReady)
+            if (_projectData.waitPluginReady)
                 AddSceneToBuildSettings();
             else
                 RemoveSceneToBuildSettings();
