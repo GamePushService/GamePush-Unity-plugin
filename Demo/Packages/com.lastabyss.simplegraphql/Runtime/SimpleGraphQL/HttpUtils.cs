@@ -88,7 +88,7 @@ namespace SimpleGraphQL
 
                 try
                 {
-                    await webRequest.SendWebRequest();
+                    webRequest.SendWebRequest();
 
                     while (!webRequest.isDone)
                     {
