@@ -27,7 +27,6 @@ namespace GamePush.Initialization
 #if !UNITY_EDITOR && UNITY_WEBGL
              GP_UnityReady();
 #endif
-
             GameObject SDK = new GameObject();
             SDK.name = "GamePushSDK";
             UnityEngine.Object.DontDestroyOnLoad(SDK);
@@ -75,6 +74,10 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Storage>();
             SDK.AddComponent<GP_Windows>();
 
+            if (ProjectData.AUTO_PAUSE_ON_ADS)
+            {
+                SDK.AddComponent<GP_PauseLogic>();
+            }
 
             EndInit();
         }

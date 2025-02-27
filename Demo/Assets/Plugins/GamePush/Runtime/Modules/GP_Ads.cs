@@ -37,7 +37,6 @@ namespace GamePush
         #endregion
        
 
-
         [DllImport("__Internal")]
         private static extern void GP_Ads_ShowFullscreen();
         public static void ShowFullscreen(Action onFullscreenStart = null, Action<bool> onFullscreenClose = null)

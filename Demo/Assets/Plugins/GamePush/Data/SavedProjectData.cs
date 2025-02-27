@@ -13,6 +13,7 @@ namespace GamePush.Data
         public bool showStickyOnStart;
         public bool waitPluginReady;
         public bool gameReadyAuto;
+        public bool autoPause;
     }
 
 }

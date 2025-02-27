@@ -69,16 +69,6 @@ namespace GamePushEditor
 
         private static void SaveProjectData()
         {
-            // _projectData = new SavedProjectData()
-            // {
-            //     id = _id,
-            //     token = _token,
-            //     showPreloadAd = _showPreloaderAd,
-            //     showStickyOnStart = _showStickyOnStart,
-            //     waitPluginReady = _waitPluginReady,
-            //     gameReadyAuto = _gameReadyAuto,
-            // };
-            
             var path = AssetDatabase.GetAssetPath(DataLinker.saveFile);
             var json = JsonUtility.ToJson(_projectData);
 
@@ -108,6 +98,7 @@ namespace GamePushEditor
             string gameReadyBool = _projectData.gameReadyAuto.ToString().ToLower();
             string showStickyBool = _projectData.showStickyOnStart.ToString().ToLower();
             string waitPluginBool = _projectData.waitPluginReady.ToString().ToLower();
+            string autoPauseBool = _projectData.autoPause.ToString().ToLower();
 
             file.WriteLine("namespace GamePush.Data");
             file.WriteLine("{");
@@ -119,6 +110,7 @@ namespace GamePushEditor
             file.WriteLine($"        public static bool GAMEREADY_AUTOCALL = {gameReadyBool};");
             file.WriteLine($"        public static bool SHOW_STICKY_ON_START = {showStickyBool};");
             file.WriteLine($"        public static bool WAIT_PLAGIN_READY = {waitPluginBool};");
+            file.WriteLine($"        public static bool AUTO_PAUSE_ON_ADS = {autoPauseBool};");
             file.WriteLine("    }");
             file.WriteLine("}");
             file.Close();
@@ -135,9 +127,6 @@ namespace GamePushEditor
             filePre.WriteLine($"const dataProjectId = \'{_projectData.id}\';");
             filePre.WriteLine($"const dataPublicToken = \'{_projectData.token}\';");
             filePre.WriteLine($"const showPreloaderAd = \'{_projectData.showPreloadAd}\';");
-            filePre.WriteLine($"const showStickyOnStart = \'{_projectData.showStickyOnStart}\';");
-            filePre.WriteLine($"const waitPluginReady = \'{_projectData.waitPluginReady}\';");
-            filePre.WriteLine($"const autocallGameReady = \'{_projectData.gameReadyAuto}\';");
 
             filePre.Close();
 
@@ -194,6 +183,8 @@ namespace GamePushEditor
             _projectData.gameReadyAuto = EditorGUILayout.Toggle("GameReady Autocall", _projectData.gameReadyAuto);
             GUILayout.Space(5);
             _projectData.waitPluginReady = EditorGUILayout.Toggle("Await plugin ready", _projectData.waitPluginReady);
+            GUILayout.Space(5);
+            _projectData.autoPause = EditorGUILayout.Toggle("Pause music on ads", _projectData.autoPause);
 
             GUILayout.Space(25);
 
@@ -260,6 +251,8 @@ namespace GamePushEditor
             return true;
         }
 
+        #region InitScene
+
         private static void IniSceneHandle()
         {
             if (_projectData.waitPluginReady)
@@ -320,5 +313,8 @@ namespace GamePushEditor
                 EditorBuildSettings.scenes = newScenes;
             }
         }
+
+        #endregion
+        
     }
 }
