@@ -106,6 +106,7 @@ namespace GamePush.Core
             List<RewardToIncrement> notSentAcceptedRewards)
         {
             playerRewards = CleanPlayerRewardsList(playerRewards);
+            
             var notSentAcceptedLeft = new List<RewardToIncrement>(notSentAcceptedRewards);
 
             var notSentRewards = notSentGivenRewards
