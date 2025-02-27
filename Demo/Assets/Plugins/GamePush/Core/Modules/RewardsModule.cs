@@ -30,6 +30,7 @@ namespace GamePush.Core
         private const string RewardNotFoundError = "reward_not_found";
         private const string PlayerRewardNotFoundError = "player_reward_not_found";
         private const string RewardAlreadyAcceptedError = "reward_already_accepted";
+        
         public void Init(List<Reward> rewards)
         {
             _rewardsList = rewards;
@@ -130,7 +131,7 @@ namespace GamePush.Core
 
                     return list;
                 });
-
+            
             var allPlayerRewards = playerRewards.Concat(notSentRewards).ToList();
 
             _playerRewardsList = allPlayerRewards
@@ -148,10 +149,11 @@ namespace GamePush.Core
 
                         list.Add(pr);
                     }
-
                     return list;
                 });
-
+            
+            
+            
             RefreshPlayerRewardsMap();
         }
 
@@ -361,10 +363,12 @@ namespace GamePush.Core
 
             if (_playerRewardsMap.TryGetValue(id, out var existingReward))
             {
+                Logger.Log("Old reward: " + id);
                 existingReward.countTotal += 1;
             }
             else
             {
+                Logger.Log("New reward: " + id);
                 _playerRewardsList.Insert(0, new PlayerReward { rewardId = id, countTotal = 1, countAccepted = 0 });
                 RefreshPlayerRewardsMap();
             }
