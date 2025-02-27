@@ -14,6 +14,9 @@ namespace GamePush
         public static event UnityAction<TriggerData> OnTriggerClaim;
         public static event UnityAction<string> OnTriggerClaimError;
 
+        private void CallOnTriggerDataActive(TriggerData trigger) { OnTriggerActivate?.Invoke(trigger); }
+        private void CallOnTriggerDataClaim(TriggerData trigger) { OnTriggerClaim?.Invoke(trigger); }
+        
         private void CallOnTriggerActive(string trigger) { OnTriggerActivate?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaim(string trigger) { OnTriggerClaim?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaimError(string error) { OnTriggerClaimError?.Invoke(error); }
@@ -35,17 +38,16 @@ namespace GamePush
 
         private void OnEnable()
         {
-            CoreSDK.Triggers.OnTriggerActivate += (TriggerData data) => OnTriggerActivate?.Invoke(data);
-            CoreSDK.Triggers.OnTriggerClaim += (TriggerData data) => OnTriggerClaim?.Invoke(data);
-            CoreSDK.Triggers.OnTriggerClaimError += (string error) => OnTriggerClaimError?.Invoke(error);
+            CoreSDK.Triggers.OnTriggerActivate += CallOnTriggerDataActive;
+            CoreSDK.Triggers.OnTriggerClaim += CallOnTriggerDataClaim;
+            CoreSDK.Triggers.OnTriggerClaimError += CallOnTriggerClaimError;
         }
 
         private void OnDisable()
         {
-            CoreSDK.Triggers.OnTriggerActivate -= (TriggerData data) => OnTriggerActivate?.Invoke(data);
-            CoreSDK.Triggers.OnTriggerClaim -= (TriggerData data) => OnTriggerClaim?.Invoke(data);
-            CoreSDK.Triggers.OnTriggerClaimError -= (string error) => OnTriggerClaimError?.Invoke(error);
-
+            CoreSDK.Triggers.OnTriggerActivate -= CallOnTriggerDataActive;
+            CoreSDK.Triggers.OnTriggerClaim -= CallOnTriggerDataClaim;
+            CoreSDK.Triggers.OnTriggerClaimError -= CallOnTriggerClaimError;
         }
 
         public static void Claim(string idOrTag)

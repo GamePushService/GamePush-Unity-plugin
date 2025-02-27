@@ -36,6 +36,7 @@ namespace GamePush.Core
             SetRewardDataList(rewards);
             
             CoreSDK.Language.OnChangeLanguage += ChangeTranslations;
+            CoreSDK.OnInit += AcceptOnStart;
         }
 
         public async void MarkRewardsGiven(List<int> ids)
@@ -44,8 +45,9 @@ namespace GamePush.Core
             {
                 foreach (var id in ids)
                 {
-                    Logger.Log("Set given: " + id);
+                    // Logger.Log("Set given: " + id);
                     var reward = GetRewardData(id);
+                    var playerReward = GetPlayerRewardById(id);
                     if (reward == null)
                     {
                         Logger.Error($"Reward not found, ID {id}");
@@ -53,7 +55,11 @@ namespace GamePush.Core
                     }
                     AddReward(reward.id);
 
-                    await Give(reward.id.ToString());
+                    var allData = new AllRewardData(reward, playerReward);
+                    OnRewardsGive?.Invoke(allData);
+                    if (reward.isAutoAccept) {
+                        OnRewardsAccept?.Invoke(allData);
+                    }
                 }
             }
             catch (Exception e)
@@ -147,10 +153,9 @@ namespace GamePush.Core
                 });
 
             RefreshPlayerRewardsMap();
-            AcceptOnStart();
         }
 
-        private async Task AcceptOnStart()
+        private async void AcceptOnStart()
         {
             foreach (var playerReward in _playerRewardsList)
             {

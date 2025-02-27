@@ -166,6 +166,8 @@ namespace GamePush.Core
                 throw new Exception(error);
             }
             JObject resultObject = (JObject)root["data"]["result"];
+            
+            Logger.Log("Get score from server: " + resultObject["state"]["score"]);
             return resultObject;
         }
 
@@ -187,6 +189,7 @@ namespace GamePush.Core
 
             JObject resultObject = RootToResult(root);
 
+            Logger.Log("Get score from server: " + resultObject["state"]["score"]);
             return resultObject;
         }
 

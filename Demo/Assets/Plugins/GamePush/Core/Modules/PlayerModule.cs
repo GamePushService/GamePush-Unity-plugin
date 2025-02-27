@@ -230,7 +230,7 @@ namespace GamePush.Core
         private async Task CloudSync(JObject playerState, SyncStorageType storage, bool forceOverride = false)
         {
             // Logger.Log("To sync AcceptedRewards count " + _acceptedRewards.Count);
-            Logger.Log("To sync claimedTriggers count " + _claimedTriggers.Count);
+            // Logger.Log("To sync claimedTriggers count " + _claimedTriggers.Count);
             var playerInput = new SyncPlayerInput
             {
                 playerState = playerState,
@@ -261,6 +261,7 @@ namespace GamePush.Core
 
         private void HandleSync(JObject playerData, SyncStorageType syncStorage)
         {
+           
             SetPlayerStats(playerData);
             
             SetStartTime(playerData["sessionStart"].ToString());
@@ -988,11 +989,8 @@ namespace GamePush.Core
                 //throw new Exception(err);
                 return default(float);
             }
-
-            
         }
-
-
+        
         public int GetSecondsLeft(string key)
         {
             if (playerDataFields.TryGetValue(key, out PlayerField field))
@@ -1095,7 +1093,6 @@ namespace GamePush.Core
             }
         }
 
-
         public int GetActiveDays()
         {
             return _playerStats.activeDays;
@@ -1166,13 +1163,17 @@ namespace GamePush.Core
 
         public void Add(string key, int value)
         {
+            Logger.Log("Add key:" + key + " value:" + value);
             int oldValue = Get<int>(key);
+            Logger.Log("oldValue:" + oldValue);
             int newValue = oldValue + value;
+            Logger.Log("newValue:" + newValue);
             SetStateValue(key, newValue);
         }
 
         public void Add(string key, float value)
         {
+            Logger.Log("Add key:" + key + " float value:" + value);
             float oldValue = Get<float>(key);
             float newValue = oldValue + value;
             SetStateValue(key, newValue);
@@ -1190,7 +1191,7 @@ namespace GamePush.Core
             {
                 _givenRewards.Add(info);
             }
-            // Logger.Log("GivenRewards Count: " + _givenRewards.Count);
+            Logger.Log("GivenRewards Count: " + _givenRewards.Count);
             // Logger.Log("Rewards Count: " + _givenRewards.FirstOrDefault(r => r.id == info.id).count);
         }
 
@@ -1206,7 +1207,7 @@ namespace GamePush.Core
             {
                 _acceptedRewards.Add(info);
             }
-            // Logger.Log("AcceptedRewards Count: " + _acceptedRewards.Count);
+            Logger.Log("AcceptedRewards Count: " + _acceptedRewards.Count);
             // Logger.Log("Rewards Count: " + _acceptedRewards.FirstOrDefault(r => r.id == info.id).count);
         }
 
