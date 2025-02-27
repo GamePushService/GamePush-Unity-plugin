@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2b5ffaf4-4954-4552-b9ab-9695f9aa1163" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Windows.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Windows.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +18,11 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ConfigData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ModulesData/PlatformModuleData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Editor/BuildModifications.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Init.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/ad/5f3da708/List`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b1516e6e8d9244cdbb5e9eb1e87025f24800/b7/e92d9d03/ZipFile.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -118,6 +120,7 @@
       <workItem from="1740139747561" duration="201000" />
       <workItem from="1740402485507" duration="12005000" />
       <workItem from="1740493028071" duration="750000" />
+      <workItem from="1740667796233" duration="120000" />
     </task>
     <servers />
   </component>
