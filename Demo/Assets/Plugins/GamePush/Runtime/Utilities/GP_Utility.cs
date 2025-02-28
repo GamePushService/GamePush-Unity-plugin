@@ -9,9 +9,9 @@ namespace GamePush.Utilities
 {
     public class UtilityImage
     {
-        public async static Task DownloadImageAsync(string url, Image image)
+        public async static Task<bool> DownloadImageAsync(string url, Image image)
         {
-            if (url == "" || url == null) return;
+            if (url == "" || url == null) return false;
 
             var request = UnityWebRequestTexture.GetTexture(url);
             AsyncOperation operation = request.SendWebRequest();
@@ -28,17 +28,19 @@ namespace GamePush.Utilities
                 if (_texture2D == null)
                 {
                     Debug.Log("Download Image : Incorrect texture");
-                    return;
+                    return false;
                 }
 
                 Sprite sprite = Sprite.Create(_texture2D, new Rect(0, 0, _texture2D.width, _texture2D.height), new Vector2(0.5f, 0.5f), 20f);
 
                 image.sprite = sprite;
+                return true;
             }
             else
             {
                 Debug.Log("Download Image : Failed");
             }
+            return false;
         }
 
     }

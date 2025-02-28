@@ -339,16 +339,16 @@ namespace Examples.Player
         }
         #endregion
 
-        private void OnFetchFields(List<PlayerFetchFieldsData> playerFetchFields)
+        private void OnFetchFields(List<PlayerFieldData> playerFetchFields)
         {
             ConsoleUI.Instance.Log("\nPLAYER FIELDS:");
-            foreach (PlayerFetchFieldsData field in playerFetchFields)
+            foreach (PlayerFieldData field in playerFetchFields)
             {
                 PrintPlayerField(field);
             }
         }
 
-        private void PrintPlayerField(PlayerFetchFieldsData field)
+        private void PrintPlayerField(PlayerFieldData field)
         {
             ConsoleUI.Instance.Log($"\nField key: {field.key}");
             ConsoleUI.Instance.Log($"Field name: {field.name}");
@@ -389,15 +389,15 @@ namespace Examples.Player
 
         private void OnPlayerChange() => ConsoleUI.Instance.Log("Player Change");
 
-        private void OnFieldMaximum(PlayerFetchFieldsData field)
+        private void OnFieldMaximum(PlayerFieldData field)
         {
             ConsoleUI.Instance.Log($"Field {field.name} Maximum");
         }
-        private void OnFieldMinimum(PlayerFetchFieldsData field)
+        private void OnFieldMinimum(PlayerFieldData field)
         {
             ConsoleUI.Instance.Log($"Field {field.name} Minimum");
         }
-        private void OnFieldIncrement(PlayerFetchFieldsData field)
+        private void OnFieldIncrement(PlayerFieldData field)
         {
             ConsoleUI.Instance.Log($"Field {field.name} Increment");
         }

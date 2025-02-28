@@ -1,20 +1,47 @@
 using UnityEngine;
-
+using UnityEngine.UI;
 using GamePush;
+using TMPro;
+
+using Examples.Console;
 
 namespace Examples.Languages
 {
     public class Languages : MonoBehaviour
     {
-        private void Start()
+        [SerializeField] private TMP_Dropdown _langs;
+        [Space]
+        [SerializeField] private Button _buttonCurrent;
+        [SerializeField] private Button _buttonChange;
+
+        private void OnEnable()
         {
-            Debug.Log("Language: " + Current());
+            _buttonCurrent.onClick.AddListener(Current);
+            _buttonChange.onClick.AddListener(Change);
         }
 
-        public string Current() => GP_Language.Current().ToString();
+        private void OnDisable()
+        {
+            _buttonCurrent.onClick.RemoveListener(Current);
+            _buttonChange.onClick.RemoveListener(Change);
+        }
 
-        public void Change() => GP_Language.Change(Language.English, OnChange);
+        public void Current()
+        {
+            string lang = GP_Language.Current().ToString();
+            ConsoleUI.Instance.Log($"LANGUAGE : CURRENT: {lang}");
+        }
 
-        private void OnChange(Language language) => Debug.Log("LANGUAGE : ON CHANGE: " + language);
+        public void Change()
+        {
+            Language langToChange = (Language)_langs.value;
+            ConsoleUI.Instance.Log($"LANGUAGE : CHANGE TO: {langToChange}");
+            GP_Language.Change(langToChange, OnChange);
+        }
+
+        private void OnChange(Language language)
+        {
+            ConsoleUI.Instance.Log("LANGUAGE : ON CHANGE: " + language);
+        }
     }
 }

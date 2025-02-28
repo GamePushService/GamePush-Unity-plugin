@@ -10,6 +10,8 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Ads);
 
+        #region Events
+
         public static event UnityAction OnAdsStart;
         public static event UnityAction<bool> OnAdsClose;
         public static event UnityAction OnFullscreenStart;
@@ -23,17 +25,17 @@ namespace GamePush
         public static event UnityAction OnStickyClose;
         public static event UnityAction OnStickyRefresh;
         public static event UnityAction OnStickyRender;
-
+        
         private static event Action _onFullscreenStart;
         private static event Action<bool> _onFullscreenClose;
-
         private static event Action _onPreloaderStart;
         private static event Action<bool> _onPreloaderClose;
-
         private static event Action<string> _onRewardedReward;
         private static event Action _onRewardedStart;
         private static event Action<bool> _onRewardedClose;
 
+        #endregion
+       
 
         [DllImport("__Internal")]
         private static extern void GP_Ads_ShowFullscreen();

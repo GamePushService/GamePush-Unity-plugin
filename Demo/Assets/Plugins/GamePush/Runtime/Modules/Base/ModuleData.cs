@@ -40,6 +40,7 @@ namespace GamePush
         Variables,
         Triggers,
         Uniques,
-        Storage
+        Storage,
+        Windows
     }
 }

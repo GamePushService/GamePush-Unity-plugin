@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace GamePush.Data
 {
@@ -8,27 +9,11 @@ namespace GamePush.Data
         public int id;
         public string token;
 
-        public bool showPreAd;
+        public bool showPreloadAd;
         public bool showStickyOnStart;
         public bool waitPluginReady;
         public bool gameReadyAuto;
-
-        public SavedProjectData(
-            int id,
-            string token,
-            bool showPreAd = false,
-            bool showStickyOnStart = false,
-            bool waitPluginReady = false,
-            bool gameReadyAuto = false
-            )
-        {
-            this.id = id;
-            this.token = token;
-            this.showPreAd = showPreAd;
-            this.showStickyOnStart = showStickyOnStart;
-            this.waitPluginReady = waitPluginReady;
-            this.gameReadyAuto = gameReadyAuto;
-        }
+        public bool autoPause;
     }
 
 }

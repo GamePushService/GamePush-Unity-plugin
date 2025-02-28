@@ -12,6 +12,11 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Payments);
 
+        public static List<FetchProducts> Products = new List<FetchProducts>();
+        public static List<FetchPlayerPurchases> Purchases = new List<FetchPlayerPurchases>();
+        public string CurrencySymbol() => Products[0]?.ToString();
+        
+        #region Events
         public static event UnityAction<List<FetchProducts>> OnFetchProducts;
         public static event UnityAction OnFetchProductsError;
 
@@ -26,7 +31,11 @@ namespace GamePush
         public static event UnityAction OnSubscribeError;
         public static event UnityAction<string> OnUnsubscribeSuccess;
         public static event UnityAction OnUnsubscribeError;
+        
+        private static event Action<List<FetchProducts>> _onFetchProducts;
+        private static event Action _onFetchProductsError;
 
+        private static event Action<List<FetchPlayerPurchases>> _onFetchPlayerPurchases;
 
         private static event Action<string> _onPurchaseSuccess;
         private static event Action _onPurchaseError;
@@ -39,129 +48,45 @@ namespace GamePush
 
         private static event Action<string> _onUnsubscribeSuccess;
         private static event Action _onUnsubscribeError;
+        #endregion
 
-
+        #region DLL Import
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")]
         private static extern void GP_Payments_FetchProducts();
-        public static void Fetch()
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Payments_FetchProducts();
-#else
-
-            ConsoleLog("FETCH PRODUCTS");
-            OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
-            OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
-#endif
-        }
-
-
         [DllImport("__Internal")]
         private static extern void GP_Payments_Purchase(string idOrTag);
-        public static void Purchase(string idOrTag, Action<string> onPurchaseSuccess = null, Action onPurchaseError = null)
-        {
-            _onPurchaseSuccess = onPurchaseSuccess;
-            _onPurchaseError = onPurchaseError;
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Payments_Purchase(idOrTag);
-#else
-
-            ConsoleLog("PURCHASE: " + idOrTag);
-            _onPurchaseSuccess?.Invoke(idOrTag);
-            OnPurchaseSuccess?.Invoke(idOrTag);
-#endif
-        }
-
-
-
         [DllImport("__Internal")]
         private static extern void GP_Payments_Consume(string idOrTag);
-        public static void Consume(string idOrTag, Action<string> onConsumeSuccess = null, Action onConsumeError = null)
-        {
-            _onConsumeSuccess = onConsumeSuccess;
-            _onConsumeError = onConsumeError;
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Payments_Consume(idOrTag);
-#else
-
-            ConsoleLog("CONSUME: " + idOrTag);
-            _onConsumeSuccess?.Invoke(idOrTag);
-            OnConsumeSuccess?.Invoke(idOrTag);
-#endif
-        }
-
-
         [DllImport("__Internal")]
         private static extern string GP_Payments_IsAvailable();
-        public static bool IsPaymentsAvailable()
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_Payments_IsAvailable() == "true";
-#else
-            bool isVal = GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
-            ConsoleLog("IS PAYMENTS AVAILABLE: " + isVal);
-            return isVal;
-#endif
-        }
-
-
         [DllImport("__Internal")]
         private static extern string GP_Payments_IsSubscriptionsAvailable();
-        public static bool IsSubscriptionsAvailable()
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return GP_Payments_IsSubscriptionsAvailable() == "true";
-#else
-            bool isVal = GP_Settings.instance.GetPlatformSettings().IsSubscriptionsAvailable;
-            ConsoleLog("IS SUBSCRIPTIONS AVAILABLE: " + isVal);
-            return isVal;
-#endif
-        }
-
-
         [DllImport("__Internal")]
         private static extern void GP_Payments_Subscribe(string idOrTag);
-        public static void Subscribe(string idOrTag, Action<string> onSubscribeSuccess = null, Action onSubscribeError = null)
-        {
-            _onSubscribeSuccess = onSubscribeSuccess;
-            _onSubscribeError = onSubscribeError;
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Payments_Subscribe(idOrTag);
-#else
-
-            ConsoleLog("SUBSCRIBE: " +  idOrTag);
-            _onSubscribeSuccess?.Invoke(idOrTag);
-            OnSubscribeSuccess?.Invoke(idOrTag);
-#endif
-        }
-
-
-
         [DllImport("__Internal")]
         private static extern void GP_Payments_Unsubscribe(string idOrTag);
-        public static void Unsubscribe(string idOrTag, Action<string> onUnsubscribeSuccess = null, Action onUnsubscribeError = null)
-        {
-            _onUnsubscribeSuccess = onUnsubscribeSuccess;
-            _onUnsubscribeError = onUnsubscribeError;
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Payments_Unsubscribe(idOrTag);
-#else
-
-            ConsoleLog("UNSUBSCRIBE: " + idOrTag);
-            _onUnsubscribeSuccess?.Invoke(idOrTag);
-            OnUnsubscribeSuccess?.Invoke(idOrTag);
 #endif
+        #endregion
+        
+        #region Callbacks
+
+        private void CallPaymentsFetchProducts(string data)
+        {
+            _onFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
+            OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
+        }
+        private void CallPaymentsFetchPlayerPurchases(string data)
+        { 
+            _onFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
+            OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
         }
 
-
-        private void CallPaymentsFetchProducts(string data) => OnFetchProducts?.Invoke(UtilityJSON.GetList<FetchProducts>(data));
-        private void CallPaymentsFetchPlayerPurcahses(string data) => OnFetchPlayerPurchases?.Invoke(UtilityJSON.GetList<FetchPlayerPurchases>(data));
-
-        private void CallPaymentsFetchProductsError() => OnFetchProductsError?.Invoke();
+        private void CallPaymentsFetchProductsError()
+        {
+            _onFetchProductsError?.Invoke();
+            OnFetchProductsError?.Invoke();
+        }
 
         private void CallPaymentsPurchase(string PuchasedIdOrTag)
         {
@@ -206,6 +131,112 @@ namespace GamePush
             _onUnsubscribeError?.Invoke();
             OnUnsubscribeError?.Invoke();
         }
+        #endregion
+
+        private async void Start()
+        {
+            await GP_Init.Ready;
+            Fetch(products => {Products = products;}, null, purchases => {Purchases = purchases;});
+        }
+
+        public static void Fetch(Action<List<FetchProducts>> onFetchProducts = null, Action onFetchProductsError = null, Action<List<FetchPlayerPurchases>> onFetchPlayerPurchases = null)
+        {
+            _onFetchProducts = onFetchProducts;
+            _onFetchProductsError = onFetchProductsError;
+            _onFetchPlayerPurchases = onFetchPlayerPurchases;
+            
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Payments_FetchProducts();
+#else
+
+            ConsoleLog("FETCH PRODUCTS");
+            OnFetchProducts?.Invoke(GP_Settings.instance.GetProducts());
+            OnFetchPlayerPurchases?.Invoke(GP_Settings.instance.GetPlayerPurchases());
+#endif
+        }
+
+        public static void Purchase(string idOrTag, Action<string> onPurchaseSuccess = null, Action onPurchaseError = null)
+        {
+            _onPurchaseSuccess = onPurchaseSuccess;
+            _onPurchaseError = onPurchaseError;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Payments_Purchase(idOrTag);
+#else
+
+            ConsoleLog("PURCHASE: " + idOrTag);
+            _onPurchaseSuccess?.Invoke(idOrTag);
+            OnPurchaseSuccess?.Invoke(idOrTag);
+#endif
+        }
+        
+        public static void Consume(string idOrTag, Action<string> onConsumeSuccess = null, Action onConsumeError = null)
+        {
+            _onConsumeSuccess = onConsumeSuccess;
+            _onConsumeError = onConsumeError;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Payments_Consume(idOrTag);
+#else
+
+            ConsoleLog("CONSUME: " + idOrTag);
+            _onConsumeSuccess?.Invoke(idOrTag);
+            OnConsumeSuccess?.Invoke(idOrTag);
+#endif
+        }
+
+        public static bool IsPaymentsAvailable()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Payments_IsAvailable() == "true";
+#else
+            bool isVal = GP_Settings.instance.GetPlatformSettings().IsPaymentsAvailable;
+            ConsoleLog("IS PAYMENTS AVAILABLE: " + isVal);
+            return isVal;
+#endif
+        }
+
+        public static bool IsSubscriptionsAvailable()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return GP_Payments_IsSubscriptionsAvailable() == "true";
+#else
+            bool isVal = GP_Settings.instance.GetPlatformSettings().IsSubscriptionsAvailable;
+            ConsoleLog("IS SUBSCRIPTIONS AVAILABLE: " + isVal);
+            return isVal;
+#endif
+        }
+        
+        public static void Subscribe(string idOrTag, Action<string> onSubscribeSuccess = null, Action onSubscribeError = null)
+        {
+            _onSubscribeSuccess = onSubscribeSuccess;
+            _onSubscribeError = onSubscribeError;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Payments_Subscribe(idOrTag);
+#else
+
+            ConsoleLog("SUBSCRIBE: " +  idOrTag);
+            _onSubscribeSuccess?.Invoke(idOrTag);
+            OnSubscribeSuccess?.Invoke(idOrTag);
+#endif
+        }
+
+        public static void Unsubscribe(string idOrTag, Action<string> onUnsubscribeSuccess = null, Action onUnsubscribeError = null)
+        {
+            _onUnsubscribeSuccess = onUnsubscribeSuccess;
+            _onUnsubscribeError = onUnsubscribeError;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Payments_Unsubscribe(idOrTag);
+#else
+
+            ConsoleLog("UNSUBSCRIBE: " + idOrTag);
+            _onUnsubscribeSuccess?.Invoke(idOrTag);
+            OnUnsubscribeSuccess?.Invoke(idOrTag);
+#endif
+        }
+
     }
 
     [System.Serializable]

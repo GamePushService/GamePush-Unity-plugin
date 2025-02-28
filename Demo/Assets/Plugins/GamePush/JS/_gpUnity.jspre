@@ -726,6 +726,14 @@ class GamePushUnityInner {
         return (query = id > 0 ? { id } : { tag: idOrTag });
     }
 
+    getBoolean(value){
+        console.log("Format value " + value);
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        console.log("New value " + value);
+        return value;
+    }
+    
     toUnity(value) {
         switch (typeof value) {
             case 'boolean': {
@@ -880,12 +888,18 @@ class GamePushUnityInner {
     PlayerHas(key) {
         return this.toUnity(this.gp.player.has(key));
     }
+    
+    
 
     PlayerSetFlag(key, value) {
         this.gp.player.set(key, !Boolean(value));
     }
     PlayerToggle(key) {
         this.gp.player.toggle(key);
+    }
+
+    PlayerGetField(key){
+        return this.toUnity(this.gp.player.getField(key));
     }
 
     PlayerGetFieldName(key) {
@@ -1308,7 +1322,7 @@ class GamePushUnityInner {
                     JSON.stringify(result.products)
                 );
                 this.trigger(
-                    'CallPaymentsFetchPlayerPurcahses',
+                    'CallPaymentsFetchPlayerPurchases',
                     JSON.stringify(result.playerPurchases)
                 );
             })
@@ -2742,7 +2756,42 @@ class GamePushUnityInner {
         await this.gp.storage.setGlobal(key, value);
     }
     //Storage
+    
+    //Windows
+    
+    WindowsShowConfirmDefault(){
+        this.gp.windows.showConfirm({})
+            .then((result) => {
+            this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+        });
+    }
+    
+    WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
+        invertButtonColors = this.getBoolean(invertButtonColors)
+        
+        console.log("Data: " 
+            + "\n " + title 
+            + "\n " + description 
+            + "\n " + textConfirm 
+            + "\n " + textCancel 
+            + "\n " + invertButtonColors);
+        
+        this.gp.windows.showConfirm({
+            title,
+            description,
+            textConfirm,
+            textCancel,
+            invertButtonColors
+        })
+            .then((result) => {
+                this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+            });
+    }
+    
+    //Windows
 }
+
+
 
 function formatCustomValue(value) {
     switch (typeof value) {
