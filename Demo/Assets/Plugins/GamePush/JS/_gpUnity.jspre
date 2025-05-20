@@ -721,11 +721,6 @@ class GamePushUnityInner {
         SendMessage('GamePushSDK', eventName, this.toUnity(value));
     }
 
-    getQuery(idOrTag) {
-        const id = parseInt(idOrTag, 10) || 0;
-        return (query = id > 0 ? { id } : { tag: idOrTag });
-    }
-
     getBoolean(value){
         console.log("Format value " + value);
         if (value == 'True') value = true;
@@ -2791,8 +2786,6 @@ class GamePushUnityInner {
     //Windows
 }
 
-
-
 function formatCustomValue(value) {
     switch (typeof value) {
         case 'boolean': {
@@ -2813,7 +2806,6 @@ function formatCustomValue(value) {
     }
     return value;
 }
-
 function mapChannel(channel = {}) {
     return {
         ...channel,

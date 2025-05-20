@@ -3,6 +3,7 @@ export default class GamePushUnity {
         this.gp = gp;
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
+
         this.gp.player.on('sync', (success) => {
             this.trigger(
                 success ? 'CallPlayerSyncComplete' : 'CallPlayerSyncError'
@@ -22,6 +23,18 @@ export default class GamePushUnity {
             this.trigger(
                 success ? 'CallPlayerLogoutComplete' : 'CallPlayerLogoutError'
             );
+        });
+
+        this.gp.player.on('field:maximum', ({ field }) => {
+            this.trigger('CallPlayerFieldReachMaximum', JSON.stringify(field));
+        });
+
+        this.gp.player.on('field:minimum', ({ field }) => {
+            this.trigger('CallPlayerFieldReachMinimum', JSON.stringify(field));
+        });
+
+        this.gp.player.on('field:increment', ({ field, oldValue, newValue }) => {
+            this.trigger('CallPlayerFieldIncrement', JSON.stringify(field));
         });
 
         this.gp.on('event:connect', () => this.trigger('CallPlayerConnect'));
@@ -664,10 +677,14 @@ export default class GamePushUnity {
         });
 
         this.gp.uniques.on('check', (uniqueValue) => {
-            this.trigger('CallOnUniqueValueCheck', JSON.stringify(uniqueValue));
-        });
-        this.gp.uniques.on('error:check', (error) => {
-            this.trigger('CallOnUniqueValueCheckError', error);
+            if (uniqueValue.success) {
+                this.trigger(
+                    'CallOnUniqueValueCheck',
+                    JSON.stringify(uniqueValue)
+                );
+                return;
+            }
+            this.trigger('CallOnUniqueValueCheckError', 'already_exist');
         });
 
         this.gp.uniques.on('delete', (uniqueValue) => {
@@ -679,21 +696,37 @@ export default class GamePushUnity {
         this.gp.uniques.on('error:delete', (error) => {
             this.trigger('CallOnUniqueValueDeleteError', error);
         });
+
+        //Storage
+        this.gp.storage.on('get', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetValue', JSON.stringify(result));
+        });
+        this.gp.storage.on('set', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetValue', JSON.stringify(result));
+        });
+        this.gp.storage.on('get:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageGetGlobal', JSON.stringify(result));
+        });
+        this.gp.storage.on('set:global', (result) => {
+            console.log(result);
+            this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
+        });
     }
 
-    trigger(eventName, value) {
-        if (window.unityInstance !== null) {
-            window.unityInstance.SendMessage(
-                'GamePushSDK',
-                eventName,
-                this.toUnity(value)
-            );
-        }
+    async trigger(eventName, value) {
+        await _unityAwaiter.ready;
+        window.unityInstance.SendMessage('GamePushSDK', eventName, this.toUnity(value));
     }
 
-    getQuery(idOrTag) {
-        const id = parseInt(idOrTag, 10) || 0;
-        return (query = id > 0 ? { id } : { tag: idOrTag });
+    getBoolean(value){
+        console.log("Format value " + value);
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        console.log("New value " + value);
+        return value;
     }
 
     toUnity(value) {
@@ -730,6 +763,9 @@ export default class GamePushUnity {
 
     PlatformType() {
         return this.gp.platform.type;
+    }
+    PlatformTag() {
+        return this.gp.platform.tag;
     }
     PlatformHasIntegratedAuth() {
         return this.toUnity(this.gp.platform.hasIntegratedAuth);
@@ -848,11 +884,17 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.player.has(key));
     }
 
+
+
     PlayerSetFlag(key, value) {
         this.gp.player.set(key, !Boolean(value));
     }
     PlayerToggle(key) {
         this.gp.player.toggle(key);
+    }
+
+    PlayerGetField(key){
+        return this.toUnity(this.gp.player.getField(key));
     }
 
     PlayerGetFieldName(key) {
@@ -877,18 +919,20 @@ export default class GamePushUnity {
     PlayerRemove() {
         this.gp.player.remove();
     }
-    PlayerSync(storage = 'local', override = false) {
-        return this.gp.player.sync({ storage: storage, override: Boolean(override) });
+    //Sync
+    PlayerSync(storage, override) {
+        if (override == 'True') override = true;
+        else if (override == 'False') override = false;
+        this.gp.player.sync({ storage: storage, override: Boolean(override) });
     }
-    PlayerSync(override = false) {
-        return this.gp.player.sync({ override: Boolean(override) });
+    //AutoSync
+    PlayerEnableAutoSync(interval, storage) {
+        this.gp.player.enableAutoSync({ interval: interval, storage: storage});
     }
-    PlayerEnableAutoSync(interval = 10) {
-        return this.gp.player.enableAutoSync({ interval: interval, storage: 'cloud' });
+    PlayerDisableAutoSync(storage) {
+        this.gp.player.disableAutoSync({ storage: storage});
     }
-    PlayerDisableAutoSync() {
-        return this.gp.player.disableAutoSync({ storage: 'cloud' });
-    }
+
     PlayerLoad() {
         return this.gp.player.load();
     }
@@ -1273,7 +1317,7 @@ export default class GamePushUnity {
                     JSON.stringify(result.products)
                 );
                 this.trigger(
-                    'CallPaymentsFetchPlayerPurcahses',
+                    'CallPaymentsFetchPlayerPurchases',
                     JSON.stringify(result.playerPurchases)
                 );
             })
@@ -2575,47 +2619,46 @@ export default class GamePushUnity {
 
     // Custom
     CustomCall(name, args) {
-        let callFunc = 'GamePush.' + name;
+        let callFunc = name;
 
-        if (args == null) window.executeFunctionByName(callFunc, window);
+        if (args == null) window.executeFunctionByName(callFunc, this);
         else {
             let argArray = args.replace(/\s/g, '').split(',');
 
-            window.executeFunctionByName(callFunc, window, ...argArray);
+            window.executeFunctionByName(callFunc, this, ...argArray);
         }
     }
 
     CustomReturn(name, args) {
-        let callFunc = 'GamePush.' + name;
+        let callFunc = name;
 
         let value;
-        if (args == null)
-            value = window.executeFunctionByName(callFunc, window);
+        if (args == null) value = window.executeFunctionByName(callFunc, this);
         else {
             args = args.replace(/\s/g, '');
             let argArray = args.split(',');
 
-            value = window.executeFunctionByName(callFunc, window, ...argArray);
+            value = window.executeFunctionByName(callFunc, this, ...argArray);
         }
 
         return formatCustomValue(value);
     }
 
     CustomGetValue(name) {
-        let valueName = 'GamePush.' + name;
-        let value = window.returnValueByName(valueName, window);
+        let valueName = name;
+        let value = window.returnValueByName(valueName, this);
 
         return formatCustomValue(value);
     }
 
     CustomAsyncReturn(name, args) {
-        let callFunc = 'GamePush.' + name;
+        let callFunc = name;
 
         if (args != null) args = args.replace(/\s/g, '').split(',');
 
         try {
             window
-                .executeFunctionByName(callFunc, window, ...args)
+                .executeFunctionByName(callFunc, this, ...args)
                 .then((result) => {
                     this.trigger(
                         'CallCustomAsyncReturn',
@@ -2650,6 +2693,7 @@ export default class GamePushUnity {
     //Uniques
     UniquesRegister(tag, value) {
         this.gp.uniques.register({ tag, value });
+
     }
     UniquesGet(tag) {
         return this.toUnity(this.gp.uniques.get(tag));
@@ -2658,12 +2702,88 @@ export default class GamePushUnity {
         return this.toUnity(this.gp.uniques.list);
     }
     UniquesCheck(tag, value) {
-        this.gp.uniques.register({ tag, value });
+        this.gp.uniques.check({ tag, value });
+
     }
     UniquesDelete(tag) {
-        return this.toUnity(this.gp.uniques.delete({tag}));
+        this.gp.uniques.delete({tag});
+
     }
     //Uniques
+
+    //Storage
+    StorageSetType(type = "platform") {
+        this.gp.storage.setStorage({ type: type});
+    }
+
+    async StorageGet(key) {
+        await this.gp.storage.get(key);
+    }
+    async StorageSet(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+
+    async StorageSetString(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetNumber(key, value) {
+        await this.gp.storage.set(key, value);
+    }
+    async StorageSetBool(key, value) {
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        await this.gp.storage.set(key, value);
+    }
+
+    async StorageGetGlobal(key) {
+        await this.gp.storage.getGlobal(key);
+    }
+
+    async StorageSetGlobalString(key, value) {
+        await this.gp.storage.setGlobal(key, value);
+    }
+    async StorageSetGlobalNumber(key, value) {
+        await this.gp.storage.setGlobal(key, value);
+    }
+    async StorageSetGlobalBool(key, value) {
+        if (value == 'True') value = true;
+        else if (value == 'False') value = false;
+        await this.gp.storage.setGlobal(key, value);
+    }
+    //Storage
+
+    //Windows
+
+    WindowsShowConfirmDefault(){
+        this.gp.windows.showConfirm({})
+            .then((result) => {
+                this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+            });
+    }
+
+    WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
+        invertButtonColors = this.getBoolean(invertButtonColors)
+
+        console.log("Data: "
+            + "\n " + title
+            + "\n " + description
+            + "\n " + textConfirm
+            + "\n " + textCancel
+            + "\n " + invertButtonColors);
+
+        this.gp.windows.showConfirm({
+            title,
+            description,
+            textConfirm,
+            textCancel,
+            invertButtonColors
+        })
+            .then((result) => {
+                this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+            });
+    }
+
+    //Windows
 }
 
 function formatCustomValue(value) {
@@ -2686,14 +2806,12 @@ function formatCustomValue(value) {
     }
     return value;
 }
-
 function mapChannel(channel = {}) {
     return {
         ...channel,
         ch_private: channel.private
     };
 }
-
 function mapItemWithChannel(item = {}) {
     return {
         ...item,
