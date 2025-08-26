@@ -6,7 +6,6 @@ namespace GamePush
 {
     public enum ModuleName
     {
-        None,
         Init,
         Achievements,
         Ads,

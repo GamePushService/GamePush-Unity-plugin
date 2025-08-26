@@ -705,28 +705,23 @@ class GamePushUnityInner {
             this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
         });
 
-        // Выключили звук
+       
         this.gp.sounds.on('mute', () => 
             this.trigger('CallOnSoundsMute')
         );
-        // Выключили звуковые эффекты
         this.gp.sounds.on('mute:sfx', () => {
             this.trigger('CallOnSoundsMuteSFX')
         });
-        // Выключили музыку
         this.gp.sounds.on('mute:music', () => {
             this.trigger('CallOnSoundsMuteMusic')
         });
 
-        // Включили звук
         this.gp.sounds.on('unmute', () => {
             this.trigger('CallOnSoundsUnmute')
         });
-        // Включили звуковые эффекты
         this.gp.sounds.on('unmute:sfx', () => {
             this.trigger('CallOnSoundsUnmuteSFX')
         });
-        // Включили музыку звуковые эффекты
         this.gp.sounds.on('unmute:music', () => {
             this.trigger('CallOnSoundsUnmuteMusic')
         });

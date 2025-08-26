@@ -1196,7 +1196,7 @@ mergeInto(LibraryManager.library, {
         _GP().SoundsMuteSFX();
     },
 
-    GP_Sounds_MuteSFX: function () {
+    GP_Sounds_MuteMusic: function () {
         _GP().SoundsMuteMusic();
     },
 
@@ -1208,7 +1208,7 @@ mergeInto(LibraryManager.library, {
         _GP().SoundsUnmuteSFX();
     },
 
-    GP_Sounds_UnmuteSFX: function () {
+    GP_Sounds_UnmuteMusic: function () {
         _GP().SoundsUnmuteMusic();
     },
 

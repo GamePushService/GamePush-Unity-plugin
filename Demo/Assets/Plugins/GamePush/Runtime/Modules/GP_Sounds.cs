@@ -51,20 +51,6 @@ namespace GamePush
         private static extern void GP_Sounds_UnmuteSFX();
         [DllImport("__Internal")]
         private static extern void GP_Sounds_UnmuteMusic();
-        
-        private static Dictionary<SoundType, Action> muteActions = new Dictionary<SoundType, Action>()
-        {
-            { SoundType.All, GP_Sounds_Mute},
-            { SoundType.Music, GP_Sounds_MuteSFX},
-            { SoundType.SFX, GP_Sounds_MuteMusic}
-        };
-        
-        private static Dictionary<SoundType, Action> unmuteActions = new Dictionary<SoundType, Action>()
-        {
-            { SoundType.All, GP_Sounds_Unmute},
-            { SoundType.Music, GP_Sounds_UnmuteSFX},
-            { SoundType.SFX, GP_Sounds_UnmuteMusic}
-        };
 #endif
         #endregion
 
@@ -77,6 +63,7 @@ namespace GamePush
                 SoundType.All => GP_Sounds_IsMuted() == "true",
                 SoundType.Music => GP_Sounds_IsMusicMuted() == "true",
                 SoundType.SFX => GP_Sounds_IsSFXMuted() == "true",
+                _ => false
             };
 #else
             bool isMuted = muted[soundType];
@@ -90,8 +77,14 @@ namespace GamePush
         public static void Mute(SoundType soundType = SoundType.All)
         {
             ConsoleLog($"Mute {soundType}");
+            
 #if !UNITY_EDITOR && UNITY_WEBGL
-            muteActions[soundType]?.Invoke();
+            switch (soundType)
+            {
+                case SoundType.All: GP_Sounds_Mute(); break;
+                case SoundType.Music: GP_Sounds_MuteMusic(); break;
+                case SoundType.SFX: GP_Sounds_MuteSFX(); break;
+            }
 #else
             muted[soundType] = true;
             switch (soundType)
@@ -106,7 +99,12 @@ namespace GamePush
         {
             ConsoleLog($"Unmute {soundType}");
 #if !UNITY_EDITOR && UNITY_WEBGL
-            unmuteActions[soundType]?.Invoke();
+            switch (soundType)
+            {
+                case SoundType.All: GP_Sounds_Unmute(); break;
+                case SoundType.Music: GP_Sounds_UnmuteMusic(); break;
+                case SoundType.SFX: GP_Sounds_UnmuteSFX(); break;
+            }
 #else
             muted[soundType] = false;
             switch (soundType)
