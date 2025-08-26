@@ -41,6 +41,7 @@ namespace GamePush
         Triggers,
         Uniques,
         Storage,
-        Windows
+        Windows,
+        Sounds
     }
 }
