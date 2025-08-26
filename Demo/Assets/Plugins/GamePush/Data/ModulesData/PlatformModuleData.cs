@@ -41,7 +41,11 @@ namespace GamePush
         FOTOSTRANA,
         Y8,
         BEELINE,
-        PARTNER
+        PARTNER,
+        PLAYDIA,
+        YOUTUBE,
+        XIAOMI,
+        ARCADIA
     }
 
     public static class PlatformTypes
@@ -76,9 +80,11 @@ namespace GamePush
         public const string Y8 = "Y8";
         public const string BEELINE = "BEELINE";
         public const string PARTNER = "PARTNER";
+        public const string PLAYDIA = "PLAYDIA";
+        public const string YOUTUBE = "YOUTUBE";
+        public const string XIAOMI = "XIAOMI";
+        public const string ARCADIA = "ARCADIA";
         
-
-
         public static Platform ConvertToEnum(string platform)
         {
             return platform switch
@@ -112,6 +118,10 @@ namespace GamePush
                 Y8 => Platform.Y8,
                 BEELINE => Platform.BEELINE,
                 PARTNER => Platform.PARTNER,
+                PLAYDIA => Platform.PLAYDIA,
+                YOUTUBE => Platform.YOUTUBE,
+                XIAOMI => Platform.XIAOMI,
+                ARCADIA => Platform.ARCADIA,
                 _ => Platform.NONE
             };
 
