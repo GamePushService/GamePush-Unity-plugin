@@ -71,8 +71,6 @@ namespace GamePush
             return isMuted;
 #endif
         }
-        public static bool IsSFXMuted() => IsMuted(SoundType.SFX);
-        public static bool IsMusicMuted() => IsMuted(SoundType.Music);
         
         public static void Mute(SoundType soundType = SoundType.All)
         {
