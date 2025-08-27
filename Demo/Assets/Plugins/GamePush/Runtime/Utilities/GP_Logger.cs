@@ -74,8 +74,13 @@ namespace GamePush
 
         public static void ModuleLog(string log, ModuleName name)
         {
+#if UNITY_EDITOR
             if (GP_ConsoleController.Instance.IsModuleLogs(name))
                 Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
+#else
+            if (GP_Settings.instance.viewLogs)
+                Debug.Log("<color=#04bc04> GP: </color> " + $"{name}: {log}");
+#endif
         }
 
         public static void SystemLog(string text)

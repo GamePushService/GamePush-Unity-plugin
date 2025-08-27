@@ -2791,23 +2791,23 @@ class GamePushUnityInner {
     }
 
     SoundsMute() {
-        gp.sounds.mute();
+        this.gp.sounds.mute();
     }
     SoundsMuteSFX() {
-        gp.sounds.muteSFX();
+        this.gp.sounds.muteSFX();
     }
     SoundsMuteMusic() {
-        gp.sounds.muteMusic();
+        this.gp.sounds.muteMusic();
     }
 
     SoundsUnmute() {
-        gp.sounds.unmute();
+        this.gp.sounds.unmute();
     }
     SoundsUnmuteSFX() {
-        gp.sounds.unmuteSFX();
+        this.gp.sounds.unmuteSFX();
     }
     SoundsUnmuteMusic() {
-        gp.sounds.unmuteMusic();
+        this.gp.sounds.unmuteMusic();
     }
 }
 
