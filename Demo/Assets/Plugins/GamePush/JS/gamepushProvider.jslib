@@ -1168,5 +1168,51 @@ mergeInto(LibraryManager.library, {
             UTF8ToString(textCancel),
             UTF8ToString(invertButtonColors));
     },
+
+    /* WINDOWS */
+
+    /* SOUNDS */
+
+    GP_Sounds_IsMuted: function () {
+        var value = _GP().SoundsIsMuted();
+        return _ToBuff(value);
+    },
+
+     GP_Sounds_IsSFXMuted: function () {
+        var value = _GP().SoundsIsSFXMuted();
+        return _ToBuff(value);
+    },
+
+     GP_Sounds_IsMusicMuted: function () {
+        var value = _GP().SoundsIsMusicMuted();
+        return _ToBuff(value);
+    },
+
+    GP_Sounds_Mute: function () {
+        _GP().SoundsMute();
+    },
+
+    GP_Sounds_MuteSFX: function () {
+        _GP().SoundsMuteSFX();
+    },
+
+    GP_Sounds_MuteMusic: function () {
+        _GP().SoundsMuteMusic();
+    },
+
+     GP_Sounds_Unmute: function () {
+        _GP().SoundsUnmute();
+    },
+
+    GP_Sounds_UnmuteSFX: function () {
+        _GP().SoundsUnmuteSFX();
+    },
+
+    GP_Sounds_UnmuteMusic: function () {
+        _GP().SoundsUnmuteMusic();
+    },
+
+
+    /* SOUNDS */
     
 });

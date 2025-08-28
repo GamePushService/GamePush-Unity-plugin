@@ -9,9 +9,9 @@ namespace GamePush.Utilities
 {
     public class UtilityImage
     {
-        public async static Task<bool> DownloadImageAsync(string url, Image image)
+        public static async Task<bool> DownloadImageAsync(string url, Image image)
         {
-            if (url == "" || url == null) return false;
+            if (string.IsNullOrEmpty(url)) return false;
 
             var request = UnityWebRequestTexture.GetTexture(url);
             AsyncOperation operation = request.SendWebRequest();

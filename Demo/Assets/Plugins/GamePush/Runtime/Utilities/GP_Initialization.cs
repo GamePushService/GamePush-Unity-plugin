@@ -73,6 +73,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Uniques>();
             SDK.AddComponent<GP_Storage>();
             SDK.AddComponent<GP_Windows>();
+            SDK.AddComponent<GP_Sounds>();
 
             if (ProjectData.AUTO_PAUSE_ON_ADS)
             {

@@ -18,7 +18,8 @@ var _unityInnerAwaiter = {};
 
 function _UnityReady() {
     console.log("Unity is ready");
-    _unityInnerAwaiter.done();
+    if(_unityInnerAwaiter != null)
+        _unityInnerAwaiter.done();
 }
 
 function _waitFor(check, timeout) {

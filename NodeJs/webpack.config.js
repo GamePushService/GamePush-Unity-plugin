@@ -7,7 +7,7 @@ module.exports = {
     },
     devtool: 'cheap-source-map',
     output: {
-        path: path.resolve(__dirname, 'dist/TemplateData'),
+        path: path.resolve(__dirname, 'GamePush'),
         filename: 'gamepush-unity.js',
         crossOriginLoading: 'anonymous',
     },

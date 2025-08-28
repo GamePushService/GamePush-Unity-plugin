@@ -174,10 +174,6 @@ class GamePushUnityInner {
             this.trigger('CallChangeOrientation')
         );
 
-        // app
-        //this.gp.app.on('requestReview', (result) => this.trigger('CallReviewResult', result));
-        //this.gp.app.on('addShortcut', (success) => this.trigger('CallAddShortcut', success));
-
         //documents
         this.gp.documents.on('open', () => this.trigger('CallOnDocumentsOpen'));
         this.gp.documents.on('close', () => {
@@ -592,12 +588,6 @@ class GamePushUnityInner {
             this.trigger('CallOnSegmentLeave', segmentTag);
         });
 
-        //rewards
-        //this.gp.rewards.on('give', ({ reward, playerReward }) => {this.trigger('CallOnRewardsGive', JSON.stringify({ reward, playerReward })); });
-        //this.gp.rewards.on('error:give', (err) => {this.trigger('CallOnRewardsGiveError', err); });
-        //this.gp.rewards.on('accept', ({ reward, playerReward }) => {this.trigger('CallOnRewardsAccept', JSON.stringify({ reward, playerReward })); });
-        //this.gp.rewards.on('error:accept', (err) => {this.trigger('CallOnRewardsAcceptError', err);  });
-
         //Schedulers
         this.gp.schedulers.on('register', (schedulerInfo) => {
             this.trigger(
@@ -714,16 +704,32 @@ class GamePushUnityInner {
             console.log(result);
             this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
         });
+
+       
+        this.gp.sounds.on('mute', () => 
+            this.trigger('CallOnSoundsMute')
+        );
+        this.gp.sounds.on('mute:sfx', () => {
+            this.trigger('CallOnSoundsMuteSFX')
+        });
+        this.gp.sounds.on('mute:music', () => {
+            this.trigger('CallOnSoundsMuteMusic')
+        });
+
+        this.gp.sounds.on('unmute', () => {
+            this.trigger('CallOnSoundsUnmute')
+        });
+        this.gp.sounds.on('unmute:sfx', () => {
+            this.trigger('CallOnSoundsUnmuteSFX')
+        });
+        this.gp.sounds.on('unmute:music', () => {
+            this.trigger('CallOnSoundsUnmuteMusic')
+        });
     }
 
     async trigger(eventName, value) {
         await _unityInnerAwaiter.ready;
         SendMessage('GamePushSDK', eventName, this.toUnity(value));
-    }
-
-    getQuery(idOrTag) {
-        const id = parseInt(idOrTag, 10) || 0;
-        return (query = id > 0 ? { id } : { tag: idOrTag });
     }
 
     getBoolean(value){
@@ -2413,69 +2419,56 @@ class GamePushUnityInner {
         const triggerId = parseInt(triggerIdOrTag, 10) || 0;
         const triggerQuery = triggerId > 0 ? triggerId : triggerIdOrTag;
 
-        console.log(query);
-        console.log(day);
-        console.log(triggerQuery);
-
         this.gp.schedulers.claimDayAdditional(query, day, triggerQuery);
     }
 
     Schedulers_ClaimAllDay(idOrTag, day) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
-        console.log(query);
-        console.log(day);
+
         this.gp.schedulers.claimAllDay(query, day);
     }
 
     Schedulers_ClaimAllDays(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
-        console.log(query);
+
         this.gp.schedulers.claimAllDays(query);
     }
 
     Schedulers_List() {
         const list = this.gp.schedulers.list;
-        console.log(list);
         return this.toUnity(list);
     }
 
     Schedulers_ActiveList() {
         const list = this.gp.schedulers.activeList;
-        console.log(list);
         return this.toUnity(list);
     }
 
     Schedulers_GetScheduler(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
-        console.log(query);
+
         const result = this.toUnity(this.gp.schedulers.getScheduler(query));
-        console.log(result);
         return result;
     }
 
     Schedulers_GetSchedulerDay(idOrTag, day) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
-        console.log(query);
-        console.log(day);
         const result = this.toUnity(
             this.gp.schedulers.getSchedulerDay(query, day)
         );
-        console.log(result);
         return result;
     }
 
     Schedulers_GetSchedulerCurrentDay(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
-        console.log(query);
         const result = this.toUnity(
             this.gp.schedulers.getSchedulerCurrentDay(query)
         );
-        console.log(result);
         return result;
     }
 
@@ -2483,7 +2476,6 @@ class GamePushUnityInner {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
         const result = this.gp.schedulers.isRegistered(query);
-        console.log(result);
         return this.toUnity(result);
     }
 
@@ -2491,7 +2483,6 @@ class GamePushUnityInner {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
         const result = this.gp.schedulers.isTodayRewardClaimed(query);
-        console.log(result);
         return this.toUnity(result);
     }
 
@@ -2499,7 +2490,6 @@ class GamePushUnityInner {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
         const result = this.gp.schedulers.canClaimDay(query, day);
-        console.log(result);
         return this.toUnity(result);
     }
 
@@ -2514,7 +2504,6 @@ class GamePushUnityInner {
             day,
             triggerQuery
         );
-        console.log(result);
         return this.toUnity(result);
     }
 
@@ -2522,7 +2511,6 @@ class GamePushUnityInner {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? id : idOrTag;
         const result = this.gp.schedulers.canClaimAllDay(query, day);
-        console.log(result);
         return this.toUnity(result);
     }
     // Schedulers
@@ -2787,11 +2775,41 @@ class GamePushUnityInner {
                 this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
             });
     }
-    
     //Windows
+
+    //Sounds
+    SoundsIsMuted() {
+        return this.toUnity(this.gp.sounds.isMuted);
+    }
+
+    SoundsIsSFXMuted() {
+        return this.toUnity(this.gp.sounds.isSFXMuted);
+    }
+
+    SoundsIsMusicMuted() {
+        return this.toUnity(this.gp.sounds.isMusicMuted);
+    }
+
+    SoundsMute() {
+        this.gp.sounds.mute();
+    }
+    SoundsMuteSFX() {
+        this.gp.sounds.muteSFX();
+    }
+    SoundsMuteMusic() {
+        this.gp.sounds.muteMusic();
+    }
+
+    SoundsUnmute() {
+        this.gp.sounds.unmute();
+    }
+    SoundsUnmuteSFX() {
+        this.gp.sounds.unmuteSFX();
+    }
+    SoundsUnmuteMusic() {
+        this.gp.sounds.unmuteMusic();
+    }
 }
-
-
 
 function formatCustomValue(value) {
     switch (typeof value) {
@@ -2813,7 +2831,6 @@ function formatCustomValue(value) {
     }
     return value;
 }
-
 function mapChannel(channel = {}) {
     return {
         ...channel,

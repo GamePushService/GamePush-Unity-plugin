@@ -69,6 +69,7 @@ https://docs.gamepush.com/ru/docs/get-start/
 | [GP_Variables](#GP_Variables)                 |
 | [GP_Uniques](#GP_Uniques)                     |
 | [GP_Storage](#GP_Storage)                     |
+| [GP_Sounds](#GP_Sounds)                       |
 
 ## GP_Achievements
 
@@ -1874,5 +1875,39 @@ public class StorageField
 {
     public string key;
     public string value;
+}
+```
+
+## GP_Sounds
+
+[Sounds documentation](https://docs.gamepush.com/docs/sounds/)
+
+### Methods
+
+| Method name  | Method parameters                                                  | Return value |
+| ------------ | ------------------------------------------------------------------ | ------------ |
+| `IsMuted`    | `SoundType soundType`                                              | bool         |
+| `Mute`       | `SoundType soundType`                                              | void         |
+| `Unmute`     |  `SoundType soundType`                                             | void         |
+
+### Actions
+
+| Action name             | Return value   |
+| ----------------------- | -------------- |
+| `CallOnSoundsMute`      | void |
+| `CallOnSoundsMuteSFX`   | void |
+| `CallOnSoundsMuteMusic` | void |
+| `CallOnSoundsUnmute`.   | void |
+| `CallOnSoundsUnmuteSFX` | void |
+| `CallOnSoundsUnmuteMusic` | void |
+
+### Data structures
+
+```c
+public enum SoundType 
+{
+    All, 
+    SFX, 
+    Music
 }
 ```

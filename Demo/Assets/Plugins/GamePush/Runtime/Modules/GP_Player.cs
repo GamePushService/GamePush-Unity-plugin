@@ -36,7 +36,7 @@ namespace GamePush
         public static event UnityAction<PlayerFieldData> OnFieldMinimum;
         public static event UnityAction<PlayerFieldData> OnFieldIncrement;
 
-        private static event Action<List<PlayerFieldData>> _onFetchFields;
+        private static event Action<List<PlayerFieldData>> OnFetchFields;
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace GamePush
         private void CallPlayerFetchFieldsComplete(string data)
         {
             OnPlayerFetchFieldsComplete?.Invoke(UtilityJSON.GetList<PlayerFieldData>(data));
-            _onFetchFields?.Invoke(UtilityJSON.GetList<PlayerFieldData>(data));
+            OnFetchFields?.Invoke(UtilityJSON.GetList<PlayerFieldData>(data));
         }
         private void CallPlayerFetchFieldsError() => OnPlayerFetchFieldsError?.Invoke();
 
@@ -580,7 +580,7 @@ namespace GamePush
 
         #region Sync/Load
 
-        public static void Sync(SyncStorageType storage = SyncStorageType.preffered, bool forceOverride = false)
+        public static void Sync(SyncStorageType storage = SyncStorageType.preferred, bool forceOverride = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_Sync(forceOverride: forceOverride, storage: storage.ToString());
@@ -728,7 +728,7 @@ namespace GamePush
         
         public static void FetchFields(Action<List<PlayerFieldData>> onFetchFields = null)
         {
-            _onFetchFields = onFetchFields;
+            OnFetchFields = onFetchFields;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player_FetchFields();
@@ -744,7 +744,7 @@ namespace GamePush
     [System.Serializable]
     public enum SyncStorageType
     {
-        preffered,
+        preferred,
         local,
         platform,
         cloud

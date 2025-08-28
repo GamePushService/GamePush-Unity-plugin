@@ -6,7 +6,6 @@ namespace GamePush
 {
     public enum ModuleName
     {
-        None,
         Init,
         Achievements,
         Ads,
@@ -41,6 +40,7 @@ namespace GamePush
         Triggers,
         Uniques,
         Storage,
-        Windows
+        Windows,
+        Sounds
     }
 }
