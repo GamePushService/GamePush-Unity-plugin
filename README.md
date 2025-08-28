@@ -1880,7 +1880,7 @@ public class StorageField
 
 ## GP_Sounds
 
-[Storage documentation](https://docs.gamepush.com/docs/sounds/)
+[Sounds documentation](https://docs.gamepush.com/docs/sounds/)
 
 ### Methods
 
