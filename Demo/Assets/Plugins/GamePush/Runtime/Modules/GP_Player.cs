@@ -202,11 +202,11 @@ namespace GamePush
         
         private async void Start()
         {
-            await GP_Init.Ready;
-            FetchFields(fields =>
-            {
-                PlayerFields = fields;
-            });
+        //    await GP_Init.Ready;
+        //    FetchFields(fields =>
+        //    {
+        //        PlayerFields = fields;
+        //    });
         }
 
         #region Getters
