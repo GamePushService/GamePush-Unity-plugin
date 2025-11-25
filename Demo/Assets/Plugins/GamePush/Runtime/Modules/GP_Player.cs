@@ -200,14 +200,14 @@ namespace GamePush
 #endif
         #endregion
         
-        private async void Start()
-        {
-            await GP_Init.Ready;
-            FetchFields(fields =>
-            {
-                PlayerFields = fields;
-            });
-        }
+        //private async void Start()
+        //{
+        //    await GP_Init.Ready;
+        //    FetchFields(fields =>
+        //    {
+        //        PlayerFields = fields;
+        //    });
+        //}
 
         #region Getters
 
