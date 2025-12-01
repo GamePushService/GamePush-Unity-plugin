@@ -706,6 +706,7 @@ class GamePushUnityInner {
         });
 
        
+        //Sounds
         this.gp.sounds.on('mute', () => 
             this.trigger('CallOnSoundsMute')
         );
@@ -2809,6 +2810,8 @@ class GamePushUnityInner {
     SoundsUnmuteMusic() {
         this.gp.sounds.unmuteMusic();
     }
+
+    //Sounds
 }
 
 function formatCustomValue(value) {

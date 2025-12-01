@@ -13,6 +13,7 @@
     const projectId = "{{{ PROJECT_ID.replace(/ /g, '') }}}";
     const publicToken = "{{{ TOKEN.replace(/ /g, '') }}}";
     const overlayBackgroundColor = "{{{ OVERLAY_BACKGROUND_COLOR.replace(/ /g, '') }}}";
+    const backgroundFileName = "{{{ BACKGROUND_IMAGE_FILE.replace(/ /g, '') }}}";
     const progressBarFillColor = "{{{ PROGRESS_BAR_FILL_COLOR.replace(/ /g, '') }}}";
     const progressBarBackgroundColor = "{{{ PROGRESS_BAR_BACKGROUND_COLOR.replace(/ /g, '') }}}";
     const progressBarBorderColor = "{{{ PROGRESS_BAR_BORDER_COLOR.replace(/ /g, '') }}}";
@@ -160,17 +161,17 @@
       progressBarEmpty.style.border.color = progressBarBorderColor;
     }
 
-    // if (backgroundFileName !== " " && backgroundFileName !== ""){
-    //   canvas.style.background = "url('" + backgroundFileName + "') center / cover";
-    // }
+    if (backgroundFileName !== " " && backgroundFileName !== ""){
+      canvas.style.background = "url('" + backgroundFileName + "') center / cover";
+    }
 
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       container.className = "unity-mobile";
     }
 
-    #if BACKGROUND_FILENAME
-    canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
-    #endif
+    // #if BACKGROUND_FILENAME
+    // canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+    // #endif
     
     loadingCover.style.display = "";
     let UnityInstance = null;

@@ -174,10 +174,6 @@ export default class GamePushUnity {
             this.trigger('CallChangeOrientation')
         );
 
-        // app
-        //this.gp.app.on('requestReview', (result) => this.trigger('CallReviewResult', result));
-        //this.gp.app.on('addShortcut', (success) => this.trigger('CallAddShortcut', success));
-
         //documents
         this.gp.documents.on('open', () => this.trigger('CallOnDocumentsOpen'));
         this.gp.documents.on('close', () => {
@@ -713,6 +709,27 @@ export default class GamePushUnity {
         this.gp.storage.on('set:global', (result) => {
             console.log(result);
             this.trigger('CallOnStorageSetGlobal', JSON.stringify(result));
+        });
+
+        //Sounds
+        this.gp.sounds.on('mute', () => 
+            this.trigger('CallOnSoundsMute')
+        );
+        this.gp.sounds.on('mute:sfx', () => {
+            this.trigger('CallOnSoundsMuteSFX')
+        });
+        this.gp.sounds.on('mute:music', () => {
+            this.trigger('CallOnSoundsMuteMusic')
+        });
+
+        this.gp.sounds.on('unmute', () => {
+            this.trigger('CallOnSoundsUnmute')
+        });
+        this.gp.sounds.on('unmute:sfx', () => {
+            this.trigger('CallOnSoundsUnmuteSFX')
+        });
+        this.gp.sounds.on('unmute:music', () => {
+            this.trigger('CallOnSoundsUnmuteMusic')
         });
     }
 
@@ -2784,6 +2801,41 @@ export default class GamePushUnity {
     }
 
     //Windows
+
+     //Sounds
+    SoundsIsMuted() {
+        return this.toUnity(this.gp.sounds.isMuted);
+    }
+
+    SoundsIsSFXMuted() {
+        return this.toUnity(this.gp.sounds.isSFXMuted);
+    }
+
+    SoundsIsMusicMuted() {
+        return this.toUnity(this.gp.sounds.isMusicMuted);
+    }
+
+    SoundsMute() {
+        this.gp.sounds.mute();
+    }
+    SoundsMuteSFX() {
+        this.gp.sounds.muteSFX();
+    }
+    SoundsMuteMusic() {
+        this.gp.sounds.muteMusic();
+    }
+
+    SoundsUnmute() {
+        this.gp.sounds.unmute();
+    }
+    SoundsUnmuteSFX() {
+        this.gp.sounds.unmuteSFX();
+    }
+    SoundsUnmuteMusic() {
+        this.gp.sounds.unmuteMusic();
+    }
+
+    //Sounds
 }
 
 function formatCustomValue(value) {
