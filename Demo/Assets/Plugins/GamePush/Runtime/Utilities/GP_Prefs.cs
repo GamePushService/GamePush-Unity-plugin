@@ -45,7 +45,6 @@ namespace GamePush
         
         public static T Get<T>(string key) where T : IConvertible
         {
-            Debug.Log($"TypeCode {typeof(T)}");
             T value = (T)Convert.ChangeType(0, typeof(T));
             
             T result =  value.GetTypeCode() switch

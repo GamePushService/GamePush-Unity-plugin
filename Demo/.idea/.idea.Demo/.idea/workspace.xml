@@ -5,33 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b5ffaf4-4954-4552-b9ab-9695f9aa1163" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/TemplateData/gamepush-unity.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/TemplateData/gamepush-unity.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/TemplateData/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/background.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Build/GP_Web/logo.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/EditorSaves.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/EditorSaves.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ProjectData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ProjectData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_dataFields.jspre" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_dataFields.jspre" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/GP_Examples/Modules/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GP_Examples/Modules/Player/Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/GP_Examples/Scenes/ExamplesScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GP_Examples/Scenes/ExamplesScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePush/TemplateData/gamepush-unity.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePush/TemplateData/gamepush-unity.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePush/TemplateData/gamepush-unity.js.map.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePush/TemplateData/gamepush-unity.js.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/TemplateData/gamepush-unity.js" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/TemplateData/gamepush-unity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/TemplateData/gamepush-unity.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/TemplateData/gamepush-unity.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/WebGLTemplates/GamePushOld/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/gamepushProvider.jslib" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/gamepushProvider.jslib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Payments.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Payments.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Utilities/GP_Prefs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Utilities/GP_Prefs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NodeJs/GamePush/TemplateData/gamepush-unity.js" beforeDir="false" afterPath="$PROJECT_DIR$/../NodeJs/GamePush/TemplateData/gamepush-unity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NodeJs/GamePush/TemplateData/gamepush-unity.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../NodeJs/GamePush/TemplateData/gamepush-unity.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NodeJs/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../NodeJs/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NodeJs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../NodeJs/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NodeJs/src/GamePushUnity.js" beforeDir="false" afterPath="$PROJECT_DIR$/../NodeJs/src/GamePushUnity.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,20 +42,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "gp-1.8.2",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.fileTypes",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gp-1.8.2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.fileTypes&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$PROJECT_DIR$/../Builds/GP_Native/UnityTest.app/Contents/MacOS/GamePushDemo" />
@@ -161,6 +143,9 @@
       <workItem from="1756379997672" duration="2469000" />
       <workItem from="1756921032001" duration="2207000" />
       <workItem from="1762613511043" duration="138000" />
+      <workItem from="1764856548470" duration="628000" />
+      <workItem from="1765540125372" duration="881000" />
+      <workItem from="1768191623296" duration="1546000" />
     </task>
     <servers />
   </component>

@@ -86,6 +86,12 @@ namespace GamePush
         
         [DllImport("__Internal")]
         private static extern string GP_Player_GetAvatar();
+
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetField(string key);
+
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetFields();
         
         [DllImport("__Internal")]
         private static extern string GP_Player_GetFieldName(string key);
@@ -203,10 +209,7 @@ namespace GamePush
         private async void Start()
         {
             await GP_Init.Ready;
-            FetchFields(fields =>
-            {
-                PlayerFields = fields;
-            });
+            PlayerFields = GetPlayerFields();
         }
 
         #region Getters
@@ -272,6 +275,29 @@ namespace GamePush
                 image.rectTransform.pivot);
 #endif
         }
+        
+        public static PlayerFieldData GetField(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            var data = GP_Player_GetField(key);
+            return UtilityJSON.Get<PlayerFieldData>(data);
+#else
+            ConsoleLog("GET FIELD: " + key);
+            return new PlayerFieldData();
+#endif
+        }
+        
+        public static List<PlayerFieldData> GetPlayerFields()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            var data = GP_Player_GetFields();
+            return UtilityJSON.GetList<PlayerFieldData>(data);
+#else
+            ConsoleLog("GET PLAYER FIELDS");
+            return new List<PlayerFieldData>();
+#endif
+        }
+        
         public static string GetFieldName(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -737,7 +763,7 @@ namespace GamePush
             ConsoleLog("FETCH FIELDS");
 #endif
         }
-
+        
         
     }
 

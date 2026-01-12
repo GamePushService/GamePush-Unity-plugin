@@ -908,6 +908,15 @@ class GamePushUnityInner {
     PlayerGetField(key){
         return this.toUnity(this.gp.player.getField(key));
     }
+    
+    PlayerGetFields(){
+        return JSON.stringify(
+            this.gp.player.fields.map((field) => ({
+                ...field,
+                defaultValue: field.default
+            }))
+        )
+    }
 
     PlayerGetFieldName(key) {
         return this.gp.player.getFieldName(key);

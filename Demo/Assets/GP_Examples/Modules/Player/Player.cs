@@ -175,6 +175,8 @@ namespace Examples.Player
         {
             _id.text = "ID: " + GP_Player.GetID();
             _name.text = "NAME: " + GP_Player.GetName();
+            
+            print(GP_Player.GetField("score"));
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             GP_Player.GetAvatar(_playerAvatar);

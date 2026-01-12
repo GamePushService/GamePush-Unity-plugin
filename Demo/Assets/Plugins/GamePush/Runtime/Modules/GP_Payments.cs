@@ -136,7 +136,7 @@ namespace GamePush
         private async void Start()
         {
             await GP_Init.Ready;
-            Fetch(products => {Products = products;}, null, purchases => {Purchases = purchases;});
+            // Fetch(products => {Products = products;}, null, purchases => {Purchases = purchases;});
         }
 
         public static void Fetch(Action<List<FetchProducts>> onFetchProducts = null, Action onFetchProductsError = null, Action<List<FetchPlayerPurchases>> onFetchPlayerPurchases = null)

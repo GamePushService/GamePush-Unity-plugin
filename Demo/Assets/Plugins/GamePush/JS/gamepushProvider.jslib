@@ -142,6 +142,15 @@ mergeInto(LibraryManager.library, {
         var value = _GP().PlayerGetAvatar();
         return _ToBuff(value);
     },
+    
+    GP_Player_GetField: function (key) {
+        var value = _GP().PlayerGetField(UTF8ToString(key));
+        return _ToBuff(value);
+    },
+    GP_Player_GetFields: function (key) {
+        var value = _GP().PlayerGetFields();
+        return _ToBuff(value);
+    },
     GP_Player_GetFieldName: function (key) {
         return _GP().PlayerGetFieldName(UTF8ToString(key));
     },
