@@ -7,13 +7,16 @@
     <list default="true" id="2b5ffaf4-4954-4552-b9ab-9695f9aa1163" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Demo/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/GP_Examples/Modules/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GP_Examples/Modules/Player/Player.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/GP_Examples/Scenes/ExamplesScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GP_Examples/Scenes/ExamplesScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/_gpUnity.jspre" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/gamepushProvider.jslib" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/JS/gamepushProvider.jslib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Payments.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Payments.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/EditorSaves.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/EditorSaves.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/PluginData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/PluginData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ProjectData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ProjectData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedDataSO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedDataSO.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedProjectData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedProjectData.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Data/SavedData.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Editor/BuildModifications.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Editor/BuildModifications.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Editor/GP_SetUpWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Editor/GP_SetUpWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Resources/GP_DataLinker.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Resources/GP_DataLinker.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Modules/GP_Player.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Utilities/GP_Prefs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/GamePush/Runtime/Utilities/GP_Prefs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +27,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd55edc8dc664b71b2b0fec2890d3cc09f8e00/8c/e3c7c90e/EditorWindow.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/GP_Examples/Modules/Sounds/Sounds.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ConfigData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Plugins/GamePush/Data/ModulesData/PlatformModuleData.cs" root0="FORCE_HIGHLIGHTING" />
@@ -145,7 +149,7 @@
       <workItem from="1762613511043" duration="138000" />
       <workItem from="1764856548470" duration="628000" />
       <workItem from="1765540125372" duration="881000" />
-      <workItem from="1768191623296" duration="1546000" />
+      <workItem from="1768191623296" duration="3447000" />
     </task>
     <servers />
   </component>

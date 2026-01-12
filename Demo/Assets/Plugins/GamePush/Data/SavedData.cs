@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 namespace GamePush.Data
 {
     [System.Serializable]
-    public class SavedProjectData
+    public class SavedData
     {
         public int id;
         public string token;
@@ -14,6 +14,8 @@ namespace GamePush.Data
         public bool waitPluginReady;
         public bool gameReadyAuto;
         public bool autoPause;
+
+        public bool compressBuild;
     }
 
 }

@@ -12,6 +12,7 @@ namespace GamePush.Data
         public TextAsset saveFile;
 #endif
         public TextAsset projectData;
+        public TextAsset pluginData;
         public TextAsset jsAnchor;
 
     }
