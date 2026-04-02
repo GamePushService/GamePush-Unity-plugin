@@ -85,7 +85,7 @@ sandbox.setProject(4, 'xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT')
 
 ```bash
 cd <repo-root>
-npx http-server Demo/Build/WebGLParity -p 8123 --brotli -c-1
+npm run serve:webgl:demo
 ```
 
 5. Откройте локальную страницу:
@@ -135,6 +135,8 @@ npm run build
   - `Demo`
 - parity build output:
   - `Demo/Build/WebGLParity`
+- local WebGL launcher:
+  - `scripts/serve-webgl.mjs`
 - parity bridge:
   - `Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs`
 - WebGL build script:
@@ -150,6 +152,25 @@ npm run build
 2. `Parity bridge mode`
    - нужен для точечных вызовов и для `Multiplayer`
    - вызывается из browser console через `unityInstance.SendMessage(...)`
+
+## Почему используется именно этот локальный server
+
+Unity build в этом репозитории использует Brotli-сжатые файлы (`*.br`).
+
+Обычные статические серверы иногда отдают их без корректного:
+
+- `Content-Encoding: br`
+- `Content-Type`
+
+В этом случае браузер пытается читать сжатый JS как обычный JavaScript и страница падает с:
+
+```text
+SyntaxError: Invalid or unexpected token
+```
+
+Скрипт `npm run serve:webgl:demo` уже учитывает это и раздаёт build правильно.
+
+Если вместо Unity loader открывается `Index of /`, значит сервер поднят не из build root или build собран не полностью.
 
 ## UI Mode: как проверять Channels
 

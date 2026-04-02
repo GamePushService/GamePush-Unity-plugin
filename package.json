@@ -1,0 +1,8 @@
+{
+  "name": "gamepush-unity-plugin-tools",
+  "private": true,
+  "scripts": {
+    "serve:webgl": "node scripts/serve-webgl.mjs",
+    "serve:webgl:demo": "node scripts/serve-webgl.mjs Demo/Build/WebGLParity 8123"
+  }
+}
