@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using TMPro;
 
 using GamePush;
@@ -31,6 +32,13 @@ namespace Examples.Channels.Messages
         public string platformType;
         public int projectId;
         public int score;
+    }
+
+    [System.Serializable]
+    public class MessagesPayload
+    {
+        public Message_Data[] items;
+        public bool canLoadMore;
     }
 
     public class Messages : MonoBehaviour
@@ -78,37 +86,36 @@ namespace Examples.Channels.Messages
             _fetchMoreFeedMessagesButton.onClick.AddListener(FetchMoreFeedMessages);
 
 
-            GP_Channels.OnMessage += OnMessage;
+            GP_Channels.on("message", (UnityAction<GP_Data>)OnMessage);
 
-            GP_Channels.OnSendMessage += OnSendMessage;
-            GP_Channels.OnSendMessageError += OnSendMessageError;
+            GP_Channels.on("sendMessage", (UnityAction<GP_Data>)OnSendMessage);
+            GP_Channels.on("error:sendMessage", (UnityAction<GP_Data>)OnSendMessageError);
 
-            GP_Channels.OnEditMessageSuccess += OnEditMessageSuccess;
-            GP_Channels.OnEditMessageError += OnEditMessageError;
-            GP_Channels.OnEditMessageEvent += OnEditMessageEvent;
+            GP_Channels.on("editMessage", (UnityAction<GP_Data>)OnEditMessageSuccess);
+            GP_Channels.on("error:editMessage", (UnityAction<GP_Data>)OnEditMessageError);
+            GP_Channels.on("event:editMessage", (UnityAction<GP_Data>)OnEditMessageEvent);
 
-            GP_Channels.OnDeleteMessageSuccess += OnDeleteMessageSuccess;
-            GP_Channels.OnDeleteMessageError += OnDeleteMessageError;
-            GP_Channels.OnDeleteMessageEvent += OnDeleteMessageEvent;
+            GP_Channels.on("deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageSuccessEvent);
+            GP_Channels.on("error:deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageError);
+            GP_Channels.on("event:deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageEvent);
 
-            GP_Channels.OnFetchMessages += OnFetchMessages;
-            GP_Channels.OnFetchMessagesError += OnFetchMessagesError;
+            GP_Channels.on("fetchMessages", (UnityAction<GP_Data>)OnFetchMessages);
+            GP_Channels.on("error:fetchMessages", (UnityAction<GP_Data>)OnFetchMessagesError);
 
-            GP_Channels.OnFetchPersonalMessages += OnFetchPersonalMessages;
-            GP_Channels.OnFetchPersonalMessagesError += OnFetchPersonalMessagesError;
+            GP_Channels.on("fetchPersonalMessages", (UnityAction<GP_Data>)OnFetchPersonalMessages);
+            GP_Channels.on("error:fetchPersonalMessages", (UnityAction<GP_Data>)OnFetchPersonalMessagesError);
 
-            GP_Channels.OnFetchFeedMessages += OnFetchFeedMessages;
-            GP_Channels.OnFetchFeedMessagesError += OnFetchFeedMessagesError;
+            GP_Channels.on("fetchFeedMessages", (UnityAction<GP_Data>)OnFetchFeedMessages);
+            GP_Channels.on("error:fetchFeedMessages", (UnityAction<GP_Data>)OnFetchFeedMessagesError);
 
+            GP_Channels.on("fetchMoreMessages", (UnityAction<GP_Data>)OnFetchMoreMessages);
+            GP_Channels.on("error:fetchMoreMessages", (UnityAction<GP_Data>)OnFetchMoreMessagesError);
 
-            GP_Channels.OnFetchMoreMessages += OnFetchMoreMessages;
-            GP_Channels.OnFetchMoreMessagesError += OnFetchMoreMessagesError;
+            GP_Channels.on("fetchMorePersonalMessages", (UnityAction<GP_Data>)OnFetchMorePersonalMessages);
+            GP_Channels.on("error:fetchMorePersonalMessages", (UnityAction<GP_Data>)OnFetchMorePersonalMessagesError);
 
-            GP_Channels.OnFetchMorePersonalMessages += OnFetchMorePersonalMessages;
-            GP_Channels.OnFetchMorePersonalMessagesError += OnFetchMorePersonalMessagesError;
-
-            GP_Channels.OnFetchMoreFeedMessages += OnFetchMoreFeedMessages;
-            GP_Channels.OnFetchMoreFeedMessagesError += OnFetchMoreFeedMessagesError;
+            GP_Channels.on("fetchMoreFeedMessages", (UnityAction<GP_Data>)OnFetchMoreFeedMessages);
+            GP_Channels.on("error:fetchMoreFeedMessages", (UnityAction<GP_Data>)OnFetchMoreFeedMessagesError);
 
         }
 
@@ -127,56 +134,128 @@ namespace Examples.Channels.Messages
             _fetchMoreFeedMessagesButton.onClick.RemoveListener(FetchMoreFeedMessages);
 
 
-            GP_Channels.OnMessage += OnMessage;
+            GP_Channels.off("message", (UnityAction<GP_Data>)OnMessage);
 
-            GP_Channels.OnSendMessage -= OnSendMessage;
-            GP_Channels.OnSendMessageError -= OnSendMessageError;
+            GP_Channels.off("sendMessage", (UnityAction<GP_Data>)OnSendMessage);
+            GP_Channels.off("error:sendMessage", (UnityAction<GP_Data>)OnSendMessageError);
 
-            GP_Channels.OnEditMessageSuccess -= OnEditMessageSuccess;
-            GP_Channels.OnEditMessageError -= OnEditMessageError;
-            GP_Channels.OnEditMessageEvent -= OnEditMessageEvent;
+            GP_Channels.off("editMessage", (UnityAction<GP_Data>)OnEditMessageSuccess);
+            GP_Channels.off("error:editMessage", (UnityAction<GP_Data>)OnEditMessageError);
+            GP_Channels.off("event:editMessage", (UnityAction<GP_Data>)OnEditMessageEvent);
 
-            GP_Channels.OnDeleteMessageSuccess -= OnDeleteMessageSuccess;
-            GP_Channels.OnDeleteMessageError -= OnDeleteMessageError;
-            GP_Channels.OnDeleteMessageEvent -= OnDeleteMessageEvent;
+            GP_Channels.off("deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageSuccessEvent);
+            GP_Channels.off("error:deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageError);
+            GP_Channels.off("event:deleteMessage", (UnityAction<GP_Data>)OnDeleteMessageEvent);
 
+            GP_Channels.off("fetchMessages", (UnityAction<GP_Data>)OnFetchMessages);
+            GP_Channels.off("error:fetchMessages", (UnityAction<GP_Data>)OnFetchMessagesError);
 
-            GP_Channels.OnFetchMessages -= OnFetchMessages;
-            GP_Channels.OnFetchMessagesError -= OnFetchMessagesError;
+            GP_Channels.off("fetchPersonalMessages", (UnityAction<GP_Data>)OnFetchPersonalMessages);
+            GP_Channels.off("error:fetchPersonalMessages", (UnityAction<GP_Data>)OnFetchPersonalMessagesError);
 
-            GP_Channels.OnFetchPersonalMessages -= OnFetchPersonalMessages;
-            GP_Channels.OnFetchPersonalMessagesError -= OnFetchPersonalMessagesError;
+            GP_Channels.off("fetchFeedMessages", (UnityAction<GP_Data>)OnFetchFeedMessages);
+            GP_Channels.off("error:fetchFeedMessages", (UnityAction<GP_Data>)OnFetchFeedMessagesError);
 
-            GP_Channels.OnFetchFeedMessages -= OnFetchFeedMessages;
-            GP_Channels.OnFetchFeedMessagesError -= OnFetchFeedMessagesError;
+            GP_Channels.off("fetchMoreMessages", (UnityAction<GP_Data>)OnFetchMoreMessages);
+            GP_Channels.off("error:fetchMoreMessages", (UnityAction<GP_Data>)OnFetchMoreMessagesError);
 
+            GP_Channels.off("fetchMorePersonalMessages", (UnityAction<GP_Data>)OnFetchMorePersonalMessages);
+            GP_Channels.off("error:fetchMorePersonalMessages", (UnityAction<GP_Data>)OnFetchMorePersonalMessagesError);
 
-            GP_Channels.OnFetchMoreMessages -= OnFetchMoreMessages;
-            GP_Channels.OnFetchMoreMessagesError -= OnFetchMoreMessagesError;
-
-            GP_Channels.OnFetchMorePersonalMessages -= OnFetchMorePersonalMessages;
-            GP_Channels.OnFetchMorePersonalMessagesError -= OnFetchMorePersonalMessagesError;
-
-            GP_Channels.OnFetchMoreFeedMessages -= OnFetchMoreFeedMessages;
-            GP_Channels.OnFetchMoreFeedMessagesError -= OnFetchMoreFeedMessagesError;
+            GP_Channels.off("fetchMoreFeedMessages", (UnityAction<GP_Data>)OnFetchMoreFeedMessages);
+            GP_Channels.off("error:fetchMoreFeedMessages", (UnityAction<GP_Data>)OnFetchMoreFeedMessagesError);
         }
 
 
-        public void SendMessage() => GP_Channels.SendMessage(int.Parse(_channelIdInput.text), _messageInput.text, _tagsInput.text);
-        public void SendPersonalMessage() => GP_Channels.SendPersonalMessage(int.Parse(_playerIdInput.text), _messageInput.text, _tagsInput.text);
-        public void SendFeedMessage() => GP_Channels.SendFeedMessage(int.Parse(_playerIdInput.text), _messageInput.text, _tagsInput.text);
+        public void SendMessage() => GP_Channels.sendMessage(new SendChannelMessageQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            text = _messageInput.text,
+            tags = SplitTags()
+        });
 
-        public void EditMessage() => GP_Channels.EditMessage(_messageIdInput.text, _messageInput.text);
-        public void DeleteMessage() => GP_Channels.DeleteMessage(_messageIdInput.text);
+        public void SendPersonalMessage() => GP_Channels.sendPersonalMessage(new SendPlayerMessageQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            text = _messageInput.text,
+            tags = SplitTags()
+        });
 
-        public void FetchMessages() => GP_Channels.FetchMessages(int.Parse(_channelIdInput.text), _tagsInput.text, 10, 0);
-        public void FetchMoreMessages() => GP_Channels.FetchMoreMessages(int.Parse(_channelIdInput.text), _tagsInput.text, 10);
+        public void SendFeedMessage() => GP_Channels.sendFeedMessage(new SendPlayerMessageQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            text = _messageInput.text,
+            tags = SplitTags()
+        });
 
-        public void FetchPersonalMessages() => GP_Channels.FetchPersonalMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10, 0);
-        public void FetchMorePersonalMessages() => GP_Channels.FetchMorePersonalMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10);
+        public void EditMessage() => GP_Channels.editMessage(new EditMessageQuery
+        {
+            messageId = _messageIdInput.text,
+            text = _messageInput.text
+        });
 
-        public void FetchFeedMessages() => GP_Channels.FetchFeedMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10, 0);
-        public void FetchMoreFeedMessages() => GP_Channels.FetchMoreFeedMessages(int.Parse(_playerIdInput.text), _tagsInput.text, 10);
+        public void DeleteMessage() => GP_Channels.deleteMessage(new MessageQuery
+        {
+            messageId = _messageIdInput.text
+        });
+
+        public void FetchMessages() => GP_Channels.fetchMessages(new FetchMessagesQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            tags = SplitTags(),
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMoreMessages() => GP_Channels.fetchMoreMessages(new FetchMoreMessagesQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            tags = SplitTags(),
+            limit = 10
+        });
+
+        public void FetchPersonalMessages() => GP_Channels.fetchPersonalMessages(new FetchPlayerMessagesQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            tags = SplitTags(),
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMorePersonalMessages() => GP_Channels.fetchMorePersonalMessages(new FetchMorePlayerMessagesQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            tags = SplitTags(),
+            limit = 10
+        });
+
+        public void FetchFeedMessages() => GP_Channels.fetchFeedMessages(new FetchFeedMessagesQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            tags = SplitTags(),
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMoreFeedMessages() => GP_Channels.fetchMoreFeedMessages(new FetchMoreFeedMessagesQuery
+        {
+            playerId = int.Parse(_playerIdInput.text),
+            tags = SplitTags(),
+            limit = 10
+        });
+
+        private string[] SplitTags()
+        {
+            if (string.IsNullOrEmpty(_tagsInput.text))
+                return Array.Empty<string>();
+
+            string[] raw = _tagsInput.text.Split(',');
+
+            for (int index = 0; index < raw.Length; index++)
+                raw[index] = raw[index].Trim();
+
+            return raw;
+        }
 
         private void OnMessage(GP_Data data)
         {
@@ -209,6 +288,7 @@ namespace Examples.Channels.Messages
 
 
         private void OnSendMessageError() => ConsoleUI.Instance.Log("SEND MESSAGE: ERROR");
+        private void OnSendMessageError(GP_Data _) => OnSendMessageError();
         private void OnSendMessage(GP_Data data)
         {
             var sendMessageData = data.Get<Message_Data>();
@@ -240,6 +320,7 @@ namespace Examples.Channels.Messages
 
 
         private void OnEditMessageError() => ConsoleUI.Instance.Log("EDIT MESSAGE: ERROR");
+        private void OnEditMessageError(GP_Data _) => OnEditMessageError();
         private void OnEditMessageSuccess(GP_Data data)
         {
             var editMessageData = data.Get<Message_Data>();
@@ -268,8 +349,9 @@ namespace Examples.Channels.Messages
             ConsoleUI.Instance.Log("EDIT MESSAGE SUCCESS: PLAYER: SCORE " + editMessageData.player.score);
             ConsoleUI.Instance.Log(" ");
         }
-        private void OnEditMessageEvent(MessageData data)
+        private void OnEditMessageEvent(GP_Data payload)
         {
+            MessageData data = payload.Get<MessageData>();
             _chatUI.text += $"\n {data.text}";
 
             ConsoleUI.Instance.Log(" ");
@@ -287,9 +369,12 @@ namespace Examples.Channels.Messages
 
 
         private void OnDeleteMessageSuccess() => ConsoleUI.Instance.Log("DELETE MESSAGE: Success");
+        private void OnDeleteMessageSuccessEvent(GP_Data _) => OnDeleteMessageSuccess();
         private void OnDeleteMessageError() => ConsoleUI.Instance.Log("DELETE MESSAGE: ERROR");
-        private void OnDeleteMessageEvent(MessageData data)
+        private void OnDeleteMessageError(GP_Data _) => OnDeleteMessageError();
+        private void OnDeleteMessageEvent(GP_Data payload)
         {
+            MessageData data = payload.Get<MessageData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("DELETE MESSAGE EVENT: ID: " + data.id);
             ConsoleUI.Instance.Log("DELETE MESSAGE EVENT: CHANNEL ID: " + data.channelId);
@@ -305,14 +390,16 @@ namespace Examples.Channels.Messages
 
 
         private void OnFetchMessagesError() => ConsoleUI.Instance.Log("FETCH MESSAGES: ERROR");
-        private void OnFetchMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchMessagesError(GP_Data _) => OnFetchMessagesError();
+        private void OnFetchMessages(GP_Data payload)
         {
-            var fetchMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMessageData = data.items ?? new Message_Data[0];
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMessageData.Count; i++)
+            for (int i = 0; i < fetchMessageData.Length; i++)
             {
                 _chatUI.text += $"\n {fetchMessageData[i].text}";
                 ConsoleUI.Instance.Log(" ");
@@ -342,14 +429,16 @@ namespace Examples.Channels.Messages
 
 
         private void OnFetchPersonalMessagesError() => ConsoleUI.Instance.Log("FETCH PERSONAL MESSAGES: ERROR");
-        private void OnFetchPersonalMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchPersonalMessagesError(GP_Data _) => OnFetchPersonalMessagesError();
+        private void OnFetchPersonalMessages(GP_Data payload)
         {
-            var fetchMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMessageData = data.items ?? new Message_Data[0];
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH PERSONAL MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH PERSONAL MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMessageData.Count; i++)
+            for (int i = 0; i < fetchMessageData.Length; i++)
             {
                 _chatUI.text += $"\n {fetchMessageData[i].text}";
                 ConsoleUI.Instance.Log(" ");
@@ -378,14 +467,16 @@ namespace Examples.Channels.Messages
 
 
         private void OnFetchFeedMessagesError() => ConsoleUI.Instance.Log("FETCH FEED MESSAGES: ERROR");
-        private void OnFetchFeedMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchFeedMessagesError(GP_Data _) => OnFetchFeedMessagesError();
+        private void OnFetchFeedMessages(GP_Data payload)
         {
-            var fetchMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMessageData = data.items ?? new Message_Data[0];
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH FEED MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH FEED MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMessageData.Count; i++)
+            for (int i = 0; i < fetchMessageData.Length; i++)
             {
                 _chatUI.text += $"\n {fetchMessageData[i].text}";
                 ConsoleUI.Instance.Log(" ");
@@ -414,15 +505,17 @@ namespace Examples.Channels.Messages
 
 
         private void OnFetchMoreMessagesError() => ConsoleUI.Instance.Log("FETCH MORE MESSAGES: ERROR");
-        private void OnFetchMoreMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreMessagesError(GP_Data _) => OnFetchMoreMessagesError();
+        private void OnFetchMoreMessages(GP_Data payload)
         {
-            var fetchMoreMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMoreMessageData = data.items ?? new Message_Data[0];
 
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MORE MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMoreMessageData.Count; i++)
+            for (int i = 0; i < fetchMoreMessageData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE MESSAGES: CHANNEL ID: " + fetchMoreMessageData[i].channelId);
@@ -449,15 +542,17 @@ namespace Examples.Channels.Messages
         }
 
         private void OnFetchMorePersonalMessagesError() => ConsoleUI.Instance.Log("FETCH MORE PERSONAL MESSAGES: ERROR");
-        private void OnFetchMorePersonalMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchMorePersonalMessagesError(GP_Data _) => OnFetchMorePersonalMessagesError();
+        private void OnFetchMorePersonalMessages(GP_Data payload)
         {
-            var fetchMoreMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMoreMessageData = data.items ?? new Message_Data[0];
 
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MORE PERSONAL MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE PERSONAL MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMoreMessageData.Count; i++)
+            for (int i = 0; i < fetchMoreMessageData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE PERSONAL MESSAGES: CHANNEL ID: " + fetchMoreMessageData[i].channelId);
@@ -484,15 +579,17 @@ namespace Examples.Channels.Messages
         }
 
         private void OnFetchMoreFeedMessagesError() => ConsoleUI.Instance.Log("FETCH MORE FEED MESSAGES: ERROR");
-        private void OnFetchMoreFeedMessages(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreFeedMessagesError(GP_Data _) => OnFetchMoreFeedMessagesError();
+        private void OnFetchMoreFeedMessages(GP_Data payload)
         {
-            var fetchMoreMessageData = data.GetList<Message_Data>();
+            MessagesPayload data = payload.Get<MessagesPayload>();
+            Message_Data[] fetchMoreMessageData = data.items ?? new Message_Data[0];
 
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MORE FEED MESSAGES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE FEED MESSAGES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchMoreMessageData.Count; i++)
+            for (int i = 0; i < fetchMoreMessageData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE FEED MESSAGES: CHANNEL ID: " + fetchMoreMessageData[i].channelId);

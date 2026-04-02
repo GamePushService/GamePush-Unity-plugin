@@ -14,6 +14,7 @@
     const progressBarBackgroundColor = "{{{ PROGRESS_BAR_BACKGROUND_COLOR.replace(/ /g, '') }}}";
     const progressBarBorderColor = "{{{ PROGRESS_BAR_BORDER_COLOR.replace(/ /g, '') }}}";
   </script>
+  <script src="TemplateData/gamepush-unity.js"></script>
 
 </head>
 
@@ -34,6 +35,29 @@
   <script>
     const buildUrl = "Build";
     const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+    const shouldIgnoreGamePushUnhandledRejection = (reason) => {
+      const message =
+        typeof reason === "string"
+          ? reason
+          : reason && typeof reason.message === "string"
+            ? reason.message
+            : "";
+
+      return /^[a-z0-9_]+$/.test(message);
+    };
+
+    // Unity's loader promotes page-level unhandled promise rejections to modal alerts.
+    // GamePush backend errors are already propagated through SDK callbacks/events, so
+    // suppress duplicate alerts for backend-style error codes.
+    window.addEventListener("unhandledrejection", (event) => {
+      if (!shouldIgnoreGamePushUnhandledRejection(event.reason)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }, true);
+
     const config = {
       dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
       frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",

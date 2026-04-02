@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using TMPro;
 
 using GamePush;
@@ -54,6 +55,13 @@ namespace Examples.Channel.Members
         public string date;
     }
 
+    [System.Serializable]
+    public class FetchMembersPayload
+    {
+        public FetchMembersData[] items;
+        public bool canLoadMore;
+    }
+
 
     public class Members : MonoBehaviour
     {
@@ -83,34 +91,34 @@ namespace Examples.Channel.Members
             _fetchMoreButton.onClick.AddListener(FetchMoreMembers);
 
 
-            GP_Channels.OnJoinError += OnJoinError;
-            GP_Channels.OnJoinEvent += OnJoinEvent;
-            GP_Channels.OnJoinSuccess += OnJoinSuccess;
+            GP_Channels.on("error:join", (UnityAction<GP_Data>)OnJoinError);
+            GP_Channels.on("event:join", (UnityAction<GP_Data>)OnJoinEvent);
+            GP_Channels.on("join", (UnityAction<GP_Data>)OnJoinSuccessEvent);
 
-            GP_Channels.OnCancelJoinSuccess += OnCancelJoinSuccess;
-            GP_Channels.OnCancelJoinError += OnCancelJoinError;
-            GP_Channels.OnCancelJoinEvent += OnCancelJoinEvent;
+            GP_Channels.on("cancelJoin", (UnityAction<GP_Data>)OnCancelJoinSuccessEvent);
+            GP_Channels.on("error:cancelJoin", (UnityAction<GP_Data>)OnCancelJoinError);
+            GP_Channels.on("event:cancelJoin", (UnityAction<GP_Data>)OnCancelJoinEvent);
 
-            GP_Channels.OnLeaveSuccess += OnLeaveSuccess;
-            GP_Channels.OnLeaveEvent += OnLeaveEvent;
-            GP_Channels.OnLeaveError += OnLeaveError;
+            GP_Channels.on("leave", (UnityAction<GP_Data>)OnLeaveSuccessEvent);
+            GP_Channels.on("event:leave", (UnityAction<GP_Data>)OnLeaveEvent);
+            GP_Channels.on("error:leave", (UnityAction<GP_Data>)OnLeaveError);
 
-            GP_Channels.OnKick += OnKick;
-            GP_Channels.OnKickError += OnKickError;
+            GP_Channels.on("kick", (UnityAction<GP_Data>)OnKickEvent);
+            GP_Channels.on("error:kick", (UnityAction<GP_Data>)OnKickError);
 
-            GP_Channels.OnMuteSuccess += OnMuteSuccess;
-            GP_Channels.OnMuteError += OnMuteError;
-            GP_Channels.OnMuteEvent += OnMuteEvent;
+            GP_Channels.on("mute", (UnityAction<GP_Data>)OnMuteSuccessEvent);
+            GP_Channels.on("error:mute", (UnityAction<GP_Data>)OnMuteError);
+            GP_Channels.on("event:mute", (UnityAction<GP_Data>)OnMuteEvent);
 
-            GP_Channels.OnUnmuteSuccess += OnUnmuteSuccess;
-            GP_Channels.OnUnmuteError += OnUnmuteError;
-            GP_Channels.OnUnmuteEvent += OnUnmuteEvent;
+            GP_Channels.on("unmute", (UnityAction<GP_Data>)OnUnmuteSuccessEvent);
+            GP_Channels.on("error:unmute", (UnityAction<GP_Data>)OnUnmuteError);
+            GP_Channels.on("event:unmute", (UnityAction<GP_Data>)OnUnmuteEvent);
 
-            GP_Channels.OnFetchMembers += OnFetchMembers;
-            GP_Channels.OnFetchMembersError += OnFetchMembersError;
+            GP_Channels.on("fetchMembers", (UnityAction<GP_Data>)OnFetchMembers);
+            GP_Channels.on("error:fetchMembers", (UnityAction<GP_Data>)OnFetchMembersError);
 
-            GP_Channels.OnFetchMoreMembers += OnFetchMoreMembers;
-            GP_Channels.OnFetchMoreMembersError += OnFetchMoreMembersError;
+            GP_Channels.on("fetchMoreMembers", (UnityAction<GP_Data>)OnFetchMoreMembers);
+            GP_Channels.on("error:fetchMoreMembers", (UnityAction<GP_Data>)OnFetchMoreMembersError);
         }
         private void OnDisable()
         {
@@ -124,69 +132,98 @@ namespace Examples.Channel.Members
             _fetchMoreButton.onClick.RemoveListener(FetchMoreMembers);
 
 
-            GP_Channels.OnJoinError -= OnJoinError;
-            GP_Channels.OnJoinEvent -= OnJoinEvent;
-            GP_Channels.OnJoinSuccess -= OnJoinSuccess;
+            GP_Channels.off("error:join", (UnityAction<GP_Data>)OnJoinError);
+            GP_Channels.off("event:join", (UnityAction<GP_Data>)OnJoinEvent);
+            GP_Channels.off("join", (UnityAction<GP_Data>)OnJoinSuccessEvent);
 
-            GP_Channels.OnCancelJoinSuccess -= OnCancelJoinSuccess;
-            GP_Channels.OnCancelJoinError -= OnCancelJoinError;
-            GP_Channels.OnCancelJoinEvent -= OnCancelJoinEvent;
+            GP_Channels.off("cancelJoin", (UnityAction<GP_Data>)OnCancelJoinSuccessEvent);
+            GP_Channels.off("error:cancelJoin", (UnityAction<GP_Data>)OnCancelJoinError);
+            GP_Channels.off("event:cancelJoin", (UnityAction<GP_Data>)OnCancelJoinEvent);
 
-            GP_Channels.OnLeaveSuccess -= OnLeaveSuccess;
-            GP_Channels.OnLeaveEvent -= OnLeaveEvent;
-            GP_Channels.OnLeaveError -= OnLeaveError;
+            GP_Channels.off("leave", (UnityAction<GP_Data>)OnLeaveSuccessEvent);
+            GP_Channels.off("event:leave", (UnityAction<GP_Data>)OnLeaveEvent);
+            GP_Channels.off("error:leave", (UnityAction<GP_Data>)OnLeaveError);
 
-            GP_Channels.OnKick -= OnKick;
-            GP_Channels.OnKickError -= OnKickError;
+            GP_Channels.off("kick", (UnityAction<GP_Data>)OnKickEvent);
+            GP_Channels.off("error:kick", (UnityAction<GP_Data>)OnKickError);
 
-            GP_Channels.OnMuteError -= OnMuteError;
-            GP_Channels.OnMuteEvent -= OnMuteEvent;
-            GP_Channels.OnMuteSuccess -= OnMuteSuccess;
+            GP_Channels.off("error:mute", (UnityAction<GP_Data>)OnMuteError);
+            GP_Channels.off("event:mute", (UnityAction<GP_Data>)OnMuteEvent);
+            GP_Channels.off("mute", (UnityAction<GP_Data>)OnMuteSuccessEvent);
 
-            GP_Channels.OnUnmuteError -= OnUnmuteError;
-            GP_Channels.OnUnmuteEvent -= OnUnmuteEvent;
-            GP_Channels.OnUnmuteSuccess -= OnUnmuteSuccess;
+            GP_Channels.off("error:unmute", (UnityAction<GP_Data>)OnUnmuteError);
+            GP_Channels.off("event:unmute", (UnityAction<GP_Data>)OnUnmuteEvent);
+            GP_Channels.off("unmute", (UnityAction<GP_Data>)OnUnmuteSuccessEvent);
 
-            GP_Channels.OnFetchMembers -= OnFetchMembers;
-            GP_Channels.OnFetchMembersError -= OnFetchMembersError;
+            GP_Channels.off("fetchMembers", (UnityAction<GP_Data>)OnFetchMembers);
+            GP_Channels.off("error:fetchMembers", (UnityAction<GP_Data>)OnFetchMembersError);
 
-            GP_Channels.OnFetchMoreMembers -= OnFetchMoreMembers;
-            GP_Channels.OnFetchMoreMembersError -= OnFetchMoreMembersError;
+            GP_Channels.off("fetchMoreMembers", (UnityAction<GP_Data>)OnFetchMoreMembers);
+            GP_Channels.off("error:fetchMoreMembers", (UnityAction<GP_Data>)OnFetchMoreMembersError);
         }
 
 
-        public void Join() => GP_Channels.Join(int.Parse(_channelIdInput.text), "12345");
-        public void CancelJoin() => GP_Channels.CancelJoin(int.Parse(_channelIdInput.text));
-        public void Leave() => GP_Channels.Leave(int.Parse(_channelIdInput.text));
+        public void Join() => GP_Channels.join(new JoinChannelQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            password = "12345"
+        });
 
-        public void Kick() => GP_Channels.Kick(int.Parse(_channelIdInput.text), int.Parse(_playerIdInput.text));
-        public void Mute() => GP_Channels.Mute(int.Parse(_channelIdInput.text), int.Parse(_playerIdInput.text), int.Parse(_muteTimeInput.text));
-        public void Unmute() => GP_Channels.UnMute(int.Parse(_channelIdInput.text), int.Parse(_playerIdInput.text));
+        public void CancelJoin() => GP_Channels.cancelJoin(new ChannelQuery
+        {
+            channelId = int.Parse(_channelIdInput.text)
+        });
+
+        public void Leave() => GP_Channels.leave(new ChannelQuery
+        {
+            channelId = int.Parse(_channelIdInput.text)
+        });
+
+        public void Kick() => GP_Channels.kick(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            playerId = int.Parse(_playerIdInput.text)
+        });
+
+        public void Mute() => GP_Channels.mute(new MutePlayerQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            playerId = int.Parse(_playerIdInput.text),
+            seconds = int.Parse(_muteTimeInput.text)
+        });
+
+        public void Unmute() => GP_Channels.unmute(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_channelIdInput.text),
+            playerId = int.Parse(_playerIdInput.text)
+        });
 
 
         public void FetchMembers()
         {
             var filter = new FetchMembersFilter(int.Parse(_channelIdInput.text));
             filter.limit = 50;
-            GP_Channels.FetchMembers(filter);
+            GP_Channels.fetchMembers(filter);
         }
 
         public void FetchMoreMembers()
         {
             var filter = new FetchMoreMembersFilter(int.Parse(_channelIdInput.text));
             filter.limit = 50;
-            GP_Channels.FetchMoreMembers(filter);
+            GP_Channels.fetchMoreMembers(filter);
         }
 
         public void MakeOwner()
         {
             var filter = new UpdateChannelFilter(int.Parse(_channelIdInput.text));
             filter.ownerId = int.Parse(_playerIdInput.text);
-            GP_Channels.UpdateChannel(filter);
+            GP_Channels.updateChannel(filter);
         }
 
         private void OnJoinSuccess() => ConsoleUI.Instance.Log("JOIN: SUCCESS");
+        private void OnJoinSuccessEvent(GP_Data _) => OnJoinSuccess();
         private void OnJoinError() => ConsoleUI.Instance.Log("JOIN: ERROR");
+        private void OnJoinError(GP_Data _) => OnJoinError();
         private void OnJoinEvent(GP_Data data)
         {
             var joinData = data.Get<JoinData>();
@@ -232,8 +269,11 @@ namespace Examples.Channel.Members
 
         private void OnCancelJoinError() => ConsoleUI.Instance.Log("CANCEL JOIN: ERROR");
         private void OnCancelJoinSuccess() => ConsoleUI.Instance.Log("CANCEL JOIN: SUCCESS");
-        private void OnCancelJoinEvent(CancelJoinData data)
+        private void OnCancelJoinSuccessEvent(GP_Data _) => OnCancelJoinSuccess();
+        private void OnCancelJoinError(GP_Data _) => OnCancelJoinError();
+        private void OnCancelJoinEvent(GP_Data payload)
         {
+            CancelJoinData data = payload.Get<CancelJoinData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("CANCEL JOIN EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("CANCEL JOIN EVENT: PLAYER ID: " + data.playerId);
@@ -242,9 +282,12 @@ namespace Examples.Channel.Members
 
 
         private void OnLeaveSuccess() => ConsoleUI.Instance.Log("ON LEAVE CHANNEL: SUCCESS");
+        private void OnLeaveSuccessEvent(GP_Data _) => OnLeaveSuccess();
         private void OnLeaveError() => ConsoleUI.Instance.Log("ON LEAVE CHANNEL: ERROR");
-        private void OnLeaveEvent(MemberLeaveData data)
+        private void OnLeaveError(GP_Data _) => OnLeaveError();
+        private void OnLeaveEvent(GP_Data payload)
         {
+            MemberLeaveData data = payload.Get<MemberLeaveData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("ON LEAVE CHANNEL: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("ON LEAVE CHANNEL: PLAYER ID: " + data.playerId);
@@ -254,13 +297,18 @@ namespace Examples.Channel.Members
 
 
         private void OnKick() => ConsoleUI.Instance.Log("KICK: SUCCESS");
+        private void OnKickEvent(GP_Data _) => OnKick();
         private void OnKickError() => ConsoleUI.Instance.Log("KICK: ERROR");
+        private void OnKickError(GP_Data _) => OnKickError();
 
 
         private void OnUnmuteSuccess() => ConsoleUI.Instance.Log("UNMUTE: SUCCESS");
+        private void OnUnmuteSuccessEvent(GP_Data _) => OnUnmuteSuccess();
         private void OnUnmuteError() => ConsoleUI.Instance.Log("UNMUTE: ERROR");
-        private void OnUnmuteEvent(UnmuteData data)
+        private void OnUnmuteError(GP_Data _) => OnUnmuteError();
+        private void OnUnmuteEvent(GP_Data payload)
         {
+            UnmuteData data = payload.Get<UnmuteData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("UNMUTE EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("UNMUTE EVENT: PLAYER ID: " + data.playerId);
@@ -269,9 +317,12 @@ namespace Examples.Channel.Members
 
 
         private void OnMuteSuccess() => ConsoleUI.Instance.Log("MUTE: SUCCESS");
+        private void OnMuteSuccessEvent(GP_Data _) => OnMuteSuccess();
         private void OnMuteError() => ConsoleUI.Instance.Log("MUTE: ERROR");
-        private void OnMuteEvent(MuteData data)
+        private void OnMuteError(GP_Data _) => OnMuteError();
+        private void OnMuteEvent(GP_Data payload)
         {
+            MuteData data = payload.Get<MuteData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("MUTE EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("MUTE EVENT: PLAYER ID: " + data.playerId);
@@ -281,15 +332,17 @@ namespace Examples.Channel.Members
 
 
         private void OnFetchMembersError() => ConsoleUI.Instance.Log("FETCH MEMBERS: ERROR");
-        private void OnFetchMembers(GP_Data data, bool canLoadMore)
+        private void OnFetchMembersError(GP_Data _) => OnFetchMembersError();
+        private void OnFetchMembers(GP_Data payload)
         {
-            var membersData = data.GetList<FetchMembersData>();
+            FetchMembersPayload data = payload.Get<FetchMembersPayload>();
+            FetchMembersData[] membersData = data.items ?? new FetchMembersData[0];
 
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MEMBERS: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MEMBERS: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < membersData.Count; i++)
+            for (int i = 0; i < membersData.Length; i++)
             {
                 ConsoleUI.Instance.Log("FETCH MEMBERS: MEMBER: ID: " + membersData[i].id);
                 ConsoleUI.Instance.Log("FETCH MEMBERS: MEMBER: IS ONLINE: " + membersData[i].isOnline);
@@ -311,15 +364,17 @@ namespace Examples.Channel.Members
 
 
         private void OnFetchMoreMembersError() => ConsoleUI.Instance.Log("FETCH MORE MEMBERS: ERROR");
-        private void OnFetchMoreMembers(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreMembersError(GP_Data _) => OnFetchMoreMembersError();
+        private void OnFetchMoreMembers(GP_Data payload)
         {
-            var membersData = data.GetList<FetchMembersData>();
+            FetchMembersPayload data = payload.Get<FetchMembersPayload>();
+            FetchMembersData[] membersData = data.items ?? new FetchMembersData[0];
 
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH MORE MEMBERS: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE MEMBERS: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < membersData.Count; i++)
+            for (int i = 0; i < membersData.Length; i++)
             {
                 ConsoleUI.Instance.Log("FETCH MORE MEMBERS: MEMBER: ID: " + membersData[i].id);
                 ConsoleUI.Instance.Log("FETCH MORE MEMBERS: MEMBER: IS ONLINE: " + membersData[i].isOnline);

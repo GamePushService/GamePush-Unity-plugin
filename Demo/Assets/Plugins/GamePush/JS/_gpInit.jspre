@@ -44,8 +44,39 @@ function _waitFor(check, timeout) {
     })
   }
 
+function _resolveGamePushProjectData(defaultProjectId, defaultPublicToken) {
+    let projectId = defaultProjectId;
+    let publicToken = defaultPublicToken;
+
+    try {
+        let searchParams = new URL(window.location.href).searchParams;
+        let queryProjectId = searchParams.get('projectId');
+        let queryPublicToken = searchParams.get('publicToken');
+
+        if (queryProjectId) {
+            projectId = queryProjectId;
+        }
+
+        if (queryPublicToken) {
+            publicToken = queryPublicToken;
+        }
+    } catch (error) {}
+
+    try {
+        if (!projectId) {
+            projectId = localStorage.getItem('__gs_projectId') || projectId;
+        }
+
+        if (!publicToken) {
+            publicToken = localStorage.getItem('__gs_publicToken') || publicToken;
+        }
+    } catch (error) {}
+
+    return { projectId, publicToken };
+}
+
 setTimeout(() => {
-    if ('GamePushUnity' in window) return;
+    if ('onGPInit' in window) return;
 
     window.onGPError = async () => {
         await _unityInnerAwaiter.ready;
@@ -53,8 +84,8 @@ setTimeout(() => {
     };
 
     window.onGPInit = async (gp) => {
-
-        GamePush = new GamePushUnityInner(gp);
+        const UnityBridge = window.GamePushUnity || window.GamePushUnityInner;
+        GamePush = UnityBridge ? new UnityBridge(gp) : gp;
 
         if (showPreloaderAd == 'True') {
             gp.ads.showPreloader();
@@ -67,6 +98,8 @@ setTimeout(() => {
 
         
     };
+
+    let bootProject = _resolveGamePushProjectData(dataProjectId, dataPublicToken);
 
     ((g, a, m, e) => {
         let o = () => {
@@ -94,7 +127,7 @@ setTimeout(() => {
             'https://s3.eponesh.com/files/gs/sdk/gamepush.js',
             'TemplateData/gp_bundle/gamepush.js'
         ],
-        dataProjectId,
-        dataPublicToken
+        bootProject.projectId,
+        bootProject.publicToken
     );
 }, 0);

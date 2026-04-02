@@ -701,7 +701,22 @@ mergeInto(LibraryManager.library, {
     GP_Channels_OpenFeed: function (player_ID, tags) {
         _GP().Channels_Open_Feed(player_ID, UTF8ToString(tags));
     },
+    GP_Channels_OpenChatOverlay: function (channel, messages, tags) {
+        _GP().Channels_OpenChatOverlay(
+            UTF8ToString(channel),
+            UTF8ToString(messages),
+            UTF8ToString(tags)
+        );
+    },
+    GP_Channels_ProcessTags: function (tags, player_ID) {
+        var value = _GP().Channels_ProcessTags(UTF8ToString(tags), player_ID);
+        return _ToBuff(value);
+    },
 
+    GP_Channels_CanBeOnline: function () {
+        var value = _GP().Channels_CanBeOnline();
+        return _ToBuff(value);
+    },
     GP_Channels_IsMainChatEnabled: function () {
         var value = _GP().Channels_IsMainChatEnabled();
         return _ToBuff(value);
@@ -755,11 +770,17 @@ mergeInto(LibraryManager.library, {
     GP_Channels_FetchMoreChannelInvites: function (channel_ID, limit) {
         _GP().Channels_FetchMoreChannelInvites(channel_ID, limit);
     },
-    GP_Channels_FetchSentInvites: function (channel_ID, limit, offset) {
-        _GP().Channels_FetchSentInvites(channel_ID, limit, offset);
+    GP_Channels_FetchSentInvites: function (limit, offset) {
+        _GP().Channels_FetchSentInvites(limit, offset);
     },
-    GP_Channels_FetchMoreSentInvites: function (channel_ID, limit) {
-        _GP().Channels_FetchMoreSentInvites(channel_ID, limit);
+    GP_Channels_FetchMoreSentInvites: function (limit) {
+        _GP().Channels_FetchMoreSentInvites(limit);
+    },
+    GP_Channels_FetchPersonalChannel: function (player_ID) {
+        _GP().Channels_FetchPersonalChannel(player_ID);
+    },
+    GP_Channels_FetchFeedChannel: function (player_ID) {
+        _GP().Channels_FetchFeedChannel(player_ID);
     },
     GP_Channels_AcceptJoinRequest: function (channel_ID, player_ID) {
         _GP().Channels_AcceptJoinRequest(channel_ID, player_ID);
@@ -800,8 +821,8 @@ mergeInto(LibraryManager.library, {
     GP_Channels_FetchPersonalMessages: function (player_ID, tags, limit, offset) {
         _GP().Channels_FetchPersonalMessages(player_ID, UTF8ToString(tags), limit, offset);
     },
-    GP_Channels_FetchFeedMessages: function (player_ID, tags, limit, offset) {
-        _GP().Channels_FetchFeedMessages(player_ID, UTF8ToString(tags), limit, offset);
+    GP_Channels_FetchFeedMessages: function (player_ID, author_ID, tags, limit, offset) {
+        _GP().Channels_FetchFeedMessages(player_ID, author_ID, UTF8ToString(tags), limit, offset);
     },
 
     GP_Channels_FetchMoreMessages: function (channel_ID, tags, limit) {
@@ -810,8 +831,8 @@ mergeInto(LibraryManager.library, {
     GP_Channels_FetchMorePersonalMessages: function (player_ID, tags, limit) {
         _GP().Channels_FetchMorePersonalMessages(player_ID, UTF8ToString(tags), limit);
     },
-    GP_Channels_FetchMoreFeedMessages: function (player_ID, tags, limit) {
-        _GP().Channels_FetchMoreFeedMessages(player_ID, UTF8ToString(tags), limit);
+    GP_Channels_FetchMoreFeedMessages: function (player_ID, author_ID, tags, limit) {
+        _GP().Channels_FetchMoreFeedMessages(player_ID, author_ID, UTF8ToString(tags), limit);
     },
 
     GP_Channels_DeleteChannel: function (channel_ID) {
@@ -819,6 +840,36 @@ mergeInto(LibraryManager.library, {
     },
     GP_Channels_FetchChannel: function (channel_ID) {
         _GP().Channels_FetchChannel(channel_ID);
+    },
+    GP_Channels_GetLocalChannelState: function (channel_ID) {
+        var value = _GP().Channels_GetLocalChannelState(channel_ID);
+        return _ToBuff(value);
+    },
+    GP_Channels_GetChannelField: function (channel_ID, key) {
+        var value = _GP().Channels_GetChannelField(channel_ID, UTF8ToString(key));
+        return _ToBuff(value);
+    },
+    GP_Channels_GetChannelValue: function (channel_ID, key) {
+        var value = _GP().Channels_GetChannelValue(channel_ID, UTF8ToString(key));
+        return _ToBuff(value);
+    },
+    GP_Channels_SetValueString: function (channel_ID, key, value) {
+        _GP().Channels_SetValue(channel_ID, UTF8ToString(key), UTF8ToString(value));
+    },
+    GP_Channels_SetValueNumber: function (channel_ID, key, value) {
+        _GP().Channels_SetValue(channel_ID, UTF8ToString(key), value);
+    },
+    GP_Channels_SetValueBool: function (channel_ID, key, value) {
+        _GP().Channels_SetValue(channel_ID, UTF8ToString(key), !!value);
+    },
+    GP_Channels_SetValueJson: function (query) {
+        _GP().Channels_SetValueJson(UTF8ToString(query));
+    },
+    GP_Channels_AddValue: function (channel_ID, key, value) {
+        _GP().Channels_AddValue(channel_ID, UTF8ToString(key), value);
+    },
+    GP_Channels_AddValueJson: function (query) {
+        _GP().Channels_AddValueJson(UTF8ToString(query));
     },
 
     GP_Channels_CreateChannel: function (filter) {
@@ -846,6 +897,67 @@ mergeInto(LibraryManager.library, {
     },
 
     /* CHANNELS */
+
+    /* MULTIPLAYER */
+    GP_Multiplayer_Connect: function (query) {
+        _GP().Multiplayer_Connect(UTF8ToString(query));
+    },
+    GP_Multiplayer_Disconnect: function (query) {
+        _GP().Multiplayer_Disconnect(UTF8ToString(query));
+    },
+    GP_Multiplayer_SetMode: function (mode) {
+        _GP().Multiplayer_SetMode(UTF8ToString(mode));
+    },
+    GP_Multiplayer_DefinePlayerSchema: function (schema) {
+        _GP().Multiplayer_DefinePlayerSchema(UTF8ToString(schema));
+    },
+    GP_Multiplayer_SetPlayerInitializer: function () {
+        _GP().Multiplayer_SetPlayerInitializer();
+    },
+    GP_Multiplayer_ClearPlayerInitializer: function () {
+        _GP().Multiplayer_ClearPlayerInitializer();
+    },
+    GP_Multiplayer_ResolvePlayerInitializer: function (request_ID, state) {
+        _GP().Multiplayer_ResolvePlayerInitializer(request_ID, UTF8ToString(state));
+    },
+    GP_Multiplayer_SetPlayerState: function (state) {
+        _GP().Multiplayer_SetPlayerState(UTF8ToString(state));
+    },
+    GP_Multiplayer_SendMessage: function (eventName, data, options) {
+        _GP().Multiplayer_SendMessage(
+            UTF8ToString(eventName),
+            UTF8ToString(data),
+            UTF8ToString(options)
+        );
+    },
+    GP_Multiplayer_TickRate: function () {
+        return _GP().Multiplayer_TickRate();
+    },
+    GP_Multiplayer_IsConnected: function () {
+        var value = _GP().Multiplayer_IsConnected();
+        return _ToBuff(value);
+    },
+    GP_Multiplayer_IsHost: function () {
+        var value = _GP().Multiplayer_IsHost();
+        return _ToBuff(value);
+    },
+    GP_Multiplayer_MyState: function () {
+        var value = _GP().Multiplayer_MyState();
+        return _ToBuff(value);
+    },
+    GP_Multiplayer_PlayersState: function () {
+        var value = _GP().Multiplayer_PlayersState();
+        return _ToBuff(value);
+    },
+    GP_Multiplayer_ConnectedPlayers: function () {
+        var value = _GP().Multiplayer_ConnectedPlayers();
+        return _ToBuff(value);
+    },
+    GP_Multiplayer_NetworkStats: function () {
+        var value = _GP().Multiplayer_NetworkStats();
+        return _ToBuff(value);
+    },
+    /* MULTIPLAYER */
 
     /* TRIGGERS */
     GP_Triggers_Claim: function (idOrTag) {

@@ -1,8 +1,10 @@
 using GamePush.Data;
 using GamePush.Core;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
+using UnityEngine;
 
 namespace GamePush
 {
@@ -100,8 +102,8 @@ namespace GamePush
         #region Initialization
         public static async void Initialize()
         {
-            int.TryParse(ProjectData.ID, out var id);
-            SetProjectData(id, ProjectData.TOKEN);
+            ResolveProjectData(out var id, out var token);
+            SetProjectData(id, token);
 
 #if UNITY_EDITOR || !UNITY_WEBGL
             await InitFetch();
@@ -117,6 +119,61 @@ namespace GamePush
             
             await FetchCoreConfig();
             await Player.FetchPlayerConfig();
+        }
+
+        private static void ResolveProjectData(out int id, out string token)
+        {
+            int.TryParse(ProjectData.ID, out id);
+            token = ProjectData.TOKEN;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            Dictionary<string, string> queryParams = ParseQueryParams(Application.absoluteURL);
+
+            if (queryParams.TryGetValue("projectId", out string queryProjectId) &&
+                int.TryParse(queryProjectId, out int parsedProjectId))
+            {
+                id = parsedProjectId;
+            }
+
+            if (queryParams.TryGetValue("publicToken", out string queryToken) &&
+                !string.IsNullOrEmpty(queryToken))
+            {
+                token = queryToken;
+            }
+#endif
+        }
+
+        private static Dictionary<string, string> ParseQueryParams(string url)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrEmpty(url))
+                return result;
+
+            int queryStart = url.IndexOf('?');
+
+            if (queryStart < 0 || queryStart >= url.Length - 1)
+                return result;
+
+            string query = url.Substring(queryStart + 1);
+            string[] parts = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string part in parts)
+            {
+                string[] pair = part.Split('=', 2);
+                string key = Uri.UnescapeDataString(pair[0]);
+
+                if (string.IsNullOrEmpty(key))
+                    continue;
+
+                string value = pair.Length > 1
+                    ? Uri.UnescapeDataString(pair[1])
+                    : string.Empty;
+
+                result[key] = value;
+            }
+
+            return result;
         }
 
         private static async Task FetchCoreConfig()

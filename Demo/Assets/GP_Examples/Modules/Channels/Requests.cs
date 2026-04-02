@@ -7,6 +7,7 @@ using TMPro;
 using System;
 using Examples.Console;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Examples.Channel.Requests
 {
@@ -28,6 +29,20 @@ namespace Examples.Channel.Requests
     {
         public PlayerData player; // Публичные поля игрока добавляет сам разработчик, в данном случае все поля Игрока по default
         public string date;
+    }
+
+    [System.Serializable]
+    public class FetchJoinRequestsPayload
+    {
+        public FetchJoinRequestsData[] items;
+        public bool canLoadMore;
+    }
+
+    [System.Serializable]
+    public class FetchSentJoinRequestsPayload
+    {
+        public JoinRequestsData[] items;
+        public bool canLoadMore;
     }
 
 
@@ -53,24 +68,24 @@ namespace Examples.Channel.Requests
             _fetchSentMoreButton.onClick.AddListener(FetchMoreSentJoinRequest);
 
 
-            GP_Channels.OnAcceptJoinRequest += OnAcceptJoinRequest;
-            GP_Channels.OnAcceptJoinRequestError += OnAcceptJoinRequestError;
+            GP_Channels.on("acceptJoinRequest", (UnityAction<GP_Data>)OnAcceptJoinRequestEvent);
+            GP_Channels.on("error:acceptJoinRequest", (UnityAction<GP_Data>)OnAcceptJoinRequestError);
 
-            GP_Channels.OnRejectJoinRequestSuccess += OnRejectJoinRequestSuccess;
-            GP_Channels.OnRejectJoinRequestError += OnRejectJoinRequestError;
-            GP_Channels.OnRejectJoinRequestEvent += OnRejectJoinRequestEvent;
+            GP_Channels.on("rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestSuccessEvent);
+            GP_Channels.on("error:rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestError);
+            GP_Channels.on("event:rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestEvent);
 
-            GP_Channels.OnFetchJoinRequests += OnFetchJoinRequests;
-            GP_Channels.OnFetchJoinRequestsError += OnFetchJoinRequestsError;
+            GP_Channels.on("fetchJoinRequests", (UnityAction<GP_Data>)OnFetchJoinRequests);
+            GP_Channels.on("error:fetchJoinRequests", (UnityAction<GP_Data>)OnFetchJoinRequestsError);
 
-            GP_Channels.OnFetchMoreJoinRequests += OnFetchMoreJoinRequests;
-            GP_Channels.OnFetchMoreJoinRequestsError += OnFetchMoreJoinRequestsError;
+            GP_Channels.on("fetchMoreJoinRequests", (UnityAction<GP_Data>)OnFetchMoreJoinRequests);
+            GP_Channels.on("error:fetchMoreJoinRequests", (UnityAction<GP_Data>)OnFetchMoreJoinRequestsError);
 
-            GP_Channels.OnFetchSentJoinRequests += OnFetchSentJoinRequests;
-            GP_Channels.OnFetchSentJoinRequestsError += OnFetchSentJoinRequestsError;
+            GP_Channels.on("fetchSentJoinRequests", (UnityAction<GP_Data>)OnFetchSentJoinRequests);
+            GP_Channels.on("error:fetchSentJoinRequests", (UnityAction<GP_Data>)OnFetchSentJoinRequestsError);
 
-            GP_Channels.OnFetchMoreSentJoinRequests += OnFetchMoreSentJoinRequests;
-            GP_Channels.OnFetchMoreSentJoinRequestsError += OnFetchMoreSentJoinRequestsError;
+            GP_Channels.on("fetchMoreSentJoinRequests", (UnityAction<GP_Data>)OnFetchMoreSentJoinRequests);
+            GP_Channels.on("error:fetchMoreSentJoinRequests", (UnityAction<GP_Data>)OnFetchMoreSentJoinRequestsError);
         }
         private void OnDisable()
         {
@@ -82,44 +97,78 @@ namespace Examples.Channel.Requests
             _fetchSentMoreButton.onClick.RemoveListener(FetchMoreSentJoinRequest);
 
 
-            GP_Channels.OnAcceptJoinRequest -= OnAcceptJoinRequest;
-            GP_Channels.OnAcceptJoinRequestError -= OnAcceptJoinRequestError;
+            GP_Channels.off("acceptJoinRequest", (UnityAction<GP_Data>)OnAcceptJoinRequestEvent);
+            GP_Channels.off("error:acceptJoinRequest", (UnityAction<GP_Data>)OnAcceptJoinRequestError);
 
-            GP_Channels.OnRejectJoinRequestSuccess -= OnRejectJoinRequestSuccess;
-            GP_Channels.OnRejectJoinRequestError -= OnRejectJoinRequestError;
-            GP_Channels.OnRejectJoinRequestEvent -= OnRejectJoinRequestEvent;
+            GP_Channels.off("rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestSuccessEvent);
+            GP_Channels.off("error:rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestError);
+            GP_Channels.off("event:rejectJoinRequest", (UnityAction<GP_Data>)OnRejectJoinRequestEvent);
 
-            GP_Channels.OnFetchJoinRequests -= OnFetchJoinRequests;
-            GP_Channels.OnFetchJoinRequestsError -= OnFetchJoinRequestsError;
+            GP_Channels.off("fetchJoinRequests", (UnityAction<GP_Data>)OnFetchJoinRequests);
+            GP_Channels.off("error:fetchJoinRequests", (UnityAction<GP_Data>)OnFetchJoinRequestsError);
 
-            GP_Channels.OnFetchMoreJoinRequests -= OnFetchMoreJoinRequests;
-            GP_Channels.OnFetchMoreJoinRequestsError -= OnFetchMoreJoinRequestsError;
+            GP_Channels.off("fetchMoreJoinRequests", (UnityAction<GP_Data>)OnFetchMoreJoinRequests);
+            GP_Channels.off("error:fetchMoreJoinRequests", (UnityAction<GP_Data>)OnFetchMoreJoinRequestsError);
 
-            GP_Channels.OnFetchSentJoinRequests -= OnFetchSentJoinRequests;
-            GP_Channels.OnFetchSentJoinRequestsError -= OnFetchSentJoinRequestsError;
+            GP_Channels.off("fetchSentJoinRequests", (UnityAction<GP_Data>)OnFetchSentJoinRequests);
+            GP_Channels.off("error:fetchSentJoinRequests", (UnityAction<GP_Data>)OnFetchSentJoinRequestsError);
 
-            GP_Channels.OnFetchMoreSentJoinRequests -= OnFetchMoreSentJoinRequests;
-            GP_Channels.OnFetchMoreSentJoinRequestsError -= OnFetchMoreSentJoinRequestsError;
+            GP_Channels.off("fetchMoreSentJoinRequests", (UnityAction<GP_Data>)OnFetchMoreSentJoinRequests);
+            GP_Channels.off("error:fetchMoreSentJoinRequests", (UnityAction<GP_Data>)OnFetchMoreSentJoinRequestsError);
         }
 
 
-        public void AcceptJoinRequest() => GP_Channels.AcceptJoinRequest(int.Parse(_inputChannelIds.text), int.Parse(_inputPlayerIds.text));
-        public void RejectJoinRequest() => GP_Channels.RejectJoinRequest(int.Parse(_inputChannelIds.text), int.Parse(_inputPlayerIds.text));
-        public void FetchJoinRequest() => GP_Channels.FetchJoinRequests(int.Parse(_inputChannelIds.text), 10);
-        public void FetchMoreJoinRequest() => GP_Channels.FetchMoreJoinRequests(int.Parse(_inputChannelIds.text), 10);
-        public void FetchSentJoinRequest() => GP_Channels.FetchSentJoinRequests(10);
-        public void FetchMoreSentJoinRequest() => GP_Channels.FetchMoreSentJoinRequests(10);
+        public void AcceptJoinRequest() => GP_Channels.acceptJoinRequest(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            playerId = int.Parse(_inputPlayerIds.text)
+        });
+
+        public void RejectJoinRequest() => GP_Channels.rejectJoinRequest(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            playerId = int.Parse(_inputPlayerIds.text)
+        });
+
+        public void FetchJoinRequest() => GP_Channels.fetchJoinRequests(new ChannelPagingQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMoreJoinRequest() => GP_Channels.fetchMoreJoinRequests(new ChannelLimitQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            limit = 10
+        });
+
+        public void FetchSentJoinRequest() => GP_Channels.fetchSentJoinRequests(new PagingQuery
+        {
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMoreSentJoinRequest() => GP_Channels.fetchMoreSentJoinRequests(new LimitQuery
+        {
+            limit = 10
+        });
 
 
 
         private void OnAcceptJoinRequest() => ConsoleUI.Instance.Log("ACCEPT JOIN REQUEST: SUCCESS");
+        private void OnAcceptJoinRequestEvent(GP_Data _) => OnAcceptJoinRequest();
         private void OnAcceptJoinRequestError() => ConsoleUI.Instance.Log("ACCEPT JOIN REQUEST: ERROR");
+        private void OnAcceptJoinRequestError(GP_Data _) => OnAcceptJoinRequestError();
 
 
         private void OnRejectJoinRequestSuccess() => ConsoleUI.Instance.Log("REJECT JOIN REQUESTS: SUCCESS");
+        private void OnRejectJoinRequestSuccessEvent(GP_Data _) => OnRejectJoinRequestSuccess();
         private void OnRejectJoinRequestError() => ConsoleUI.Instance.Log("REJECT JOIN REQUESTS: ERROR");
-        private void OnRejectJoinRequestEvent(RejectJoinRequestData data)
+        private void OnRejectJoinRequestError(GP_Data _) => OnRejectJoinRequestError();
+        private void OnRejectJoinRequestEvent(GP_Data payload)
         {
+            RejectJoinRequestData data = payload.Get<RejectJoinRequestData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("REJECT JOIN REQUEST EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("REJECT JOIN REQUEST EVENT: PLAYER ID: " + data.playerId);
@@ -128,14 +177,16 @@ namespace Examples.Channel.Requests
 
 
         private void OnFetchJoinRequestsError() => ConsoleUI.Instance.Log("FETCH JOIN REQUESTS: ERROR");
-        private void OnFetchJoinRequests(GP_Data data, bool canLoadMore)
+        private void OnFetchJoinRequestsError(GP_Data _) => OnFetchJoinRequestsError();
+        private void OnFetchJoinRequests(GP_Data payload)
         {
-            var fetchJoinRequestsData = data.GetList<FetchJoinRequestsData>();
+            FetchJoinRequestsPayload data = payload.Get<FetchJoinRequestsPayload>();
+            FetchJoinRequestsData[] fetchJoinRequestsData = data.items ?? new FetchJoinRequestsData[0];
 
             ConsoleUI.Instance.Log(" ");
-            ConsoleUI.Instance.Log("FETCH JOIN REQUESTS: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH JOIN REQUESTS: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchJoinRequestsData.Count; i++)
+            for (int i = 0; i < fetchJoinRequestsData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH JOIN REQUESTS: DATE: " + fetchJoinRequestsData[i].date);
@@ -154,14 +205,16 @@ namespace Examples.Channel.Requests
 
 
         private void OnFetchMoreJoinRequestsError() => ConsoleUI.Instance.Log("FETCH MORE JOIN REQUESTS: ERROR");
-        private void OnFetchMoreJoinRequests(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreJoinRequestsError(GP_Data _) => OnFetchMoreJoinRequestsError();
+        private void OnFetchMoreJoinRequests(GP_Data payload)
         {
-            var fetchJoinRequestsData = data.GetList<FetchJoinRequestsData>();
+            FetchJoinRequestsPayload data = payload.Get<FetchJoinRequestsPayload>();
+            FetchJoinRequestsData[] fetchJoinRequestsData = data.items ?? new FetchJoinRequestsData[0];
 
             ConsoleUI.Instance.Log(" ");
-            ConsoleUI.Instance.Log("FETCH MORE JOIN REQUESTS: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE JOIN REQUESTS: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchJoinRequestsData.Count; i++)
+            for (int i = 0; i < fetchJoinRequestsData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE JOIN REQUESTS: DATE: " + fetchJoinRequestsData[i].date);
@@ -180,13 +233,16 @@ namespace Examples.Channel.Requests
 
 
         private void OnFetchSentJoinRequestsError() => ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: ERROR");
-        private void OnFetchSentJoinRequests(List<JoinRequestsData> data, bool canLoadMore)
+        private void OnFetchSentJoinRequestsError(GP_Data _) => OnFetchSentJoinRequestsError();
+        private void OnFetchSentJoinRequests(GP_Data payload)
         {
+            FetchSentJoinRequestsPayload result = payload.Get<FetchSentJoinRequestsPayload>();
+            JoinRequestsData[] data = result.items ?? new JoinRequestsData[0];
             ConsoleUI.Instance.Log(" ");
 
-            ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CAN LOAD MORE: " + result.canLoadMore);
 
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: DATE: " + data[i].date);
@@ -211,7 +267,7 @@ namespace Examples.Channel.Requests
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: OWNER ID: " + data[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: NAME: " + data[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: DESCRIPTION: " + data[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: PRIVATE: " + data[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: PRIVATE: " + data[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: VISIBLE: " + data[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: PERMANENT: " + data[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH SENT JOIN REQUESTS: CHANNEL: HAS PASSWORD: " + data[i].channel.hasPassword);
@@ -233,12 +289,15 @@ namespace Examples.Channel.Requests
 
 
         private void OnFetchMoreSentJoinRequestsError() => ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: ERROR");
-        private void OnFetchMoreSentJoinRequests(List<JoinRequestsData> data, bool canLoadMore)
+        private void OnFetchMoreSentJoinRequestsError(GP_Data _) => OnFetchMoreSentJoinRequestsError();
+        private void OnFetchMoreSentJoinRequests(GP_Data payload)
         {
+            FetchSentJoinRequestsPayload result = payload.Get<FetchSentJoinRequestsPayload>();
+            JoinRequestsData[] data = result.items ?? new JoinRequestsData[0];
             ConsoleUI.Instance.Log(" ");
-            ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CAN LOAD MORE " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CAN LOAD MORE " + result.canLoadMore);
 
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: DATE: " + data[i].date);
@@ -263,7 +322,7 @@ namespace Examples.Channel.Requests
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: OWNER ID: " + data[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: NAME: " + data[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: DESCRIPTION: " + data[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: PRIVATE: " + data[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: PRIVATE: " + data[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: VISIBLE: " + data[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: PERMANENT: " + data[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH MORE SENT JOIN REQUESTS: CHANNEL: HAS PASSWORD: " + data[i].channel.hasPassword);

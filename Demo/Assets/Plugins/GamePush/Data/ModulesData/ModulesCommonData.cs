@@ -23,6 +23,7 @@ namespace GamePush
         Language,
         Leaderboard,
         LeaderboardScoped,
+        Multiplayer,
         Payments,
         Platform,
         Player,

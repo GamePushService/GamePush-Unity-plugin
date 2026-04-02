@@ -746,8 +746,7 @@ class GamePushUnityInner {
 
     mapItemsWithChannel(items = {}) {
         return {
-            ...items,
-            ch_private: items.private
+            ...items
         };
     }
 
@@ -2207,12 +2206,19 @@ class GamePushUnityInner {
 
     Channels_CreateChannel(filter) {
         const query = JSON.parse(filter);
-        this.gp.channels.createChannel({ ...query, private: query.ch_private });
+        this.gp.channels.createChannel({
+            ...query,
+            template: query.template == null ? query.template : String(query.template),
+            private: query.private
+        });
     }
 
     Channels_UpdateChannel(filter) {
         const query = JSON.parse(filter);
-        this.gp.channels.updateChannel({ ...query, private: query.ch_private });
+        this.gp.channels.updateChannel({
+            ...query,
+            private: query.private
+        });
     }
 
     Channels_FetchChannels(filter) {
@@ -2780,8 +2786,7 @@ function formatCustomValue(value) {
 
 function mapChannel(channel = {}) {
     return {
-        ...channel,
-        ch_private: channel.private
+        ...channel
     };
 }
 

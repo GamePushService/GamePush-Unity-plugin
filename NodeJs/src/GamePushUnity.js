@@ -1,6 +1,10 @@
 export default class GamePushUnity {
     constructor(gp) {
         this.gp = gp;
+        this.pendingMessages = [];
+        this.pendingMessagesFlushInterval = window.setInterval(() => {
+            this.flushPendingMessages();
+        }, 50);
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
         this.gp.player.on('sync', (success) => {
@@ -187,7 +191,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:createChannel', (err) =>
-            this.trigger('CallOnCreateChannelError')
+            this.triggerError('CallOnCreateChannelError', err)
         );
 
         this.gp.channels.on('updateChannel', (channel) => {
@@ -196,19 +200,31 @@ export default class GamePushUnity {
                 JSON.stringify(mapChannel(channel))
             );
         });
+        this.gp.channels.on('event:updateChannel', (channel) => {
+            this.trigger(
+                'CallOnUpdateChannelEvent',
+                JSON.stringify(mapChannel(channel))
+            );
+        });
         this.gp.channels.on('error:updateChannel', (err) =>
-            this.trigger('CallOnUpdateChannelError')
+            this.triggerError('CallOnUpdateChannelError', err)
         );
 
         this.gp.channels.on('deleteChannel', () =>
             this.trigger('CallOnDeleteChannelSuccess')
         );
         this.gp.channels.on('event:deleteChannel', (channel) => {
-            this.trigger('CallOnDeleteChannelEvent', channel.id);
+            this.triggerJson('CallOnDeleteChannelEvent', mapChannel(channel));
         });
         this.gp.channels.on('error:deleteChannel', (err) =>
-            this.trigger('CallOnDeleteChannelError')
+            this.triggerError('CallOnDeleteChannelError', err)
         );
+        this.gp.channels.on('event:connect', (data) => {
+            this.trigger(
+                'CallOnChannelsConnectEvent',
+                JSON.stringify(data)
+            );
+        });
 
         this.gp.channels.on('fetchChannel', (channel) => {
             this.trigger(
@@ -217,7 +233,27 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchChannel', (err) =>
-            this.trigger('CallOnFetchChannelError')
+            this.triggerError('CallOnFetchChannelError', err)
+        );
+
+        this.gp.channels.on('fetchPersonalChannel', (channel) => {
+            this.trigger(
+                'CallOnFetchPersonalChannel',
+                JSON.stringify(mapChannel(channel))
+            );
+        });
+        this.gp.channels.on('error:fetchPersonalChannel', (err) =>
+            this.triggerError('CallOnFetchPersonalChannelError', err)
+        );
+
+        this.gp.channels.on('fetchFeedChannel', (channel) => {
+            this.trigger(
+                'CallOnFetchFeedChannel',
+                JSON.stringify(mapChannel(channel))
+            );
+        });
+        this.gp.channels.on('error:fetchFeedChannel', (err) =>
+            this.triggerError('CallOnFetchFeedChannelError', err)
         );
 
         this.gp.channels.on('fetchChannels', (result) => {
@@ -228,7 +264,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchChannels', (err) =>
-            this.trigger('CallOnFetchChannelsError')
+            this.triggerError('CallOnFetchChannelsError', err)
         );
 
         this.gp.channels.on('fetchMoreChannels', (result) => {
@@ -242,13 +278,16 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreChannels', (err) =>
-            this.trigger('CallOnFetchMoreChannelsError')
+            this.triggerError('CallOnFetchMoreChannelsError', err)
         );
 
         this.gp.channels.on('openChat', () => this.trigger('CallOnOpenChat'));
         this.gp.channels.on('closeChat', () => this.trigger('CallOnCloseChat'));
         this.gp.channels.on('error:openChat', (err) =>
-            this.trigger('CallOnOpenChatError')
+            this.triggerError('CallOnOpenChatError', err)
+        );
+        this.gp.channels.on('error:openFeed', (err) =>
+            this.triggerError('CallOnOpenFeedError', err)
         );
 
         this.gp.channels.on('join', () => this.trigger('CallOnJoinSuccess'));
@@ -256,7 +295,7 @@ export default class GamePushUnity {
             this.trigger('CallOnJoinEvent', JSON.stringify(member));
         });
         this.gp.channels.on('error:join', (err) =>
-            this.trigger('CallOnJoinError')
+            this.triggerError('CallOnJoinError', err)
         );
 
         this.gp.channels.on('event:joinRequest', (joinRequest) => {
@@ -270,7 +309,7 @@ export default class GamePushUnity {
             this.trigger('CallOnCancelJoinEvent', JSON.stringify(joinRequest));
         });
         this.gp.channels.on('error:cancelJoin', (err) =>
-            this.trigger('CallOnCancelJoinError')
+            this.triggerError('CallOnCancelJoinError', err)
         );
 
         this.gp.channels.on('leave', () => this.trigger('CallOnLeaveSuccess'));
@@ -278,20 +317,89 @@ export default class GamePushUnity {
             this.trigger('CallOnLeaveEvent', JSON.stringify(memberLeave));
         });
         this.gp.channels.on('error:leave', (err) =>
-            this.trigger('CallOnLeaveError')
+            this.triggerError('CallOnLeaveError', err)
         );
 
         this.gp.channels.on('kick', () => this.trigger('CallOnKick'));
         this.gp.channels.on('error:kick', (err) =>
-            this.trigger('CallOnKickError')
+            this.triggerError('CallOnKickError', err)
         );
+
+        this.gp.channels.on('setValue', (result) => {
+            this.trigger('CallOnSetValue', JSON.stringify(result));
+        });
+        this.gp.channels.on('error:setValue', (err) =>
+            this.triggerError('CallOnSetValueError', err)
+        );
+        this.gp.channels.on('event:changeValue', (change) => {
+            this.trigger('CallOnChangeValue', JSON.stringify(change));
+        });
+
+        // multiplayer
+        this.multiplayerPlayerInitializerRequestId = 0;
+        this.multiplayerPlayerInitializerResolvers = new Map();
+
+        this.gp.multiplayer.on('connect', (result) => {
+            this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('disconnect', (result) => {
+            this.trigger('CallOnMultiplayerDisconnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('error:connect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerConnectError',
+                JSON.stringify(serializeError(error))
+            );
+        });
+        this.gp.multiplayer.on('error:disconnect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerDisconnectError',
+                JSON.stringify(serializeError(error))
+            );
+        });
+        this.gp.multiplayer.on('error:sendState', (error) => {
+            this.trigger(
+                'CallOnMultiplayerSendStateError',
+                JSON.stringify(serializeError(error))
+            );
+        });
+        this.gp.multiplayer.on('playerJoined', (player) => {
+            this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playerLeft', (player) => {
+            this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playersUpdated', (playersState) => {
+            this.trigger(
+                'CallOnMultiplayerPlayersUpdated',
+                JSON.stringify(mapToObject(playersState))
+            );
+        });
+        this.gp.multiplayer.on('customEvent', (event) => {
+            this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(event));
+        });
+        this.gp.multiplayer.on('becameHost', () => {
+            this.trigger('CallOnMultiplayerBecameHost');
+        });
+        this.gp.multiplayer.on('becamePeer', () => {
+            this.trigger('CallOnMultiplayerBecamePeer');
+        });
+        this.gp.multiplayer.on('hostMigrated', (data) => {
+            this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
+        });
+        this.gp.multiplayer.onTick((deltaTime) => {
+            this.trigger(
+                'CallOnMultiplayerTick',
+                String(deltaTime)
+            );
+        });
 
         this.gp.channels.on('fetchMembers', (result) => {
             this.trigger('CallOnFetchMembersCanLoadMore', result.canLoadMore);
             this.trigger('CallOnFetchMembers', JSON.stringify(result.items));
         });
         this.gp.channels.on('error:fetchMembers', (err) =>
-            this.trigger('CallOnFetchMembersError')
+            this.triggerError('CallOnFetchMembersError', err)
         );
 
         this.gp.channels.on('fetchMoreMembers', (result) => {
@@ -305,7 +413,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreMembers', (err) =>
-            this.trigger('CallOnFetchMoreMembersError')
+            this.triggerError('CallOnFetchMoreMembersError', err)
         );
 
         this.gp.channels.on('mute', () => this.trigger('CallOnMuteSuccess'));
@@ -313,7 +421,7 @@ export default class GamePushUnity {
             this.trigger('CallOnMuteEvent', JSON.stringify(mute));
         });
         this.gp.channels.on('error:mute', (err) =>
-            this.trigger('CallOnMuteError')
+            this.triggerError('CallOnMuteError', err)
         );
 
         this.gp.channels.on('unmute', () =>
@@ -323,14 +431,14 @@ export default class GamePushUnity {
             this.trigger('CallOnUnmuteEvent', JSON.stringify(mute));
         });
         this.gp.channels.on('error:unmute', (err) =>
-            this.trigger('CallOnUnmuteError')
+            this.triggerError('CallOnUnmuteError', err)
         );
 
         this.gp.channels.on('sendInvite', () =>
             this.trigger('CallOnSendInvite')
         );
         this.gp.channels.on('error:sendInvite', (err) =>
-            this.trigger('CallOnSendInviteError')
+            this.triggerError('CallOnSendInviteError', err)
         );
 
         this.gp.channels.on('event:invite', (invite) => {
@@ -344,14 +452,20 @@ export default class GamePushUnity {
             this.trigger('CallOnCancelInviteEvent', JSON.stringify(invite));
         });
         this.gp.channels.on('error:cancelInvite', (err) =>
-            this.trigger('CallOnCancelInviteError')
+            this.triggerError('CallOnCancelInviteError', err)
         );
 
         this.gp.channels.on('acceptInvite', () =>
             this.trigger('CallOnAcceptInvite')
         );
+        this.gp.channels.on('event:acceptInvite', (invite) => {
+            this.trigger(
+                'CallOnAcceptInviteEvent',
+                JSON.stringify(invite)
+            );
+        });
         this.gp.channels.on('error:acceptInvite', (err) =>
-            this.trigger('CallOnAcceptInviteError')
+            this.triggerError('CallOnAcceptInviteError', err)
         );
 
         this.gp.channels.on('rejectInvite', () =>
@@ -361,7 +475,7 @@ export default class GamePushUnity {
             this.trigger('CallOnRejectInviteEvent', JSON.stringify(invite));
         });
         this.gp.channels.on('error:rejectInvite', (err) =>
-            this.trigger('CallOnRejectInviteError')
+            this.triggerError('CallOnRejectInviteError', err)
         );
 
         this.gp.channels.on('fetchInvites', (result) => {
@@ -372,7 +486,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchInvites', (err) =>
-            this.trigger('CallOnFetchInvitesError')
+            this.triggerError('CallOnFetchInvitesError', err)
         );
 
         this.gp.channels.on('fetchMoreInvites', (result) => {
@@ -386,7 +500,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreInvites', (err) =>
-            this.trigger('CallOnFetchMoreInvitesError')
+            this.triggerError('CallOnFetchMoreInvitesError', err)
         );
 
         this.gp.channels.on('fetchChannelInvites', (result) => {
@@ -400,7 +514,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchChannelInvites', (err) =>
-            this.trigger('CallOnFetchChannelInvitesError')
+            this.triggerError('CallOnFetchChannelInvitesError', err)
         );
 
         this.gp.channels.on('fetchMoreChannelInvites', (result) => {
@@ -414,7 +528,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreChannelInvites', (err) =>
-            this.trigger('CallOnFetchMoreChannelInvitesError')
+            this.triggerError('CallOnFetchMoreChannelInvitesError', err)
         );
 
         this.gp.channels.on('fetchSentInvites', (result) => {
@@ -428,7 +542,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchSentInvites', (err) =>
-            this.trigger('CallOnFetchSentInvitesError')
+            this.triggerError('CallOnFetchSentInvitesError', err)
         );
 
         this.gp.channels.on('fetchMoreSentInvites', (result) => {
@@ -442,14 +556,14 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreSentInvites', (err) =>
-            this.trigger('CallOnFetchMoreSentInvitesError')
+            this.triggerError('CallOnFetchMoreSentInvitesError', err)
         );
 
         this.gp.channels.on('acceptJoinRequest', () =>
             this.trigger('CallOnAcceptJoinRequest')
         );
         this.gp.channels.on('error:acceptJoinRequest', (err) =>
-            this.trigger('CallOnAcceptJoinRequestError')
+            this.triggerError('CallOnAcceptJoinRequestError', err)
         );
 
         this.gp.channels.on('rejectJoinRequest', () =>
@@ -462,7 +576,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:rejectJoinRequest', (err) =>
-            this.trigger('CallOnRejectJoinRequestError')
+            this.triggerError('CallOnRejectJoinRequestError', err)
         );
 
         this.gp.channels.on('fetchJoinRequests', (result) => {
@@ -476,7 +590,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchJoinRequests', (err) =>
-            this.trigger('CallOnFetchJoinRequestsError')
+            this.triggerError('CallOnFetchJoinRequestsError', err)
         );
 
         this.gp.channels.on('fetchMoreJoinRequests', (result) => {
@@ -490,7 +604,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreJoinRequests', (err) =>
-            this.trigger('CallOnFetchMoreJoinRequestsError')
+            this.triggerError('CallOnFetchMoreJoinRequestsError', err)
         );
 
         this.gp.channels.on('fetchSentJoinRequests', (result) => {
@@ -504,7 +618,7 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchSentJoinRequests', (err) =>
-            this.trigger('CallOnFetchSentJoinRequestsError')
+            this.triggerError('CallOnFetchSentJoinRequestsError', err)
         );
 
         this.gp.channels.on('fetchMoreSentJoinRequests', (result) => {
@@ -518,14 +632,14 @@ export default class GamePushUnity {
             );
         });
         this.gp.channels.on('error:fetchMoreSentJoinRequests', (err) =>
-            this.trigger('CallOnFetchMoreSentJoinRequestsError')
+            this.triggerError('CallOnFetchMoreSentJoinRequestsError', err)
         );
 
         this.gp.channels.on('sendMessage', (message) => {
             this.trigger('CallOnSendMessage', JSON.stringify(message));
         });
         this.gp.channels.on('error:sendMessage', (err) =>
-            this.trigger('CallOnSendMessageError')
+            this.triggerError('CallOnSendMessageError', err)
         );
 
         this.gp.channels.on('event:message', (message) => {
@@ -539,7 +653,7 @@ export default class GamePushUnity {
             this.trigger('CallOnEditMessageEvent', JSON.stringify(message));
         });
         this.gp.channels.on('error:editMessage', (err) =>
-            this.trigger('CallOnEditMessageError')
+            this.triggerError('CallOnEditMessageError', err)
         );
 
         this.gp.channels.on('deleteMessage', () =>
@@ -549,7 +663,7 @@ export default class GamePushUnity {
             this.trigger('CallOnDeleteMessageEvent', JSON.stringify(message));
         });
         this.gp.channels.on('error:deleteMessage', (err) =>
-            this.trigger('CallOnDeleteMessageError')
+            this.triggerError('CallOnDeleteMessageError', err)
         );
 
         //triggers
@@ -682,13 +796,54 @@ export default class GamePushUnity {
     }
 
     trigger(eventName, value) {
-        if (window.unityInstance !== null) {
-            window.unityInstance.SendMessage(
-                'GamePushSDK',
-                eventName,
-                this.toUnity(value)
-            );
+        if (this.trySendToUnity(eventName, value)) {
+            return;
         }
+
+        this.pendingMessages.push({ eventName, value });
+    }
+
+    triggerJson(eventName, value) {
+        this.trigger(eventName, JSON.stringify(value));
+    }
+
+    triggerError(eventName, error) {
+        this.triggerJson(eventName, serializeError(error));
+    }
+
+    flushPendingMessages() {
+        if (!this.pendingMessages.length) {
+            return;
+        }
+
+        if (!window.unityInstance || typeof window.unityInstance.SendMessage !== 'function') {
+            return;
+        }
+
+        const queue = this.pendingMessages.splice(0);
+
+        queue.forEach(({ eventName, value }) => {
+            this.trySendToUnity(eventName, value);
+        });
+
+        if (this.pendingMessagesFlushInterval) {
+            window.clearInterval(this.pendingMessagesFlushInterval);
+            this.pendingMessagesFlushInterval = null;
+        }
+    }
+
+    trySendToUnity(eventName, value) {
+        if (!window.unityInstance || typeof window.unityInstance.SendMessage !== 'function') {
+            return false;
+        }
+
+        window.unityInstance.SendMessage(
+            'GamePushSDK',
+            eventName,
+            this.toUnity(value)
+        );
+
+        return true;
     }
 
     getQuery(idOrTag) {
@@ -714,10 +869,14 @@ export default class GamePushUnity {
         return value;
     }
 
+    toUnityString(value) {
+        const result = this.toUnity(value);
+        return typeof result === 'string' ? result : String(result);
+    }
+
     mapItemsWithChannel(items = {}) {
         return {
-            ...items,
-            ch_private: items.private
+            ...items
         };
     }
 
@@ -1802,7 +1961,7 @@ export default class GamePushUnity {
         if (channel_ID == -10) {
             this.gp.channels.openChat();
         } else {
-            this.gp.channels.openChat({ channel_ID });
+            this.gp.channels.openChat({ id: channel_ID });
         }
     }
 
@@ -1816,7 +1975,7 @@ export default class GamePushUnity {
             });
         } else {
             this.gp.channels.openChat({
-                channel_ID,
+                id: channel_ID,
                 tags: tags
                     .split(',')
                     .map((o) => o.trim())
@@ -1827,7 +1986,7 @@ export default class GamePushUnity {
 
     Channels_Open_Personal_Chat(player_ID, tags) {
         this.gp.channels.openPersonalChat({
-            player_ID,
+            playerId: player_ID,
             tags: tags
                 .split(',')
                 .map((o) => o.trim())
@@ -1837,12 +1996,39 @@ export default class GamePushUnity {
 
     Channels_Open_Feed(player_ID, tags) {
         this.gp.channels.openFeed({
-            player_ID,
+            playerId: player_ID,
             tags: tags
                 .split(',')
                 .map((o) => o.trim())
                 .filter((f) => f)
         });
+    }
+
+    Channels_OpenChatOverlay(channel, messages, tags) {
+        this.gp.channels.openChatOverlay(
+            JSON.parse(channel),
+            JSON.parse(messages),
+            tags
+                .split(',')
+                .map((o) => o.trim())
+                .filter((f) => f)
+        );
+    }
+
+    Channels_ProcessTags(tags, playerId) {
+        return this.toUnityString(
+            this.gp.channels.processTags(
+                tags
+                    .split(',')
+                    .map((o) => o.trim())
+                    .filter((f) => f),
+                playerId
+            )
+        );
+    }
+
+    Channels_CanBeOnline() {
+        return this.toUnity(this.gp.channels.canBeOnline);
     }
 
     Channels_IsMainChatEnabled() {
@@ -1917,12 +2103,20 @@ export default class GamePushUnity {
         this.gp.channels.fetchMoreChannelInvites({ channelId, limit });
     }
 
-    Channels_FetchSentInvites(channelId, limit, offset) {
-        this.gp.channels.fetchSentInvites({ channelId, limit, offset });
+    Channels_FetchSentInvites(limit, offset) {
+        this.gp.channels.fetchSentInvites({ limit, offset });
     }
 
-    Channels_FetchMoreSentInvites(channelId, limit) {
-        this.gp.channels.fetchMoreSentInvites({ channelId, limit });
+    Channels_FetchMoreSentInvites(limit) {
+        this.gp.channels.fetchMoreSentInvites({ limit });
+    }
+
+    Channels_FetchPersonalChannel(playerId) {
+        this.gp.channels.fetchPersonalChannel({ playerId });
+    }
+
+    Channels_FetchFeedChannel(playerId) {
+        this.gp.channels.fetchFeedChannel({ playerId });
     }
 
     Channels_AcceptJoinRequest(channelId, playerId) {
@@ -2013,7 +2207,7 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchMessagesError');
+                this.triggerError('CallOnFetchMessagesError', err);
             });
     }
 
@@ -2040,14 +2234,15 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchPersonalMessagesError');
+                this.triggerError('CallOnFetchPersonalMessagesError', err);
             });
     }
 
-    Channels_FetchFeedMessages(playerId, tags, limit, offset) {
+    Channels_FetchFeedMessages(playerId, authorId, tags, limit, offset) {
         this.gp.channels
             .fetchFeedMessages({
                 playerId,
+                authorId,
                 tags: tags
                     .split(',')
                     .map((o) => o.trim())
@@ -2067,7 +2262,7 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchFeedMessagesError');
+                this.triggerError('CallOnFetchFeedMessagesError', err);
             });
     }
 
@@ -2093,7 +2288,7 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchMoreMessagesError');
+                this.triggerError('CallOnFetchMoreMessagesError', err);
             });
     }
 
@@ -2119,14 +2314,15 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchMorePersonalMessagesError');
+                this.triggerError('CallOnFetchMorePersonalMessagesError', err);
             });
     }
 
-    Channels_FetchMoreFeedMessages(playerId, tags, limit) {
+    Channels_FetchMoreFeedMessages(playerId, authorId, tags, limit) {
         this.gp.channels
             .fetchMoreFeedMessages({
                 playerId,
+                authorId,
                 tags: tags
                     .split(',')
                     .map((o) => o.trim())
@@ -2145,7 +2341,7 @@ export default class GamePushUnity {
             })
             .catch((err) => {
                 console.warn(err);
-                this.trigger('CallOnFetchMoreFeedMessagesError');
+                this.triggerError('CallOnFetchMoreFeedMessagesError', err);
             });
     }
 
@@ -2157,14 +2353,76 @@ export default class GamePushUnity {
         this.gp.channels.fetchChannel({ channelId });
     }
 
+    Channels_GetLocalChannelState(channelId) {
+        return this.toUnityString(
+            mapChannelLocalState(this.gp.channels.getLocalChannelState(channelId))
+        );
+    }
+
+    Channels_GetChannelField(channelId, key) {
+        return this.toUnityString(
+            mapChannelField(this.gp.channels.getChannelField(channelId, key))
+        );
+    }
+
+    Channels_GetChannelValue(channelId, key) {
+        const value = this.gp.channels.getChannelValue(channelId, key);
+
+        return this.toUnityString({
+            isUndefined: typeof value === 'undefined',
+            value: typeof value === 'undefined' ? null : value
+        });
+    }
+
+    Channels_SetValue(channelId, key, value) {
+        try {
+            ignorePromiseRejection(this.gp.channels.setValue({ channelId, key, value }));
+        } catch (error) {
+            this.triggerError('CallOnSetValueError', error);
+        }
+    }
+
+    Channels_SetValueJson(query) {
+        try {
+            ignorePromiseRejection(this.gp.channels.setValue(parseJsonOrRaw(query, {})));
+        } catch (error) {
+            this.triggerError('CallOnSetValueError', error);
+        }
+    }
+
+    Channels_AddValue(channelId, key, value) {
+        try {
+            ignorePromiseRejection(
+                this.gp.channels.addValue({ channelId, key, value: Number(value) })
+            );
+        } catch (error) {
+            this.triggerError('CallOnSetValueError', error);
+        }
+    }
+
+    Channels_AddValueJson(query) {
+        try {
+            ignorePromiseRejection(this.gp.channels.addValue(parseJsonOrRaw(query, {})));
+        } catch (error) {
+            this.triggerError('CallOnSetValueError', error);
+        }
+    }
+
     Channels_CreateChannel(filter) {
         const query = JSON.parse(filter);
-        this.gp.channels.createChannel({ ...query, private: query.ch_private });
+        this.gp.channels.createChannel({
+            ...query,
+            template: query.template == null ? query.template : String(query.template),
+            private: query.private
+        });
     }
 
     Channels_UpdateChannel(filter) {
         const query = JSON.parse(filter);
-        this.gp.channels.updateChannel({ ...query, private: query.ch_private });
+        this.gp.channels.updateChannel({
+            ...query,
+            private: query.private
+        });
     }
 
     Channels_FetchChannels(filter) {
@@ -2187,6 +2445,102 @@ export default class GamePushUnity {
         this.gp.channels.fetchMoreMembers(query);
     }
     // Channels
+
+    // Multiplayer
+    Multiplayer_Connect(query) {
+        this.gp.multiplayer.connect(parseJsonOrRaw(query, {}));
+    }
+
+    Multiplayer_Disconnect(query) {
+        this.gp.multiplayer.disconnect(parseJsonOrRaw(query, {}));
+    }
+
+    Multiplayer_SetMode(mode) {
+        this.gp.multiplayer.setMode(mode);
+    }
+
+    Multiplayer_DefinePlayerSchema(schema) {
+        this.gp.multiplayer.definePlayerSchema(parseJsonOrRaw(schema, {}));
+    }
+
+    Multiplayer_SetPlayerInitializer() {
+        this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
+            const requestId = ++this.multiplayerPlayerInitializerRequestId;
+
+            return await new Promise((resolve) => {
+                this.multiplayerPlayerInitializerResolvers.set(requestId, resolve);
+                this.trigger(
+                    'CallOnMultiplayerPlayerInitializerRequest',
+                    JSON.stringify({
+                        requestId,
+                        playerId,
+                        player
+                    })
+                );
+            });
+        });
+    }
+
+    Multiplayer_ClearPlayerInitializer() {
+        this.gp.multiplayer.setPlayerInitializer(null);
+    }
+
+    Multiplayer_ResolvePlayerInitializer(requestId, state) {
+        const resolve =
+            this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
+
+        if (!resolve) {
+            return;
+        }
+
+        this.multiplayerPlayerInitializerResolvers.delete(requestId);
+        resolve(parseJsonOrRaw(state, null));
+    }
+
+    Multiplayer_SetPlayerState(state) {
+        this.gp.multiplayer.setPlayerState(parseJsonOrRaw(state, {}));
+    }
+
+    Multiplayer_SendMessage(eventName, data, options) {
+        const parsedData = parseJsonOrRaw(data, null);
+        const parsedOptions = parseJsonOrRaw(options, undefined);
+
+        if (typeof parsedOptions === 'undefined') {
+            this.gp.multiplayer.sendMessage(eventName, parsedData);
+            return;
+        }
+
+        this.gp.multiplayer.sendMessage(eventName, parsedData, parsedOptions);
+    }
+
+    Multiplayer_TickRate() {
+        return this.gp.multiplayer.tickRate;
+    }
+
+    Multiplayer_IsConnected() {
+        return this.toUnity(this.gp.multiplayer.isConnected);
+    }
+
+    Multiplayer_IsHost() {
+        return this.toUnity(this.gp.multiplayer.isHost);
+    }
+
+    Multiplayer_MyState() {
+        return this.toUnityString(this.gp.multiplayer.myState);
+    }
+
+    Multiplayer_PlayersState() {
+        return this.toUnityString(mapToObject(this.gp.multiplayer.playersState));
+    }
+
+    Multiplayer_ConnectedPlayers() {
+        return this.toUnityString(this.gp.multiplayer.connectedPlayers);
+    }
+
+    Multiplayer_NetworkStats() {
+        return this.toUnityString(this.gp.multiplayer.networkStats);
+    }
+    // Multiplayer
 
     // Triggers
     Triggers_Claim(idOrTag) {
@@ -2689,8 +3043,45 @@ function formatCustomValue(value) {
 
 function mapChannel(channel = {}) {
     return {
-        ...channel,
-        ch_private: channel.private
+        ...channel
+    };
+}
+
+function mapChannelField(field = null) {
+    if (!field) {
+        return null;
+    }
+
+    return {
+        ...field,
+        defaultValue: field.default
+    };
+}
+
+function mapChannelLocalState(state = null) {
+    if (!state) {
+        return null;
+    }
+
+    const fields = Array.isArray(state.fields)
+        ? state.fields.map(mapChannelField)
+        : [];
+    const values = {};
+    const versions = {};
+
+    fields.forEach((field) => {
+        values[field.key] = state.get(field.key);
+        if (field.atomic) {
+            const versionValue = state.get(`${field.key}:ver`);
+            versions[field.key] = versionValue;
+            values[`${field.key}:ver`] = versionValue;
+        }
+    });
+
+    return {
+        fields,
+        state: values,
+        versions
     };
 }
 
@@ -2699,6 +3090,83 @@ function mapItemWithChannel(item = {}) {
         ...item,
         channel: mapChannel(item.channel)
     };
+}
+
+function mapToObject(value) {
+    if (value instanceof Map) {
+        const result = {};
+
+        value.forEach((item, key) => {
+            result[String(key)] = item;
+        });
+
+        return result;
+    }
+
+    return value;
+}
+
+function parseJsonOrRaw(value, fallback) {
+    if (
+        typeof value === 'undefined' ||
+        value === null ||
+        value === '' ||
+        value === 'undefined'
+    ) {
+        return fallback;
+    }
+
+    if (value === 'null') {
+        return null;
+    }
+
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return value;
+    }
+}
+
+function serializeError(error) {
+    if (!error) {
+        return null;
+    }
+
+    if (typeof error !== 'object') {
+        return {
+            message: String(error),
+            name: null,
+            code: null
+        };
+    }
+
+    const result = {
+        message: error.message || String(error),
+        name: error.name || null
+    };
+
+    Object.getOwnPropertyNames(error).forEach((key) => {
+        if (key in result) {
+            return;
+        }
+
+        result[key] = error[key];
+    });
+
+    if (typeof result.code === 'undefined') {
+        result.code = null;
+    }
+
+    return result;
+}
+
+function ignorePromiseRejection(result) {
+    if (!result || typeof result.catch !== 'function') {
+        return result;
+    }
+
+    result.catch(() => null);
+    return result;
 }
 
 window.executeFunctionByName = function (functionName, context /*, args*/) {

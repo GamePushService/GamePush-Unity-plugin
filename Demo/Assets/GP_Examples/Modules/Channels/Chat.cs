@@ -32,23 +32,26 @@ public class Chat : MonoBehaviour
 
     public void OpenChat()
     {
-        GP_Channels.OpenChat(OnOpen, OnClose, OnOpenError);
+        GP_Channels.openChat(new OpenChatQuery(), OnOpen, OnClose, OnOpenError);
     }
 
     public void OpenChatWithID()
     {
-        GP_Channels.OpenChat(int.Parse(_channelIdInput.text), OnOpen, OnClose, OnOpenError);
+        GP_Channels.openChat(new OpenChatQuery
+        {
+            id = int.Parse(_channelIdInput.text)
+        }, OnOpen, OnClose, OnOpenError);
     }
 
     private void MainChatID()
     {
-        int id = GP_Channels.MainChatId();
+        int id = GP_Channels.mainChatId;
         ConsoleUI.Instance.Log(id);
     }
 
     private void IsMainChatEnabled()
     {
-        bool isMainChatEnabled = GP_Channels.IsMainChatEnabled();
+        bool isMainChatEnabled = GP_Channels.isMainChatEnabled;
         ConsoleUI.Instance.Log(isMainChatEnabled);
     }
 

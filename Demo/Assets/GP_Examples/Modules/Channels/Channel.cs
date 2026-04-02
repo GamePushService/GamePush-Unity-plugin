@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using System.Collections.Generic;
 using TMPro;
 
@@ -26,6 +27,13 @@ namespace Examples.Channel.Channel
     {
         public bool isMuted;
         public string unmuteAt;
+    }
+
+    [System.Serializable]
+    public class FetchChannelsPayload
+    {
+        public FetchChannelData[] items;
+        public bool canLoadMore;
     }
 
     public class Channel : MonoBehaviour
@@ -60,25 +68,24 @@ namespace Examples.Channel.Channel
             _fetchMoreChannelsButton.onClick.AddListener(FetchMoreChannels);
 
 
-            GP_Channels.OnCreateChannel += OnCreateChannel;
-            GP_Channels.OnCreateChannelError += OnCreateChannelError;
+            GP_Channels.on("createChannel", (UnityAction<GP_Data>)OnCreateChannel);
+            GP_Channels.on("error:createChannel", (UnityAction<GP_Data>)OnCreateChannelError);
 
-            GP_Channels.OnUpdateChannel += OnUpdateChannel;
-            GP_Channels.OnUpdateChannelError += OnUpdateChannelError;
+            GP_Channels.on("updateChannel", (UnityAction<GP_Data>)OnUpdateChannel);
+            GP_Channels.on("error:updateChannel", (UnityAction<GP_Data>)OnUpdateChannelError);
 
-            GP_Channels.OnDeleteChannelSuccess += OnDeleteChannelSuccess;
-            GP_Channels.OnDeleteChannelEvent += OnDeleteChannelEvent;
-            GP_Channels.OnDeleteChannelError += OnDeleteChannelError;
+            GP_Channels.on("deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelSuccessEvent);
+            GP_Channels.on("event:deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelEvent);
+            GP_Channels.on("error:deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelError);
 
+            GP_Channels.on("fetchChannel", (UnityAction<GP_Data>)OnFetchChannel);
+            GP_Channels.on("error:fetchChannel", (UnityAction<GP_Data>)OnFetchChannelError);
 
-            GP_Channels.OnFetchChannel += OnFetchChannel;
-            GP_Channels.OnFetchChannelError += OnFetchChannelError;
+            GP_Channels.on("fetchChannels", (UnityAction<GP_Data>)OnFetchChannels);
+            GP_Channels.on("error:fetchChannels", (UnityAction<GP_Data>)OnFetchChannelsError);
 
-            GP_Channels.OnFetchChannels += OnFetchChannels;
-            GP_Channels.OnFetchChannelsError += OnFetchChannelsError;
-
-            GP_Channels.OnFetchMoreChannels += OnFetchMoreChannels;
-            GP_Channels.OnFetchMoreChannelsError += OnFetchMoreChannelsError;
+            GP_Channels.on("fetchMoreChannels", (UnityAction<GP_Data>)OnFetchMoreChannels);
+            GP_Channels.on("error:fetchMoreChannels", (UnityAction<GP_Data>)OnFetchMoreChannelsError);
         }
 
         private void OnDisable()
@@ -91,25 +98,24 @@ namespace Examples.Channel.Channel
             _fetchMoreChannelsButton.onClick.RemoveListener(FetchMoreChannels);
 
 
-            GP_Channels.OnCreateChannel -= OnCreateChannel;
-            GP_Channels.OnCreateChannelError -= OnCreateChannelError;
+            GP_Channels.off("createChannel", (UnityAction<GP_Data>)OnCreateChannel);
+            GP_Channels.off("error:createChannel", (UnityAction<GP_Data>)OnCreateChannelError);
 
-            GP_Channels.OnUpdateChannel -= OnUpdateChannel;
-            GP_Channels.OnUpdateChannelError -= OnUpdateChannelError;
+            GP_Channels.off("updateChannel", (UnityAction<GP_Data>)OnUpdateChannel);
+            GP_Channels.off("error:updateChannel", (UnityAction<GP_Data>)OnUpdateChannelError);
 
-            GP_Channels.OnDeleteChannelSuccess -= OnDeleteChannelSuccess;
-            GP_Channels.OnDeleteChannelEvent -= OnDeleteChannelEvent;
-            GP_Channels.OnDeleteChannelError -= OnDeleteChannelError;
+            GP_Channels.off("deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelSuccessEvent);
+            GP_Channels.off("event:deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelEvent);
+            GP_Channels.off("error:deleteChannel", (UnityAction<GP_Data>)OnDeleteChannelError);
 
+            GP_Channels.off("fetchChannel", (UnityAction<GP_Data>)OnFetchChannel);
+            GP_Channels.off("error:fetchChannel", (UnityAction<GP_Data>)OnFetchChannelError);
 
-            GP_Channels.OnFetchChannel -= OnFetchChannel;
-            GP_Channels.OnFetchChannelError -= OnFetchChannelError;
+            GP_Channels.off("fetchChannels", (UnityAction<GP_Data>)OnFetchChannels);
+            GP_Channels.off("error:fetchChannels", (UnityAction<GP_Data>)OnFetchChannelsError);
 
-            GP_Channels.OnFetchChannels -= OnFetchChannels;
-            GP_Channels.OnFetchChannelsError -= OnFetchChannelsError;
-
-            GP_Channels.OnFetchMoreChannels -= OnFetchMoreChannels;
-            GP_Channels.OnFetchMoreChannelsError -= OnFetchMoreChannelsError;
+            GP_Channels.off("fetchMoreChannels", (UnityAction<GP_Data>)OnFetchMoreChannels);
+            GP_Channels.off("error:fetchMoreChannels", (UnityAction<GP_Data>)OnFetchMoreChannelsError);
         }
 
 
@@ -120,7 +126,7 @@ namespace Examples.Channel.Channel
             filter.name = "CLAN_OF_DARKNESS";
             filter.visible = true;
             filter.tags = _inputTags.text.Split(",");
-            GP_Channels.CreateChannel(filter);
+            GP_Channels.createChannel(filter);
         }
         public void UpdateChannel()
         {
@@ -141,13 +147,13 @@ namespace Examples.Channel.Channel
             guestAcl.canMutePlayer = true;
 
             filter.guestAcl = guestAcl;
-            filter.ch_private = true;
+            filter.@private = true;
 
-            GP_Channels.UpdateChannel(filter);
+            GP_Channels.updateChannel(filter);
         }
-        public void Delete() => GP_Channels.DeleteChannel(int.Parse(_inputChannelIds.text));
+        public void Delete() => GP_Channels.deleteChannel(new ChannelQuery { channelId = int.Parse(_inputChannelIds.text) });
 
-        public void Fetch() => GP_Channels.FetchChannel(int.Parse(_inputChannelIds.text));
+        public void Fetch() => GP_Channels.fetchChannel(new ChannelQuery { channelId = int.Parse(_inputChannelIds.text) });
         public void FetchChannels()
         {
             var filter = new FetchChannelsFilter();
@@ -155,7 +161,7 @@ namespace Examples.Channel.Channel
             filter.limit = 10;
             filter.tags = _inputTags.text.Split(",");
 
-            GP_Channels.FetchChannels(filter);
+            GP_Channels.fetchChannels(filter);
         }
         public void FetchMoreChannels()
         {
@@ -164,14 +170,15 @@ namespace Examples.Channel.Channel
             filter.limit = 10;
             filter.tags = _inputTags.text.Split(",");
 
-            GP_Channels.FetchMoreChannels(filter);
+            GP_Channels.fetchMoreChannels(filter);
         }
         #endregion
 
 
 
-        private void OnCreateChannel(CreateChannelData data)
+        private void OnCreateChannel(GP_Data payload)
         {
+            CreateChannelData data = payload.Get<CreateChannelData>();
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: ID: " + data.id);
 
             for (int x = 0; x < data.tags.Length; x++)
@@ -189,7 +196,7 @@ namespace Examples.Channel.Channel
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: OWNER ID: " + data.ownerId);
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: NAME: " + data.name);
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: DESCRIPTION: " + data.description);
-            ConsoleUI.Instance.Log("ON CHANNEL CREATE: PRIVATE: " + data.ch_private);
+            ConsoleUI.Instance.Log("ON CHANNEL CREATE: PRIVATE: " + data.@private);
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: VISIBLE: " + data.visible);
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: PERMANENT: " + data.permanent);
             ConsoleUI.Instance.Log("ON CHANNEL CREATE: HAS PASSWORD: " + data.hasPassword);
@@ -208,9 +215,11 @@ namespace Examples.Channel.Channel
             ConsoleUI.Instance.Log(" ");
         }
         private void OnCreateChannelError() => ConsoleUI.Instance.Log("CREATE CHANNEL: ERROR");
+        private void OnCreateChannelError(GP_Data _) => OnCreateChannelError();
 
-        private void OnUpdateChannel(UpdateChannelData data)
+        private void OnUpdateChannel(GP_Data payload)
         {
+            UpdateChannelData data = payload.Get<UpdateChannelData>();
             ConsoleUI.Instance.Log("UPDATE CHANNEL: ID: " + data.id);
 
             for (int i = 0; i < data.tags.Length; i++)
@@ -227,7 +236,7 @@ namespace Examples.Channel.Channel
             ConsoleUI.Instance.Log("UPDATE CHANNEL: OWNER ID: " + data.ownerId);
             ConsoleUI.Instance.Log("UPDATE CHANNEL: NAME: " + data.name);
             ConsoleUI.Instance.Log("UPDATE CHANNEL: DESCRIPTION: " + data.description);
-            ConsoleUI.Instance.Log("UPDATE CHANNEL: PRIVATE: " + data.ch_private);
+            ConsoleUI.Instance.Log("UPDATE CHANNEL: PRIVATE: " + data.@private);
             ConsoleUI.Instance.Log("UPDATE CHANNEL: VISIBLE: " + data.visible);
             ConsoleUI.Instance.Log("UPDATE CHANNEL: PERMANENT: " + data.permanent);
             ConsoleUI.Instance.Log("UPDATE CHANNEL: HAS PASSWORD: " + data.hasPassword);
@@ -246,10 +255,12 @@ namespace Examples.Channel.Channel
             ConsoleUI.Instance.Log(" ");
         }
         private void OnUpdateChannelError() => ConsoleUI.Instance.Log("UPDATE CHANNEL: ERROR");
+        private void OnUpdateChannelError(GP_Data _) => OnUpdateChannelError();
 
 
-        private void OnFetchChannel(FetchChannelData data)
+        private void OnFetchChannel(GP_Data payload)
         {
+            FetchChannelData data = payload.Get<FetchChannelData>();
             SetUI();
 
             ConsoleUI.Instance.Log("FETCH CHANNEL: ID: " + data.id);
@@ -270,7 +281,7 @@ namespace Examples.Channel.Channel
             ConsoleUI.Instance.Log("FETCH CHANNEL: OWNER ID: " + data.ownerId);
             ConsoleUI.Instance.Log("FETCH CHANNEL: NAME: " + data.name);
             ConsoleUI.Instance.Log("FETCH CHANNEL: DESCRIPTION: " + data.description);
-            ConsoleUI.Instance.Log("FETCH CHANNEL: PRIVATE: " + data.ch_private);
+            ConsoleUI.Instance.Log("FETCH CHANNEL: PRIVATE: " + data.@private);
             ConsoleUI.Instance.Log("FETCH CHANNEL: VISIBLE: " + data.visible);
             ConsoleUI.Instance.Log("FETCH CHANNEL: PERMANENT: " + data.permanent);
             ConsoleUI.Instance.Log("FETCH CHANNEL: HAS PASSWORD: " + data.hasPassword);
@@ -299,10 +310,14 @@ namespace Examples.Channel.Channel
             }
         }
         private void OnFetchChannelError() => ConsoleUI.Instance.Log("FETCH CHANNEL: ERROR");
+        private void OnFetchChannelError(GP_Data _) => OnFetchChannelError();
 
 
-        private void OnFetchChannels(List<FetchChannelData> data, bool canLoadMore)
+        private void OnFetchChannels(GP_Data payload)
         {
+            FetchChannelsPayload paged = payload.Get<FetchChannelsPayload>();
+            List<FetchChannelData> data = paged.items == null ? new List<FetchChannelData>() : new List<FetchChannelData>(paged.items);
+            bool canLoadMore = paged.canLoadMore;
             ConsoleUI.Instance.Log("FETCH CHANNELS: CAN LOAD MORE: " + canLoadMore);
             ConsoleUI.Instance.Log(" ");
             for (int i = 0; i < data.Count; i++)
@@ -329,7 +344,7 @@ namespace Examples.Channel.Channel
                 ConsoleUI.Instance.Log("FETCH CHANNELS: TEMPLATE ID: " + data[i].templateId);
                 ConsoleUI.Instance.Log("FETCH CHANNELS: CAPACITY: " + data[i].capacity);
                 ConsoleUI.Instance.Log("FETCH CHANNELS: VISIBLE: " + data[i].visible);
-                ConsoleUI.Instance.Log("FETCH CHANNELS: PRIVATE: " + data[i].ch_private);
+                ConsoleUI.Instance.Log("FETCH CHANNELS: PRIVATE: " + data[i].@private);
                 ConsoleUI.Instance.Log("FETCH CHANNELS: PERMANENT: " + data[i].permanent);
                 ConsoleUI.Instance.Log("FETCH CHANNELS: HAS PASSWORD: " + data[i].hasPassword);
                 ConsoleUI.Instance.Log("FETCH CHANNELS: PASSWORD: " + data[i].password);
@@ -348,10 +363,14 @@ namespace Examples.Channel.Channel
             }
         }
         private void OnFetchChannelsError() => ConsoleUI.Instance.Log("FETCH CHANNELS: ERROR");
+        private void OnFetchChannelsError(GP_Data _) => OnFetchChannelsError();
 
 
-        private void OnFetchMoreChannels(List<FetchChannelData> data, bool canLoadMore)
+        private void OnFetchMoreChannels(GP_Data payload)
         {
+            FetchChannelsPayload paged = payload.Get<FetchChannelsPayload>();
+            List<FetchChannelData> data = paged.items == null ? new List<FetchChannelData>() : new List<FetchChannelData>(paged.items);
+            bool canLoadMore = paged.canLoadMore;
             ConsoleUI.Instance.Log("FETCH MORE CHANNELS: CAN LOAD MORE: " + canLoadMore);
             ConsoleUI.Instance.Log(" ");
             for (int i = 0; i < data.Count; i++)
@@ -377,7 +396,7 @@ namespace Examples.Channel.Channel
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: TEMPLATE ID: " + data[i].templateId);
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: CAPACITY: " + data[i].capacity);
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: VISIBLE: " + data[i].visible);
-                ConsoleUI.Instance.Log("FETCH MORE CHANNELS: PRIVATE: " + data[i].ch_private);
+                ConsoleUI.Instance.Log("FETCH MORE CHANNELS: PRIVATE: " + data[i].@private);
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: PERMANENT: " + data[i].permanent);
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: HAS PASSWORD: " + data[i].hasPassword);
                 ConsoleUI.Instance.Log("FETCH MORE CHANNELS: PASSWORD: " + data[i].password);
@@ -396,10 +415,13 @@ namespace Examples.Channel.Channel
             }
         }
         private void OnFetchMoreChannelsError() => ConsoleUI.Instance.Log("FETCH MORE CHANNELS: ERROR");
+        private void OnFetchMoreChannelsError(GP_Data _) => OnFetchMoreChannelsError();
 
 
         private void OnDeleteChannelSuccess() => ConsoleUI.Instance.Log("DELETE CHANNEL: SUCCESS");
-        private void OnDeleteChannelEvent(int channel_Id) => ConsoleUI.Instance.Log("DELETE CHANNEL EVENT: CHANNEL ID: " + channel_Id);
+        private void OnDeleteChannelSuccessEvent(GP_Data _) => OnDeleteChannelSuccess();
+        private void OnDeleteChannelEvent(GP_Data payload) => ConsoleUI.Instance.Log("DELETE CHANNEL EVENT: CHANNEL ID: " + payload.Get<FetchChannelData>().id);
         private void OnDeleteChannelError() => ConsoleUI.Instance.Log("DELETE CHANNEL: ERROR");
+        private void OnDeleteChannelError(GP_Data _) => OnDeleteChannelError();
     }
 }

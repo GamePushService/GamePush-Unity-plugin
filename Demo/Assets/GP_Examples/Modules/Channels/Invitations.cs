@@ -6,6 +6,7 @@ using Examples.Console;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Events;
 
 namespace Examples.Channel.Invitations
 {
@@ -46,6 +47,27 @@ namespace Examples.Channel.Invitations
         public int score;
     }
 
+    [System.Serializable]
+    public class FetchInvitesPayload
+    {
+        public FetchInvitesData[] items;
+        public bool canLoadMore;
+    }
+
+    [System.Serializable]
+    public class FetchChannelInvitesPayload
+    {
+        public FetchChannelInvitesData[] items;
+        public bool canLoadMore;
+    }
+
+    [System.Serializable]
+    public class FetchSentInvitesPayload
+    {
+        public FetchSentInvitesData[] items;
+        public bool canLoadMore;
+    }
+
     public class Invitations : MonoBehaviour
     {
         [SerializeField] private TMP_InputField _inputChannelIds;
@@ -79,36 +101,36 @@ namespace Examples.Channel.Invitations
             _fetchMoreSentInvitesButton.onClick.AddListener(FetchMoreSentInvites);
 
 
-            GP_Channels.OnSendInvite += OnSendInvite;
-            GP_Channels.OnSendInviteError += OnSendInviteError;
+            GP_Channels.on("sendInvite", (UnityAction<GP_Data>)OnSendInviteEvent);
+            GP_Channels.on("error:sendInvite", (UnityAction<GP_Data>)OnSendInviteError);
 
-            GP_Channels.OnCancelInviteError += OnCancelInviteError;
-            GP_Channels.OnCancelInviteEvent += OnCancelInviteEvent;
-            GP_Channels.OnCancelInviteSuccess += OnCancelInviteSuccess;
+            GP_Channels.on("error:cancelInvite", (UnityAction<GP_Data>)OnCancelInviteError);
+            GP_Channels.on("event:cancelInvite", (UnityAction<GP_Data>)OnCancelInviteEvent);
+            GP_Channels.on("cancelInvite", (UnityAction<GP_Data>)OnCancelInviteSuccessEvent);
 
-            GP_Channels.OnAcceptInvite += OnAcceptInvite;
-            GP_Channels.OnAcceptInviteError += OnAcceptInviteError;
+            GP_Channels.on("acceptInvite", (UnityAction<GP_Data>)OnAcceptInviteEvent);
+            GP_Channels.on("error:acceptInvite", (UnityAction<GP_Data>)OnAcceptInviteError);
 
-            GP_Channels.OnRejectInviteError += OnRejectInviteError;
-            GP_Channels.OnRejectInviteEvent += OnRejectInviteEvent;
-            GP_Channels.OnRejectInviteSuccess += OnRejectInviteSuccess;
+            GP_Channels.on("error:rejectInvite", (UnityAction<GP_Data>)OnRejectInviteError);
+            GP_Channels.on("event:rejectInvite", (UnityAction<GP_Data>)OnRejectInviteEvent);
+            GP_Channels.on("rejectInvite", (UnityAction<GP_Data>)OnRejectInviteSuccessEvent);
 
-            GP_Channels.OnFetchInvites += OnFetchInvites;
-            GP_Channels.OnFetchInvitesError += OnFetchInvitesError;
+            GP_Channels.on("fetchInvites", (UnityAction<GP_Data>)OnFetchInvites);
+            GP_Channels.on("error:fetchInvites", (UnityAction<GP_Data>)OnFetchInvitesError);
 
-            GP_Channels.OnFetchMoreInvites += OnFetchMoreInvites;
-            GP_Channels.OnFetchMoreInvitesError += OnFetchMoreInvitesError;
+            GP_Channels.on("fetchMoreInvites", (UnityAction<GP_Data>)OnFetchMoreInvites);
+            GP_Channels.on("error:fetchMoreInvites", (UnityAction<GP_Data>)OnFetchMoreInvitesError);
 
-            GP_Channels.OnFetchChannelInvites += OnFetchChannelInvites;
-            GP_Channels.OnFetchChannelInvitesError += OnFetchChannelInvitesError;
+            GP_Channels.on("fetchChannelInvites", (UnityAction<GP_Data>)OnFetchChannelInvites);
+            GP_Channels.on("error:fetchChannelInvites", (UnityAction<GP_Data>)OnFetchChannelInvitesError);
 
-            GP_Channels.OnFetchMoreChannelInvites += OnFetchMoreChannelInvites;
-            GP_Channels.OnFetchMoreChannelInvitesError += OnFetchMoreChannelInvitesError;
+            GP_Channels.on("fetchMoreChannelInvites", (UnityAction<GP_Data>)OnFetchMoreChannelInvites);
+            GP_Channels.on("error:fetchMoreChannelInvites", (UnityAction<GP_Data>)OnFetchMoreChannelInvitesError);
 
-            GP_Channels.OnFetchSentInvites += OnFetchSentInvites;
-            GP_Channels.OnFetchSentInvitesError += OnFetchSentInvitesError;
-            GP_Channels.OnFetchMoreSentInvites += OnFetchMoreSentInvites;
-            GP_Channels.OnFetchMoreSentInvitesError += OnFetchMoreSentInvitesError;
+            GP_Channels.on("fetchSentInvites", (UnityAction<GP_Data>)OnFetchSentInvites);
+            GP_Channels.on("error:fetchSentInvites", (UnityAction<GP_Data>)OnFetchSentInvitesError);
+            GP_Channels.on("fetchMoreSentInvites", (UnityAction<GP_Data>)OnFetchMoreSentInvites);
+            GP_Channels.on("error:fetchMoreSentInvites", (UnityAction<GP_Data>)OnFetchMoreSentInvitesError);
         }
 
         private void OnDisable()
@@ -125,64 +147,112 @@ namespace Examples.Channel.Invitations
             _fetchMoreSentInvitesButton.onClick.RemoveListener(FetchMoreSentInvites);
 
 
-            GP_Channels.OnSendInvite -= OnSendInvite;
-            GP_Channels.OnSendInviteError -= OnSendInviteError;
+            GP_Channels.off("sendInvite", (UnityAction<GP_Data>)OnSendInviteEvent);
+            GP_Channels.off("error:sendInvite", (UnityAction<GP_Data>)OnSendInviteError);
 
-            GP_Channels.OnCancelInviteError -= OnCancelInviteError;
-            GP_Channels.OnCancelInviteEvent -= OnCancelInviteEvent;
-            GP_Channels.OnCancelInviteSuccess -= OnCancelInviteSuccess;
+            GP_Channels.off("error:cancelInvite", (UnityAction<GP_Data>)OnCancelInviteError);
+            GP_Channels.off("event:cancelInvite", (UnityAction<GP_Data>)OnCancelInviteEvent);
+            GP_Channels.off("cancelInvite", (UnityAction<GP_Data>)OnCancelInviteSuccessEvent);
 
-            GP_Channels.OnAcceptInvite -= OnAcceptInvite;
-            GP_Channels.OnAcceptInviteError -= OnAcceptInviteError;
+            GP_Channels.off("acceptInvite", (UnityAction<GP_Data>)OnAcceptInviteEvent);
+            GP_Channels.off("error:acceptInvite", (UnityAction<GP_Data>)OnAcceptInviteError);
 
-            GP_Channels.OnRejectInviteError -= OnRejectInviteError;
-            GP_Channels.OnRejectInviteEvent -= OnRejectInviteEvent;
-            GP_Channels.OnRejectInviteSuccess -= OnRejectInviteSuccess;
+            GP_Channels.off("error:rejectInvite", (UnityAction<GP_Data>)OnRejectInviteError);
+            GP_Channels.off("event:rejectInvite", (UnityAction<GP_Data>)OnRejectInviteEvent);
+            GP_Channels.off("rejectInvite", (UnityAction<GP_Data>)OnRejectInviteSuccessEvent);
 
-            GP_Channels.OnFetchInvites -= OnFetchInvites;
-            GP_Channels.OnFetchInvitesError -= OnFetchInvitesError;
+            GP_Channels.off("fetchInvites", (UnityAction<GP_Data>)OnFetchInvites);
+            GP_Channels.off("error:fetchInvites", (UnityAction<GP_Data>)OnFetchInvitesError);
 
-            GP_Channels.OnFetchMoreInvites -= OnFetchMoreInvites;
-            GP_Channels.OnFetchMoreInvitesError -= OnFetchMoreInvitesError;
+            GP_Channels.off("fetchMoreInvites", (UnityAction<GP_Data>)OnFetchMoreInvites);
+            GP_Channels.off("error:fetchMoreInvites", (UnityAction<GP_Data>)OnFetchMoreInvitesError);
 
-            GP_Channels.OnFetchChannelInvites -= OnFetchChannelInvites;
-            GP_Channels.OnFetchChannelInvitesError -= OnFetchChannelInvitesError;
+            GP_Channels.off("fetchChannelInvites", (UnityAction<GP_Data>)OnFetchChannelInvites);
+            GP_Channels.off("error:fetchChannelInvites", (UnityAction<GP_Data>)OnFetchChannelInvitesError);
 
-            GP_Channels.OnFetchMoreChannelInvites -= OnFetchMoreChannelInvites;
-            GP_Channels.OnFetchMoreChannelInvitesError -= OnFetchMoreChannelInvitesError;
+            GP_Channels.off("fetchMoreChannelInvites", (UnityAction<GP_Data>)OnFetchMoreChannelInvites);
+            GP_Channels.off("error:fetchMoreChannelInvites", (UnityAction<GP_Data>)OnFetchMoreChannelInvitesError);
 
-            GP_Channels.OnFetchSentInvites -= OnFetchSentInvites;
-            GP_Channels.OnFetchSentInvitesError -= OnFetchSentInvitesError;
-            GP_Channels.OnFetchMoreSentInvites -= OnFetchMoreSentInvites;
-            GP_Channels.OnFetchMoreSentInvitesError -= OnFetchMoreSentInvitesError;
+            GP_Channels.off("fetchSentInvites", (UnityAction<GP_Data>)OnFetchSentInvites);
+            GP_Channels.off("error:fetchSentInvites", (UnityAction<GP_Data>)OnFetchSentInvitesError);
+            GP_Channels.off("fetchMoreSentInvites", (UnityAction<GP_Data>)OnFetchMoreSentInvites);
+            GP_Channels.off("error:fetchMoreSentInvites", (UnityAction<GP_Data>)OnFetchMoreSentInvitesError);
         }
 
 
 
-        public void SendInvite() => GP_Channels.SendInvite(int.Parse(_inputChannelIds.text), int.Parse(_inputPlayerIds.text));
-        public void CancelInvite() => GP_Channels.CancelInvite(int.Parse(_inputChannelIds.text), int.Parse(_inputPlayerIds.text));
-        public void AcceptInvite() => GP_Channels.AcceptInvite(int.Parse(_inputChannelIds.text));
-        public void RejectInvite() => GP_Channels.RejectInvite(int.Parse(_inputChannelIds.text));
+        public void SendInvite() => GP_Channels.sendInvite(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            playerId = int.Parse(_inputPlayerIds.text)
+        });
 
-        public void FetchInvites() => GP_Channels.FetchInvites(20, 0);
-        public void FetchMoreInvites() => GP_Channels.FetchMoreInvites(20);
+        public void CancelInvite() => GP_Channels.cancelInvite(new ChannelPlayerQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            playerId = int.Parse(_inputPlayerIds.text)
+        });
 
-        public void FetchChannelInvites() => GP_Channels.FetchChannelInvites(int.Parse(_inputChannelIds.text), 20);
-        public void FetchChannelMoreInvites() => GP_Channels.FetchMoreChannelInvites(int.Parse(_inputChannelIds.text), 20);
+        public void AcceptInvite() => GP_Channels.acceptInvite(new ChannelQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text)
+        });
 
-        public void FetchSentInvites() => GP_Channels.FetchSentInvites(int.Parse(_inputChannelIds.text), 10, 0);
-        public void FetchMoreSentInvites() => GP_Channels.FetchMoreSentInvites(int.Parse(_inputChannelIds.text), 10);
+        public void RejectInvite() => GP_Channels.rejectInvite(new ChannelQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text)
+        });
+
+        public void FetchInvites() => GP_Channels.fetchInvites(new PagingQuery
+        {
+            limit = 20,
+            offset = 0
+        });
+
+        public void FetchMoreInvites() => GP_Channels.fetchMoreInvites(new LimitQuery
+        {
+            limit = 20
+        });
+
+        public void FetchChannelInvites() => GP_Channels.fetchChannelInvites(new ChannelPagingQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            limit = 20,
+            offset = 0
+        });
+
+        public void FetchChannelMoreInvites() => GP_Channels.fetchMoreChannelInvites(new ChannelLimitQuery
+        {
+            channelId = int.Parse(_inputChannelIds.text),
+            limit = 20
+        });
+
+        public void FetchSentInvites() => GP_Channels.fetchSentInvites(new PagingQuery
+        {
+            limit = 10,
+            offset = 0
+        });
+
+        public void FetchMoreSentInvites() => GP_Channels.fetchMoreSentInvites(new LimitQuery
+        {
+            limit = 10
+        });
 
 
 
         private void OnSendInvite() => ConsoleUI.Instance.Log("ON SEND INVITE");
+        private void OnSendInviteEvent(GP_Data _) => OnSendInvite();
         private void OnSendInviteError() => ConsoleUI.Instance.Log("SEND INVITE: ERROR");
+        private void OnSendInviteError(GP_Data _) => OnSendInviteError();
 
 
         private void OnCancelInviteSuccess() => ConsoleUI.Instance.Log("CANCEL INVITE: SUCCESS");
+        private void OnCancelInviteSuccessEvent(GP_Data _) => OnCancelInviteSuccess();
         private void OnCancelInviteError() => ConsoleUI.Instance.Log("CANCEL INVITE: ERROR");
-        private void OnCancelInviteEvent(CancelInviteData data)
+        private void OnCancelInviteError(GP_Data _) => OnCancelInviteError();
+        private void OnCancelInviteEvent(GP_Data payload)
         {
+            CancelInviteData data = payload.Get<CancelInviteData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("CANCEL INVITE EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("CANCEL INVITE EVENT: PLAYER FROM: ID: " + data.playerFromId);
@@ -192,13 +262,18 @@ namespace Examples.Channel.Invitations
 
 
         private void OnAcceptInvite() => ConsoleUI.Instance.Log("ON ACCEPT INVITE");
+        private void OnAcceptInviteEvent(GP_Data _) => OnAcceptInvite();
         private void OnAcceptInviteError() => ConsoleUI.Instance.Log("ACCEPT INVITE: ERROR");
+        private void OnAcceptInviteError(GP_Data _) => OnAcceptInviteError();
 
 
         private void OnRejectInviteSuccess() => ConsoleUI.Instance.Log("REJECT INVITE: SUCCESS");
+        private void OnRejectInviteSuccessEvent(GP_Data _) => OnRejectInviteSuccess();
         private void OnRejectInviteError() => ConsoleUI.Instance.Log("REJECT INVITE: ERROR");
-        private void OnRejectInviteEvent(RejectInviteData data)
+        private void OnRejectInviteError(GP_Data _) => OnRejectInviteError();
+        private void OnRejectInviteEvent(GP_Data payload)
         {
+            RejectInviteData data = payload.Get<RejectInviteData>();
             ConsoleUI.Instance.Log(" ");
             ConsoleUI.Instance.Log("REJECT INVITE EVENT: CHANNEL ID: " + data.channelId);
             ConsoleUI.Instance.Log("REJECT INVITE EVENT: PLAYER FROM: ID: " + data.playerFromId);
@@ -208,14 +283,16 @@ namespace Examples.Channel.Invitations
 
 
         private void OnFetchInvitesError() => ConsoleUI.Instance.Log("FETCH INVITES: ERROR");
-        private void OnFetchInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchInvitesError(GP_Data _) => OnFetchInvitesError();
+        private void OnFetchInvites(GP_Data payload)
         {
-            var fetchInvitesData = data.GetList<FetchInvitesData>();
+            FetchInvitesPayload data = payload.Get<FetchInvitesPayload>();
+            FetchInvitesData[] fetchInvitesData = data.items ?? new FetchInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
 
-            for (int i = 0; i < fetchInvitesData.Count; i++)
+            for (int i = 0; i < fetchInvitesData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
 
@@ -237,7 +314,7 @@ namespace Examples.Channel.Invitations
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: OWNER ID: " + fetchInvitesData[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: NAME: " + fetchInvitesData[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: DESCRIPTION: " + fetchInvitesData[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: PRIVATE: " + fetchInvitesData[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: PRIVATE: " + fetchInvitesData[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: VISIBLE: " + fetchInvitesData[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: PERMANENT: " + fetchInvitesData[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH INVITES: CHANNEL: HAS PASSWORD: " + fetchInvitesData[i].channel.hasPassword);
@@ -270,15 +347,16 @@ namespace Examples.Channel.Invitations
         }
 
         private void OnFetchMoreInvitesError() => ConsoleUI.Instance.Log("FETCH MORE INVITES: ERROR");
-
-        private void OnFetchMoreInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreInvitesError(GP_Data _) => OnFetchMoreInvitesError();
+        private void OnFetchMoreInvites(GP_Data payload)
         {
-            var fetchInvitesData = data.GetList<FetchInvitesData>();
+            FetchInvitesPayload data = payload.Get<FetchInvitesPayload>();
+            FetchInvitesData[] fetchInvitesData = data.items ?? new FetchInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH MORE INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
 
-            for (int i = 0; i < fetchInvitesData.Count; i++)
+            for (int i = 0; i < fetchInvitesData.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
 
@@ -300,7 +378,7 @@ namespace Examples.Channel.Invitations
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: OWNER ID: " + fetchInvitesData[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: NAME: " + fetchInvitesData[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: DESCRIPTION: " + fetchInvitesData[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: PRIVATE: " + fetchInvitesData[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: PRIVATE: " + fetchInvitesData[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: VISIBLE: " + fetchInvitesData[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: PERMANENT: " + fetchInvitesData[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH MORE INVITES: CHANNEL: HAS PASSWORD: " + fetchInvitesData[i].channel.hasPassword);
@@ -333,13 +411,15 @@ namespace Examples.Channel.Invitations
 
 
         private void OnFetchChannelInvitesError() => ConsoleUI.Instance.Log("FETCH CHANNEL INVITES: ERROR");
-        private void OnFetchChannelInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchChannelInvitesError(GP_Data _) => OnFetchChannelInvitesError();
+        private void OnFetchChannelInvites(GP_Data payload)
         {
-            var fetchChannelInvites = data.GetList<FetchChannelInvitesData>();
+            FetchChannelInvitesPayload data = payload.Get<FetchChannelInvitesPayload>();
+            FetchChannelInvitesData[] fetchChannelInvites = data.items ?? new FetchChannelInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH CHANNEL INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH CHANNEL INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchChannelInvites.Count; i++)
+            for (int i = 0; i < fetchChannelInvites.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH CHANNEL INVITES: DATE: " + fetchChannelInvites[i].date);
@@ -364,13 +444,15 @@ namespace Examples.Channel.Invitations
         }
 
         private void OnFetchMoreChannelInvitesError() => ConsoleUI.Instance.Log("FETCH MORE CHANNEL INVITES: ERROR");
-        private void OnFetchMoreChannelInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreChannelInvitesError(GP_Data _) => OnFetchMoreChannelInvitesError();
+        private void OnFetchMoreChannelInvites(GP_Data payload)
         {
-            var fetchChannelInvites = data.GetList<FetchChannelInvitesData>();
+            FetchChannelInvitesPayload data = payload.Get<FetchChannelInvitesPayload>();
+            FetchChannelInvitesData[] fetchChannelInvites = data.items ?? new FetchChannelInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH MORE CHANNEL INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE CHANNEL INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchChannelInvites.Count; i++)
+            for (int i = 0; i < fetchChannelInvites.Length; i++)
             {
                 ConsoleUI.Instance.Log(" ");
                 ConsoleUI.Instance.Log("FETCH MORE CHANNEL INVITES: DATE: " + fetchChannelInvites[i].date);
@@ -396,13 +478,15 @@ namespace Examples.Channel.Invitations
 
 
         private void OnFetchSentInvitesError() => ConsoleUI.Instance.Log("FETCH SENT INVITES: ERROR");
-        private void OnFetchSentInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchSentInvitesError(GP_Data _) => OnFetchSentInvitesError();
+        private void OnFetchSentInvites(GP_Data payload)
         {
-            var fetchSentInvites = data.GetList<FetchSentInvitesData>();
+            FetchSentInvitesPayload data = payload.Get<FetchSentInvitesPayload>();
+            FetchSentInvitesData[] fetchSentInvites = data.items ?? new FetchSentInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH SENT INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH SENT INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchSentInvites.Count; i++)
+            for (int i = 0; i < fetchSentInvites.Length; i++)
             {
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: DATE: " + fetchSentInvites[i].date);
 
@@ -426,7 +510,7 @@ namespace Examples.Channel.Invitations
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: OWNER ID: " + fetchSentInvites[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: NAME: " + fetchSentInvites[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: DESCRIPTION: " + fetchSentInvites[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: PRIVATE: " + fetchSentInvites[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: PRIVATE: " + fetchSentInvites[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: VISIBLE: " + fetchSentInvites[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: PERMANENT: " + fetchSentInvites[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH SENT INVITES: CHANNEL: HAS PASSWORD: " + fetchSentInvites[i].channel.hasPassword);
@@ -456,13 +540,15 @@ namespace Examples.Channel.Invitations
         }
 
         private void OnFetchMoreSentInvitesError() => ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: ERROR");
-        private void OnFetchMoreSentInvites(GP_Data data, bool canLoadMore)
+        private void OnFetchMoreSentInvitesError(GP_Data _) => OnFetchMoreSentInvitesError();
+        private void OnFetchMoreSentInvites(GP_Data payload)
         {
-            var fetchSentInvites = data.GetList<FetchSentInvitesData>();
+            FetchSentInvitesPayload data = payload.Get<FetchSentInvitesPayload>();
+            FetchSentInvitesData[] fetchSentInvites = data.items ?? new FetchSentInvitesData[0];
 
-            ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CAN LOAD MORE: " + canLoadMore);
+            ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CAN LOAD MORE: " + data.canLoadMore);
 
-            for (int i = 0; i < fetchSentInvites.Count; i++)
+            for (int i = 0; i < fetchSentInvites.Length; i++)
             {
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: DATE: " + fetchSentInvites[i].date);
 
@@ -486,7 +572,7 @@ namespace Examples.Channel.Invitations
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: OWNER ID: " + fetchSentInvites[i].channel.ownerId);
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: NAME: " + fetchSentInvites[i].channel.name);
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: DESCRIPTION: " + fetchSentInvites[i].channel.description);
-                ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: PRIVATE: " + fetchSentInvites[i].channel.ch_private);
+                ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: PRIVATE: " + fetchSentInvites[i].channel.@private);
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: VISIBLE: " + fetchSentInvites[i].channel.visible);
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: PERMANENT: " + fetchSentInvites[i].channel.permanent);
                 ConsoleUI.Instance.Log("FETCH MORE SENT INVITES: CHANNEL: HAS PASSWORD: " + fetchSentInvites[i].channel.hasPassword);
