@@ -20,9 +20,9 @@
 
 Базовые артефакты для сверки:
 
-- [DoD summary](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/dod_status_summary.md)
-- [Channels checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
-- [Multiplayer checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+- [DoD summary](output/dod_status_summary.md)
+- [Channels checklist](output/channels_parity_checklist.md)
+- [Multiplayer checklist](output/multiplayer_parity_checklist.md)
 
 ## Требования
 
@@ -77,14 +77,14 @@ sandbox.setProject(4, 'xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT')
 Если вы не меняли JS bridge и просто хотите проверить текущее состояние репозитория:
 
 1. Откройте Unity project из папки:
-   - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo`
+   - `<repo-root>/Demo`
 2. Дождитесь импортов.
 3. В Unity запустите:
    - `GamePush -> Build -> Parity WebGL`
 4. После сборки поднимите локальный сервер:
 
 ```bash
-cd /Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import
+cd <repo-root>
 npx http-server Demo/Build/WebGLParity -p 8123 --brotli -c-1
 ```
 
@@ -102,7 +102,7 @@ http://localhost:8123/?projectId=4&publicToken=xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT
 Перед Unity build пересоберите bundle:
 
 ```bash
-cd /Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/NodeJs
+cd <repo-root>/NodeJs
 npm install
 npm run build
 ```
@@ -114,26 +114,31 @@ npm run build
 Если удобнее собирать через terminal:
 
 ```bash
-"/Applications/Unity/Hub/Editor/6000.0.24f1/Unity.app/Contents/MacOS/Unity" \
+"<unity-editor-path>/Unity" \
   -batchmode \
   -quit \
-  -projectPath "/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo" \
+  -projectPath "<repo-root>/Demo" \
   -executeMethod GamePush.BuildTools.GP_ParityBuild.CI_BuildParityWebGL \
   -logFile -
 ```
 
-Если у вас другой patch/minor релиз Unity `6000.x`, просто замените путь к binary.
+Где:
+
+- `<repo-root>`: корень этого репозитория
+- `<unity-editor-path>`: папка `.../Unity.app/Contents/MacOS`
+
+Если у вас другой patch/minor релиз Unity `6000.x`, просто замените путь к editor binary.
 
 ## Где что лежит
 
 - Unity project:
-  - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo`
+  - `Demo`
 - parity build output:
-  - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Build/WebGLParity`
+  - `Demo/Build/WebGLParity`
 - parity bridge:
-  - [/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs)
+  - `Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs`
 - WebGL build script:
-  - [/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs)
+  - `Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs`
 
 ## Режимы проверки
 
@@ -175,7 +180,7 @@ npm run build
 
 Подробный статус уже зафиксирован в:
 
-- [channels_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
+- [channels_parity_checklist.md](output/channels_parity_checklist.md)
 
 ## Parity Bridge Mode: подготовка console helper'ов
 
@@ -445,8 +450,8 @@ paritySend(
 
 Если поведение отличается, результат нужно сверять с готовыми чеклистами:
 
-- [channels_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
-- [multiplayer_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+- [channels_parity_checklist.md](output/channels_parity_checklist.md)
+- [multiplayer_parity_checklist.md](output/multiplayer_parity_checklist.md)
 
 ## Что сейчас уже НЕ считать новым багом
 
@@ -497,8 +502,8 @@ paritySend(
 
 После прогона обязательно сопоставьте результат с:
 
-- [DoD summary](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/dod_status_summary.md)
-- [Channels checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
-- [Multiplayer checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+- [DoD summary](output/dod_status_summary.md)
+- [Channels checklist](output/channels_parity_checklist.md)
+- [Multiplayer checklist](output/multiplayer_parity_checklist.md)
 
 Если кейс уже отмечен там как `pass`, а у тестировщика он ломается, это уже хороший кандидат на regression.
