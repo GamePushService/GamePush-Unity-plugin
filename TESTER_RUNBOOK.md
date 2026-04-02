@@ -1,0 +1,504 @@
+# GamePush Unity Parity Test Runbook
+
+Этот документ нужен тестировщику, чтобы:
+
+1. поднять локальный Unity WebGL build;
+2. открыть sandbox reference;
+3. прогнать `Channels` и `Multiplayer`;
+4. сравнить поведение `sandbox == Unity`;
+5. не тратить время на уже известные `blocked`-кейсы.
+
+## Что именно проверяем
+
+- `Channels` parity против reference sandbox.
+- `Multiplayer` parity против reference sandbox и локального parity bridge.
+- Совпадение:
+  - публичных вызовов;
+  - payload/result;
+  - `error:*` событий;
+  - realtime-событий.
+
+Базовые артефакты для сверки:
+
+- [DoD summary](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/dod_status_summary.md)
+- [Channels checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
+- [Multiplayer checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+
+## Требования
+
+- Unity `6000.0.24f1` или совместимая `6000.x`
+- установлен модуль `WebGL Build Support`
+- Node.js `18+`
+- `npm`
+- браузер с DevTools
+- возможность открыть две отдельные сессии браузера
+  - лучше обычное окно + incognito
+  - или два разных профиля
+
+## Что важно заранее
+
+### 1. Локальный origin должен быть разрешён в GamePush project
+
+Если тест идёт не на project `4`, у проекта должны быть разрешены:
+
+- `http://localhost:8123`
+- `http://127.0.0.1:8123`
+
+Иначе `Multiplayer.connect(...)` может падать с `origin_not_allowed`.
+
+### 2. Проект и token
+
+Parity build умеет брать `projectId` и `publicToken` из query string.
+
+Формат URL:
+
+```text
+http://localhost:8123/?projectId=4&publicToken=xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT
+```
+
+Если используется другой проект, просто замените оба значения.
+
+### 3. Sandbox reference
+
+Reference sandbox:
+
+- [https://s3.gamepush.com/games/4/](https://s3.gamepush.com/games/4/)
+
+Если нужно принудительно подставить проект в sandbox, в DevTools Console:
+
+```js
+sandbox.setProject(4, 'xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT')
+```
+
+## Быстрый старт
+
+### Вариант A. Просто проверить текущий snapshot
+
+Если вы не меняли JS bridge и просто хотите проверить текущее состояние репозитория:
+
+1. Откройте Unity project из папки:
+   - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo`
+2. Дождитесь импортов.
+3. В Unity запустите:
+   - `GamePush -> Build -> Parity WebGL`
+4. После сборки поднимите локальный сервер:
+
+```bash
+cd /Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import
+npx http-server Demo/Build/WebGLParity -p 8123 --brotli -c-1
+```
+
+5. Откройте локальную страницу:
+
+```text
+http://localhost:8123/?projectId=4&publicToken=xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT
+```
+
+6. Откройте sandbox:
+   - [https://s3.gamepush.com/games/4/](https://s3.gamepush.com/games/4/)
+
+### Вариант B. Если перед тестом менялся JS bridge
+
+Перед Unity build пересоберите bundle:
+
+```bash
+cd /Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/NodeJs
+npm install
+npm run build
+```
+
+Потом снова выполните шаги из варианта A.
+
+## CLI-сборка без Unity UI
+
+Если удобнее собирать через terminal:
+
+```bash
+"/Applications/Unity/Hub/Editor/6000.0.24f1/Unity.app/Contents/MacOS/Unity" \
+  -batchmode \
+  -quit \
+  -projectPath "/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo" \
+  -executeMethod GamePush.BuildTools.GP_ParityBuild.CI_BuildParityWebGL \
+  -logFile -
+```
+
+Если у вас другой patch/minor релиз Unity `6000.x`, просто замените путь к binary.
+
+## Где что лежит
+
+- Unity project:
+  - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo`
+- parity build output:
+  - `/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Build/WebGLParity`
+- parity bridge:
+  - [/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs)
+- WebGL build script:
+  - [/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs)
+
+## Режимы проверки
+
+Есть два практических режима:
+
+1. `UI mode`
+   - подходит в первую очередь для `Channels`
+   - используется demo scene `ExamplesScene`
+2. `Parity bridge mode`
+   - нужен для точечных вызовов и для `Multiplayer`
+   - вызывается из browser console через `unityInstance.SendMessage(...)`
+
+## UI Mode: как проверять Channels
+
+После открытия локальной страницы:
+
+1. Дождитесь загрузки `MAIN MENU`.
+2. Используйте экраны:
+   - `CHANNELS`
+   - `CHATS`
+3. Все действия логируются в demo console внутри страницы.
+4. Те же действия повторяйте в sandbox и сравнивайте:
+   - success/error
+   - payload
+   - realtime события
+
+Минимальный smoke checklist:
+
+1. `createChannel`
+2. `fetchChannel`
+3. `fetchChannels`
+4. `sendMessage`
+5. `fetchMessages`
+6. `updateChannel`
+7. `deleteChannel`
+8. `openChat`
+9. `openFeed`
+10. invite / request / moderation flows
+
+Подробный статус уже зафиксирован в:
+
+- [channels_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
+
+## Parity Bridge Mode: подготовка console helper'ов
+
+Откройте DevTools Console на локальной Unity WebGL странице и вставьте:
+
+```js
+window.parityAll = () => (window.GPParity?.events ?? []).map((x) => JSON.parse(x));
+
+window.parityByRequest = (requestId) =>
+  parityAll().filter((x) => x.requestId === requestId);
+
+window.parityLast = () => parityAll().at(-1);
+
+window.paritySend = (module, member, ...args) => {
+  const requestId = `${module}:${member}:${Date.now()}:${Math.random().toString(16).slice(2)}`;
+  window.unityInstance.SendMessage(
+    'GP_ParityBridge',
+    'RunCommand',
+    JSON.stringify({ requestId, module, member, args })
+  );
+  return requestId;
+};
+
+window.parityGet = (module, member) => {
+  const requestId = `${module}:${member}:${Date.now()}:${Math.random().toString(16).slice(2)}`;
+  window.unityInstance.SendMessage(
+    'GP_ParityBridge',
+    'RunCommand',
+    JSON.stringify({ requestId, module, member, kind: 'get', args: [] })
+  );
+  return requestId;
+};
+
+window.parityPing = (requestId = `ping:${Date.now()}`) => {
+  window.unityInstance.SendMessage('GP_ParityBridge', 'Ping', requestId);
+  return requestId;
+};
+```
+
+Проверка, что bridge жив:
+
+```js
+const req = parityPing();
+setTimeout(() => parityByRequest(req), 300);
+```
+
+Ожидается событие вида:
+
+```json
+{ "kind": "pong", "module": "system", "member": "ping", "payload": "ok" }
+```
+
+## Формат parity-команд
+
+`RunCommand` принимает JSON:
+
+```json
+{
+  "requestId": "optional-id",
+  "module": "channels | multiplayer | parity",
+  "member": "methodOrPropertyName",
+  "kind": "get",
+  "args": []
+}
+```
+
+Правила:
+
+- для методов используйте `args`
+- для properties используйте `kind: "get"`
+- результаты и события прилетают в `window.GPParity.events`
+
+## Примеры parity-команд
+
+### Channels
+
+Получить property:
+
+```js
+const req = parityGet('channels', 'canBeOnline');
+setTimeout(() => parityByRequest(req), 300);
+```
+
+Создать канал:
+
+```js
+const req = paritySend(
+  'channels',
+  'createChannel',
+  {
+    title: 'Parity Room',
+    template: '1',
+    private: false,
+    visible: true,
+    tags: [],
+    messageTags: []
+  }
+);
+```
+
+Получить канал:
+
+```js
+const req = paritySend('channels', 'fetchChannel', { channelId: 12345 });
+```
+
+Ошибка на невалидном канале:
+
+```js
+const req = paritySend('channels', 'fetchChannel', { channelId: 0 });
+```
+
+### Multiplayer
+
+Получить property:
+
+```js
+const req = parityGet('multiplayer', 'isConnected');
+```
+
+Включить default initializer на host:
+
+```js
+const req = paritySend('parity', 'enableDefaultPlayerInitializer');
+```
+
+Подключиться:
+
+```js
+const req = paritySend('multiplayer', 'connect', { channelId: 12345 });
+```
+
+Отключиться:
+
+```js
+const req = paritySend('multiplayer', 'disconnect', { channelId: 12345 });
+```
+
+Установить state:
+
+```js
+const req = paritySend('multiplayer', 'setPlayerState', { score: 1, ready: true });
+```
+
+Отправить custom event:
+
+```js
+const req = paritySend(
+  'multiplayer',
+  'sendMessage',
+  'demo-event',
+  { foo: 'bar' },
+  { target: 'all', echo: true }
+);
+```
+
+Включить probes:
+
+```js
+paritySend('parity', 'resetProbes');
+paritySend('parity', 'enableMessageProbe');
+paritySend('parity', 'enableTickProbe');
+```
+
+Снять probe state:
+
+```js
+const req = paritySend('parity', 'getProbeState');
+```
+
+## Как проверять Multiplayer вручную
+
+### Рекомендуемый сценарий
+
+Нужны две отдельные браузерные сессии:
+
+- `Host`
+- `Peer`
+
+Обе открывают один и тот же локальный URL с одним и тем же `projectId/publicToken`.
+
+### Сценарий 1. connect / disconnect
+
+1. На `Host` создать канал через `Channels` UI или через `paritySend('channels', 'createChannel', ...)`
+2. На `Peer` войти в канал:
+   - `paritySend('channels', 'join', { channelId })`
+3. На `Host`:
+   - `paritySend('multiplayer', 'connect', { channelId })`
+4. На `Peer`:
+   - `paritySend('multiplayer', 'connect', { channelId })`
+5. Сравнить:
+   - `connect`
+   - `playerJoined`
+   - `connectedPlayers`
+   - `isHost`
+6. Выполнить `disconnect` на одной стороне и проверить:
+   - `disconnect`
+   - `playerLeft`
+   - `playersUpdated`
+
+### Сценарий 2. peer -> host state sync
+
+Важно: перед проверкой на host обязательно включить initializer:
+
+```js
+paritySend('parity', 'enableDefaultPlayerInitializer');
+```
+
+Потом:
+
+1. `Host` подключается к каналу
+2. `Peer` подключается к тому же каналу
+3. `Peer` вызывает:
+
+```js
+paritySend('multiplayer', 'setPlayerState', { score: 10, ready: true });
+```
+
+4. На `Host` проверить:
+   - событие `playersUpdated`
+   - property `playersState`
+
+Если initializer не включён, `peer -> host` sync может не появиться. Это не баг Unity wrapper, а подтверждённое поведение reference core.
+
+### Сценарий 3. sendMessage / onMessage / onTick
+
+1. После `connect` включить probes:
+
+```js
+paritySend('parity', 'resetProbes');
+paritySend('parity', 'enableMessageProbe');
+paritySend('parity', 'enableTickProbe');
+```
+
+2. Отправить сообщение:
+
+```js
+paritySend(
+  'multiplayer',
+  'sendMessage',
+  'smoke',
+  { ok: true },
+  { target: 'all', echo: true }
+);
+```
+
+3. Проверить `getProbeState`
+
+Ожидается:
+
+- `messageProbeHits > 0`
+- `tickProbeHits > 0`
+
+## Как сравнивать с sandbox
+
+Используйте тот же сценарий на reference sandbox:
+
+- [https://s3.gamepush.com/games/4/](https://s3.gamepush.com/games/4/)
+
+Сравнивать нужно:
+
+- был ли success / error
+- точный код ошибки
+- какие realtime-события пришли
+- порядок событий
+- форму payload
+
+Если поведение отличается, результат нужно сверять с готовыми чеклистами:
+
+- [channels_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
+- [multiplayer_parity_checklist.md](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+
+## Что сейчас уже НЕ считать новым багом
+
+### Channels
+
+- `setValue/addValue` success-path на project `4`
+  - blocked
+  - у доступных templates нет `fields`
+- `closeChat`
+  - blocked/manual overlay case
+
+### Multiplayer
+
+- `peer -> host setPlayerState` без initializer
+  - expected behavior
+  - host-side sync требует `setPlayerInitializer(...)`
+- `becamePeer`
+  - пока blocked / live-unverified
+  - не удалось стабильно воспроизвести real host migration
+
+## Что прикладывать к баг-репорту
+
+Минимум:
+
+1. шаги воспроизведения
+2. локальный URL
+3. sandbox URL
+4. `projectId`
+5. `channelId`, если кейс связан с конкретным каналом
+6. console output локального build
+7. console output sandbox
+8. если использовался parity bridge:
+   - сам вызов
+   - `requestId`
+   - результат `parityByRequest(requestId)`
+
+## Рекомендуемый порядок прогона
+
+1. `Channels` happy-path
+2. `Channels error:*`
+3. `Channels realtime`
+4. `Multiplayer connect/disconnect`
+5. `Multiplayer sendMessage`
+6. `Multiplayer peer state sync with initializer`
+7. только потом blocked/advanced cases
+
+## Финальная сверка
+
+После прогона обязательно сопоставьте результат с:
+
+- [DoD summary](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/dod_status_summary.md)
+- [Channels checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/channels_parity_checklist.md)
+- [Multiplayer checklist](/Users/pprudnikov/Projects/CodeX/gamepush-unity-plugin-import/output/multiplayer_parity_checklist.md)
+
+Если кейс уже отмечен там как `pass`, а у тестировщика он ломается, это уже хороший кандидат на regression.
