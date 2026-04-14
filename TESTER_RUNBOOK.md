@@ -203,6 +203,183 @@ SyntaxError: Invalid or unexpected token
 
 - [channels_parity_checklist.md](output/channels_parity_checklist.md)
 
+## UI Mode: как проверять Multiplayer Demo
+
+`Multiplayer` сейчас тестируется не через auto-builder, а через вручную сохранённую сцену.
+
+Что это значит:
+
+- источник истины для layout:
+  - `Demo/Assets/GP_Examples/Scenes/ExamplesScene.unity`
+- пункт меню `GamePush -> Examples -> Build Multiplayer Scene` отключён намеренно
+- тестировщику не нужно и нельзя пытаться пересобирать layout этого экрана
+
+### Где открыть экран
+
+1. Откройте локальный WebGL build.
+2. На `MAIN MENU` выберите:
+   - `MULTIPLAYER`
+
+### Как сгруппирован экран
+
+Экран разбит на смысловые блоки.
+
+#### 1. Session
+
+Используется для подключения и режима тиков:
+
+- `CHANNEL ID`
+- `CONNECT`
+- `DISCONNECT`
+- `FAST`
+- `SMOOTH`
+
+Связи:
+
+- `CONNECT` использует `CHANNEL ID`
+- `DISCONNECT` использует `CHANNEL ID`
+- `FAST` и `SMOOTH` не используют инпуты
+
+#### 2. Schema & Initializer
+
+Используется для подготовки host-side state sync:
+
+- `SCHEMA JSON`
+- `DEFINE SCHEMA`
+- `INITIALIZER JSON`
+- `INIT SYNC`
+- `INIT ASYNC`
+- `CLEAR INIT`
+
+Связи:
+
+- `DEFINE SCHEMA` использует `SCHEMA JSON`
+- `INIT SYNC` и `INIT ASYNC` используют `INITIALIZER JSON`
+- `CLEAR INIT` просто сбрасывает initializer
+
+#### 3. Player State
+
+- `STATE JSON`
+- `SET STATE`
+
+Связи:
+
+- `SET STATE` использует `STATE JSON`
+
+#### 4. Messaging
+
+- `EVENT NAME`
+- `MESSAGE JSON`
+- `TARGET`
+- `ECHO`
+- `SEND MESSAGE`
+
+Связи:
+
+- `SEND MESSAGE` использует все 4 поля
+
+#### 5. Runtime Info
+
+Readonly-кнопки:
+
+- `READ TICK`
+- `READ CONNECTED`
+- `READ HOST`
+- `READ MY STATE`
+- `READ PLAYERS`
+- `READ PEERS`
+- `READ NETWORK`
+
+Они не используют input fields и только читают текущее состояние SDK.
+
+#### 6. Console
+
+Нижний логовый блок.
+
+В него пишутся:
+
+- результаты методов
+- ошибки
+- realtime-события
+- `onMessage`
+- `onTick`
+
+### Что проверить глазами
+
+Перед функциональным тестом убедитесь:
+
+- блоки визуально разделены и не наезжают друг на друга
+- кнопки находятся внутри своих карточек
+- нижний `Console` не перекрывает карточки
+- `MAIN MENU` остаётся поверх экрана и работает
+
+### Multiplayer UI smoke test
+
+#### Сценарий 1. Один клиент
+
+1. Введите `CHANNEL ID`
+2. Нажмите `CONNECT`
+3. Проверьте лог:
+   - `MULTIPLAYER: CONNECT`
+   - либо `connect`, либо `error:connect`
+4. Нажмите:
+   - `READ CONNECTED`
+   - `READ HOST`
+   - `READ TICK`
+5. Нажмите `FAST`, потом `READ TICK`
+6. Нажмите `SMOOTH`, потом `READ TICK`
+7. Нажмите `DISCONNECT`
+
+#### Сценарий 2. Host + Peer
+
+Нужны две сессии браузера:
+
+- `Host`
+- `Peer`
+
+Порядок:
+
+1. Через `Channels` создайте или используйте готовый `channelId`
+2. Убедитесь, что `Peer` состоит в этом канале
+3. На `Host`:
+   - `INIT SYNC` или `INIT ASYNC`
+4. На `Host` и `Peer`:
+   - `CONNECT`
+5. На `Peer`:
+   - `SET STATE`
+6. На `Host`:
+   - `READ PLAYERS`
+
+Ожидается:
+
+- `Host` получает `playersUpdated`
+- `READ PLAYERS` показывает state peer
+
+Важно:
+
+- без `INIT SYNC` или `INIT ASYNC` host-side sync может не появиться
+- это expected behavior, а не новый баг
+
+#### Сценарий 3. Messaging
+
+1. На обоих клиентах выполнить `CONNECT`
+2. На одном клиенте заполнить:
+   - `EVENT NAME`
+   - `MESSAGE JSON`
+   - `TARGET`
+   - `ECHO`
+3. Нажать `SEND MESSAGE`
+4. Проверить:
+   - `customEvent`
+   - `onMessage`
+   - payload в `Console`
+
+### Что НЕ делать тестировщику
+
+- не запускать `GamePush -> Examples -> Build Multiplayer Scene`
+- не перестраивать `Multiplayer` layout через editor-builder
+- не считать отсутствие `peer -> host` sync без initializer новым багом
+
 ## Parity Bridge Mode: подготовка console helper'ов
 
 Откройте DevTools Console на локальной Unity WebGL странице и вставьте:

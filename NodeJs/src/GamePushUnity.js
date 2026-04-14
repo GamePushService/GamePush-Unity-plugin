@@ -2988,16 +2988,34 @@ export default class GamePushUnity {
 
     //Logger
     LoggerInfo(title, text) {
-        this.gp.logger.info(title, text);
+        const logger = this.gp.logger || console;
+        const fn = typeof logger.info === 'function'
+            ? logger.info
+            : (typeof logger.log === 'function' ? logger.log : console.log);
+
+        fn.call(logger, title, text);
     }
     LoggerWarn(title, text) {
-        this.gp.logger.warn(title, text);
+        const logger = this.gp.logger || console;
+        const fn = typeof logger.warn === 'function'
+            ? logger.warn
+            : (typeof logger.log === 'function' ? logger.log : console.warn);
+
+        fn.call(logger, title, text);
     }
     LoggerError(title, text) {
-        this.gp.logger.error(title, text);
+        const logger = this.gp.logger || console;
+        const fn = typeof logger.error === 'function'
+            ? logger.error
+            : (typeof logger.log === 'function' ? logger.log : console.error);
+
+        fn.call(logger, title, text);
     }
     LoggerLog(title, text) {
-        this.gp.logger.log(title, text);
+        const logger = this.gp.logger || console;
+        const fn = typeof logger.log === 'function' ? logger.log : console.log;
+
+        fn.call(logger, title, text);
     }
     //Logger
 

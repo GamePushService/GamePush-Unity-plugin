@@ -21,19 +21,12 @@ namespace Examples.EditorTools
         private const string TemplateRootName = "Variables";
         private const string TemplateMenuButtonName = "VARIABLES";
         private static readonly Vector2 ContentPosition = new(0f, 450f);
-        private static readonly Vector2 ContentSize = new(1100f, 860f);
-        private static readonly Vector2 ConsolePosition = new(0f, -435f);
+        private static readonly Vector2 ContentSize = new(1100f, 1220f);
+        private static readonly Vector2 ConsolePosition = new(0f, -930f);
         private static readonly Vector2 ConsoleSize = new(1100f, 280f);
-        private static readonly Vector2 ButtonsPosition = new(0f, -90f);
-        private static readonly Vector2 ButtonsSize = new(820f, 300f);
-        private static readonly Vector2 ButtonCellSize = new(185f, 50f);
-        private static readonly Vector2 ButtonSpacing = new(15f, 10f);
-        private static readonly Vector2 FieldsPosition = new(0f, -405f);
-        private static readonly Vector2 FieldsSize = new(830f, 360f);
-        private static readonly Vector2 FieldCellSize = new(395f, 78f);
-        private static readonly Vector2 FieldSpacing = new(18f, 10f);
+        private static readonly Color CardColor = new(0.97f, 0.97f, 0.97f, 1f);
+        private static readonly Color HeaderColor = new(0.27f, 0.78f, 0.24f, 1f);
 
-        [MenuItem("GamePush/Examples/Build Multiplayer Scene")]
         public static void Build()
         {
             Scene scene = EditorSceneManager.OpenScene(ExamplesScenePath, OpenSceneMode.Single);
@@ -84,6 +77,8 @@ namespace Examples.EditorTools
 
             MultiplayerExample multiplayer = multiplayerRoot.AddComponent<MultiplayerExample>();
 
+            CreateBackground(multiplayerRoot.transform);
+
             Transform content = FindDescendant(multiplayerRoot.transform, "Content");
             if (content == null)
                 throw new InvalidOperationException("Multiplayer builder: duplicated module root does not contain Content.");
@@ -113,35 +108,46 @@ namespace Examples.EditorTools
             if (buttonTemplate == null || fieldTemplate == null || labelTemplate == null)
                 throw new InvalidOperationException("Multiplayer builder: failed to locate button, label, or field template.");
 
-            RectTransform buttonsContainer = CreateButtonsContainer(content);
-            RectTransform fieldsContainer = CreateFieldsContainer(content);
+            CardLayout sessionCard = CreateCard(content, labelTemplate, "SESSION", new Vector2(-285f, -88f), new Vector2(430f, 245f));
+            TMP_InputField channelIdInput = CreateInputField(fieldTemplate, labelTemplate, sessionCard.Body, "CHANNEL ID", "e.g. 38777", 360f);
+            RectTransform sessionButtonsRow = CreateHorizontalRow(sessionCard.Body, 10f);
+            Button connectButton = CreateActionButton(buttonTemplate, sessionButtonsRow, "CONNECT", 145f);
+            Button disconnectButton = CreateActionButton(buttonTemplate, sessionButtonsRow, "DISCONNECT", 145f);
+            RectTransform sessionModeRow = CreateHorizontalRow(sessionCard.Body, 10f);
+            Button fastModeButton = CreateActionButton(buttonTemplate, sessionModeRow, "FAST", 145f);
+            Button smoothModeButton = CreateActionButton(buttonTemplate, sessionModeRow, "SMOOTH", 145f);
 
-            Button connectButton = CreateActionButton(buttonTemplate, buttonsContainer, "CONNECT");
-            Button disconnectButton = CreateActionButton(buttonTemplate, buttonsContainer, "DISCONNECT");
-            Button fastModeButton = CreateActionButton(buttonTemplate, buttonsContainer, "FAST");
-            Button smoothModeButton = CreateActionButton(buttonTemplate, buttonsContainer, "SMOOTH");
-            Button defineSchemaButton = CreateActionButton(buttonTemplate, buttonsContainer, "DEFINE SCHEMA");
-            Button enableInitializerButton = CreateActionButton(buttonTemplate, buttonsContainer, "INIT SYNC");
-            Button enableAsyncInitializerButton = CreateActionButton(buttonTemplate, buttonsContainer, "INIT ASYNC");
-            Button disableInitializerButton = CreateActionButton(buttonTemplate, buttonsContainer, "CLEAR INIT");
-            Button setPlayerStateButton = CreateActionButton(buttonTemplate, buttonsContainer, "SET STATE");
-            Button sendMessageButton = CreateActionButton(buttonTemplate, buttonsContainer, "SEND MESSAGE");
-            Button readTickRateButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ TICK");
-            Button readIsConnectedButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ CONNECTED");
-            Button readIsHostButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ HOST");
-            Button readMyStateButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ MY STATE");
-            Button readPlayersStateButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ PLAYERS");
-            Button readConnectedPlayersButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ PEERS");
-            Button readNetworkStatsButton = CreateActionButton(buttonTemplate, buttonsContainer, "READ NETWORK");
+            CardLayout schemaCard = CreateCard(content, labelTemplate, "SCHEMA & INITIALIZER", new Vector2(285f, -88f), new Vector2(470f, 295f));
+            TMP_InputField schemaJsonInput = CreateInputField(fieldTemplate, labelTemplate, schemaCard.Body, "SCHEMA JSON", "{\"score\":\"number\"}", 400f);
+            Button defineSchemaButton = CreateActionButton(buttonTemplate, schemaCard.Body, "DEFINE SCHEMA", 200f);
+            TMP_InputField initializerStateJsonInput = CreateInputField(fieldTemplate, labelTemplate, schemaCard.Body, "INITIALIZER JSON", "{\"score\":0}", 400f);
+            RectTransform initializerButtonsRow = CreateHorizontalRow(schemaCard.Body, 10f);
+            Button enableInitializerButton = CreateActionButton(buttonTemplate, initializerButtonsRow, "INIT SYNC", 120f);
+            Button enableAsyncInitializerButton = CreateActionButton(buttonTemplate, initializerButtonsRow, "INIT ASYNC", 120f);
+            Button disableInitializerButton = CreateActionButton(buttonTemplate, initializerButtonsRow, "CLEAR INIT", 120f);
 
-            TMP_InputField channelIdInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "CHANNEL ID", "e.g. 38777");
-            TMP_InputField schemaJsonInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "SCHEMA JSON", "{\"score\":\"number\"}");
-            TMP_InputField initializerStateJsonInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "INITIALIZER JSON", "{\"score\":0}");
-            TMP_InputField stateJsonInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "STATE JSON", "{\"score\":1}");
-            TMP_InputField eventNameInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "EVENT NAME", "demo:message");
-            TMP_InputField messageJsonInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "MESSAGE JSON", "{\"text\":\"hello\"}");
-            TMP_InputField targetInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "TARGET", "all");
-            TMP_InputField echoInput = CreateInputField(fieldTemplate, labelTemplate, fieldsContainer, "ECHO", "true / false");
+            CardLayout stateCard = CreateCard(content, labelTemplate, "PLAYER STATE", new Vector2(-285f, -425f), new Vector2(430f, 185f));
+            TMP_InputField stateJsonInput = CreateInputField(fieldTemplate, labelTemplate, stateCard.Body, "STATE JSON", "{\"score\":1}", 360f);
+            Button setPlayerStateButton = CreateActionButton(buttonTemplate, stateCard.Body, "SET STATE", 190f);
+
+            CardLayout messageCard = CreateCard(content, labelTemplate, "MESSAGING", new Vector2(285f, -455f), new Vector2(470f, 350f));
+            TMP_InputField eventNameInput = CreateInputField(fieldTemplate, labelTemplate, messageCard.Body, "EVENT NAME", "demo:message", 400f);
+            TMP_InputField messageJsonInput = CreateInputField(fieldTemplate, labelTemplate, messageCard.Body, "MESSAGE JSON", "{\"text\":\"hello\"}", 400f);
+            RectTransform messageMetaRow = CreateHorizontalRow(messageCard.Body, 12f);
+            TMP_InputField targetInput = CreateInputField(fieldTemplate, labelTemplate, messageMetaRow, "TARGET", "all", 194f);
+            TMP_InputField echoInput = CreateInputField(fieldTemplate, labelTemplate, messageMetaRow, "ECHO", "true / false", 194f);
+            Button sendMessageButton = CreateActionButton(buttonTemplate, messageCard.Body, "SEND MESSAGE", 190f);
+
+            CardLayout runtimeCard = CreateCard(content, labelTemplate, "RUNTIME INFO", new Vector2(0f, -770f), new Vector2(1030f, 200f));
+            RectTransform diagnosticsTopRow = CreateHorizontalRow(runtimeCard.Body, 12f);
+            Button readTickRateButton = CreateActionButton(buttonTemplate, diagnosticsTopRow, "READ TICK", 132f);
+            Button readIsConnectedButton = CreateActionButton(buttonTemplate, diagnosticsTopRow, "READ CONNECTED", 132f);
+            Button readIsHostButton = CreateActionButton(buttonTemplate, diagnosticsTopRow, "READ HOST", 132f);
+            Button readMyStateButton = CreateActionButton(buttonTemplate, diagnosticsTopRow, "READ MY STATE", 132f);
+            RectTransform diagnosticsBottomRow = CreateHorizontalRow(runtimeCard.Body, 12f);
+            Button readPlayersStateButton = CreateActionButton(buttonTemplate, diagnosticsBottomRow, "READ PLAYERS", 155f);
+            Button readConnectedPlayersButton = CreateActionButton(buttonTemplate, diagnosticsBottomRow, "READ PEERS", 155f);
+            Button readNetworkStatsButton = CreateActionButton(buttonTemplate, diagnosticsBottomRow, "READ NETWORK", 155f);
 
             SerializedObject serializedObject = new SerializedObject(multiplayer);
             SetReference(serializedObject, "_channelIdInput", channelIdInput);
@@ -180,75 +186,145 @@ namespace Examples.EditorTools
             EditorUtility.SetDirty(multiplayer.gameObject);
         }
 
-        private static RectTransform CreateButtonsContainer(Transform parent)
+        private static CardLayout CreateCard(Transform parent, TMP_Text labelTemplate, string title, Vector2 anchoredPosition, Vector2 size)
         {
-            GameObject container = new GameObject("Buttons", typeof(RectTransform), typeof(GridLayoutGroup), typeof(ContentSizeFitter));
-            container.transform.SetParent(parent, false);
+            GameObject card = new GameObject(title, typeof(RectTransform), typeof(Image));
+            card.transform.SetParent(parent, false);
 
-            RectTransform rectTransform = (RectTransform)container.transform;
-            rectTransform.anchorMin = new Vector2(0.5f, 1f);
-            rectTransform.anchorMax = new Vector2(0.5f, 1f);
-            rectTransform.pivot = new Vector2(0.5f, 1f);
-            rectTransform.anchoredPosition = ButtonsPosition;
-            rectTransform.sizeDelta = ButtonsSize;
+            RectTransform cardRect = (RectTransform)card.transform;
+            cardRect.anchorMin = new Vector2(0.5f, 1f);
+            cardRect.anchorMax = new Vector2(0.5f, 1f);
+            cardRect.pivot = new Vector2(0.5f, 1f);
+            cardRect.anchoredPosition = anchoredPosition;
+            cardRect.sizeDelta = size;
 
-            GridLayoutGroup grid = container.GetComponent<GridLayoutGroup>();
-            grid.cellSize = ButtonCellSize;
-            grid.spacing = ButtonSpacing;
-            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 4;
-            grid.startAxis = GridLayoutGroup.Axis.Horizontal;
-            grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
-            grid.childAlignment = TextAnchor.UpperCenter;
+            Image cardImage = card.GetComponent<Image>();
+            cardImage.color = CardColor;
+            cardImage.raycastTarget = false;
 
-            ContentSizeFitter fitter = container.GetComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            GameObject header = new GameObject("Header", typeof(RectTransform), typeof(Image));
+            header.transform.SetParent(card.transform, false);
+            RectTransform headerRect = (RectTransform)header.transform;
+            headerRect.anchorMin = new Vector2(0f, 1f);
+            headerRect.anchorMax = new Vector2(1f, 1f);
+            headerRect.pivot = new Vector2(0.5f, 1f);
+            headerRect.anchoredPosition = Vector2.zero;
+            headerRect.sizeDelta = new Vector2(0f, 54f);
 
-            return rectTransform;
+            Image headerImage = header.GetComponent<Image>();
+            headerImage.color = HeaderColor;
+            headerImage.raycastTarget = false;
+
+            TMP_Text titleText = UnityEngine.Object.Instantiate(labelTemplate, header.transform);
+            titleText.name = "Title";
+            titleText.text = title;
+            titleText.fontSize = 26f;
+            titleText.enableAutoSizing = true;
+            titleText.fontSizeMin = 20f;
+            titleText.fontSizeMax = 30f;
+            titleText.alignment = TextAlignmentOptions.Center;
+            titleText.raycastTarget = false;
+
+            RectTransform titleRect = (RectTransform)titleText.transform;
+            titleRect.anchorMin = new Vector2(0.5f, 0.5f);
+            titleRect.anchorMax = new Vector2(0.5f, 0.5f);
+            titleRect.pivot = new Vector2(0.5f, 0.5f);
+            titleRect.anchoredPosition = Vector2.zero;
+            titleRect.sizeDelta = new Vector2(size.x - 40f, 34f);
+
+            GameObject body = new GameObject("Body", typeof(RectTransform), typeof(LayoutElement), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            body.transform.SetParent(card.transform, false);
+
+            RectTransform bodyRect = (RectTransform)body.transform;
+            bodyRect.anchorMin = new Vector2(0.5f, 1f);
+            bodyRect.anchorMax = new Vector2(0.5f, 1f);
+            bodyRect.pivot = new Vector2(0.5f, 1f);
+            bodyRect.anchoredPosition = new Vector2(0f, -72f);
+            bodyRect.sizeDelta = new Vector2(size.x - 36f, size.y - 92f);
+
+            LayoutElement bodyLayout = body.GetComponent<LayoutElement>();
+            bodyLayout.preferredWidth = size.x - 36f;
+
+            VerticalLayoutGroup bodyGroup = body.GetComponent<VerticalLayoutGroup>();
+            bodyGroup.spacing = 10f;
+            bodyGroup.childAlignment = TextAnchor.UpperCenter;
+            bodyGroup.childControlWidth = false;
+            bodyGroup.childControlHeight = false;
+            bodyGroup.childForceExpandWidth = false;
+            bodyGroup.childForceExpandHeight = false;
+
+            ContentSizeFitter bodyFitter = body.GetComponent<ContentSizeFitter>();
+            bodyFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            bodyFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            return new CardLayout
+            {
+                Root = cardRect,
+                Body = (RectTransform)body.transform
+            };
         }
 
-        private static RectTransform CreateFieldsContainer(Transform parent)
+        private static RectTransform CreateHorizontalRow(Transform parent, float spacing)
         {
-            GameObject container = new GameObject("Fields", typeof(RectTransform), typeof(GridLayoutGroup), typeof(ContentSizeFitter));
-            container.transform.SetParent(parent, false);
+            GameObject row = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            row.transform.SetParent(parent, false);
 
-            RectTransform rectTransform = (RectTransform)container.transform;
-            rectTransform.anchorMin = new Vector2(0.5f, 1f);
-            rectTransform.anchorMax = new Vector2(0.5f, 1f);
-            rectTransform.pivot = new Vector2(0.5f, 1f);
-            rectTransform.anchoredPosition = FieldsPosition;
-            rectTransform.sizeDelta = FieldsSize;
+            HorizontalLayoutGroup layout = row.GetComponent<HorizontalLayoutGroup>();
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
 
-            GridLayoutGroup grid = container.GetComponent<GridLayoutGroup>();
-            grid.cellSize = FieldCellSize;
-            grid.spacing = FieldSpacing;
-            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 2;
-            grid.startAxis = GridLayoutGroup.Axis.Horizontal;
-            grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
-            grid.childAlignment = TextAnchor.UpperCenter;
-
-            ContentSizeFitter fitter = container.GetComponent<ContentSizeFitter>();
+            ContentSizeFitter fitter = row.GetComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
-            return rectTransform;
+            return (RectTransform)row.transform;
         }
 
-        private static Button CreateActionButton(GameObject template, Transform parent, string label)
+        private static RectTransform CreateVerticalColumn(Transform parent, float spacing)
+        {
+            GameObject column = new GameObject("Column", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            column.transform.SetParent(parent, false);
+
+            VerticalLayoutGroup layout = column.GetComponent<VerticalLayoutGroup>();
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+
+            ContentSizeFitter fitter = column.GetComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            return (RectTransform)column.transform;
+        }
+
+        private static Button CreateActionButton(GameObject template, Transform parent, string label, float width)
         {
             GameObject button = UnityEngine.Object.Instantiate(template, parent);
             button.name = label;
             button.SetActive(true);
             SetFirstText(button, label);
 
+            RectTransform rectTransform = (RectTransform)button.transform;
+            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.anchoredPosition = Vector2.zero;
+            rectTransform.localScale = Vector3.one;
+            rectTransform.sizeDelta = new Vector2(width, 38f);
+
             LayoutElement layoutElement = button.GetComponent<LayoutElement>();
             if (layoutElement == null)
                 layoutElement = button.AddComponent<LayoutElement>();
 
-            layoutElement.preferredWidth = 185f;
-            layoutElement.preferredHeight = 52f;
+            layoutElement.preferredWidth = width;
+            layoutElement.preferredHeight = 38f;
 
             Button component = button.GetComponent<Button>();
             if (component == null)
@@ -261,15 +337,21 @@ namespace Examples.EditorTools
             if (text != null)
             {
                 text.enableAutoSizing = true;
-                text.fontSizeMin = 18f;
-                text.fontSizeMax = 44f;
+                text.fontSizeMin = 14f;
+                text.fontSizeMax = 32f;
                 text.overflowMode = TextOverflowModes.Ellipsis;
             }
 
             return component;
         }
 
-        private static TMP_InputField CreateInputField(GameObject template, TMP_Text labelTemplate, Transform parent, string label, string placeholder)
+        private static TMP_InputField CreateInputField(
+            GameObject template,
+            TMP_Text labelTemplate,
+            Transform parent,
+            string label,
+            string placeholder,
+            float width)
         {
             GameObject fieldGroup = new GameObject(
                 label,
@@ -279,8 +361,8 @@ namespace Examples.EditorTools
             fieldGroup.transform.SetParent(parent, false);
 
             LayoutElement layoutElement = fieldGroup.GetComponent<LayoutElement>();
-            layoutElement.preferredWidth = 395f;
-            layoutElement.preferredHeight = 78f;
+            layoutElement.preferredWidth = width;
+            layoutElement.preferredHeight = 68f;
 
             VerticalLayoutGroup verticalLayout = fieldGroup.GetComponent<VerticalLayoutGroup>();
             verticalLayout.childAlignment = TextAnchor.UpperCenter;
@@ -306,7 +388,7 @@ namespace Examples.EditorTools
             labelRect.anchorMin = new Vector2(0.5f, 1f);
             labelRect.anchorMax = new Vector2(0.5f, 1f);
             labelRect.pivot = new Vector2(0.5f, 1f);
-            labelRect.sizeDelta = new Vector2(395f, 22f);
+            labelRect.sizeDelta = new Vector2(width, 22f);
 
             GameObject inputRoot = UnityEngine.Object.Instantiate(template, fieldGroup.transform);
             inputRoot.name = "InputField";
@@ -320,14 +402,16 @@ namespace Examples.EditorTools
             inputRect.anchorMin = new Vector2(0.5f, 1f);
             inputRect.anchorMax = new Vector2(0.5f, 1f);
             inputRect.pivot = new Vector2(0.5f, 1f);
-            inputRect.sizeDelta = new Vector2(395f, 46f);
+            inputRect.sizeDelta = new Vector2(width, 44f);
+            inputRect.anchoredPosition = Vector2.zero;
+            inputRect.localScale = Vector3.one;
 
             LayoutElement inputLayout = inputRoot.GetComponent<LayoutElement>();
             if (inputLayout == null)
                 inputLayout = inputRoot.AddComponent<LayoutElement>();
 
-            inputLayout.preferredWidth = 395f;
-            inputLayout.preferredHeight = 46f;
+            inputLayout.preferredWidth = width;
+            inputLayout.preferredHeight = 44f;
 
             if (inputField.placeholder is TMP_Text placeholderText)
                 placeholderText.text = placeholder;
@@ -349,6 +433,28 @@ namespace Examples.EditorTools
                 console.anchoredPosition = ConsolePosition;
                 console.sizeDelta = ConsoleSize;
             }
+        }
+
+        private static void CreateBackground(Transform parent)
+        {
+            Transform existing = FindDescendant(parent, "Background");
+            if (existing != null)
+                UnityEngine.Object.DestroyImmediate(existing.gameObject);
+
+            GameObject background = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            background.transform.SetParent(parent, false);
+            background.transform.SetSiblingIndex(0);
+
+            RectTransform rectTransform = (RectTransform)background.transform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.anchoredPosition = Vector2.zero;
+            rectTransform.sizeDelta = Vector2.zero;
+
+            Image image = background.GetComponent<Image>();
+            image.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+            image.raycastTarget = false;
         }
 
         private static GameObject FindButtonTemplate(GameObject root)
@@ -535,6 +641,12 @@ namespace Examples.EditorTools
             {
                 return Mathf.RoundToInt(obj).GetHashCode();
             }
+        }
+
+        private sealed class CardLayout
+        {
+            public RectTransform Root { get; set; }
+            public RectTransform Body { get; set; }
         }
     }
 }

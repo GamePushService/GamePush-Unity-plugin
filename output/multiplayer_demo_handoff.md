@@ -103,39 +103,64 @@ Builder делает следующее:
 - `GamePush.Examples`
 - `Unity.TextMeshPro`
 
+## Current Source Of Truth
+
+Сейчас источник истины для `Multiplayer` layout:
+
+- `Demo/Assets/GP_Examples/Scenes/ExamplesScene.unity`
+
+Экран был доведён вручную в Unity Editor и именно сцена считается актуальным baseline.
+
 ## Important Current Problem
 
-Первый вариант builder-а собрал экран плохо.
+`MultiplayerSceneBuilder` оказался destructive:
 
-Что пошло не так:
+- он пересоздаёт `Multiplayer` root
+- пересоздаёт menu button
+- заново раскладывает UI
+- и тем самым стирает ручные правки сцены
 
-- для инпутов был взят слишком сложный template из существующего модуля
-- вместе с ним в `Multiplayer` перетащились чужие внутренние элементы
-- визуально это дало мусор:
-  - `PLATFORM OPTIONS`
-  - `KEY`
-  - `VALUE`
-  - наложение текста и полей
+Поэтому menu entry builder-а отключён.
 
-Поэтому builder был переписан ещё раз:
+Текущее правило:
 
-- теперь он больше не должен клонировать старый composite field-group целиком
-- вместо этого он создаёт простую структуру `Label + TMP_InputField`
+- `Multiplayer` layout больше не пересобирать через editor menu
+- визуальные правки делать руками в `ExamplesScene`
+- builder хранить только как технический reference, но не как источник истины
 
-Но этот новый вариант ещё надо повторно прогнать в Unity и глазами проверить.
+## Builder Status
 
-## Required Rebuild Step
+Файл:
 
-После любых правок builder-а нужно:
+- `Demo/Assets/GP_Examples/Editor/MultiplayerSceneBuilder.cs`
 
-1. дождаться перекомпиляции в Unity
-2. запустить:
-   - `GamePush -> Examples -> Build Multiplayer Scene`
-3. заново открыть:
-   - `Demo/Assets/GP_Examples/Scenes/ExamplesScene.unity`
-4. только потом оценивать визуальный результат
+Нужен для контекста разработки, но сейчас:
 
-Если этого не сделать, на сцене останется старая сломанная версия.
+- menu item отключён
+- использовать его для пересборки экрана нельзя
+
+Если в будущем понадобится вернуть builder, его нужно будет сначала синхронизировать с фактической ручной раскладкой из сцены.
+
+## WebGL Logger Fix
+
+Во время проверки всплыл отдельный runtime-баг, не связанный с layout:
+
+- WebGL падал на `GP_LoggerInfo`
+- bridge вызывал `gp.logger.info(...)`
+- в текущем runtime `logger.info` отсутствует
+
+Фикс внесён в:
+
+- `NodeJs/src/GamePushUnity.js`
+- `Demo/Assets/WebGLTemplates/GamePush/TemplateData/gamepush-unity.js`
+
+Теперь логгер использует fallback:
+
+- `info -> log`
+- `warn -> warn/log`
+- `error -> error/log`
+
+Это нужно учитывать, если другой агент будет разбираться, почему раньше локальный WebGL падал сразу после запуска.
 
 ## Current Visual Requirements
 
@@ -215,12 +240,10 @@ Builder делает следующее:
 
 1. Открыть проект в Unity.
 2. Убедиться, что compile errors нет.
-3. Запустить:
-   - `GamePush -> Examples -> Build Multiplayer Scene`
-4. Открыть `ExamplesScene`.
-5. Визуально проверить `MULTIPLAYER`.
-6. Если layout всё ещё плохой, править только builder, а не сцену вручную.
-7. После того как экран станет визуально нормальным, прогнать functional smoke test:
+3. Открыть `ExamplesScene`.
+4. Проверить `MULTIPLAYER` как текущий baseline.
+5. Если нужен новый layout fix, править сцену вручную, а не builder.
+6. После визуальной проверки прогнать functional smoke test:
    - `connect`
    - `disconnect`
    - `setMode`
@@ -265,4 +288,3 @@ Two-client smoke:
 По прямому указанию пользователя:
 
 - ничего не коммитить и не пушить без отдельного запроса
-
