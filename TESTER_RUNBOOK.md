@@ -273,16 +273,20 @@ SyntaxError: Invalid or unexpected token
 - `TARGET`
 - `ECHO`
 - `SEND MESSAGE`
+- `OFF MESSAGE`
 
 Связи:
 
 - `SEND MESSAGE` использует все 4 поля
+- `OFF MESSAGE` не использует input fields и отключает только `onMessage`
+- `OFF MESSAGE` не отключает `customEvent`, это ожидаемое поведение
 
 #### 5. Runtime Info
 
 Readonly-кнопки:
 
 - `READ TICK`
+- `OFF TICK`
 - `READ CONNECTED`
 - `READ HOST`
 - `READ MY STATE`
@@ -303,6 +307,8 @@ Readonly-кнопки:
 - realtime-события
 - `onMessage`
 - `onTick`
+- `error:connect`
+- `error:disconnect`
 
 ### Что проверить глазами
 
@@ -330,7 +336,27 @@ Readonly-кнопки:
 6. Нажмите `SMOOTH`, потом `READ TICK`
 7. Нажмите `DISCONNECT`
 
-#### Сценарий 2. Host + Peer
+#### Сценарий 2. OFF MESSAGE / OFF TICK
+
+1. Подключитесь к реальному `channelId`
+2. Для проверки `OFF MESSAGE`:
+   - либо включите `ECHO=true` и отправляйте сообщение самому себе
+   - либо используйте второй клиент
+3. До нажатия `OFF MESSAGE` убедитесь, что в консоли появляется:
+   - `MULTIPLAYER: EVENT onMessage`
+4. Нажмите `OFF MESSAGE`
+5. Отправьте сообщение повторно
+6. Ожидается:
+   - `MULTIPLAYER: EVENT onMessage` больше не появляется
+   - `MULTIPLAYER: EVENT customEvent` может продолжать появляться, это нормально
+   - в момент клика логируется `MULTIPLAYER: OFF MESSAGE: listener disabled; customEvent stays active`
+7. Для проверки `OFF TICK` дождитесь логов `tick`
+8. Нажмите `OFF TICK`
+9. Ожидается:
+   - новые `MULTIPLAYER: EVENT tick` перестают приходить
+   - повторный клик пишет `MULTIPLAYER: OFF TICK: already disabled`
+
+#### Сценарий 3. Host + Peer
 
 Нужны две сессии браузера:
 
@@ -358,9 +384,35 @@ Readonly-кнопки:
 Важно:
 
 - без `INIT SYNC` или `INIT ASYNC` host-side sync может не появиться
+
+#### Сценарий 4. error:disconnect
+
+Цель: убедиться, что demo подписан на `error:disconnect` и выводит его в `Console`.
+
+Шаги:
+
+1. Откройте `MULTIPLAYER`
+2. Введите `CHANNEL ID = 0`
+3. Нажмите `DISCONNECT`
+
+Ожидается:
+
+- появляется `MULTIPLAYER: DISCONNECT: channelId=0`
+- появляется `MULTIPLAYER: EVENT error:disconnect`
+- payload ошибки содержит код из runtime, например `empty_channel_id`
+
+Допустимо также:
+
+- помимо realtime-события может появиться `MULTIPLAYER: DISCONNECT EXCEPTION`
+- это не отдельный баг: demo одновременно логирует event `error:disconnect` и exception из отклонённого `await disconnect(...)`
+
+Важно:
+
+- пустой или нечисловой `CHANNEL ID` не подходит для этого теста
+- в таком случае demo остановится раньше и напишет только `MULTIPLAYER: DISCONNECT: invalid channelId`
 - это expected behavior, а не новый баг
 
-#### Сценарий 3. Messaging
+#### Сценарий 5. Messaging
 
 1. На обоих клиентах выполнить `CONNECT`
 2. На одном клиенте заполнить:
