@@ -43,6 +43,7 @@ namespace Examples.Multiplayer
         [SerializeField] private Button _disableInitializerButton;
         [SerializeField] private Button _setPlayerStateButton;
         [SerializeField] private Button _sendMessageButton;
+        [SerializeField] private Button _offMessageButton;
         [SerializeField] private Button _readTickRateButton;
         [SerializeField] private Button _offTickButton;
         [SerializeField] private Button _readIsConnectedButton;
@@ -53,6 +54,7 @@ namespace Examples.Multiplayer
         [SerializeField] private Button _readNetworkStatsButton;
 
         private int _tickCount;
+        private bool _isMessageListenerSubscribed;
         private bool _isTickListenerSubscribed;
 
         private async void Start()
@@ -86,6 +88,7 @@ namespace Examples.Multiplayer
             AddListener(_disableInitializerButton, DisableInitializerAsync);
             AddListener(_setPlayerStateButton, SetPlayerState);
             AddListener(_sendMessageButton, SendMessage);
+            AddListener(_offMessageButton, DisableMessageListener);
             AddListener(_readTickRateButton, ReadTickRate);
             AddListener(_offTickButton, DisableTickListener);
             AddListener(_readIsConnectedButton, ReadIsConnected);
@@ -108,6 +111,7 @@ namespace Examples.Multiplayer
             RemoveListener(_disableInitializerButton, DisableInitializerAsync);
             RemoveListener(_setPlayerStateButton, SetPlayerState);
             RemoveListener(_sendMessageButton, SendMessage);
+            RemoveListener(_offMessageButton, DisableMessageListener);
             RemoveListener(_readTickRateButton, ReadTickRate);
             RemoveListener(_offTickButton, DisableTickListener);
             RemoveListener(_readIsConnectedButton, ReadIsConnected);
@@ -132,7 +136,7 @@ namespace Examples.Multiplayer
             GP_Multiplayer.on("hostMigrated", OnHostMigrated);
             GP_Multiplayer.on("becameHost", OnBecameHost);
             GP_Multiplayer.on("becamePeer", OnBecamePeer);
-            GP_Multiplayer.onMessage(OnMessage);
+            BindMessageListener();
             BindTickListener();
         }
 
@@ -150,7 +154,7 @@ namespace Examples.Multiplayer
             GP_Multiplayer.off("hostMigrated", OnHostMigrated);
             GP_Multiplayer.off("becameHost", OnBecameHost);
             GP_Multiplayer.off("becamePeer", OnBecamePeer);
-            GP_Multiplayer.offMessage(OnMessage);
+            UnbindMessageListener();
             UnbindTickListener();
         }
 
@@ -260,6 +264,18 @@ namespace Examples.Multiplayer
             GP_Multiplayer.sendMessage(eventName, message, options);
         }
 
+        public void DisableMessageListener()
+        {
+            if (!_isMessageListenerSubscribed)
+            {
+                Log("MULTIPLAYER: OFF MESSAGE: already disabled");
+                return;
+            }
+
+            UnbindMessageListener();
+            Log("MULTIPLAYER: OFF MESSAGE: listener disabled; customEvent stays active");
+        }
+
         public void ReadTickRate() => Log($"MULTIPLAYER: TICK RATE: {GP_Multiplayer.tickRate}");
         public void DisableTickListener()
         {
@@ -339,6 +355,24 @@ namespace Examples.Multiplayer
             _tickCount++;
             if (_tickCount == 1 || _tickCount % TickLogInterval == 0)
                 Log($"MULTIPLAYER: EVENT tick: count={_tickCount}, delta={delta.ToString("0.000", CultureInfo.InvariantCulture)}");
+        }
+
+        private void BindMessageListener()
+        {
+            if (_isMessageListenerSubscribed)
+                return;
+
+            GP_Multiplayer.onMessage(OnMessage);
+            _isMessageListenerSubscribed = true;
+        }
+
+        private void UnbindMessageListener()
+        {
+            if (!_isMessageListenerSubscribed)
+                return;
+
+            GP_Multiplayer.offMessage(OnMessage);
+            _isMessageListenerSubscribed = false;
         }
 
         private void BindTickListener()
