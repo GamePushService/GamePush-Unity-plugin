@@ -13,7 +13,7 @@ namespace GamePush.BuildTools
             "Assets/GP_Examples/Scenes/ExamplesScene.unity"
         };
 
-        [MenuItem("GamePush/Build/Parity WebGL")]
+        [MenuItem("Tools/GamePush/Parity WebGL")]
         public static void BuildParityWebGL()
         {
             Build();

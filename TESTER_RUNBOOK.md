@@ -80,7 +80,7 @@ sandbox.setProject(4, 'xT3RpsJMXpKWHPrTWkv3VBeHJKvCBccT')
    - `<repo-root>/Demo`
 2. Дождитесь импортов.
 3. В Unity запустите:
-   - `GamePush -> Build -> Parity WebGL`
+   - `Tools -> GamePush -> Parity WebGL`
 4. После сборки поднимите локальный сервер:
 
 ```bash
@@ -140,7 +140,7 @@ npm run build
 - parity bridge:
   - `Demo/Assets/GP_Examples/Parity/GP_ParityBridge.cs`
 - WebGL build script:
-  - `Demo/Assets/Plugins/GamePush/Editor/GP_ParityBuild.cs`
+  - `Demo/Assets/Editor/GamePush/GP_ParityBuild.cs`
 
 ## Режимы проверки
 
