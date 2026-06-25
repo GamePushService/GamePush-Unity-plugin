@@ -561,6 +561,41 @@ class GamePushUnityInner {
             this.trigger('CallOnDeleteMessageError')
         );
 
+        // multiplayer
+        this.gp.multiplayer.on('connect', (result) => {
+            this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('disconnect', (result) => {
+            this.trigger('CallOnMultiplayerDisconnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('error:connect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerConnectError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
+        this.gp.multiplayer.on('error:disconnect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerDisconnectError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
+        this.gp.multiplayer.on('playerJoined', (player) => {
+            this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playerLeft', (player) => {
+            this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('becameHost', () => {
+            this.trigger('CallOnMultiplayerBecameHost');
+        });
+        this.gp.multiplayer.on('becamePeer', () => {
+            this.trigger('CallOnMultiplayerBecamePeer');
+        });
+        this.gp.multiplayer.on('hostMigrated', (data) => {
+            this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
+        });
+
         //triggers
         this.gp.triggers.on('activate', ({ trigger }) => {
             this.trigger('CallOnTriggerActivate', JSON.stringify(trigger));
@@ -2243,6 +2278,32 @@ class GamePushUnityInner {
     }
     // Channels
 
+    // Multiplayer
+    Multiplayer_Connect(query) {
+        this.gp.multiplayer.connect(parseMultiplayerJson(query, {}));
+    }
+
+    Multiplayer_Disconnect(query) {
+        this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}));
+    }
+
+    Multiplayer_IsConnected() {
+        return this.toUnity(this.gp.multiplayer.isConnected);
+    }
+
+    Multiplayer_IsHost() {
+        return this.toUnity(this.gp.multiplayer.isHost);
+    }
+
+    Multiplayer_ConnectedPlayers() {
+        return this.toUnity(this.gp.multiplayer.connectedPlayers);
+    }
+
+    Multiplayer_NetworkStats() {
+        return this.toUnity(this.gp.multiplayer.networkStats);
+    }
+    // Multiplayer
+
     // Triggers
     Triggers_Claim(idOrTag) {
         try {
@@ -2843,6 +2904,49 @@ function mapItemWithChannel(item = {}) {
         ...item,
         channel: mapChannel(item.channel)
     };
+}
+
+function parseMultiplayerJson(value, fallback) {
+    if (
+        typeof value === 'undefined' ||
+        value === null ||
+        value === '' ||
+        value === 'undefined'
+    ) {
+        return fallback;
+    }
+
+    if (value === 'null') {
+        return null;
+    }
+
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return value;
+    }
+}
+
+function serializeMultiplayerError(error) {
+    if (!error) {
+        return null;
+    }
+
+    if (typeof error !== 'object') {
+        return {
+            message: String(error),
+            name: null,
+            code: null
+        };
+    }
+
+    const result = {
+        message: error.message || String(error),
+        name: error.name || null,
+        code: typeof error.code === 'undefined' ? null : error.code
+    };
+
+    return result;
 }
 
 window.executeFunctionByName = function (functionName, context /*, args*/) {

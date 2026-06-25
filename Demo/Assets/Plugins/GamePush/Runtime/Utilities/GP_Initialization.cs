@@ -54,6 +54,7 @@ namespace GamePush.Initialization
             SDK.AddComponent<GP_Language>();
             SDK.AddComponent<GP_Leaderboard>();
             SDK.AddComponent<GP_LeaderboardScoped>();
+            SDK.AddComponent<GP_Multiplayer>();
             SDK.AddComponent<GP_Payments>();
             SDK.AddComponent<GP_Platform>();
             SDK.AddComponent<GP_Player>();

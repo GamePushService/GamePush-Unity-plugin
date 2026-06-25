@@ -840,6 +840,27 @@ mergeInto(LibraryManager.library, {
 
     /* CHANNELS */
 
+    /* MULTIPLAYER */
+    GP_Multiplayer_Connect: function (query) {
+        _GP().Multiplayer_Connect(UTF8ToString(query));
+    },
+    GP_Multiplayer_Disconnect: function (query) {
+        _GP().Multiplayer_Disconnect(UTF8ToString(query));
+    },
+    GP_Multiplayer_IsConnected: function () {
+        return _ToBuff(_GP().Multiplayer_IsConnected());
+    },
+    GP_Multiplayer_IsHost: function () {
+        return _ToBuff(_GP().Multiplayer_IsHost());
+    },
+    GP_Multiplayer_ConnectedPlayers: function () {
+        return _ToBuff(_GP().Multiplayer_ConnectedPlayers());
+    },
+    GP_Multiplayer_NetworkStats: function () {
+        return _ToBuff(_GP().Multiplayer_NetworkStats());
+    },
+    /* MULTIPLAYER */
+
     /* TRIGGERS */
     GP_Triggers_Claim: function (idOrTag) {
         _GP().Triggers_Claim(UTF8ToString(idOrTag));
