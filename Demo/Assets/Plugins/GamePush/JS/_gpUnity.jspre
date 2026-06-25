@@ -562,6 +562,9 @@ class GamePushUnityInner {
         );
 
         // multiplayer
+        this.multiplayerPlayerInitializerRequestId = 0;
+        this.multiplayerPlayerInitializerResolvers = new Map();
+
         this.gp.multiplayer.on('connect', (result) => {
             this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
         });
@@ -580,11 +583,23 @@ class GamePushUnityInner {
                 JSON.stringify(serializeMultiplayerError(error))
             );
         });
+        this.gp.multiplayer.on('error:sendState', (error) => {
+            this.trigger(
+                'CallOnMultiplayerSendStateError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
         this.gp.multiplayer.on('playerJoined', (player) => {
             this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
         });
         this.gp.multiplayer.on('playerLeft', (player) => {
             this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playersUpdated', (playersState) => {
+            this.trigger(
+                'CallOnMultiplayerPlayersUpdated',
+                JSON.stringify(mapMultiplayerToObject(playersState))
+            );
         });
         this.gp.multiplayer.on('becameHost', () => {
             this.trigger('CallOnMultiplayerBecameHost');
@@ -2287,6 +2302,48 @@ class GamePushUnityInner {
         this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}));
     }
 
+    Multiplayer_DefinePlayerSchema(schema) {
+        this.gp.multiplayer.definePlayerSchema(parseMultiplayerJson(schema, {}));
+    }
+
+    Multiplayer_SetPlayerInitializer() {
+        this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
+            const requestId = ++this.multiplayerPlayerInitializerRequestId;
+
+            return await new Promise((resolve) => {
+                this.multiplayerPlayerInitializerResolvers.set(requestId, resolve);
+                this.trigger(
+                    'CallOnMultiplayerPlayerInitializerRequest',
+                    JSON.stringify({
+                        requestId,
+                        playerId,
+                        player
+                    })
+                );
+            });
+        });
+    }
+
+    Multiplayer_ClearPlayerInitializer() {
+        this.gp.multiplayer.setPlayerInitializer(null);
+    }
+
+    Multiplayer_ResolvePlayerInitializer(requestId, state) {
+        const resolve =
+            this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
+
+        if (!resolve) {
+            return;
+        }
+
+        this.multiplayerPlayerInitializerResolvers.delete(requestId);
+        resolve(parseMultiplayerJson(state, null));
+    }
+
+    Multiplayer_SetPlayerState(state) {
+        this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
+    }
+
     Multiplayer_IsConnected() {
         return this.toUnity(this.gp.multiplayer.isConnected);
     }
@@ -2301,6 +2358,14 @@ class GamePushUnityInner {
 
     Multiplayer_NetworkStats() {
         return this.toUnity(this.gp.multiplayer.networkStats);
+    }
+
+    Multiplayer_MyState() {
+        return this.toUnity(this.gp.multiplayer.myState);
+    }
+
+    Multiplayer_PlayersState() {
+        return this.toUnity(mapMultiplayerToObject(this.gp.multiplayer.playersState));
     }
     // Multiplayer
 
@@ -2946,6 +3011,18 @@ function serializeMultiplayerError(error) {
         code: typeof error.code === 'undefined' ? null : error.code
     };
 
+    return result;
+}
+
+function mapMultiplayerToObject(value) {
+    if (!(value instanceof Map)) {
+        return value;
+    }
+
+    const result = {};
+    value.forEach((item, key) => {
+        result[String(key)] = item;
+    });
     return result;
 }
 

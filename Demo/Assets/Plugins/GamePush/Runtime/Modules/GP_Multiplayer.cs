@@ -18,11 +18,16 @@ namespace GamePush
         private static event UnityAction<GP_Data> _disconnect;
         private static event UnityAction<GP_Data> _connectError;
         private static event UnityAction<GP_Data> _disconnectError;
+        private static event UnityAction<GP_Data> _sendStateError;
         private static event UnityAction<GP_Data> _playerJoined;
         private static event UnityAction<GP_Data> _playerLeft;
+        private static event UnityAction<GP_Data> _playersUpdated;
         private static event UnityAction<GP_Data> _hostMigrated;
         private static event UnityAction _becameHost;
         private static event UnityAction _becamePeer;
+
+        private static Func<int, MultiplayerConnectedPlayerData, GP_Data> _playerInitializer;
+        private static Func<int, MultiplayerConnectedPlayerData, Task<GP_Data>> _playerInitializerAsync;
 
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Multiplayer);
 
@@ -90,6 +95,16 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_Disconnect(string query);
         [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_DefinePlayerSchema(string schema);
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_SetPlayerInitializer();
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_ClearPlayerInitializer();
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_ResolvePlayerInitializer(int requestId, string state);
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_SetPlayerState(string state);
+        [DllImport("__Internal")]
         private static extern string GP_Multiplayer_IsConnected();
         [DllImport("__Internal")]
         private static extern string GP_Multiplayer_IsHost();
@@ -97,6 +112,10 @@ namespace GamePush
         private static extern string GP_Multiplayer_ConnectedPlayers();
         [DllImport("__Internal")]
         private static extern string GP_Multiplayer_NetworkStats();
+        [DllImport("__Internal")]
+        private static extern string GP_Multiplayer_MyState();
+        [DllImport("__Internal")]
+        private static extern string GP_Multiplayer_PlayersState();
 #endif
 
         public static Task<MultiplayerConnectResultData> connect(MultiplayerChannelQuery query)
@@ -118,6 +137,52 @@ namespace GamePush
 #else
             ConsoleLog($"DISCONNECT: {payload}");
             return Task.CompletedTask;
+#endif
+        }
+
+        public static void definePlayerSchema(GP_Data schema)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_DefinePlayerSchema(schema?.Data ?? "{}");
+#else
+            ConsoleLog($"DEFINE PLAYER SCHEMA: {schema?.Data ?? "{}"}");
+#endif
+        }
+
+        public static Task setPlayerInitializer(Func<int, MultiplayerConnectedPlayerData, GP_Data> initializer)
+        {
+            _playerInitializer = initializer;
+            _playerInitializerAsync = null;
+            ApplyPlayerInitializer(initializer != null);
+            return Task.CompletedTask;
+        }
+
+        public static Task setPlayerInitializer(Func<int, MultiplayerConnectedPlayerData, Task<GP_Data>> initializer)
+        {
+            _playerInitializer = null;
+            _playerInitializerAsync = initializer;
+            ApplyPlayerInitializer(initializer != null);
+            return Task.CompletedTask;
+        }
+
+        private static void ApplyPlayerInitializer(bool enabled)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            if (enabled)
+                GP_Multiplayer_SetPlayerInitializer();
+            else
+                GP_Multiplayer_ClearPlayerInitializer();
+#else
+            ConsoleLog(enabled ? "ENABLE PLAYER INITIALIZER" : "DISABLE PLAYER INITIALIZER");
+#endif
+        }
+
+        public static void setPlayerState(GP_Data state)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_SetPlayerState(state?.Data ?? "{}");
+#else
+            ConsoleLog($"SET PLAYER STATE: {state?.Data ?? "{}"}");
 #endif
         }
 
@@ -169,6 +234,30 @@ namespace GamePush
             }
         }
 
+        public static GP_Data myState
+        {
+            get
+            {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                return CreateDataOrNull(GP_Multiplayer_MyState());
+#else
+                return null;
+#endif
+            }
+        }
+
+        public static GP_Data playersState
+        {
+            get
+            {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                return CreateDataOrNull(GP_Multiplayer_PlayersState());
+#else
+                return null;
+#endif
+            }
+        }
+
         public static void on(string eventName, UnityAction<GP_Data> callback)
         {
             switch (eventName)
@@ -185,11 +274,17 @@ namespace GamePush
                 case "error:disconnect":
                     _disconnectError += callback;
                     break;
+                case "error:sendState":
+                    _sendStateError += callback;
+                    break;
                 case "playerJoined":
                     _playerJoined += callback;
                     break;
                 case "playerLeft":
                     _playerLeft += callback;
+                    break;
+                case "playersUpdated":
+                    _playersUpdated += callback;
                     break;
                 case "hostMigrated":
                     _hostMigrated += callback;
@@ -213,11 +308,17 @@ namespace GamePush
                 case "error:disconnect":
                     _disconnectError -= callback;
                     break;
+                case "error:sendState":
+                    _sendStateError -= callback;
+                    break;
                 case "playerJoined":
                     _playerJoined -= callback;
                     break;
                 case "playerLeft":
                     _playerLeft -= callback;
+                    break;
+                case "playersUpdated":
+                    _playersUpdated -= callback;
                     break;
                 case "hostMigrated":
                     _hostMigrated -= callback;
@@ -286,11 +387,38 @@ namespace GamePush
             CompleteError(PendingDisconnectOperations, data);
         }
 
+        private void CallOnMultiplayerSendStateError(string data) => _sendStateError?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayerJoined(string data) => _playerJoined?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayerLeft(string data) => _playerLeft?.Invoke(new GP_Data(data));
+        private void CallOnMultiplayerPlayersUpdated(string data) => _playersUpdated?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerHostMigrated(string data) => _hostMigrated?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerBecameHost() => _becameHost?.Invoke();
         private void CallOnMultiplayerBecamePeer() => _becamePeer?.Invoke();
+
+        private async void CallOnMultiplayerPlayerInitializerRequest(string data)
+        {
+            MultiplayerPlayerInitializerRequestData request =
+                JsonUtility.FromJson<MultiplayerPlayerInitializerRequestData>(data);
+
+            string state = "null";
+
+            if (_playerInitializer != null)
+            {
+                GP_Data result = _playerInitializer.Invoke(request.playerId, request.player);
+                if (result != null && !string.IsNullOrEmpty(result.Data))
+                    state = result.Data;
+            }
+            else if (_playerInitializerAsync != null)
+            {
+                GP_Data result = await _playerInitializerAsync.Invoke(request.playerId, request.player);
+                if (result != null && !string.IsNullOrEmpty(result.Data))
+                    state = result.Data;
+            }
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_ResolvePlayerInitializer(request.requestId, state);
+#endif
+        }
     }
 
     [Serializable]
@@ -307,6 +435,14 @@ namespace GamePush
     public class MultiplayerConnectResultData
     {
         public bool success;
+    }
+
+    [Serializable]
+    public class MultiplayerPlayerInitializerRequestData
+    {
+        public int requestId;
+        public int playerId;
+        public MultiplayerConnectedPlayerData player;
     }
 
     [Serializable]

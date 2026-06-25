@@ -847,6 +847,21 @@ mergeInto(LibraryManager.library, {
     GP_Multiplayer_Disconnect: function (query) {
         _GP().Multiplayer_Disconnect(UTF8ToString(query));
     },
+    GP_Multiplayer_DefinePlayerSchema: function (schema) {
+        _GP().Multiplayer_DefinePlayerSchema(UTF8ToString(schema));
+    },
+    GP_Multiplayer_SetPlayerInitializer: function () {
+        _GP().Multiplayer_SetPlayerInitializer();
+    },
+    GP_Multiplayer_ClearPlayerInitializer: function () {
+        _GP().Multiplayer_ClearPlayerInitializer();
+    },
+    GP_Multiplayer_ResolvePlayerInitializer: function (requestId, state) {
+        _GP().Multiplayer_ResolvePlayerInitializer(requestId, UTF8ToString(state));
+    },
+    GP_Multiplayer_SetPlayerState: function (state) {
+        _GP().Multiplayer_SetPlayerState(UTF8ToString(state));
+    },
     GP_Multiplayer_IsConnected: function () {
         return _ToBuff(_GP().Multiplayer_IsConnected());
     },
@@ -858,6 +873,12 @@ mergeInto(LibraryManager.library, {
     },
     GP_Multiplayer_NetworkStats: function () {
         return _ToBuff(_GP().Multiplayer_NetworkStats());
+    },
+    GP_Multiplayer_MyState: function () {
+        return _ToBuff(_GP().Multiplayer_MyState());
+    },
+    GP_Multiplayer_PlayersState: function () {
+        return _ToBuff(_GP().Multiplayer_PlayersState());
     },
     /* MULTIPLAYER */
 
