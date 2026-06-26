@@ -23,6 +23,7 @@ namespace GamePush
         private static event UnityAction<GP_Data> _playerJoined;
         private static event UnityAction<GP_Data> _playerLeft;
         private static event UnityAction<GP_Data> _playersUpdated;
+        private static event UnityAction<GP_Data> _globalStateUpdated;
         private static event UnityAction<GP_Data> _customEvent;
         private static event UnityAction<GP_Data> _hostMigrated;
         private static event UnityAction _becameHost;
@@ -101,6 +102,8 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_DefinePlayerSchema(string schema);
         [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_DefineGlobalSchema(string schema);
+        [DllImport("__Internal")]
         private static extern void GP_Multiplayer_SetPlayerInitializer();
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_ClearPlayerInitializer();
@@ -108,6 +111,8 @@ namespace GamePush
         private static extern void GP_Multiplayer_ResolvePlayerInitializer(int requestId, string state);
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_SetPlayerState(string state);
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_SetGlobalState(string state);
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_SetMode(string mode);
         [DllImport("__Internal")]
@@ -126,6 +131,8 @@ namespace GamePush
         private static extern string GP_Multiplayer_MyState();
         [DllImport("__Internal")]
         private static extern string GP_Multiplayer_PlayersState();
+        [DllImport("__Internal")]
+        private static extern string GP_Multiplayer_GlobalState();
 #endif
 
         public static Task<MultiplayerConnectResultData> connect(MultiplayerChannelQuery query)
@@ -156,6 +163,15 @@ namespace GamePush
             GP_Multiplayer_DefinePlayerSchema(schema?.Data ?? "{}");
 #else
             ConsoleLog($"DEFINE PLAYER SCHEMA: {schema?.Data ?? "{}"}");
+#endif
+        }
+
+        public static void defineGlobalSchema(GP_Data schema)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_DefineGlobalSchema(schema?.Data ?? "{}");
+#else
+            ConsoleLog($"DEFINE GLOBAL SCHEMA: {schema?.Data ?? "{}"}");
 #endif
         }
 
@@ -193,6 +209,15 @@ namespace GamePush
             GP_Multiplayer_SetPlayerState(state?.Data ?? "{}");
 #else
             ConsoleLog($"SET PLAYER STATE: {state?.Data ?? "{}"}");
+#endif
+        }
+
+        public static void setGlobalState(GP_Data state)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_SetGlobalState(state?.Data ?? "{}");
+#else
+            ConsoleLog($"SET GLOBAL STATE: {state?.Data ?? "{}"}");
 #endif
         }
 
@@ -328,6 +353,18 @@ namespace GamePush
             }
         }
 
+        public static GP_Data globalState
+        {
+            get
+            {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                return CreateDataOrNull(GP_Multiplayer_GlobalState());
+#else
+                return null;
+#endif
+            }
+        }
+
         public static void on(string eventName, UnityAction<GP_Data> callback)
         {
             switch (eventName)
@@ -355,6 +392,9 @@ namespace GamePush
                     break;
                 case "playersUpdated":
                     _playersUpdated += callback;
+                    break;
+                case "globalStateUpdated":
+                    _globalStateUpdated += callback;
                     break;
                 case "customEvent":
                     _customEvent += callback;
@@ -392,6 +432,9 @@ namespace GamePush
                     break;
                 case "playersUpdated":
                     _playersUpdated -= callback;
+                    break;
+                case "globalStateUpdated":
+                    _globalStateUpdated -= callback;
                     break;
                 case "customEvent":
                     _customEvent -= callback;
@@ -472,6 +515,7 @@ namespace GamePush
         private void CallOnMultiplayerPlayerJoined(string data) => _playerJoined?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayerLeft(string data) => _playerLeft?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayersUpdated(string data) => _playersUpdated?.Invoke(new GP_Data(data));
+        private void CallOnMultiplayerGlobalStateUpdated(string data) => _globalStateUpdated?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerCustomEvent(string data)
         {
             GP_Data payload = new GP_Data(data);

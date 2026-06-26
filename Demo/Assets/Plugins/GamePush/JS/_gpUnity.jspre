@@ -601,6 +601,12 @@ class GamePushUnityInner {
                 JSON.stringify(mapMultiplayerToObject(playersState))
             );
         });
+        this.gp.multiplayer.on('globalStateUpdated', (globalState) => {
+            this.trigger(
+                'CallOnMultiplayerGlobalStateUpdated',
+                JSON.stringify(globalState)
+            );
+        });
         this.gp.multiplayer.on('customEvent', (event) => {
             this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(event));
         });
@@ -2312,6 +2318,10 @@ class GamePushUnityInner {
         this.gp.multiplayer.definePlayerSchema(parseMultiplayerJson(schema, {}));
     }
 
+    Multiplayer_DefineGlobalSchema(schema) {
+        this.gp.multiplayer.defineGlobalSchema(parseMultiplayerJson(schema, {}));
+    }
+
     Multiplayer_SetPlayerInitializer() {
         this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
             const requestId = ++this.multiplayerPlayerInitializerRequestId;
@@ -2348,6 +2358,10 @@ class GamePushUnityInner {
 
     Multiplayer_SetPlayerState(state) {
         this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
+    }
+
+    Multiplayer_SetGlobalState(state) {
+        this.gp.multiplayer.setGlobalState(parseMultiplayerJson(state, {}));
     }
 
     Multiplayer_SetMode(mode) {
@@ -2394,6 +2408,10 @@ class GamePushUnityInner {
 
     Multiplayer_PlayersState() {
         return this.toUnity(mapMultiplayerToObject(this.gp.multiplayer.playersState));
+    }
+
+    Multiplayer_GlobalState() {
+        return this.toUnity(this.gp.multiplayer.globalState);
     }
     // Multiplayer
 
