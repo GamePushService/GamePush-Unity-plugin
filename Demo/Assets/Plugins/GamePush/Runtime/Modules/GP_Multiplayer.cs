@@ -14,6 +14,8 @@ namespace GamePush
             new Queue<TaskCompletionSource<MultiplayerConnectResultData>>();
         private static readonly Queue<TaskCompletionSource<bool>> PendingDisconnectOperations =
             new Queue<TaskCompletionSource<bool>>();
+        private static bool _connectInProgress;
+        private static bool _disconnectInProgress;
 
         private static event UnityAction<GP_Data> _connect;
         private static event UnityAction<GP_Data> _disconnect;
@@ -82,6 +84,13 @@ namespace GamePush
             return completionSource.Task;
         }
 
+        private static Task<T> CreateFaultedTask<T>(Exception exception)
+        {
+            TaskCompletionSource<T> completionSource = new TaskCompletionSource<T>();
+            completionSource.SetException(exception);
+            return completionSource.Task;
+        }
+
         private static void CompleteSuccess<T>(Queue<TaskCompletionSource<T>> queue, T result)
         {
             if (queue.Count > 0)
@@ -139,6 +148,10 @@ namespace GamePush
         {
             string payload = JsonUtility.ToJson(query ?? new MultiplayerChannelQuery());
 #if !UNITY_EDITOR && UNITY_WEBGL
+            if (_connectInProgress)
+                return CreateFaultedTask<MultiplayerConnectResultData>(new InvalidOperationException("Multiplayer connect is already in progress"));
+
+            _connectInProgress = true;
             return RunOperation(PendingConnectOperations, () => GP_Multiplayer_Connect(payload));
 #else
             ConsoleLog($"CONNECT: {payload}");
@@ -150,6 +163,10 @@ namespace GamePush
         {
             string payload = JsonUtility.ToJson(query ?? new MultiplayerChannelQuery());
 #if !UNITY_EDITOR && UNITY_WEBGL
+            if (_disconnectInProgress)
+                return CreateFaultedTask<bool>(new InvalidOperationException("Multiplayer disconnect is already in progress"));
+
+            _disconnectInProgress = true;
             return RunOperation(PendingDisconnectOperations, () => GP_Multiplayer_Disconnect(payload));
 #else
             ConsoleLog($"DISCONNECT: {payload}");
@@ -478,6 +495,7 @@ namespace GamePush
 
         private void CallOnMultiplayerConnect(string data)
         {
+            _connectInProgress = false;
             GP_Data payload = new GP_Data(data);
             _connect?.Invoke(payload);
 
@@ -495,18 +513,21 @@ namespace GamePush
 
         private void CallOnMultiplayerDisconnect(string data)
         {
+            _disconnectInProgress = false;
             _disconnect?.Invoke(new GP_Data(data));
             CompleteSuccess(PendingDisconnectOperations, true);
         }
 
         private void CallOnMultiplayerConnectError(string data)
         {
+            _connectInProgress = false;
             _connectError?.Invoke(new GP_Data(data));
             CompleteError(PendingConnectOperations, data);
         }
 
         private void CallOnMultiplayerDisconnectError(string data)
         {
+            _disconnectInProgress = false;
             _disconnectError?.Invoke(new GP_Data(data));
             CompleteError(PendingDisconnectOperations, data);
         }
@@ -540,17 +561,24 @@ namespace GamePush
 
             string state = "null";
 
-            if (_playerInitializer != null)
+            try
             {
-                GP_Data result = _playerInitializer.Invoke(request.playerId, request.player);
-                if (result != null && !string.IsNullOrEmpty(result.Data))
-                    state = result.Data;
+                if (_playerInitializer != null)
+                {
+                    GP_Data result = _playerInitializer.Invoke(request.playerId, request.player);
+                    if (result != null && !string.IsNullOrEmpty(result.Data))
+                        state = result.Data;
+                }
+                else if (_playerInitializerAsync != null)
+                {
+                    GP_Data result = await _playerInitializerAsync.Invoke(request.playerId, request.player);
+                    if (result != null && !string.IsNullOrEmpty(result.Data))
+                        state = result.Data;
+                }
             }
-            else if (_playerInitializerAsync != null)
+            catch (Exception exception)
             {
-                GP_Data result = await _playerInitializerAsync.Invoke(request.playerId, request.player);
-                if (result != null && !string.IsNullOrEmpty(result.Data))
-                    state = result.Data;
+                ConsoleLog($"PLAYER INITIALIZER ERROR: {exception.Message}");
             }
 
 #if !UNITY_EDITOR && UNITY_WEBGL

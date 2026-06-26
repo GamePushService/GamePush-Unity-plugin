@@ -1,6 +1,7 @@
 class GamePushUnityInner {
     constructor(gp) {
         this.gp = gp;
+        this.multiplayerPlayerInitializerTimeoutMs = 15000;
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
 
@@ -569,6 +570,7 @@ class GamePushUnityInner {
             this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
         });
         this.gp.multiplayer.on('disconnect', (result) => {
+            this.clearMultiplayerPlayerInitializerResolvers();
             this.trigger('CallOnMultiplayerDisconnect', JSON.stringify(result));
         });
         this.gp.multiplayer.on('error:connect', (error) => {
@@ -2307,11 +2309,15 @@ class GamePushUnityInner {
 
     // Multiplayer
     Multiplayer_Connect(query) {
-        this.gp.multiplayer.connect(parseMultiplayerJson(query, {}));
+        ignoreMultiplayerPromise(
+            this.gp.multiplayer.connect(parseMultiplayerJson(query, {}))
+        );
     }
 
     Multiplayer_Disconnect(query) {
-        this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}));
+        ignoreMultiplayerPromise(
+            this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}))
+        );
     }
 
     Multiplayer_DefinePlayerSchema(schema) {
@@ -2327,7 +2333,16 @@ class GamePushUnityInner {
             const requestId = ++this.multiplayerPlayerInitializerRequestId;
 
             return await new Promise((resolve) => {
-                this.multiplayerPlayerInitializerResolvers.set(requestId, resolve);
+                const timeoutId = window.setTimeout(() => {
+                    this.multiplayerPlayerInitializerResolvers.delete(requestId);
+                    resolve(null);
+                }, this.multiplayerPlayerInitializerTimeoutMs);
+
+                this.multiplayerPlayerInitializerResolvers.set(requestId, {
+                    resolve,
+                    timeoutId
+                });
+
                 this.trigger(
                     'CallOnMultiplayerPlayerInitializerRequest',
                     JSON.stringify({
@@ -2341,19 +2356,33 @@ class GamePushUnityInner {
     }
 
     Multiplayer_ClearPlayerInitializer() {
+        this.clearMultiplayerPlayerInitializerResolvers();
         this.gp.multiplayer.setPlayerInitializer(null);
     }
 
     Multiplayer_ResolvePlayerInitializer(requestId, state) {
-        const resolve =
+        const resolver =
             this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
 
-        if (!resolve) {
+        if (!resolver) {
             return;
         }
 
         this.multiplayerPlayerInitializerResolvers.delete(requestId);
-        resolve(parseMultiplayerJson(state, null));
+        window.clearTimeout(resolver.timeoutId);
+        resolver.resolve(parseMultiplayerJson(state, null));
+    }
+
+    clearMultiplayerPlayerInitializerResolvers() {
+        if (!this.multiplayerPlayerInitializerResolvers) {
+            return;
+        }
+
+        this.multiplayerPlayerInitializerResolvers.forEach((resolver) => {
+            window.clearTimeout(resolver.timeoutId);
+            resolver.resolve(null);
+        });
+        this.multiplayerPlayerInitializerResolvers.clear();
     }
 
     Multiplayer_SetPlayerState(state) {
@@ -3095,6 +3124,15 @@ function normalizeMultiplayerSendOptions(options) {
     }
 
     return options;
+}
+
+function ignoreMultiplayerPromise(result) {
+    if (!result || typeof result.catch !== 'function') {
+        return result;
+    }
+
+    result.catch(() => null);
+    return result;
 }
 
 window.executeFunctionByName = function (functionName, context /*, args*/) {
