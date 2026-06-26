@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -22,9 +23,12 @@ namespace GamePush
         private static event UnityAction<GP_Data> _playerJoined;
         private static event UnityAction<GP_Data> _playerLeft;
         private static event UnityAction<GP_Data> _playersUpdated;
+        private static event UnityAction<GP_Data> _customEvent;
         private static event UnityAction<GP_Data> _hostMigrated;
         private static event UnityAction _becameHost;
         private static event UnityAction _becamePeer;
+        private static event UnityAction<GP_Data> _onMessage;
+        private static event UnityAction<float> _onTick;
 
         private static Func<int, MultiplayerConnectedPlayerData, GP_Data> _playerInitializer;
         private static Func<int, MultiplayerConnectedPlayerData, Task<GP_Data>> _playerInitializerAsync;
@@ -105,6 +109,12 @@ namespace GamePush
         [DllImport("__Internal")]
         private static extern void GP_Multiplayer_SetPlayerState(string state);
         [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_SetMode(string mode);
+        [DllImport("__Internal")]
+        private static extern void GP_Multiplayer_SendMessage(string eventName, string data, string options);
+        [DllImport("__Internal")]
+        private static extern int GP_Multiplayer_TickRate();
+        [DllImport("__Internal")]
         private static extern string GP_Multiplayer_IsConnected();
         [DllImport("__Internal")]
         private static extern string GP_Multiplayer_IsHost();
@@ -184,6 +194,66 @@ namespace GamePush
 #else
             ConsoleLog($"SET PLAYER STATE: {state?.Data ?? "{}"}");
 #endif
+        }
+
+        public static void setMode(MultiplayerMode mode)
+        {
+            string value = mode == MultiplayerMode.FAST ? "fast" : "smooth";
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_SetMode(value);
+#else
+            ConsoleLog($"SET MODE: {value}");
+#endif
+        }
+
+        public static void sendMessage(string eventName, GP_Data data)
+        {
+            SendMessageInternal(eventName, data?.Data ?? "null", null);
+        }
+
+        public static void sendMessage(
+            string eventName,
+            GP_Data data,
+            MultiplayerSendMessageOptions options)
+        {
+            SendMessageInternal(
+                eventName,
+                data?.Data ?? "null",
+                options == null ? null : JsonUtility.ToJson(options));
+        }
+
+        public static void sendMessage(string eventName, GP_Data data, int target)
+        {
+            SendMessageInternal(
+                eventName,
+                data?.Data ?? "null",
+                target.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static void sendMessage(string eventName, GP_Data data, string target)
+        {
+            SendMessageInternal(eventName, data?.Data ?? "null", target);
+        }
+
+        private static void SendMessageInternal(string eventName, string data, string options)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GP_Multiplayer_SendMessage(eventName ?? string.Empty, data, options ?? "undefined");
+#else
+            ConsoleLog($"SEND MESSAGE: {eventName}, {data}, {options ?? "undefined"}");
+#endif
+        }
+
+        public static int tickRate
+        {
+            get
+            {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                return GP_Multiplayer_TickRate();
+#else
+                return 0;
+#endif
+            }
         }
 
         public static bool isConnected
@@ -286,6 +356,9 @@ namespace GamePush
                 case "playersUpdated":
                     _playersUpdated += callback;
                     break;
+                case "customEvent":
+                    _customEvent += callback;
+                    break;
                 case "hostMigrated":
                     _hostMigrated += callback;
                     break;
@@ -320,6 +393,9 @@ namespace GamePush
                 case "playersUpdated":
                     _playersUpdated -= callback;
                     break;
+                case "customEvent":
+                    _customEvent -= callback;
+                    break;
                 case "hostMigrated":
                     _hostMigrated -= callback;
                     break;
@@ -351,6 +427,11 @@ namespace GamePush
                     break;
             }
         }
+
+        public static void onMessage(UnityAction<GP_Data> callback) => _onMessage += callback;
+        public static void offMessage(UnityAction<GP_Data> callback) => _onMessage -= callback;
+        public static void onTick(UnityAction<float> callback) => _onTick += callback;
+        public static void offTick(UnityAction<float> callback) => _onTick -= callback;
 
         private void CallOnMultiplayerConnect(string data)
         {
@@ -391,6 +472,19 @@ namespace GamePush
         private void CallOnMultiplayerPlayerJoined(string data) => _playerJoined?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayerLeft(string data) => _playerLeft?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerPlayersUpdated(string data) => _playersUpdated?.Invoke(new GP_Data(data));
+        private void CallOnMultiplayerCustomEvent(string data)
+        {
+            GP_Data payload = new GP_Data(data);
+            _customEvent?.Invoke(payload);
+            _onMessage?.Invoke(payload);
+        }
+
+        private void CallOnMultiplayerTick(string data)
+        {
+            float.TryParse(data, NumberStyles.Float, CultureInfo.InvariantCulture, out float delta);
+            _onTick?.Invoke(delta);
+        }
+
         private void CallOnMultiplayerHostMigrated(string data) => _hostMigrated?.Invoke(new GP_Data(data));
         private void CallOnMultiplayerBecameHost() => _becameHost?.Invoke();
         private void CallOnMultiplayerBecamePeer() => _becamePeer?.Invoke();
@@ -463,5 +557,18 @@ namespace GamePush
     public class MultiplayerChannelQuery
     {
         public int channelId;
+    }
+
+    [Serializable]
+    public class MultiplayerSendMessageOptions
+    {
+        public string target;
+        public bool echo;
+    }
+
+    public enum MultiplayerMode
+    {
+        FAST,
+        SMOOTH
     }
 }

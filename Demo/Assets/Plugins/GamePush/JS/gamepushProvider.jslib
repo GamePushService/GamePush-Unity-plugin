@@ -862,6 +862,19 @@ mergeInto(LibraryManager.library, {
     GP_Multiplayer_SetPlayerState: function (state) {
         _GP().Multiplayer_SetPlayerState(UTF8ToString(state));
     },
+    GP_Multiplayer_SetMode: function (mode) {
+        _GP().Multiplayer_SetMode(UTF8ToString(mode));
+    },
+    GP_Multiplayer_SendMessage: function (eventName, data, options) {
+        _GP().Multiplayer_SendMessage(
+            UTF8ToString(eventName),
+            UTF8ToString(data),
+            UTF8ToString(options)
+        );
+    },
+    GP_Multiplayer_TickRate: function () {
+        return _GP().Multiplayer_TickRate();
+    },
     GP_Multiplayer_IsConnected: function () {
         return _ToBuff(_GP().Multiplayer_IsConnected());
     },

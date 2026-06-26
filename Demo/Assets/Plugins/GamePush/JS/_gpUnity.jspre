@@ -601,6 +601,9 @@ class GamePushUnityInner {
                 JSON.stringify(mapMultiplayerToObject(playersState))
             );
         });
+        this.gp.multiplayer.on('customEvent', (event) => {
+            this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(event));
+        });
         this.gp.multiplayer.on('becameHost', () => {
             this.trigger('CallOnMultiplayerBecameHost');
         });
@@ -609,6 +612,9 @@ class GamePushUnityInner {
         });
         this.gp.multiplayer.on('hostMigrated', (data) => {
             this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
+        });
+        this.gp.multiplayer.onTick((deltaTime) => {
+            this.trigger('CallOnMultiplayerTick', String(deltaTime));
         });
 
         //triggers
@@ -2344,6 +2350,28 @@ class GamePushUnityInner {
         this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
     }
 
+    Multiplayer_SetMode(mode) {
+        this.gp.multiplayer.setMode(mode);
+    }
+
+    Multiplayer_SendMessage(eventName, data, options) {
+        const parsedData = parseMultiplayerJson(data, null);
+        const parsedOptions = normalizeMultiplayerSendOptions(
+            parseMultiplayerJson(options, undefined)
+        );
+
+        if (typeof parsedOptions === 'undefined') {
+            this.gp.multiplayer.sendMessage(eventName, parsedData);
+            return;
+        }
+
+        this.gp.multiplayer.sendMessage(eventName, parsedData, parsedOptions);
+    }
+
+    Multiplayer_TickRate() {
+        return this.gp.multiplayer.tickRate;
+    }
+
     Multiplayer_IsConnected() {
         return this.toUnity(this.gp.multiplayer.isConnected);
     }
@@ -3024,6 +3052,31 @@ function mapMultiplayerToObject(value) {
         result[String(key)] = item;
     });
     return result;
+}
+
+function normalizeMultiplayerSendOptions(options) {
+    if (
+        typeof options === 'string' &&
+        options !== 'all' &&
+        /^-?\d+$/.test(options)
+    ) {
+        return Number(options);
+    }
+
+    if (
+        options &&
+        typeof options === 'object' &&
+        typeof options.target === 'string' &&
+        options.target !== 'all' &&
+        /^-?\d+$/.test(options.target)
+    ) {
+        return {
+            ...options,
+            target: Number(options.target)
+        };
+    }
+
+    return options;
 }
 
 window.executeFunctionByName = function (functionName, context /*, args*/) {
