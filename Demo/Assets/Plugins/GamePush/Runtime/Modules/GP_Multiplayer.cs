@@ -14,8 +14,10 @@ namespace GamePush
             new Queue<TaskCompletionSource<MultiplayerConnectResultData>>();
         private static readonly Queue<TaskCompletionSource<bool>> PendingDisconnectOperations =
             new Queue<TaskCompletionSource<bool>>();
+#if !UNITY_EDITOR && UNITY_WEBGL
         private static bool _connectInProgress;
         private static bool _disconnectInProgress;
+#endif
 
         private static event UnityAction<GP_Data> _connect;
         private static event UnityAction<GP_Data> _disconnect;
@@ -495,7 +497,9 @@ namespace GamePush
 
         private void CallOnMultiplayerConnect(string data)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
             _connectInProgress = false;
+#endif
             GP_Data payload = new GP_Data(data);
             _connect?.Invoke(payload);
 
@@ -513,21 +517,27 @@ namespace GamePush
 
         private void CallOnMultiplayerDisconnect(string data)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
             _disconnectInProgress = false;
+#endif
             _disconnect?.Invoke(new GP_Data(data));
             CompleteSuccess(PendingDisconnectOperations, true);
         }
 
         private void CallOnMultiplayerConnectError(string data)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
             _connectInProgress = false;
+#endif
             _connectError?.Invoke(new GP_Data(data));
             CompleteError(PendingConnectOperations, data);
         }
 
         private void CallOnMultiplayerDisconnectError(string data)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
             _disconnectInProgress = false;
+#endif
             _disconnectError?.Invoke(new GP_Data(data));
             CompleteError(PendingDisconnectOperations, data);
         }
