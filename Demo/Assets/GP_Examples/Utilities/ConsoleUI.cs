@@ -30,6 +30,12 @@ namespace Examples.Console
             _console.text += $"\n{data}";
             Debug.Log(data);
         }
+
+        public void Clear()
+        {
+            if (_console != null)
+                _console.text = string.Empty;
+        }
     }
 
 

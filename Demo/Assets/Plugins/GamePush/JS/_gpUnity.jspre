@@ -1,6 +1,7 @@
 class GamePushUnityInner {
     constructor(gp) {
         this.gp = gp;
+        this.multiplayerPlayerInitializerTimeoutMs = 15000;
 
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
 
@@ -560,6 +561,69 @@ class GamePushUnityInner {
         this.gp.channels.on('error:deleteMessage', (err) =>
             this.trigger('CallOnDeleteMessageError')
         );
+
+        // multiplayer
+        this.multiplayerPlayerInitializerRequestId = 0;
+        this.multiplayerPlayerInitializerResolvers = new Map();
+
+        this.gp.multiplayer.on('connect', (result) => {
+            this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('disconnect', (result) => {
+            this.clearMultiplayerPlayerInitializerResolvers();
+            this.trigger('CallOnMultiplayerDisconnect', JSON.stringify(result));
+        });
+        this.gp.multiplayer.on('error:connect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerConnectError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
+        this.gp.multiplayer.on('error:disconnect', (error) => {
+            this.trigger(
+                'CallOnMultiplayerDisconnectError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
+        this.gp.multiplayer.on('error:sendState', (error) => {
+            this.trigger(
+                'CallOnMultiplayerSendStateError',
+                JSON.stringify(serializeMultiplayerError(error))
+            );
+        });
+        this.gp.multiplayer.on('playerJoined', (player) => {
+            this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playerLeft', (player) => {
+            this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
+        });
+        this.gp.multiplayer.on('playersUpdated', (playersState) => {
+            this.trigger(
+                'CallOnMultiplayerPlayersUpdated',
+                JSON.stringify(mapMultiplayerToObject(playersState))
+            );
+        });
+        this.gp.multiplayer.on('globalStateUpdated', (globalState) => {
+            this.trigger(
+                'CallOnMultiplayerGlobalStateUpdated',
+                JSON.stringify(globalState)
+            );
+        });
+        this.gp.multiplayer.on('customEvent', (event) => {
+            this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(event));
+        });
+        this.gp.multiplayer.on('becameHost', () => {
+            this.trigger('CallOnMultiplayerBecameHost');
+        });
+        this.gp.multiplayer.on('becamePeer', () => {
+            this.trigger('CallOnMultiplayerBecamePeer');
+        });
+        this.gp.multiplayer.on('hostMigrated', (data) => {
+            this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
+        });
+        this.gp.multiplayer.onTick((deltaTime) => {
+            this.trigger('CallOnMultiplayerTick', String(deltaTime));
+        });
 
         //triggers
         this.gp.triggers.on('activate', ({ trigger }) => {
@@ -2243,6 +2307,143 @@ class GamePushUnityInner {
     }
     // Channels
 
+    // Multiplayer
+    Multiplayer_Connect(query) {
+        ignoreMultiplayerPromise(
+            this.gp.multiplayer.connect(parseMultiplayerJson(query, {}))
+        );
+    }
+
+    Multiplayer_Disconnect(query) {
+        ignoreMultiplayerPromise(
+            this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}))
+        );
+    }
+
+    Multiplayer_DefinePlayerSchema(schema) {
+        this.gp.multiplayer.definePlayerSchema(parseMultiplayerJson(schema, {}));
+    }
+
+    Multiplayer_DefineGlobalSchema(schema) {
+        this.gp.multiplayer.defineGlobalSchema(parseMultiplayerJson(schema, {}));
+    }
+
+    Multiplayer_SetPlayerInitializer() {
+        this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
+            const requestId = ++this.multiplayerPlayerInitializerRequestId;
+
+            return await new Promise((resolve) => {
+                const timeoutId = window.setTimeout(() => {
+                    this.multiplayerPlayerInitializerResolvers.delete(requestId);
+                    resolve(null);
+                }, this.multiplayerPlayerInitializerTimeoutMs);
+
+                this.multiplayerPlayerInitializerResolvers.set(requestId, {
+                    resolve,
+                    timeoutId
+                });
+
+                this.trigger(
+                    'CallOnMultiplayerPlayerInitializerRequest',
+                    JSON.stringify({
+                        requestId,
+                        playerId,
+                        player
+                    })
+                );
+            });
+        });
+    }
+
+    Multiplayer_ClearPlayerInitializer() {
+        this.clearMultiplayerPlayerInitializerResolvers();
+        this.gp.multiplayer.setPlayerInitializer(null);
+    }
+
+    Multiplayer_ResolvePlayerInitializer(requestId, state) {
+        const resolver =
+            this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
+
+        if (!resolver) {
+            return;
+        }
+
+        this.multiplayerPlayerInitializerResolvers.delete(requestId);
+        window.clearTimeout(resolver.timeoutId);
+        resolver.resolve(parseMultiplayerJson(state, null));
+    }
+
+    clearMultiplayerPlayerInitializerResolvers() {
+        if (!this.multiplayerPlayerInitializerResolvers) {
+            return;
+        }
+
+        this.multiplayerPlayerInitializerResolvers.forEach((resolver) => {
+            window.clearTimeout(resolver.timeoutId);
+            resolver.resolve(null);
+        });
+        this.multiplayerPlayerInitializerResolvers.clear();
+    }
+
+    Multiplayer_SetPlayerState(state) {
+        this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
+    }
+
+    Multiplayer_SetGlobalState(state) {
+        this.gp.multiplayer.setGlobalState(parseMultiplayerJson(state, {}));
+    }
+
+    Multiplayer_SetMode(mode) {
+        this.gp.multiplayer.setMode(mode);
+    }
+
+    Multiplayer_SendMessage(eventName, data, options) {
+        const parsedData = parseMultiplayerJson(data, null);
+        const parsedOptions = normalizeMultiplayerSendOptions(
+            parseMultiplayerJson(options, undefined)
+        );
+
+        if (typeof parsedOptions === 'undefined') {
+            this.gp.multiplayer.sendMessage(eventName, parsedData);
+            return;
+        }
+
+        this.gp.multiplayer.sendMessage(eventName, parsedData, parsedOptions);
+    }
+
+    Multiplayer_TickRate() {
+        return this.gp.multiplayer.tickRate;
+    }
+
+    Multiplayer_IsConnected() {
+        return this.toUnity(this.gp.multiplayer.isConnected);
+    }
+
+    Multiplayer_IsHost() {
+        return this.toUnity(this.gp.multiplayer.isHost);
+    }
+
+    Multiplayer_ConnectedPlayers() {
+        return this.toUnity(this.gp.multiplayer.connectedPlayers);
+    }
+
+    Multiplayer_NetworkStats() {
+        return this.toUnity(this.gp.multiplayer.networkStats);
+    }
+
+    Multiplayer_MyState() {
+        return this.toUnity(this.gp.multiplayer.myState);
+    }
+
+    Multiplayer_PlayersState() {
+        return this.toUnity(mapMultiplayerToObject(this.gp.multiplayer.playersState));
+    }
+
+    Multiplayer_GlobalState() {
+        return this.toUnity(this.gp.multiplayer.globalState);
+    }
+    // Multiplayer
+
     // Triggers
     Triggers_Claim(idOrTag) {
         try {
@@ -2843,6 +3044,95 @@ function mapItemWithChannel(item = {}) {
         ...item,
         channel: mapChannel(item.channel)
     };
+}
+
+function parseMultiplayerJson(value, fallback) {
+    if (
+        typeof value === 'undefined' ||
+        value === null ||
+        value === '' ||
+        value === 'undefined'
+    ) {
+        return fallback;
+    }
+
+    if (value === 'null') {
+        return null;
+    }
+
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return value;
+    }
+}
+
+function serializeMultiplayerError(error) {
+    if (!error) {
+        return null;
+    }
+
+    if (typeof error !== 'object') {
+        return {
+            message: String(error),
+            name: null,
+            code: null
+        };
+    }
+
+    const result = {
+        message: error.message || String(error),
+        name: error.name || null,
+        code: typeof error.code === 'undefined' ? null : error.code
+    };
+
+    return result;
+}
+
+function mapMultiplayerToObject(value) {
+    if (!(value instanceof Map)) {
+        return value;
+    }
+
+    const result = {};
+    value.forEach((item, key) => {
+        result[String(key)] = item;
+    });
+    return result;
+}
+
+function normalizeMultiplayerSendOptions(options) {
+    if (
+        typeof options === 'string' &&
+        options !== 'all' &&
+        /^-?\d+$/.test(options)
+    ) {
+        return Number(options);
+    }
+
+    if (
+        options &&
+        typeof options === 'object' &&
+        typeof options.target === 'string' &&
+        options.target !== 'all' &&
+        /^-?\d+$/.test(options.target)
+    ) {
+        return {
+            ...options,
+            target: Number(options.target)
+        };
+    }
+
+    return options;
+}
+
+function ignoreMultiplayerPromise(result) {
+    if (!result || typeof result.catch !== 'function') {
+        return result;
+    }
+
+    result.catch(() => null);
+    return result;
 }
 
 window.executeFunctionByName = function (functionName, context /*, args*/) {

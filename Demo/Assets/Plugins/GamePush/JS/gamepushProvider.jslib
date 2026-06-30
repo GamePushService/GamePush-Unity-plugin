@@ -840,6 +840,70 @@ mergeInto(LibraryManager.library, {
 
     /* CHANNELS */
 
+    /* MULTIPLAYER */
+    GP_Multiplayer_Connect: function (query) {
+        _GP().Multiplayer_Connect(UTF8ToString(query));
+    },
+    GP_Multiplayer_Disconnect: function (query) {
+        _GP().Multiplayer_Disconnect(UTF8ToString(query));
+    },
+    GP_Multiplayer_DefinePlayerSchema: function (schema) {
+        _GP().Multiplayer_DefinePlayerSchema(UTF8ToString(schema));
+    },
+    GP_Multiplayer_DefineGlobalSchema: function (schema) {
+        _GP().Multiplayer_DefineGlobalSchema(UTF8ToString(schema));
+    },
+    GP_Multiplayer_SetPlayerInitializer: function () {
+        _GP().Multiplayer_SetPlayerInitializer();
+    },
+    GP_Multiplayer_ClearPlayerInitializer: function () {
+        _GP().Multiplayer_ClearPlayerInitializer();
+    },
+    GP_Multiplayer_ResolvePlayerInitializer: function (requestId, state) {
+        _GP().Multiplayer_ResolvePlayerInitializer(requestId, UTF8ToString(state));
+    },
+    GP_Multiplayer_SetPlayerState: function (state) {
+        _GP().Multiplayer_SetPlayerState(UTF8ToString(state));
+    },
+    GP_Multiplayer_SetGlobalState: function (state) {
+        _GP().Multiplayer_SetGlobalState(UTF8ToString(state));
+    },
+    GP_Multiplayer_SetMode: function (mode) {
+        _GP().Multiplayer_SetMode(UTF8ToString(mode));
+    },
+    GP_Multiplayer_SendMessage: function (eventName, data, options) {
+        _GP().Multiplayer_SendMessage(
+            UTF8ToString(eventName),
+            UTF8ToString(data),
+            UTF8ToString(options)
+        );
+    },
+    GP_Multiplayer_TickRate: function () {
+        return _GP().Multiplayer_TickRate();
+    },
+    GP_Multiplayer_IsConnected: function () {
+        return _ToBuff(_GP().Multiplayer_IsConnected());
+    },
+    GP_Multiplayer_IsHost: function () {
+        return _ToBuff(_GP().Multiplayer_IsHost());
+    },
+    GP_Multiplayer_ConnectedPlayers: function () {
+        return _ToBuff(_GP().Multiplayer_ConnectedPlayers());
+    },
+    GP_Multiplayer_NetworkStats: function () {
+        return _ToBuff(_GP().Multiplayer_NetworkStats());
+    },
+    GP_Multiplayer_MyState: function () {
+        return _ToBuff(_GP().Multiplayer_MyState());
+    },
+    GP_Multiplayer_PlayersState: function () {
+        return _ToBuff(_GP().Multiplayer_PlayersState());
+    },
+    GP_Multiplayer_GlobalState: function () {
+        return _ToBuff(_GP().Multiplayer_GlobalState());
+    },
+    /* MULTIPLAYER */
+
     /* TRIGGERS */
     GP_Triggers_Claim: function (idOrTag) {
         _GP().Triggers_Claim(UTF8ToString(idOrTag));
