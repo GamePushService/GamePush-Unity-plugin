@@ -6,7 +6,7 @@ namespace GamePush
 {
     public class PluginData
     {
-        public const string SDK_VERSION = "1.9.0";
+        public const string SDK_VERSION = "1.10.0-pre.1";
         public const string GAME_ENGINE = "Unity";
     }
 }
