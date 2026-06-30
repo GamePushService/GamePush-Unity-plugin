@@ -65,6 +65,7 @@ namespace Examples.Multiplayer
         private int _tickCount;
         private bool _isMessageListenerSubscribed;
         private bool _isTickListenerSubscribed;
+        private Button _clearConsoleButton;
 
         private async void Start()
         {
@@ -93,6 +94,7 @@ namespace Examples.Multiplayer
 
         private void BindButtons()
         {
+            EnsureClearConsoleButton();
             AddListener(_connectButton, ConnectAsync);
             AddListener(_disconnectButton, DisconnectAsync);
             AddListener(_fastModeButton, SetFastMode);
@@ -105,9 +107,10 @@ namespace Examples.Multiplayer
             AddListener(_setPlayerStateButton, SetPlayerState);
             AddListener(_setGlobalStateButton, SetGlobalState);
             AddListener(_sendMessageButton, SendMessage);
-            AddListener(_offMessageButton, DisableMessageListener);
+            AddListener(_offMessageButton, ToggleMessageListener);
+            AddListener(_clearConsoleButton, ClearConsole);
             AddListener(_readTickRateButton, ReadTickRate);
-            AddListener(_offTickButton, DisableTickListener);
+            AddListener(_offTickButton, ToggleTickListener);
             AddListener(_readIsConnectedButton, ReadIsConnected);
             AddListener(_readIsHostButton, ReadIsHost);
             AddListener(_readMyStateButton, ReadMyState);
@@ -131,9 +134,10 @@ namespace Examples.Multiplayer
             RemoveListener(_setPlayerStateButton, SetPlayerState);
             RemoveListener(_setGlobalStateButton, SetGlobalState);
             RemoveListener(_sendMessageButton, SendMessage);
-            RemoveListener(_offMessageButton, DisableMessageListener);
+            RemoveListener(_offMessageButton, ToggleMessageListener);
+            RemoveListener(_clearConsoleButton, ClearConsole);
             RemoveListener(_readTickRateButton, ReadTickRate);
-            RemoveListener(_offTickButton, DisableTickListener);
+            RemoveListener(_offTickButton, ToggleTickListener);
             RemoveListener(_readIsConnectedButton, ReadIsConnected);
             RemoveListener(_readIsHostButton, ReadIsHost);
             RemoveListener(_readMyStateButton, ReadMyState);
@@ -319,30 +323,40 @@ namespace Examples.Multiplayer
             GP_Multiplayer.sendMessage(eventName, message, options);
         }
 
-        public void DisableMessageListener()
+        public void ToggleMessageListener()
         {
-            if (!_isMessageListenerSubscribed)
+            if (_isMessageListenerSubscribed)
             {
-                Log("MULTIPLAYER: OFF MESSAGE: already disabled");
-                return;
+                UnbindMessageListener();
+                Log("MULTIPLAYER: MESSAGE: listener disabled; customEvent stays active");
             }
+            else
+            {
+                BindMessageListener();
+                Log("MULTIPLAYER: MESSAGE: listener enabled");
+            }
+        }
 
-            UnbindMessageListener();
-            Log("MULTIPLAYER: OFF MESSAGE: listener disabled; customEvent stays active");
+        public void ClearConsole()
+        {
+            if (ConsoleUI.Instance != null)
+                ConsoleUI.Instance.Clear();
         }
 
         public void ReadTickRate() => Log($"MULTIPLAYER: TICK RATE: {GP_Multiplayer.tickRate}");
 
-        public void DisableTickListener()
+        public void ToggleTickListener()
         {
-            if (!_isTickListenerSubscribed)
+            if (_isTickListenerSubscribed)
             {
-                Log("MULTIPLAYER: OFF TICK: already disabled");
-                return;
+                UnbindTickListener();
+                Log("MULTIPLAYER: TICK: listener disabled");
             }
-
-            UnbindTickListener();
-            Log("MULTIPLAYER: OFF TICK: listener disabled");
+            else
+            {
+                BindTickListener();
+                Log("MULTIPLAYER: TICK: listener enabled");
+            }
         }
 
         public void ReadIsConnected() => Log($"MULTIPLAYER: IS CONNECTED: {GP_Multiplayer.isConnected}");
@@ -428,6 +442,7 @@ namespace Examples.Multiplayer
 
             GP_Multiplayer.onMessage(OnMessage);
             _isMessageListenerSubscribed = true;
+            UpdateMessageButtonText();
         }
 
         private void UnbindMessageListener()
@@ -437,6 +452,35 @@ namespace Examples.Multiplayer
 
             GP_Multiplayer.offMessage(OnMessage);
             _isMessageListenerSubscribed = false;
+            UpdateMessageButtonText();
+        }
+
+        private void UpdateMessageButtonText()
+        {
+            if (_offMessageButton == null)
+                return;
+
+            TMP_Text label = _offMessageButton.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+                label.text = _isMessageListenerSubscribed ? "MESSAGE OFF" : "MESSAGE ON";
+        }
+
+        private void EnsureClearConsoleButton()
+        {
+            if (_clearConsoleButton != null || _offMessageButton == null)
+                return;
+
+            Transform existing = _offMessageButton.transform.parent.Find("CLEAR CONSOLE");
+            if (existing != null && existing.TryGetComponent(out _clearConsoleButton))
+                return;
+
+            _clearConsoleButton = Instantiate(_offMessageButton, _offMessageButton.transform.parent);
+            _clearConsoleButton.name = "CLEAR CONSOLE";
+            _clearConsoleButton.transform.SetSiblingIndex(_offMessageButton.transform.GetSiblingIndex() + 1);
+
+            TMP_Text label = _clearConsoleButton.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+                label.text = "CLEAR CONSOLE";
         }
 
         private void BindTickListener()
@@ -447,6 +491,7 @@ namespace Examples.Multiplayer
             GP_Multiplayer.onTick(OnTick);
             _isTickListenerSubscribed = true;
             _tickCount = 0;
+            UpdateTickButtonText();
         }
 
         private void UnbindTickListener()
@@ -456,6 +501,17 @@ namespace Examples.Multiplayer
 
             GP_Multiplayer.offTick(OnTick);
             _isTickListenerSubscribed = false;
+            UpdateTickButtonText();
+        }
+
+        private void UpdateTickButtonText()
+        {
+            if (_offTickButton == null)
+                return;
+
+            TMP_Text label = _offTickButton.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+                label.text = _isTickListenerSubscribed ? "TICK OFF" : "TICK ON";
         }
 
         private void ApplyInputDefaults()
