@@ -1,9 +1,11 @@
 #if UNITY_EDITOR_WIN
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
@@ -29,6 +31,8 @@ namespace GamePushEditor.Play2Web
         static bool _hidden;
         static RectInt _lastRect;
         static IntPtr _lastOwner;
+        static readonly Dictionary<MethodInfo, Func<object, IntPtr>> RefIntPtrGetters =
+            new Dictionary<MethodInfo, Func<object, IntPtr>>();
 
         public static string State =>
             $"host={(IsRunning ? "up" : "down")} ready={_ready} cover={_cover} rect={_lastRect.width}x{_lastRect.height}";
@@ -338,25 +342,22 @@ namespace GamePushEditor.Play2Web
             if (gameView == null)
                 return IntPtr.Zero;
 
-            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var parent = typeof(EditorWindow).GetField("m_Parent", flags)?.GetValue(gameView);
-            if (parent != null)
+            try
             {
-                var hwnd = RootWindow(AsHwnd(parent.GetType().GetProperty("nativeHandle", flags)?.GetValue(parent)));
-                if (hwnd == IntPtr.Zero)
-                    hwnd = RootWindow(AsHwnd(parent.GetType().GetProperty("windowHandle", flags)?.GetValue(parent)));
+                var parent = ReadInstance(gameView, "m_Parent");
+                var hwnd = RootWindow(ReadHwnd(parent));
                 if (hwnd != IntPtr.Zero)
                     return hwnd;
 
-                var container = parent.GetType().GetProperty("window", flags)?.GetValue(parent);
-                if (container != null)
-                {
-                    hwnd = RootWindow(AsHwnd(container.GetType().GetProperty("nativeHandle", flags)?.GetValue(container)));
-                    if (hwnd == IntPtr.Zero)
-                        hwnd = RootWindow(AsHwnd(container.GetType().GetProperty("winHandle", flags)?.GetValue(container)));
-                    if (hwnd != IntPtr.Zero)
-                        return hwnd;
-                }
+                var container = ReadInstance(parent, "window") ?? ReadInstance(parent, "m_Window");
+                hwnd = RootWindow(ReadHwnd(container));
+                if (hwnd != IntPtr.Zero)
+                    return hwnd;
+            }
+            catch (Exception)
+            {
+                // Unity 6.6+ nativeHandle is `ref IntPtr`; PropertyInfo.GetValue throws
+                // NotSupportedException. Field reads and the point fallback still work.
             }
 
             // nativeHandle is sometimes a C++ object, not an HWND. The window under the Game
@@ -371,7 +372,110 @@ namespace GamePushEditor.Play2Web
             return RootWindow(WindowFromPoint(point));
         }
 
-        static IntPtr AsHwnd(object value) => value is IntPtr ptr ? ptr : IntPtr.Zero;
+        // Older Unity: nativeHandle / winHandle return IntPtr and GetValue works.
+        // Unity 6.6: those getters are `ref IntPtr` over MonoReloadableIntPtr fields.
+        static IntPtr ReadHwnd(object obj)
+        {
+            if (obj == null)
+                return IntPtr.Zero;
+
+            foreach (var name in new[] { "m_WindowPtr", "winHandle", "windowHandle", "nativeHandle", "m_ViewPtr" })
+            {
+                var hwnd = AsHwnd(ReadInstance(obj, name));
+                if (hwnd != IntPtr.Zero)
+                    return hwnd;
+            }
+            return IntPtr.Zero;
+        }
+
+        static object ReadInstance(object obj, string name)
+        {
+            if (obj == null || string.IsNullOrEmpty(name))
+                return null;
+
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            for (var type = obj.GetType(); type != null && type != typeof(object); type = type.BaseType)
+            {
+                var field = type.GetField(name, flags);
+                if (field != null)
+                    return field.GetValue(obj);
+
+                var property = type.GetProperty(name, flags);
+                if (property != null)
+                    return ReadProperty(property, obj);
+            }
+            return null;
+        }
+
+        static object ReadProperty(PropertyInfo property, object obj)
+        {
+            var getter = property.GetGetMethod(true);
+            if (getter == null)
+                return null;
+            if (getter.ReturnType.IsByRef)
+                return ReadByRefIntPtr(getter, obj);
+
+            try
+            {
+                return property.GetValue(obj);
+            }
+            catch (NotSupportedException)
+            {
+                return ReadByRefIntPtr(getter, obj);
+            }
+        }
+
+        static object ReadByRefIntPtr(MethodInfo getter, object instance)
+        {
+            if (getter == null || instance == null)
+                return null;
+            var element = getter.ReturnType.IsByRef ? getter.ReturnType.GetElementType() : getter.ReturnType;
+            if (element != typeof(IntPtr))
+                return null;
+
+            if (!RefIntPtrGetters.TryGetValue(getter, out var read))
+            {
+                read = BuildRefIntPtrGetter(getter);
+                RefIntPtrGetters[getter] = read;
+            }
+            return read != null ? (object)read(instance) : null;
+        }
+
+        static Func<object, IntPtr> BuildRefIntPtrGetter(MethodInfo getter)
+        {
+            try
+            {
+                var method = new DynamicMethod(
+                    "GP_ReadRefIntPtr_" + getter.DeclaringType.Name + "_" + getter.Name,
+                    typeof(IntPtr),
+                    new[] { typeof(object) },
+                    getter.DeclaringType.Module,
+                    skipVisibility: true);
+                var il = method.GetILGenerator();
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Castclass, getter.DeclaringType);
+                il.Emit(getter.IsVirtual && !getter.IsFinal ? OpCodes.Callvirt : OpCodes.Call, getter);
+                il.Emit(OpCodes.Ldobj, typeof(IntPtr));
+                il.Emit(OpCodes.Ret);
+                return (Func<object, IntPtr>)method.CreateDelegate(typeof(Func<object, IntPtr>));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        static IntPtr AsHwnd(object value)
+        {
+            if (value is IntPtr ptr)
+                return ptr;
+            if (value == null)
+                return IntPtr.Zero;
+
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var field = value.GetType().GetField("m_IntPtr", flags);
+            return field != null && field.GetValue(value) is IntPtr inner ? inner : IntPtr.Zero;
+        }
 
         static IntPtr RootWindow(IntPtr hwnd)
         {
