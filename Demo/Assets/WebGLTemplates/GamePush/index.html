@@ -60,8 +60,12 @@
     const buildUrl = "Build";
     const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
     const config = {
+#if typeof DATA_FILENAME != "undefined"
       dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
-      workerUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+#else
+      primaryDataUrls: {{{ JSON.stringify(global.PRIMARY_DATA_FILES) }}},
+      secondaryDataUrls: {{{ JSON.stringify(global.SECONDARY_DATA_FILES) }}},
+#endif
       frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
       codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
       // #if MEMORY_FILENAME
