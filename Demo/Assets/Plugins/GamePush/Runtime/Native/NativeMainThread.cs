@@ -45,6 +45,7 @@ namespace GamePush.Native
                 try { action(); }
                 catch (Exception exception) { Debug.LogException(exception); }
             }
+            NativePlayer.TickAutoSync(Time.realtimeSinceStartup);
         }
     }
 }

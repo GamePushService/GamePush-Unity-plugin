@@ -800,8 +800,28 @@ namespace GamePush
                     var result = _playerInitializer(playerId, player);
                     return result?.Data ?? "null";
                 }
+            }
+            catch (Exception exception)
+            {
+                ConsoleLog("PLAYER INITIALIZER ERROR: " + exception.Message);
+            }
+            return "null";
+        }
+
+        internal static async Task<string> NativeInitPlayerAsync(int playerId, MultiplayerConnectedPlayerData player)
+        {
+            try
+            {
+                if (_playerInitializer != null)
+                {
+                    var result = _playerInitializer(playerId, player);
+                    return result?.Data ?? "null";
+                }
                 if (_playerInitializerAsync != null)
-                    Debug.LogWarning("[GamePush Native] async player initializer is not awaited on native host");
+                {
+                    var result = await _playerInitializerAsync(playerId, player);
+                    return result?.Data ?? "null";
+                }
             }
             catch (Exception exception)
             {

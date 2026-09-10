@@ -212,7 +212,16 @@ namespace GamePush.Native
             if (GpJson.TryGetString(text, "message", out var message) && text.Contains("\"errors\""))
                 throw new Exception(message);
             var data = GpJson.GetObject(text, "data");
-            return string.IsNullOrEmpty(data) ? text : data;
+            if (string.IsNullOrEmpty(data))
+                return text ?? "";
+            var keys = GpJson.ObjectKeys(data);
+            if (keys.Count == 1)
+            {
+                var inner = GpJson.GetObject(data, keys[0]);
+                if (!string.IsNullOrEmpty(inner))
+                    return inner;
+            }
+            return data;
         }
     }
 }

@@ -125,7 +125,55 @@ namespace GamePush.Native
         public static void Set(string key, string value)
         {
             State[key ?? ""] = value ?? "";
+            LastMutatedAt = NowSeconds();
         }
+
+        public static void Add(string key, float value)
+        {
+            Set(key, (GetFloat(key) + value).ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static void SetFlag(string key, bool value)
+        {
+            Set(key, value ? "true" : "false");
+        }
+
+        public static float LastMutatedAt { get; private set; }
+
+        static float _autoSyncInterval;
+        static bool _autoSyncEnabled;
+        static float _autoSyncLastCheck;
+        static float _autoSyncLastSyncedMutation;
+
+        public static void EnableAutoSync(int interval)
+        {
+            if (interval <= 0)
+                return;
+            _autoSyncInterval = interval;
+            _autoSyncEnabled = true;
+            _autoSyncLastCheck = 0f;
+            NativeMainThread.Ensure();
+        }
+
+        public static void DisableAutoSync()
+        {
+            _autoSyncEnabled = false;
+        }
+
+        public static void TickAutoSync(float now)
+        {
+            if (!_autoSyncEnabled || _autoSyncInterval <= 0)
+                return;
+            if (LastMutatedAt <= _autoSyncLastSyncedMutation)
+                return;
+            if (_autoSyncLastCheck > 0f && now - _autoSyncLastCheck < _autoSyncInterval)
+                return;
+            _autoSyncLastCheck = now;
+            _autoSyncLastSyncedMutation = LastMutatedAt;
+            _ = Sync(false);
+        }
+
+        static float NowSeconds() => Time.realtimeSinceStartup;
 
         public static bool IsStub()
         {

@@ -635,6 +635,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Player_SetFlag(key, value);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativePlayer.SetFlag(key, value);
+                return;
+            }
             GP_Prefs.Set(key, value);
             ConsoleLog("SET FLAG: KEY: " + key + " VALUE: " + value);
 #endif
@@ -659,6 +664,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativePlayer.Add(key, value);
+                return;
+            }
             GP_Prefs.Add(key, value);
             ConsoleLog("ADD: KEY: " + key + " VALUE: " + value);
 #endif
@@ -668,6 +678,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Player_Add(key, value.ToString());
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativePlayer.Add(key, value);
+                return;
+            }
             GP_Prefs.Add(key, value);
             ConsoleLog("ADD: KEY: " + key + " VALUE: " + value);
 #endif
@@ -799,6 +814,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Player_EnableAutoSync(interval, storage.ToString());
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativePlayer.EnableAutoSync(interval);
+                return;
+            }
             ConsoleLog("AUTO SYNC: ON");
 #endif
         }
@@ -808,6 +828,11 @@ namespace GamePush
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Player_DisableAutoSync(storage.ToString());
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativePlayer.DisableAutoSync();
+                return;
+            }
             ConsoleLog("AUTO SYNC: OFF");
 #endif
         }

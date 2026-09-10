@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -9,8 +8,6 @@ using GamePush.Overlays;
 using GamePush.Overlays.Views;
 using GamePush.Overlays.Widgets;
 using static GamePushEditor.Overlays.GP_OverlayUIFactory;
-
-[assembly: InternalsVisibleTo("GamePush.Overlay.Editor.Tests")]
 
 namespace GamePushEditor.Overlays
 {

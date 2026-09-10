@@ -72,6 +72,13 @@ namespace GamePush.Native
         static int _lastPlayersSeq = -1;
         static int _lastGlobalSeq = -1;
         static float _lastSnapshotRequestAt;
+        static bool _playersHaveBase;
+        static string _lastFullPlayersJson;
+        static string _lastFullGlobalJson;
+        static readonly GP_InterpolationEngine _playersInterp = new GP_InterpolationEngine(20);
+        static readonly GP_InterpolationEngine _globalInterp = new GP_InterpolationEngine(20);
+        static object _previousInterpolatedPlayers;
+        static object _previousInterpolatedGlobal;
 
         public static bool IsConnected => _connected;
         public static bool IsHost => _connected && _hostId == NativePlayer.Id && NativePlayer.Id > 0;
@@ -233,8 +240,6 @@ namespace GamePush.Native
             _hostId = 0;
             _hostElectedAt = 0;
             _sessionStart = Time.realtimeSinceStartup;
-            _ = _playerSchema;
-            _ = _globalSchema;
             _nextTick = 0;
             _lastHostRecheckTime = 0f;
             _lastMigrationTime = 0f;
@@ -258,6 +263,14 @@ namespace GamePush.Native
             _lastPlayersSeq = -1;
             _lastGlobalSeq = -1;
             _lastSnapshotRequestAt = 0f;
+            _playersHaveBase = false;
+            _lastFullPlayersJson = null;
+            _lastFullGlobalJson = null;
+            _previousInterpolatedPlayers = null;
+            _previousInterpolatedGlobal = null;
+            _playersInterp.Clear();
+            _globalInterp.Clear();
+            ApplySchemasToEngines();
             AddSelf();
             EnsurePump();
             StartHeartbeatClock();
@@ -311,8 +324,18 @@ namespace GamePush.Native
             }
         }
 
-        public static void DefinePlayerSchema(string schema) => _playerSchema = schema ?? "{}";
-        public static void DefineGlobalSchema(string schema) => _globalSchema = schema ?? "{}";
+        public static void DefinePlayerSchema(string schema)
+        {
+            _playerSchema = schema ?? "{}";
+            ApplySchemasToEngines();
+        }
+
+        public static void DefineGlobalSchema(string schema)
+        {
+            _globalSchema = schema ?? "{}";
+            ApplySchemasToEngines();
+        }
+
         public static void SetMode(string mode)
         {
             if (string.Equals(mode, "fast", StringComparison.OrdinalIgnoreCase))
@@ -328,11 +351,14 @@ namespace GamePush.Native
                 _bufferMaxMs = 300;
             }
             _tickCounter = 0;
+            ApplySchemasToEngines();
         }
 
         public static void SetPlayerState(string state)
         {
-            _myState = string.IsNullOrEmpty(state) ? "{}" : state;
+            var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
+            incoming = GP_NativeSchema.FilterReadonly(incoming, _myState, _playerSchema);
+            _myState = GpJson.MergeDelta(_myState, incoming);
             PlayerStates[NativePlayer.Id] = _myState;
         }
 
@@ -340,7 +366,9 @@ namespace GamePush.Native
         {
             if (!IsHost)
                 return;
-            _globalState = string.IsNullOrEmpty(state) ? "{}" : state;
+            var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
+            incoming = GP_NativeSchema.FilterReadonly(incoming, _globalState, _globalSchema);
+            _globalState = GpJson.MergeDelta(_globalState, incoming);
         }
 
         public static void SendMessage(string eventName, string data, string options)
@@ -407,8 +435,8 @@ namespace GamePush.Native
 
         public static string NetworkStatsJson() =>
             "{\"ping\":" + _selfPing +
-            ",\"bufferSize\":" + _bufferMinMs +
-            ",\"bufferDelay\":" + ((_bufferMinMs + _bufferMaxMs) / 2) + "}";
+            ",\"bufferSize\":" + _playersInterp.BufferSize +
+            ",\"bufferDelay\":" + _playersInterp.BufferDelay.ToString("0.###", CultureInfo.InvariantCulture) + "}";
 
         public static string RuntimeCapabilitiesJson() =>
             "{\"connect\":true,\"disconnect\":true,\"setPlayerState\":true,\"setGlobalState\":true,\"sendMessage\":true,\"hostMigrationEvents\":true}";
@@ -420,6 +448,8 @@ namespace GamePush.Native
         {
             if (!_connected)
                 return;
+            if (!IsHost)
+                SampleInterpolation(now * 1000.0);
             if (now >= _nextTick)
             {
                 var dt = 1f / Math.Max(1, _tickRate);
@@ -627,16 +657,23 @@ namespace GamePush.Native
             ApplyHost(next.playerId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), false);
             _lastMigrationTime = Time.realtimeSinceStartup;
             if (wasHost)
-                AnnounceHost();
+                AnnounceHost(next.playerId);
         }
 
-        static void AnnounceHost()
+        internal static string BuildHostMigrationPayload(int newHostId, long electedAt)
         {
-            if (!IsHost)
+            return "{\"newHostId\":" + newHostId +
+                   ",\"hostElectedAt\":" + electedAt.ToString(CultureInfo.InvariantCulture) + "}";
+        }
+
+        static void AnnounceHost(int newHostId = 0)
+        {
+            var hostId = newHostId > 0 ? newHostId : NativePlayer.Id;
+            if (hostId <= 0)
                 return;
-            var payload = "{\"newHostId\":" + NativePlayer.Id +
-                          ",\"hostElectedAt\":" + _hostElectedAt.ToString(CultureInfo.InvariantCulture) + "}";
-            Publish(HostMigration, payload, false);
+            if (newHostId <= 0 && !IsHost)
+                return;
+            Publish(HostMigration, BuildHostMigrationPayload(hostId, _hostElectedAt), false);
         }
 
         static void ScheduleHostAnnounceRetries()
@@ -702,15 +739,34 @@ namespace GamePush.Native
 
         static void InitMissingPlayers()
         {
+            _ = InitMissingPlayersAsync();
+        }
+
+        static async Task InitMissingPlayersAsync()
+        {
+            var missing = new List<KeyValuePair<int, PlayerSlot>>();
             foreach (var pair in Players)
             {
                 if (pair.Key == NativePlayer.Id)
                     continue;
                 if (PlayerStates.ContainsKey(pair.Key))
                     continue;
-                var state = GP_Multiplayer.NativeInitPlayer(pair.Key, ToConnected(pair.Value));
+                missing.Add(pair);
+            }
+            var changed = false;
+            foreach (var pair in missing)
+            {
+                var state = await GP_Multiplayer.NativeInitPlayerAsync(pair.Key, ToConnected(pair.Value));
                 if (!string.IsNullOrEmpty(state) && state != "null")
+                {
                     PlayerStates[pair.Key] = state;
+                    changed = true;
+                }
+            }
+            if (changed && IsHost)
+            {
+                _lastSentPlayers = null;
+                SendHostPlayers();
             }
         }
 
@@ -785,6 +841,9 @@ namespace GamePush.Native
             var sender = GpJson.GetInt(json, "s");
             var seq = ReadSeq(json);
             var payload = GpJson.GetObject(json, "p") ?? "{}";
+            var timestamp = GpJson.GetLong(json, "ts");
+            if (timestamp <= 0)
+                timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             LastBeat[sender] = Time.realtimeSinceStartup;
             NoteWire(type, sender);
             switch (type)
@@ -802,31 +861,28 @@ namespace GamePush.Native
                     break;
                 case StateUpdate:
                     if (!IsHost && (_hostId == 0 || sender == _hostId))
-                    {
-                        ApplyPlayersSnapshot(payload);
-                        if (seq >= 0)
-                            _lastPlayersSeq = seq;
-                    }
+                        ApplyPlayersSnapshot(payload, seq, timestamp);
                     break;
                 case StateDelta:
                     if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyPlayersDelta(payload, seq);
+                        ApplyPlayersDelta(payload, seq, timestamp);
                     break;
                 case PeerState:
                     if (IsHost && sender != NativePlayer.Id && sender > 0)
                     {
                         PlayerStates.TryGetValue(sender, out var current);
-                        PlayerStates[sender] = GpJson.MergeDelta(current, payload);
+                        var incoming = GP_NativeSchema.FilterReadonly(payload, current, _playerSchema);
+                        PlayerStates[sender] = GpJson.MergeDelta(current, incoming);
                         GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
                     }
                     break;
                 case GlobalStateUpdate:
                     if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyGlobalSnapshot(payload, seq);
+                        ApplyGlobalSnapshot(payload, seq, timestamp);
                     break;
                 case GlobalStateDelta:
                     if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyGlobalDelta(payload, seq);
+                        ApplyGlobalDelta(payload, seq, timestamp);
                     break;
                 case SnapshotRequest:
                     if (IsHost && sender != NativePlayer.Id)
@@ -955,7 +1011,7 @@ namespace GamePush.Native
             Publish(SnapshotRequest, "{}", true);
         }
 
-        static void ApplyPlayersSnapshot(string payload)
+        static void ApplyPlayersSnapshot(string payload, int seq, long timestamp)
         {
             var map = GpJson.GetObject(payload, "players") ?? payload;
             var keys = GpJson.ObjectKeys(map);
@@ -964,48 +1020,72 @@ namespace GamePush.Native
                 if (!int.TryParse(key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
                     continue;
                 var state = GpJson.GetObject(map, key);
-                if (!string.IsNullOrEmpty(state))
-                    PlayerStates[id] = state;
+                if (string.IsNullOrEmpty(state))
+                    continue;
+                if (id == NativePlayer.Id && PlayerStates.ContainsKey(id)
+                    && !string.IsNullOrEmpty(_myState) && _myState != "{}")
+                    continue;
+                PlayerStates[id] = state;
             }
+            _playersHaveBase = true;
+            _lastFullPlayersJson = payload;
+            if (seq >= 0)
+                _lastPlayersSeq = seq;
+            PushPlayersBuffer(payload, timestamp);
             GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
         }
 
-        static void ApplyPlayersDelta(string payload, int seq)
+        static void ApplyPlayersDelta(string payload, int seq, long timestamp)
         {
+            if (!_playersHaveBase || string.IsNullOrEmpty(_lastFullPlayersJson))
+            {
+                RequestSnapshot();
+                return;
+            }
             if (seq >= 0 && _lastPlayersSeq >= 0 && seq != _lastPlayersSeq + 1)
             {
+                _playersHaveBase = false;
+                _lastFullPlayersJson = null;
                 _lastPlayersSeq = -1;
                 RequestSnapshot();
                 return;
             }
-            var map = GpJson.GetObject(payload, "players") ?? payload;
+            _lastFullPlayersJson = GpJson.MergeDelta(_lastFullPlayersJson, payload);
+            var map = GpJson.GetObject(_lastFullPlayersJson, "players") ?? _lastFullPlayersJson;
             var keys = GpJson.ObjectKeys(map);
             foreach (var key in keys)
             {
                 if (!int.TryParse(key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
                     continue;
-                var delta = GpJson.GetObject(map, key);
-                if (string.IsNullOrEmpty(delta))
+                var state = GpJson.GetObject(map, key);
+                if (string.IsNullOrEmpty(state))
                     continue;
-                PlayerStates.TryGetValue(id, out var current);
-                PlayerStates[id] = GpJson.MergeDelta(current, delta);
+                if (id == NativePlayer.Id)
+                {
+                    PlayerStates[id] = _myState;
+                    continue;
+                }
+                PlayerStates[id] = state;
             }
             if (seq >= 0)
                 _lastPlayersSeq = seq;
+            PushPlayersBuffer(_lastFullPlayersJson, timestamp);
             GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
         }
 
-        static void ApplyGlobalSnapshot(string payload, int seq)
+        static void ApplyGlobalSnapshot(string payload, int seq, long timestamp)
         {
             _globalState = string.IsNullOrEmpty(payload) ? "{}" : payload;
+            _lastFullGlobalJson = _globalState;
             if (seq >= 0)
                 _lastGlobalSeq = seq;
+            PushGlobalBuffer(_globalState, timestamp);
             GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
         }
 
-        static void ApplyGlobalDelta(string payload, int seq)
+        static void ApplyGlobalDelta(string payload, int seq, long timestamp)
         {
-            if (string.IsNullOrEmpty(_globalState) || _globalState == "{}")
+            if (string.IsNullOrEmpty(_lastFullGlobalJson) || _lastFullGlobalJson == "{}")
             {
                 RequestSnapshot();
                 return;
@@ -1013,17 +1093,97 @@ namespace GamePush.Native
             if (seq >= 0 && _lastGlobalSeq >= 0 && seq != _lastGlobalSeq + 1)
             {
                 _globalState = "{}";
+                _lastFullGlobalJson = null;
                 _lastGlobalSeq = -1;
                 RequestSnapshot();
                 return;
             }
-            var merged = GpJson.MergeDelta(_globalState, payload);
+            var merged = GpJson.MergeDelta(_lastFullGlobalJson, payload);
             if (seq >= 0)
                 _lastGlobalSeq = seq;
-            if (string.Equals(merged, _globalState, StringComparison.Ordinal))
+            if (string.Equals(merged, _lastFullGlobalJson, StringComparison.Ordinal))
                 return;
+            _lastFullGlobalJson = merged;
             _globalState = merged;
+            PushGlobalBuffer(merged, timestamp);
             GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
+        }
+
+        static void PushPlayersBuffer(string payload, long timestamp)
+        {
+            var tree = GpJson.Parse(payload);
+            if (tree == null)
+                return;
+            _playersInterp.AddStateWithGapFill(timestamp, tree, 1000.0 / Math.Max(1, _tickRate));
+        }
+
+        static void PushGlobalBuffer(string payload, long timestamp)
+        {
+            var tree = GpJson.Parse(payload);
+            if (tree == null)
+                return;
+            _globalInterp.AddStateWithGapFill(
+                timestamp, tree, (1000.0 / Math.Max(1, _tickRate)) * GlobalTickDivider);
+        }
+
+        static void ApplySchemasToEngines()
+        {
+            _playersInterp.SetTickRate(_tickRate);
+            _globalInterp.SetTickRate(_tickRate);
+            _playersInterp.SetBufferLimits(_bufferMinMs, _bufferMaxMs);
+            _globalInterp.SetBufferLimits(_bufferMinMs, _bufferMaxMs);
+            _playersInterp.SetSchema(GpJson.ParseObject(_playerSchema));
+            _globalInterp.SetSchema(GpJson.ParseObject(_globalSchema));
+        }
+
+        static void SampleInterpolation(double nowMs)
+        {
+            var interpolated = _playersInterp.Interpolate(nowMs);
+            if (interpolated != null && !ReferenceEquals(interpolated, _previousInterpolatedPlayers))
+            {
+                _previousInterpolatedPlayers = interpolated;
+                if (ApplyInterpolatedPlayers(interpolated))
+                    GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
+            }
+
+            var interpolatedGlobal = _globalInterp.Interpolate(nowMs);
+            if (interpolatedGlobal != null && !ReferenceEquals(interpolatedGlobal, _previousInterpolatedGlobal))
+            {
+                _previousInterpolatedGlobal = interpolatedGlobal;
+                _globalState = GpJson.Stringify(interpolatedGlobal);
+                GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
+            }
+        }
+
+        static bool ApplyInterpolatedPlayers(object interpolated)
+        {
+            Dictionary<string, object> players = null;
+            if (interpolated is Dictionary<string, object> root)
+            {
+                if (root.TryGetValue("players", out var node))
+                    players = node as Dictionary<string, object>;
+                if (players == null)
+                    players = root;
+            }
+            if (players == null)
+                return false;
+            var changed = false;
+            foreach (var pair in players)
+            {
+                if (!int.TryParse(pair.Key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+                    continue;
+                if (id == NativePlayer.Id)
+                {
+                    PlayerStates[id] = _myState;
+                    continue;
+                }
+                var json = GpJson.Stringify(pair.Value);
+                if (!PlayerStates.TryGetValue(id, out var current)
+                    || !string.Equals(current, json, StringComparison.Ordinal))
+                    changed = true;
+                PlayerStates[id] = json;
+            }
+            return changed;
         }
 
         static void Publish(int type, string payloadJson, bool toHost = false, Action<bool> onDone = null)
@@ -1113,6 +1273,16 @@ namespace GamePush.Native
             _lastSentGlobal = null;
             _lastHostRecheckTime = 0f;
             _tickCounter = 0;
+            _playersHaveBase = false;
+            _lastFullPlayersJson = null;
+            _lastFullGlobalJson = null;
+            _lastPlayersSeq = -1;
+            _lastGlobalSeq = -1;
+            _previousInterpolatedPlayers = null;
+            _previousInterpolatedGlobal = null;
+            _playersInterp.Clear();
+            _globalInterp.Clear();
+            ApplySchemasToEngines();
             if (wasHost)
                 GP_Multiplayer.NativeEmit("becamePeer");
             GP_Logger.Info("Centrifugo", "reconnected host-reset self=" + NativePlayer.Id);
@@ -1169,6 +1339,13 @@ namespace GamePush.Native
             _lastPlayersSeq = -1;
             _lastGlobalSeq = -1;
             _lastSnapshotRequestAt = 0f;
+            _playersHaveBase = false;
+            _lastFullPlayersJson = null;
+            _lastFullGlobalJson = null;
+            _previousInterpolatedPlayers = null;
+            _previousInterpolatedGlobal = null;
+            _playersInterp.Clear();
+            _globalInterp.Clear();
             _lastHostRecheckTime = 0f;
             _lastMigrationTime = 0f;
             _hostAnnounceRetry1 = 0f;
