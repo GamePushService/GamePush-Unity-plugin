@@ -1,20 +1,23 @@
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN || UNITY_EDITOR_OSX
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+#if UNITY_EDITOR_WIN
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+#endif
 using UnityEditor;
 using UnityEngine;
 
 namespace GamePushEditor.Play2Web
 {
-    // The overlay lives in a separate WebView2 host process. Hosting WebView2 inside the editor
-    // needs an STA thread with its own pump and turns any browser fault into an editor crash,
-    // so Unity only compiles the host, starts it and streams the Game view rect over stdin.
+    // The overlay lives in a separate browser-host process (WebView2 on Windows, WKWebView
+    // on macOS). Hosting the engine inside the editor needs its own pump and turns any
+    // browser fault into an editor crash, so Unity only compiles the host, starts it and
+    // streams the Game view rect over stdin.
     static class GP_Play2WebOverlay
     {
         // The host window composites the page with per-pixel alpha, so everything the page does
@@ -23,7 +26,9 @@ namespace GamePushEditor.Play2Web
 
         const string PidPref = "GamePush.Play2Web.HostPid";
         const float GameViewToolbarPoints = 21f;
+#if UNITY_EDITOR_WIN
         const uint GaRoot = 2;
+#endif
 
         static Process _process;
         static bool _cover;
@@ -31,8 +36,10 @@ namespace GamePushEditor.Play2Web
         static bool _hidden;
         static RectInt _lastRect;
         static IntPtr _lastOwner;
+#if UNITY_EDITOR_WIN
         static readonly Dictionary<MethodInfo, Func<object, IntPtr>> RefIntPtrGetters =
             new Dictionary<MethodInfo, Func<object, IntPtr>>();
+#endif
 
         public static string State =>
             $"host={(IsRunning ? "up" : "down")} ready={_ready} cover={_cover} rect={_lastRect.width}x{_lastRect.height}";
@@ -62,7 +69,12 @@ namespace GamePushEditor.Play2Web
 
             var userData = Path.Combine(
                 Directory.GetParent(Application.dataPath)?.FullName ?? "",
-                "Temp", "GamePushPlay2Web", "webview2-profile");
+                "Temp", "GamePushPlay2Web",
+#if UNITY_EDITOR_WIN
+                "webview2-profile");
+#else
+                "wkwebview-profile");
+#endif
             Directory.CreateDirectory(userData);
 
             var info = new ProcessStartInfo
@@ -149,17 +161,20 @@ namespace GamePushEditor.Play2Web
                 return;
 
             var gameView = FindGameView();
-            var hwnd = GameViewRootHwnd(gameView);
-            if (hwnd != IntPtr.Zero && hwnd != _lastOwner)
+            var owner = OverlayOwner(gameView);
+            if (owner != IntPtr.Zero && owner != _lastOwner)
             {
-                _lastOwner = hwnd;
-                Send("owner " + hwnd.ToInt64().ToString(CultureInfo.InvariantCulture));
+                _lastOwner = owner;
+                Send("owner " + owner.ToInt64().ToString(CultureInfo.InvariantCulture));
             }
 
             var rect = GameViewScreenRect(gameView);
             if (rect.width < 2 || rect.height < 2
                 || !IsGameViewTabVisible(gameView)
-                || !EditorInForeground(hwnd))
+#if UNITY_EDITOR_WIN
+                || !EditorInForeground(owner)
+#endif
+                )
             {
                 if (!_hidden)
                 {
@@ -176,23 +191,13 @@ namespace GamePushEditor.Play2Web
             Send($"rect {rect.x} {rect.y} {rect.width} {rect.height}");
         }
 
-        // Hidden while Unity is minimized or in the background, restored as soon as it comes
-        // back. Focus on the overlay itself counts as the editor being active, otherwise
-        // clicking an ad would hide the ad. Iconic is checked on the Game view container, not
-        // Process.MainWindowHandle — Unity's "main" window is often not the one that minimized.
-        static bool EditorInForeground(IntPtr gameViewHwnd)
+        static IntPtr OverlayOwner(EditorWindow gameView)
         {
-            if (gameViewHwnd != IntPtr.Zero && IsIconic(gameViewHwnd))
-                return false;
-
-            var foreground = GetForegroundWindow();
-            if (foreground == IntPtr.Zero)
-                return false;
-
-            GetWindowThreadProcessId(foreground, out var pid);
-            if (pid == (uint)Process.GetCurrentProcess().Id)
-                return true;
-            return _process != null && pid == (uint)_process.Id;
+#if UNITY_EDITOR_WIN
+            return GameViewRootHwnd(gameView);
+#else
+            return new IntPtr(Process.GetCurrentProcess().Id);
+#endif
         }
 
         static void Send(string command)
@@ -276,8 +281,12 @@ namespace GamePushEditor.Play2Web
                     Mathf.Min(placed.yMax, content.yMax));
             }
 
-            // Unity reports editor windows in points while Win32 positions them in pixels.
+            // Win32 SetWindowPos is pixels; Cocoa NSWindow.setFrame is points (Unity's native unit).
+#if UNITY_EDITOR_WIN
             var scale = EditorGUIUtility.pixelsPerPoint <= 0f ? 1f : EditorGUIUtility.pixelsPerPoint;
+#else
+            var scale = 1f;
+#endif
             return new RectInt(
                 Mathf.RoundToInt(area.x * scale),
                 Mathf.RoundToInt(area.y * scale),
@@ -335,6 +344,26 @@ namespace GamePushEditor.Play2Web
                 return false;
 
             return true;
+        }
+
+#if UNITY_EDITOR_WIN
+        // Hidden while Unity is minimized or in the background, restored as soon as it comes
+        // back. Focus on the overlay itself counts as the editor being active, otherwise
+        // clicking an ad would hide the ad. Iconic is checked on the Game view container, not
+        // Process.MainWindowHandle — Unity's "main" window is often not the one that minimized.
+        static bool EditorInForeground(IntPtr gameViewHwnd)
+        {
+            if (gameViewHwnd != IntPtr.Zero && IsIconic(gameViewHwnd))
+                return false;
+
+            var foreground = GetForegroundWindow();
+            if (foreground == IntPtr.Zero)
+                return false;
+
+            GetWindowThreadProcessId(foreground, out var pid);
+            if (pid == (uint)Process.GetCurrentProcess().Id)
+                return true;
+            return _process != null && pid == (uint)_process.Id;
         }
 
         static IntPtr GameViewRootHwnd(EditorWindow gameView)
@@ -505,6 +534,7 @@ namespace GamePushEditor.Play2Web
         static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
         [DllImport("user32.dll")]
         static extern IntPtr WindowFromPoint(POINT point);
+#endif
     }
 }
 #else

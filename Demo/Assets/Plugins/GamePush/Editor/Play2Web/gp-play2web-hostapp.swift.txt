@@ -1,0 +1,317 @@
+// Standalone WKWebView overlay host for Play2Web on macOS.
+// Compiled on demand by GP_Play2WebHostBuilder with the system swiftc.
+// Runs out of process on purpose: a WebKit fault must never take the Unity editor down.
+import AppKit
+import Foundation
+import WebKit
+
+final class OverlayWindow: NSWindow {
+    override var canBecomeKey: Bool { false }
+    override var canBecomeMain: Bool { false }
+}
+
+final class OverlayHost: NSObject, WKNavigationDelegate, WKUIDelegate {
+    private let url: String
+    private let userData: String
+    private let selfPid = ProcessInfo.processInfo.processIdentifier
+
+    private var window: OverlayWindow!
+    private var webView: WKWebView!
+    private var timer: Timer?
+    private var activity: NSObjectProtocol?
+
+    private var ownerPid: pid_t = 0
+    private var cover = false
+    private var clickThrough = true
+    private var hitBusy = false
+    private var parked = false
+    private var parkedUntilRect = false
+    private var liveUnity = NSRect(x: -32000, y: -32000, width: 800, height: 600)
+
+    init(url: String, userData: String) {
+        self.url = url
+        self.userData = userData
+        super.init()
+    }
+
+    func run() {
+        let app = NSApplication.shared
+        app.setActivationPolicy(.accessory)
+
+        activity = ProcessInfo.processInfo.beginActivity(
+            options: [.userInitiated, .latencyCritical],
+            reason: "Play2Web overlay")
+
+        setupWindow()
+        startStdin()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) { [weak self] _ in
+            self?.onTick()
+        }
+        app.run()
+    }
+
+    private func setupWindow() {
+        let window = OverlayWindow(
+            contentRect: NSRect(x: -32000, y: -32000, width: 800, height: 600),
+            styleMask: .borderless,
+            backing: .buffered,
+            defer: false)
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.hasShadow = false
+        window.level = .floating
+        window.isReleasedWhenClosed = false
+        window.hidesOnDeactivate = false
+        window.ignoresMouseEvents = true
+        window.animationBehavior = .none
+        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle]
+        window.sharingType = .none
+        self.window = window
+
+        let config = WKWebViewConfiguration()
+        config.mediaTypesRequiringUserActionForPlayback = []
+        config.websiteDataStore = dataStore(forUserData: userData)
+        if #available(macOS 12.3, *) {
+            config.preferences.isElementFullscreenEnabled = true
+        }
+
+        let webView = WKWebView(frame: window.contentView?.bounds ?? .zero, configuration: config)
+        webView.autoresizingMask = [.width, .height]
+        webView.navigationDelegate = self
+        webView.uiDelegate = self
+        webView.allowsMagnification = false
+        webView.wantsLayer = true
+        webView.layer?.isOpaque = false
+        webView.layer?.backgroundColor = NSColor.clear.cgColor
+        webView.setValue(false, forKey: "drawsBackground")
+        if #available(macOS 12.0, *) {
+            webView.underPageBackgroundColor = .clear
+        }
+        window.contentView = webView
+        self.webView = webView
+
+        window.orderFrontRegardless()
+        if let url = URL(string: url) {
+            webView.load(URLRequest(url: url))
+        }
+        report("ready")
+    }
+
+    private func dataStore(forUserData dir: String) -> WKWebsiteDataStore {
+        if #available(macOS 14.0, *) {
+            let file = (dir as NSString).appendingPathComponent("store-id")
+            let uuid: UUID
+            if let text = try? String(contentsOfFile: file, encoding: .utf8),
+               let parsed = UUID(uuidString: text.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                uuid = parsed
+            } else {
+                uuid = UUID()
+                try? uuid.uuidString.write(toFile: file, atomically: true, encoding: .utf8)
+            }
+            return WKWebsiteDataStore(forIdentifier: uuid)
+        }
+        return .default()
+    }
+
+    private func startStdin() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            while let line = readLine(strippingNewline: true) {
+                DispatchQueue.main.async {
+                    self?.command(line)
+                }
+            }
+            DispatchQueue.main.async {
+                NSApp.terminate(nil)
+            }
+        }
+    }
+
+    func command(_ line: String) {
+        if line.isEmpty { return }
+        let parts = line.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
+        switch parts[0] {
+        case "rect":
+            if parts.count >= 5 {
+                applyRect(parseInt(parts[1]), parseInt(parts[2]), parseInt(parts[3]), parseInt(parts[4]))
+            }
+        case "owner":
+            if parts.count > 1 {
+                ownerPid = pid_t(parseInt(parts[1]))
+            }
+        case "cover":
+            cover = parts.count > 1 && parts[1] == "1"
+            if cover {
+                setClickThrough(false)
+            }
+        case "hide":
+            parkedUntilRect = true
+            park()
+        case "nav":
+            if parts.count > 1, let url = URL(string: parts[1]) {
+                webView.load(URLRequest(url: url))
+            }
+        case "quit":
+            NSApp.terminate(nil)
+        default:
+            break
+        }
+    }
+
+    private func applyRect(_ x: Int, _ y: Int, _ w: Int, _ h: Int) {
+        if w < 2 || h < 2 { return }
+        liveUnity = NSRect(x: CGFloat(x), y: CGFloat(y), width: CGFloat(w), height: CGFloat(h))
+        parkedUntilRect = false
+        if shouldStayHidden() {
+            park()
+            return
+        }
+        unpark()
+    }
+
+    private func park() {
+        parked = true
+        let frame = NSRect(
+            x: -32000,
+            y: -32000,
+            width: max(2, liveUnity.width),
+            height: max(2, liveUnity.height))
+        window.setFrame(frame, display: true)
+        if !window.isVisible {
+            window.orderFrontRegardless()
+        }
+    }
+
+    private func unpark() {
+        parked = false
+        parkedUntilRect = false
+        window.setFrame(cocoaFrame(fromUnity: liveUnity), display: true)
+        window.orderFrontRegardless()
+    }
+
+    private func cocoaFrame(fromUnity rect: NSRect) -> NSRect {
+        let screenHeight = primaryScreenHeight()
+        return NSRect(
+            x: rect.origin.x,
+            y: screenHeight - rect.origin.y - rect.size.height,
+            width: rect.size.width,
+            height: rect.size.height)
+    }
+
+    private func primaryScreenHeight() -> CGFloat {
+        if let primary = NSScreen.screens.first(where: { $0.frame.origin == .zero }) {
+            return primary.frame.height
+        }
+        return NSScreen.main?.frame.height ?? 1080
+    }
+
+    // Child windows cannot be parented across processes on macOS, so the host hides itself
+    // when Unity is not frontmost. Overlay clicks count as this process, otherwise an ad
+    // click would park the ad. hide stays parked until the next rect so a hidden Game view
+    // tab does not come back on the 40ms timer.
+    private func shouldStayHidden() -> Bool {
+        if ownerPid == 0 { return false }
+        if let app = NSRunningApplication(processIdentifier: ownerPid) {
+            if app.isTerminated || app.isHidden { return true }
+        }
+        guard let front = NSWorkspace.shared.frontmostApplication else { return true }
+        let pid = front.processIdentifier
+        if pid == selfPid { return false }
+        return pid != ownerPid
+    }
+
+    private func onTick() {
+        if parkedUntilRect {
+            if !parked { park() }
+            return
+        }
+        if shouldStayHidden() {
+            if !parked { park() }
+            return
+        }
+        if parked { unpark() }
+        if cover || hitBusy { return }
+
+        let mouse = NSEvent.mouseLocation
+        let bounds = window.frame
+        if !NSPointInRect(mouse, bounds) {
+            setClickThrough(true)
+            return
+        }
+
+        let cssX = Int((mouse.x - bounds.minX).rounded())
+        let cssY = Int((bounds.maxY - mouse.y).rounded())
+        let script =
+            "(function(x,y){var f=window.__play2webHitTest;return f?!!f(x,y):false;})(" +
+            String(cssX) + "," + String(cssY) + ")"
+        hitBusy = true
+        webView.evaluateJavaScript(script) { [weak self] result, _ in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.hitBusy = false
+                if self.cover { return }
+                self.setClickThrough(!self.isTruthy(result))
+            }
+        }
+    }
+
+    private func isTruthy(_ result: Any?) -> Bool {
+        if let value = result as? Bool { return value }
+        if let value = result as? NSNumber { return value.boolValue }
+        if let value = result as? String { return value == "true" || value == "1" }
+        return false
+    }
+
+    private func setClickThrough(_ through: Bool) {
+        if clickThrough == through { return }
+        clickThrough = through
+        window.ignoresMouseEvents = through
+    }
+
+    private func parseInt(_ value: String) -> Int {
+        return Int(value) ?? 0
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        report("err nav " + error.localizedDescription)
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        report("err nav " + error.localizedDescription)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        createWebViewWith configuration: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction,
+        windowFeatures: WKWindowFeatures
+    ) -> WKWebView? {
+        if let url = navigationAction.request.url {
+            webView.load(URLRequest(url: url))
+        }
+        return nil
+    }
+}
+
+func report(_ message: String) {
+    fputs(message + "\n", stdout)
+    fflush(stdout)
+}
+
+var url = "about:blank"
+var userData = NSTemporaryDirectory() + "GamePushPlay2WebHost"
+let args = CommandLine.arguments
+var i = 1
+while i < args.count - 1 {
+    if args[i] == "--url" {
+        url = args[i + 1]
+        i += 2
+    } else if args[i] == "--user-data" {
+        userData = args[i + 1]
+        i += 2
+    } else {
+        i += 1
+    }
+}
+
+try? FileManager.default.createDirectory(atPath: userData, withIntermediateDirectories: true)
+OverlayHost(url: url, userData: userData).run()
