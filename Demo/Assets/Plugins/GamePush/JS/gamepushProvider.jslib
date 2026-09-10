@@ -250,10 +250,12 @@ mergeInto(LibraryManager.library, {
         _GP().PlayerLoad();
     },
     GP_Player_Login: function () {
-        _GP().PlayerLogin();
+        var result = _GP().PlayerLogin();
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Player_Logout: function () {
-        _GP().PlayerLogout();
+        var result = _GP().PlayerLogout();
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Player_FetchFields: function () {
         _GP().PlayerFetchFields();
@@ -354,7 +356,8 @@ mergeInto(LibraryManager.library, {
         _GP().PaymentsFetchProducts();
     },
     GP_Payments_Purchase: function (idOrTag) {
-        _GP().PaymentsPurchase(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsPurchase(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Payments_Consume: function (idOrTag) {
         _GP().PaymentsConsume(UTF8ToString(idOrTag));
@@ -386,10 +389,12 @@ mergeInto(LibraryManager.library, {
         return _ToBuff(value);
     },
     GP_Payments_Subscribe: function (idOrTag) {
-        _GP().PaymentsSubscribe(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsSubscribe(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Payments_Unsubscribe: function (idOrTag) {
-        _GP().PaymentsUnsubscribe(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsUnsubscribe(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
 
     /* Subscription */

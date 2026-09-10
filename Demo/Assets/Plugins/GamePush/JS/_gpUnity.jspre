@@ -10,7 +10,9 @@ function errorToString(error) {
 
 function isExpectedUserCancel(error) {
     const message = errorToString(error).toLowerCase();
-    return /cancel|cancelled|canceled|payment_rejected|rejected/.test(message);
+    return /cancel last request|user_not_logged_in|payment_rejected|payment_cancelled|purchase_cancelled|cancelled|canceled|cancel|rejected/.test(
+        message
+    );
 }
 
 function ignoreExpectedPromise(result) {
@@ -18,12 +20,11 @@ function ignoreExpectedPromise(result) {
         return result;
     }
 
-    result.catch((error) => {
+    return result.catch((error) => {
         if (!isExpectedUserCancel(error)) {
             console.warn(error);
         }
     });
-    return result;
 }
 
 function focusGame() {
@@ -1678,7 +1679,9 @@ class GamePushUnityInner {
                 }
             })
             .catch((err) => {
-                console.warn(err);
+                if (!isExpectedUserCancel(err)) {
+                    console.warn(err);
+                }
                 this.trigger('CallPaymentsSubscribeError');
             });
     }
@@ -1696,7 +1699,9 @@ class GamePushUnityInner {
                 }
             })
             .catch((err) => {
-                console.warn(err);
+                if (!isExpectedUserCancel(err)) {
+                    console.warn(err);
+                }
                 this.trigger('CallPaymentsUnsubscribeError');
             });
     }
