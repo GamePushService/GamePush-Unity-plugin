@@ -136,7 +136,15 @@ namespace GamePushEditor.Play2Web
             }
 
             Directory.CreateDirectory(HostDir);
-            if (File.Exists(MacExePath) && File.GetLastWriteTimeUtc(MacExePath) > File.GetLastWriteTimeUtc(source))
+            var newestInput = File.GetLastWriteTimeUtc(source);
+            var builder = Path.GetFullPath("Assets/Plugins/GamePush/Editor/Play2Web/GP_Play2WebHostBuilder.cs");
+            if (File.Exists(builder))
+            {
+                var builderTime = File.GetLastWriteTimeUtc(builder);
+                if (builderTime > newestInput)
+                    newestInput = builderTime;
+            }
+            if (File.Exists(MacExePath) && File.GetLastWriteTimeUtc(MacExePath) > newestInput)
                 return MacExePath;
 
             return CompileMac(source);
@@ -144,7 +152,8 @@ namespace GamePushEditor.Play2Web
 
         static string CompileMac(string source)
         {
-            if (string.IsNullOrEmpty(FindSwiftc()))
+            var swiftc = FindSwiftc();
+            if (string.IsNullOrEmpty(swiftc))
             {
                 UnityEngine.Debug.LogError(
                     "[Play2Web] Xcode Command Line Tools not found. Install them with: xcode-select --install");
@@ -162,17 +171,35 @@ namespace GamePushEditor.Play2Web
             File.Copy(source, Path.Combine(HostDir, "gp-play2web-hostapp.swift"), true);
             File.WriteAllText(Path.Combine(HostDir, "Info.plist"), MacInfoPlist);
 
-            const string compileArgs =
-                "swiftc -O -framework AppKit -framework WebKit " +
+            var sdk = QueryXcrun("--sdk macosx --show-sdk-path", 15000);
+            var cache = Path.Combine(HostDir, "swift-module-cache");
+            try
+            {
+                if (Directory.Exists(cache))
+                    Directory.Delete(cache, true);
+            }
+            catch
+            {
+                // stale cache is optional; a poisoned one is worse than none
+            }
+            Directory.CreateDirectory(cache);
+
+            var compileArgs =
+                "--sdk macosx swiftc -O " +
+                (string.IsNullOrEmpty(sdk) ? "" : "-sdk \"" + sdk + "\" ") +
+                "-module-cache-path \"" + cache + "\" " +
+                "-Xcc -fmodules-cache-path=\"" + cache + "\" " +
+                SwiftBridgingOverlayArgs(swiftc) +
+                "-framework AppKit -framework WebKit " +
                 "-o gp-play2web-host " +
                 "-Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker Info.plist " +
                 "gp-play2web-hostapp.swift";
-            if (!RunTool("/usr/bin/xcrun", compileArgs, HostDir, 120000, "Overlay host build failed"))
+            if (!RunTool("/usr/bin/xcrun", compileArgs, HostDir, 120000, "Overlay host build failed", sdk))
                 return null;
 
             const string signArgs =
                 "--force --sign - --identifier com.gamepush.play2web.host gp-play2web-host";
-            if (!RunTool("/usr/bin/codesign", signArgs, HostDir, 30000, "Overlay host codesign failed"))
+            if (!RunTool("/usr/bin/codesign", signArgs, HostDir, 30000, "Overlay host codesign failed", sdk))
                 return null;
 
             GP_Play2WebWindow.PushLog("Overlay host compiled");
@@ -181,35 +208,111 @@ namespace GamePushEditor.Play2Web
 
         static string FindSwiftc()
         {
+            var path = QueryXcrun("--sdk macosx --find swiftc", 15000);
+            return !string.IsNullOrEmpty(path) && File.Exists(path) ? path : null;
+        }
+
+        // CLT 16.x renamed include/swift/module.modulemap to bridging.modulemap. An incomplete
+        // upgrade leaves both, and clang then errors on redefinition of SwiftBridging while
+        // importing AppKit. Hide the leftover map without touching the system install.
+        static string SwiftBridgingOverlayArgs(string swiftc)
+        {
+            try
+            {
+                var usrBin = Path.GetDirectoryName(swiftc);
+                if (string.IsNullOrEmpty(usrBin))
+                    return "";
+                var includeSwift = Path.GetFullPath(Path.Combine(usrBin, "..", "include", "swift"));
+                var leftover = Path.Combine(includeSwift, "module.modulemap");
+                var current = Path.Combine(includeSwift, "bridging.modulemap");
+                if (!File.Exists(leftover) || !File.Exists(current))
+                    return "";
+
+                var emptyMap = Path.Combine(HostDir, "empty.modulemap");
+                File.WriteAllText(emptyMap, "// Play2Web: leftover CLT SwiftBridging map\n");
+                var overlay = Path.Combine(HostDir, "swift-vfs.yaml");
+                File.WriteAllText(overlay,
+                    "version: 0\n" +
+                    "roots:\n" +
+                    "  - name: " + YamlQuote(includeSwift) + "\n" +
+                    "    type: directory\n" +
+                    "    contents:\n" +
+                    "      - name: module.modulemap\n" +
+                    "        type: file\n" +
+                    "        external-contents: " + YamlQuote(emptyMap) + "\n");
+                return "-vfsoverlay \"" + overlay + "\" -Xcc -ivfsoverlay -Xcc \"" + overlay + "\" ";
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning("[Play2Web] Could not apply SwiftBridging workaround: " + ex.Message);
+                return "";
+            }
+        }
+
+        static string YamlQuote(string value)
+        {
+            return "'" + (value ?? "").Replace("'", "''") + "'";
+        }
+
+        static string PreferredDeveloperDir()
+        {
+            const string xcode = "/Applications/Xcode.app/Contents/Developer";
+            if (Directory.Exists(Path.Combine(xcode, "usr", "bin")))
+                return xcode;
+            const string clt = "/Library/Developer/CommandLineTools";
+            return Directory.Exists(clt) ? clt : null;
+        }
+
+        static void ApplyMacBuildEnvironment(ProcessStartInfo info, string sdkRoot)
+        {
+            var env = info.EnvironmentVariables;
+            env.Remove("CPATH");
+            env.Remove("C_INCLUDE_PATH");
+            env.Remove("CPLUS_INCLUDE_PATH");
+            env.Remove("OBJC_INCLUDE_PATH");
+            var developerDir = PreferredDeveloperDir();
+            if (!string.IsNullOrEmpty(developerDir))
+                env["DEVELOPER_DIR"] = developerDir;
+            if (!string.IsNullOrEmpty(sdkRoot))
+                env["SDKROOT"] = sdkRoot;
+        }
+
+        static string QueryXcrun(string arguments, int timeoutMs)
+        {
             try
             {
                 var info = new ProcessStartInfo
                 {
                     FileName = "/usr/bin/xcrun",
-                    Arguments = "--find swiftc",
+                    Arguments = arguments,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
+                ApplyMacBuildEnvironment(info, null);
                 using (var process = Process.Start(info))
                 {
                     if (process == null)
                         return null;
                     var stdout = process.StandardOutput.ReadToEnd().Trim();
-                    process.WaitForExit(15000);
-                    if (process.ExitCode == 0 && File.Exists(stdout))
-                        return stdout;
+                    if (!process.WaitForExit(timeoutMs))
+                    {
+                        try { process.Kill(); }
+                        catch { /* ignore */ }
+                        return null;
+                    }
+                    return process.ExitCode == 0 ? stdout : null;
                 }
             }
             catch
             {
-                // xcrun missing or developer path unset
+                return null;
             }
-            return null;
         }
 
-        static bool RunTool(string fileName, string arguments, string workDir, int timeoutMs, string failLabel)
+        static bool RunTool(
+            string fileName, string arguments, string workDir, int timeoutMs, string failLabel, string sdkRoot)
         {
             var info = new ProcessStartInfo
             {
@@ -221,6 +324,7 @@ namespace GamePushEditor.Play2Web
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
+            ApplyMacBuildEnvironment(info, sdkRoot);
 
             try
             {
@@ -244,7 +348,9 @@ namespace GamePushEditor.Play2Web
 
                     if (process.ExitCode != 0)
                     {
-                        UnityEngine.Debug.LogError("[Play2Web] " + failLabel + ":\n" + stdout + stderr);
+                        UnityEngine.Debug.LogError("[Play2Web] " + failLabel + ":\n" +
+                            TrimToolOutput(stdout + stderr) +
+                            SwiftBridgingHint(stdout + stderr));
                         return false;
                     }
                 }
@@ -256,6 +362,23 @@ namespace GamePushEditor.Play2Web
             }
 
             return File.Exists(MacExePath);
+        }
+
+        static string SwiftBridgingHint(string output)
+        {
+            if (string.IsNullOrEmpty(output) || output.IndexOf("SwiftBridging", StringComparison.Ordinal) < 0)
+                return "";
+            return "\n[Play2Web] Duplicate SwiftBridging module maps in Command Line Tools. " +
+                   "If this persists, reinstall them:\n" +
+                   "sudo rm -rf /Library/Developer/CommandLineTools && xcode-select --install";
+        }
+
+        static string TrimToolOutput(string text)
+        {
+            const int max = 4000;
+            if (string.IsNullOrEmpty(text) || text.Length <= max)
+                return text;
+            return text.Substring(0, max) + "\n… (truncated)";
         }
 
         const string MacInfoPlist =

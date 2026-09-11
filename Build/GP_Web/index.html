@@ -58,11 +58,11 @@
 
   <script>
     const buildUrl = "Build";
-    const loaderUrl = buildUrl + "/a11953bd37eb6b6ac4dc58ea5434d2b6.loader.js";
+    const loaderUrl = buildUrl + "/83972f6021b34fedc79b2b3365aa32c2.loader.js";
     const config = {
-      dataUrl: buildUrl + "/001ff0d95631712eac85686e09626733.data",
-      frameworkUrl: buildUrl + "/7e6a5d28b6ec9811d296064cf39b72df.framework.js",
-      codeUrl: buildUrl + "/ed48ced2c06218a6bc9215fa4a77327e.wasm",
+      dataUrl: buildUrl + "/4e4ddd36e2820ac9c960dead7093de24.data",
+      frameworkUrl: buildUrl + "/0e326733f0c6758fd8577800b7b95357.framework.js",
+      codeUrl: buildUrl + "/388a02184e72fb62acdd0b9abfd8930c.wasm",
       // #if MEMORY_FILENAME
       //   memoryUrl: buildUrl + "/",
       // #endif
@@ -128,6 +128,31 @@
             FocusGame();
         });
 
+    function gpExpectedRejectionMessage(reason) {
+      if (reason == null) return "";
+      if (typeof reason === "string") return reason;
+      if (typeof reason === "object")
+        return String(reason.code || reason.message || reason);
+      return String(reason);
+    }
+
+    function isGpExpectedRejection(reason) {
+      const message = gpExpectedRejectionMessage(reason).toLowerCase();
+      return /cancel last request|user_not_logged_in|payment_rejected|payment_cancelled|purchase_cancelled|cancelled|canceled|cancel|rejected/.test(
+        message
+      );
+    }
+
+    window.addEventListener(
+      "unhandledrejection",
+      (event) => {
+        if (!isGpExpectedRejection(event.reason)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      },
+      true
+    );
+
     const unityLoader = document.createElement("script");
     unityLoader.src = loaderUrl;
     unityLoader.onload = async () => {
@@ -139,6 +164,7 @@
         window.unityInstance = unityInstance;
         loadingCover.style.display = "none";
       }).catch((message) => {
+        if (isGpExpectedRejection(message)) return;
         alert(message);
       });
     };
