@@ -28,7 +28,7 @@ namespace GamePush.Native
                     input["search"] = filter.search;
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchChannels, input);
                 ThrowIfProblem(json);
-                var result = GpJson.GetObject(json, "result");
+                var result = GpJson.GetObject(json, "result") ?? json;
                 var items = GpJson.GetObjectArray(result, "items");
                 var list = new List<FetchChannelData>();
                 foreach (var item in items)
@@ -46,7 +46,7 @@ namespace GamePush.Native
                     ["channelId"] = channelId
                 });
                 ThrowIfProblem(json);
-                var result = GpJson.GetObject(json, "result");
+                var result = GpJson.GetObject(json, "result") ?? json;
                 var data = ParseChannel<FetchChannelData>(result);
                 NativeMainThread.Run(() => GP_Channels.NativeFireFetchChannel(data));
             }, () => GP_Channels.NativeFireFetchChannelError());
@@ -72,7 +72,9 @@ namespace GamePush.Native
                 if (filter.guestAcl != null) input["guestAcl"] = Acl(filter.guestAcl);
                 var json = await NativeCore.Client.Fetch(NativeQueries.CreateChannel, input);
                 ThrowIfProblem(json);
-                var data = ParseChannel<CreateChannelData>(GpJson.GetObject(json, "result"));
+                var data = ParseChannel<CreateChannelData>(GpJson.GetObject(json, "result") ?? json, "createChannel");
+                if (data.id <= 0)
+                    throw new InvalidOperationException("createChannel returned an invalid channel id");
                 NativeMainThread.Run(() => GP_Channels.NativeFireCreateChannel(data));
             }, () => GP_Channels.NativeFireCreateChannelError());
         }
@@ -95,7 +97,7 @@ namespace GamePush.Native
                     input["password"] = GpJson.TryGetString(rawJson, "password", out var password) ? password : "";
                 var json = await NativeCore.Client.Fetch(NativeQueries.UpdateChannel, input);
                 ThrowIfProblem(json);
-                var data = ParseChannel<UpdateChannelData>(GpJson.GetObject(json, "result"));
+                var data = ParseChannel<UpdateChannelData>(GpJson.GetObject(json, "result") ?? json);
                 data.channelId = data.id;
                 NativeMainThread.Run(() => GP_Channels.NativeFireUpdateChannel(data));
             }, () => GP_Channels.NativeFireUpdateChannelError());
@@ -178,11 +180,23 @@ namespace GamePush.Native
             };
         }
 
-        static T ParseChannel<T>(string json) where T : new()
+        static T ParseChannel<T>(string json, string operation = "channel") where T : new()
         {
+            if (string.IsNullOrWhiteSpace(json))
+                throw new InvalidOperationException(operation + " returned an empty channel payload");
             var mapped = GpJson.ReplaceKey(json, "private", "ch_private");
-            try { return JsonUtility.FromJson<T>(mapped); }
-            catch { return new T(); }
+            try
+            {
+                var value = JsonUtility.FromJson<T>(mapped);
+                if (value == null)
+                    throw new InvalidOperationException("JsonUtility returned null");
+                return value;
+            }
+            catch (Exception exception)
+            {
+                GP_Logger.Error("Channels", operation + " response parse failed: " + exception.Message + " payload=" + json);
+                throw;
+            }
         }
 
         static void ThrowIfProblem(string json)

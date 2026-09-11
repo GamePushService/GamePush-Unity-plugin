@@ -698,72 +698,9 @@ class GamePushUnityInner {
             this.trigger('CallOnDeleteMessageError')
         );
 
-        // multiplayer
+        // multiplayer tokens only — session/events live in the Unity native kernel
         this.multiplayerPlayerInitializerRequestId = 0;
         this.multiplayerPlayerInitializerResolvers = new Map();
-
-        this.gp.multiplayer.on('connect', (result) => {
-            this.trigger('CallOnMultiplayerConnect', wrapMultiplayerOperation(0, result));
-        });
-        this.gp.multiplayer.on('disconnect', (result) => {
-            this.clearMultiplayerPlayerInitializerResolvers();
-            this.trigger('CallOnMultiplayerDisconnect', wrapMultiplayerOperation(0, result));
-        });
-        this.gp.multiplayer.on('error:connect', (error) => {
-            this.trigger(
-                'CallOnMultiplayerConnectError',
-                wrapMultiplayerOperation(0, serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('error:disconnect', (error) => {
-            this.trigger(
-                'CallOnMultiplayerDisconnectError',
-                wrapMultiplayerOperation(0, serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('error:sendState', (error) => {
-            console.warn(
-                '[GamePush Unity] Multiplayer sendState error:',
-                serializeMultiplayerError(error)
-            );
-            this.trigger(
-                'CallOnMultiplayerSendStateError',
-                JSON.stringify(serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('playerJoined', (player) => {
-            this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
-        });
-        this.gp.multiplayer.on('playerLeft', (player) => {
-            this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
-        });
-        this.gp.multiplayer.on('playersUpdated', (playersState) => {
-            this.trigger(
-                'CallOnMultiplayerPlayersUpdated',
-                JSON.stringify(mapMultiplayerStateEntries(playersState))
-            );
-        });
-        this.gp.multiplayer.on('globalStateUpdated', (globalState) => {
-            this.trigger(
-                'CallOnMultiplayerGlobalStateUpdated',
-                JSON.stringify(globalState || {})
-            );
-        });
-        this.gp.multiplayer.on('customEvent', (event) => {
-            this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(normalizeMultiplayerEvent(event)));
-        });
-        this.gp.multiplayer.on('becameHost', () => {
-            this.trigger('CallOnMultiplayerBecameHost');
-        });
-        this.gp.multiplayer.on('becamePeer', () => {
-            this.trigger('CallOnMultiplayerBecamePeer');
-        });
-        this.gp.multiplayer.on('hostMigrated', (data) => {
-            this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
-        });
-        this.gp.multiplayer.onTick((deltaTime) => {
-            this.trigger('CallOnMultiplayerTick', String(deltaTime));
-        });
 
         //triggers
         this.gp.triggers.on('activate', ({ trigger }) => {
@@ -2540,10 +2477,14 @@ class GamePushUnityInner {
             return;
         }
         Promise.resolve(channels.createChannel({ ...query, private: query.ch_private }))
-            .then((channel) => this.trigger(
-                'CallOnCreateChannel',
-                JSON.stringify(mapChannel(channel))
-            ))
+            .then((channel) => {
+                const mapped = mapChannel(channel);
+                if (!mapped || Number(mapped.id || 0) <= 0) {
+                    throw new Error('createChannel returned an invalid channel id');
+                }
+                console.info('[GamePush Unity] createChannel id=' + mapped.id + ' source=js');
+                this.trigger('CallOnCreateChannel', JSON.stringify(mapped));
+            })
             .catch((err) => {
                 console.warn(err);
                 this.trigger('CallOnCreateChannelError');
@@ -2660,139 +2601,37 @@ class GamePushUnityInner {
             ));
     }
 
-    Multiplayer_DefinePlayerSchema(schema) {
-        this.gp.multiplayer.definePlayerSchema(parseMultiplayerJson(schema, {}));
-    }
-
-    Multiplayer_DefineGlobalSchema(schema) {
-        this.gp.multiplayer.defineGlobalSchema(parseMultiplayerJson(schema, {}));
-    }
-
-    Multiplayer_SetPlayerInitializer() {
-        this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
-            const requestId = ++this.multiplayerPlayerInitializerRequestId;
-
-            return await new Promise((resolve) => {
-                const timeoutId = window.setTimeout(() => {
-                    this.multiplayerPlayerInitializerResolvers.delete(requestId);
-                    resolve(null);
-                }, this.multiplayerPlayerInitializerTimeoutMs);
-
-                this.multiplayerPlayerInitializerResolvers.set(requestId, {
-                    resolve,
-                    timeoutId
-                });
-
-                this.trigger(
-                    'CallOnMultiplayerPlayerInitializerRequest',
-                    JSON.stringify({
-                        requestId,
-                        playerId,
-                        player
-                    })
-                );
-            });
-        });
-    }
-
-    Multiplayer_ClearPlayerInitializer() {
-        this.clearMultiplayerPlayerInitializerResolvers();
-        this.gp.multiplayer.setPlayerInitializer(null);
-    }
-
-    Multiplayer_ResolvePlayerInitializer(requestId, state) {
-        const resolver =
-            this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
-
-        if (!resolver) {
-            return;
-        }
-
-        this.multiplayerPlayerInitializerResolvers.delete(requestId);
-        window.clearTimeout(resolver.timeoutId);
-        resolver.resolve(parseMultiplayerJson(state, null));
-    }
-
+    Multiplayer_DefinePlayerSchema() {}
+    Multiplayer_DefineGlobalSchema() {}
+    Multiplayer_SetPlayerInitializer() {}
+    Multiplayer_ClearPlayerInitializer() {}
+    Multiplayer_ResolvePlayerInitializer() {}
     clearMultiplayerPlayerInitializerResolvers() {
         if (!this.multiplayerPlayerInitializerResolvers) {
             return;
         }
-
-        this.multiplayerPlayerInitializerResolvers.forEach((resolver) => {
-            window.clearTimeout(resolver.timeoutId);
-            resolver.resolve(null);
-        });
         this.multiplayerPlayerInitializerResolvers.clear();
     }
-
-    Multiplayer_SetPlayerState(state) {
-        this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
-    }
-
-    Multiplayer_SetGlobalState(state) {
-        this.gp.multiplayer.setGlobalState(parseMultiplayerJson(state, {}));
-    }
-
-    Multiplayer_SetMode(mode) {
-        this.gp.multiplayer.setMode(mode);
-    }
-
-    Multiplayer_SendMessage(eventName, data, options) {
-        const parsedData = parseMultiplayerJson(data, null);
-        const parsedOptions = normalizeMultiplayerSendOptions(
-            parseMultiplayerJson(options, undefined)
-        );
-
-        if (typeof parsedOptions === 'undefined') {
-            this.gp.multiplayer.sendMessage(eventName, parsedData);
-            return;
-        }
-
-        this.gp.multiplayer.sendMessage(eventName, parsedData, parsedOptions);
-    }
-
-    Multiplayer_TickRate() {
-        return this.gp.multiplayer.tickRate;
-    }
-
-    Multiplayer_IsConnected() {
-        return this.toUnity(this.gp.multiplayer.isConnected);
-    }
-
-    Multiplayer_IsHost() {
-        return this.toUnity(this.gp.multiplayer.isHost);
-    }
-
-    Multiplayer_ConnectedPlayers() {
-        return this.toUnity(serializeConnectedPlayers(this.gp.multiplayer.connectedPlayers));
-    }
-
-    Multiplayer_NetworkStats() {
-        return this.toUnity(this.gp.multiplayer.networkStats);
-    }
-
-    Multiplayer_MyState() {
-        return this.toUnity(this.gp.multiplayer.myState);
-    }
-
-    Multiplayer_PlayersState() {
-        return this.toUnity(mapMultiplayerStateEntries(this.gp.multiplayer.playersState));
-    }
-
-    Multiplayer_GlobalState() {
-        return this.toUnity(this.gp.multiplayer.globalState);
-    }
-
+    Multiplayer_SetPlayerState() {}
+    Multiplayer_SetGlobalState() {}
+    Multiplayer_SetMode() {}
+    Multiplayer_SendMessage() {}
+    Multiplayer_TickRate() { return 0; }
+    Multiplayer_IsConnected() { return this.toUnity(false); }
+    Multiplayer_IsHost() { return this.toUnity(false); }
+    Multiplayer_ConnectedPlayers() { return this.toUnity([]); }
+    Multiplayer_NetworkStats() { return this.toUnity({ ping: 0, bufferSize: 0, bufferDelay: 0 }); }
+    Multiplayer_MyState() { return this.toUnity({}); }
+    Multiplayer_PlayersState() { return this.toUnity([]); }
+    Multiplayer_GlobalState() { return this.toUnity({}); }
     Multiplayer_RuntimeCapabilities() {
-        const multiplayer = this.gp && this.gp.multiplayer;
-        const canListen = multiplayer && typeof multiplayer.on === 'function';
         return this.toUnity({
-            connect: !!multiplayer && typeof multiplayer.connect === 'function',
-            disconnect: !!multiplayer && typeof multiplayer.disconnect === 'function',
-            setPlayerState: !!multiplayer && typeof multiplayer.setPlayerState === 'function',
-            setGlobalState: !!multiplayer && typeof multiplayer.setGlobalState === 'function',
-            sendMessage: !!multiplayer && typeof multiplayer.sendMessage === 'function',
-            hostMigrationEvents: !!canListen
+            connect: true,
+            disconnect: true,
+            setPlayerState: true,
+            setGlobalState: true,
+            sendMessage: true,
+            hostMigrationEvents: true
         });
     }
     // Multiplayer

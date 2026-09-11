@@ -155,6 +155,10 @@ namespace GamePush.Native
 
         static bool IsReconnectable(uint code, string reason)
         {
+            if (code >= 3500 && code < 4000)
+                return false;
+            if (code >= 100 && code <= 111)
+                return false;
             if (code >= 3000 && code < 3500)
                 return true;
             if (code >= 4000 && code < 4500)
@@ -217,6 +221,8 @@ namespace GamePush.Native
         public event Action<byte[]> Publication;
         public event Action Subscribed;
         public bool IsSubscribed { get; private set; }
+
+        public void MarkUnsubscribed() => IsSubscribed = false;
 
         public NativeSubscription(NativeCentrifugo client, string channel, string token)
         {

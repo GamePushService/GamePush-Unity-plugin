@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,78 +10,32 @@ namespace GamePush.Native
 {
     public static class NativeMultiplayer
     {
-        const int StateUpdate = 1;
-        const int Heartbeat = 2;
-        const int HostMigration = 3;
-        const int PeerState = 4;
-        const int CustomEvent = 5;
-        const int GlobalStateUpdate = 6;
-        const int StateDelta = 7;
-        const int GlobalStateDelta = 8;
-        const int SnapshotRequest = 9;
-        const float HeartbeatInterval = 1f;
-        const float HeartbeatTimeout = 3f;
-        const float HostHeartbeatTimeout = 1.5f;
-        const float HostRecheckInterval = 60f;
-        const int GlobalTargetSendRate = 20;
+        const float SnapshotResponseThrottle = 0.25f;
 
-        static readonly Dictionary<int, PlayerSlot> Players = new Dictionary<int, PlayerSlot>();
-        static readonly Dictionary<int, string> PlayerStates = new Dictionary<int, string>();
-        static readonly Dictionary<int, float> LastBeat = new Dictionary<int, float>();
+        static NativeMultiplayerTransport _transport;
+        static NativeMultiplayerSynchronizer _synchronizer;
+        static NativeMultiplayerStateManager _stateManager;
+        static NativeMultiplayerSession _session;
+        static NativePump _pump;
 
-        static NativeCentrifugo _centrifuge;
-        static NativeSubscription _hostSub;
-        static NativeSubscription _stateSub;
         static bool _connected;
         static bool _connecting;
         static int _channelId;
-        static int _hostId;
-        static long _hostElectedAt;
-        static float _sessionStart;
-        static int _tickRate = 20;
-        static int _bufferMinMs = 100;
-        static int _bufferMaxMs = 300;
-        static bool _transportLive;
-        static float _reconnectGraceUntil;
-        static string _globalState = "{}";
-        static string _myState = "{}";
-        static string _playerSchema = "{}";
-        static string _globalSchema = "{}";
-        static NativePump _pump;
-        static Timer _heartbeatClock;
-        static int _heartbeatQueued;
         static float _nextTick;
-        static int _playersSeq;
-        static float _lastHostRecheckTime;
-        static float _lastMigrationTime;
-        static float _hostAnnounceRetry1;
-        static float _hostAnnounceRetry2;
-        static int _selfReconnectCount;
-        static int _selfFreezeCount;
-        static float _selfPingJitterEma;
-        static int _selfPing;
-        static float _selfEchoLastAt;
-        static int _tickCounter;
-        static int _globalSendSeq;
-        static int _loggedWire;
-        static string _lastSentPlayers;
-        static string _lastSentGlobal;
-        static bool _playersActiveLastTick;
-        static bool _globalActiveLastTick;
-        static int _lastPlayersSeq = -1;
-        static int _lastGlobalSeq = -1;
-        static float _lastSnapshotRequestAt;
-        static bool _playersHaveBase;
-        static string _lastFullPlayersJson;
-        static string _lastFullGlobalJson;
-        static readonly GP_InterpolationEngine _playersInterp = new GP_InterpolationEngine(20);
-        static readonly GP_InterpolationEngine _globalInterp = new GP_InterpolationEngine(20);
-        static object _previousInterpolatedPlayers;
-        static object _previousInterpolatedGlobal;
+        static string _pendingPeerState;
+        static bool _pendingPeerStateFlushed = true;
+        static bool _peerActiveLastTick;
+        static float _lastSnapshotResponseAt;
+        static string _pendingPlayerSchema = "{}";
+        static string _pendingGlobalSchema = "{}";
+        static string _pendingMode = "smooth";
 
         public static bool IsConnected => _connected;
-        public static bool IsHost => _connected && _hostId == NativePlayer.Id && NativePlayer.Id > 0;
-        public static int TickRate => _tickRate;
+        public static bool IsHost => _session != null && _session.IsHost;
+        public static int TickRate =>
+            _synchronizer != null
+                ? _synchronizer.TickRate
+                : string.Equals(_pendingMode, "fast", StringComparison.OrdinalIgnoreCase) ? 60 : 20;
 
         public static async Task<MultiplayerConnectResultData> Connect(
             MultiplayerChannelQuery query, CancellationToken cancellationToken)
@@ -102,7 +55,7 @@ namespace GamePush.Native
                 var result = GpJson.GetObject(json, "result") ?? json;
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                     throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "connect_problem");
-                await OpenTransport(result, cancellationToken);
+                await OpenSession(result, cancellationToken);
                 return FinishConnect();
             }
             catch (Exception exception)
@@ -139,7 +92,7 @@ namespace GamePush.Native
                     NativePlayer.Adopt(playerId, playerName);
                 if (NativePlayer.Id <= 0)
                     throw new Exception("Play2Web player id missing");
-                await OpenTransport(result, cancellationToken);
+                await OpenSession(result, cancellationToken);
                 return FinishConnect();
             }
             catch (Exception exception)
@@ -153,149 +106,123 @@ namespace GamePush.Native
             }
         }
 
-        static async Task OpenTransport(string result, CancellationToken cancellationToken)
+        static async Task OpenSession(string credentials, CancellationToken cancellationToken)
         {
-            NativeMainThread.Ensure();
-            var connection = GpJson.GetObject(result, "connection");
-            var hostInfo = GpJson.GetObject(result, "hostSubscription");
-            var stateInfo = GpJson.GetObject(result, "stateSubscription");
-            var endpoint = GpJson.TryGetString(connection, "endpoint", out var ep) && !string.IsNullOrEmpty(ep)
-                ? ep
-                : NativeCore.CentrifugeWs;
-            endpoint = EnsureProtobufEndpoint(endpoint);
-            var token = GpJson.TryGetString(connection, "token", out var tok) ? tok : "";
-            var hostChannel = GpJson.TryGetString(hostInfo, "channel", out var hc) ? hc : "";
-            var hostToken = GpJson.TryGetString(hostInfo, "token", out var ht) ? ht : "";
-            var stateChannel = GpJson.TryGetString(stateInfo, "channel", out var sc) ? sc : "";
-            var stateToken = GpJson.TryGetString(stateInfo, "token", out var st) ? st : "";
-            GP_Logger.Info("Centrifugo", "open " + endpoint +
-                                         " host=" + hostChannel +
-                                         " state=" + stateChannel +
-                                         " tokenLen=" + (token == null ? 0 : token.Length));
+            _transport = new NativeMultiplayerTransport();
+            _synchronizer = new NativeMultiplayerSynchronizer();
+            _synchronizer.DefinePlayerSchema(_pendingPlayerSchema);
+            _synchronizer.DefineGlobalSchema(_pendingGlobalSchema);
+            ApplyPendingMode(false);
+            _stateManager = new NativeMultiplayerStateManager(_transport, _synchronizer);
+            _session = new NativeMultiplayerSession(_transport);
+            WireModules();
+            await _transport.Connect(credentials, cancellationToken);
+        }
 
-            var connected = new TaskCompletionSource<bool>();
-            var hostReady = new TaskCompletionSource<bool>();
-            var stateReady = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() =>
+        static void WireModules()
+        {
+            _transport.Reconnecting += () => _session?.NoteTransportInterrupted();
+            _transport.Reconnected += HandleTransportReconnect;
+            _transport.Disconnected += HandleTransportDrop;
+            _transport.Message += HandleWire;
+            _synchronizer.SnapshotRequest += () =>
             {
-                connected.TrySetCanceled();
-                hostReady.TrySetCanceled();
-                stateReady.TrySetCanceled();
-            }))
+                if (_connected && _session != null && !_session.IsHost)
+                    _transport.SendToHost(NativeMultiplayerWire.SnapshotRequest, "{}", NativePlayer.Id);
+            };
+            _synchronizer.PeerStateChanged += (playerId, state) =>
             {
-                _centrifuge = new NativeCentrifugo();
-                _centrifuge.Connected += () =>
+                if (_session == null || !_session.IsHost)
+                    return;
+                _synchronizer.TryGetPlayerState(playerId, out var existing);
+                if (!GpJson.HasPartialChanges(state, existing ?? "{}"))
+                    return;
+                _synchronizer.SetPlayerState(playerId, GpJson.MergeDelta(existing, state));
+                GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(_synchronizer.PlayersStateJson()));
+            };
+            _synchronizer.PlayersUpdated += () =>
+                GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(_synchronizer.PlayersStateJson()));
+            _synchronizer.GlobalStateUpdated += state =>
+                GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(state));
+            _session.PlayerJoined += (player, isSelf) =>
+            {
+                if (_session.IsHost)
+                    InitMissingPlayers();
+                var joined = "{\"player\":" + NativeMultiplayerSession.PlayerJson(player) +
+                             ",\"isSelf\":" + (isSelf ? "true" : "false") + "}";
+                GP_Multiplayer.NativeEmit("playerJoined", new GP_Data(joined));
+            };
+            _session.PlayerLeft += player =>
+            {
+                _synchronizer.RemovePlayer(player.playerId);
+                GP_Multiplayer.NativeEmit("playerLeft", new GP_Data(NativeMultiplayerSession.PlayerJson(player)));
+                if (_session != null && _session.IsHost)
+                    _stateManager.SendFullSnapshot();
+            };
+            _session.HostMigrated += (oldHost, newHost) =>
+                GP_Multiplayer.NativeEmit("hostMigrated",
+                    new GP_Data("{\"oldHost\":" + oldHost + ",\"newHost\":" + newHost + "}"));
+            _session.BecameHost += () =>
+            {
+                _stateManager.ResetSendState();
+                _stateManager.StartSending();
+                InitMissingPlayers();
+                GP_Multiplayer.NativeEmit("becameHost");
+            };
+            _session.BecamePeer += () =>
+            {
+                _stateManager.StopSending();
+                _stateManager.ResetSendState();
+                GP_Multiplayer.NativeEmit("becamePeer");
+            };
+            _session.CustomEvent += EmitCustom;
+            _session.PageUnfrozen += frozenMs =>
+            {
+                GP_Logger.Info("Multiplayer", "Resyncing state after " +
+                               frozenMs.ToString("0", CultureInfo.InvariantCulture) + "ms freeze");
+                if (_session != null && _session.IsHost)
                 {
-                    GP_Logger.Info("Centrifugo", "connected");
-                    connected.TrySetResult(true);
-                };
-                _centrifuge.Reconnecting += () => NativeMainThread.Run(HandleTransportInterrupted);
-                _centrifuge.Reconnected += () => NativeMainThread.Run(HandleTransportReconnect);
-                _centrifuge.Disconnected += reason =>
-                {
-                    if (_connected)
-                        NativeMainThread.Run(() => HandleTransportDrop(reason));
-                };
-                _hostSub = _centrifuge.Subscribe(hostChannel, hostToken);
-                _stateSub = _centrifuge.Subscribe(stateChannel, stateToken);
-                _hostSub.Publication += OnBytes;
-                _stateSub.Publication += OnBytes;
-                _hostSub.Subscribed += () =>
-                {
-                    GP_Logger.Info("Centrifugo", "subscribed host=" + hostChannel);
-                    hostReady.TrySetResult(true);
-                };
-                _stateSub.Subscribed += () =>
-                {
-                    GP_Logger.Info("Centrifugo", "subscribed state=" + stateChannel);
-                    stateReady.TrySetResult(true);
-                };
-                _centrifuge.Connect(endpoint, token);
-                _hostSub.Subscribe();
-                _stateSub.Subscribe();
-
-                var timeout = Task.Delay(10000, cancellationToken);
-                var ready = Task.WhenAll(connected.Task, hostReady.Task, stateReady.Task);
-                var winner = await Task.WhenAny(ready, timeout);
-                if (winner != ready)
-                {
-                    var pending = "";
-                    if (!connected.Task.IsCompleted)
-                        pending += " connected";
-                    if (!hostReady.Task.IsCompleted)
-                        pending += " hostSub";
-                    if (!stateReady.Task.IsCompleted)
-                        pending += " stateSub";
-                    throw new TimeoutException("Centrifugo connection timeout:" + pending);
+                    _stateManager.ResetSendState();
+                    _stateManager.SendFullSnapshot();
                 }
-                await ready;
-            }
+                else if (!string.IsNullOrEmpty(_synchronizer.MyState) && _synchronizer.MyState != "{}")
+                {
+                    _pendingPeerState = _synchronizer.MyState;
+                    _pendingPeerStateFlushed = false;
+                    FlushPendingPeerState();
+                }
+            };
+            _session.SnapshotRequested += _ =>
+            {
+                if (_session == null || !_session.IsHost)
+                    return;
+                var now = Time.realtimeSinceStartup;
+                if (now - _lastSnapshotResponseAt < SnapshotResponseThrottle)
+                    return;
+                _lastSnapshotResponseAt = now;
+                _stateManager.SendFullSnapshot();
+            };
         }
 
         static MultiplayerConnectResultData FinishConnect()
         {
-            Players.Clear();
-            PlayerStates.Clear();
-            LastBeat.Clear();
-            _hostId = 0;
-            _hostElectedAt = 0;
-            _sessionStart = Time.realtimeSinceStartup;
             _nextTick = 0;
-            _lastHostRecheckTime = 0f;
-            _lastMigrationTime = 0f;
-            _hostAnnounceRetry1 = 0f;
-            _hostAnnounceRetry2 = 0f;
-            _selfReconnectCount = 0;
-            _selfFreezeCount = 0;
-            _selfPingJitterEma = 0f;
-            _selfPing = 0;
-            _selfEchoLastAt = 0f;
-            _tickCounter = 0;
-            _playersSeq = 0;
-            _globalSendSeq = 0;
-            _loggedWire = 0;
-            _transportLive = true;
-            _reconnectGraceUntil = 0f;
-            _lastSentPlayers = null;
-            _lastSentGlobal = null;
-            _playersActiveLastTick = false;
-            _globalActiveLastTick = false;
-            _lastPlayersSeq = -1;
-            _lastGlobalSeq = -1;
-            _lastSnapshotRequestAt = 0f;
-            _playersHaveBase = false;
-            _lastFullPlayersJson = null;
-            _lastFullGlobalJson = null;
-            _previousInterpolatedPlayers = null;
-            _previousInterpolatedGlobal = null;
-            _playersInterp.Clear();
-            _globalInterp.Clear();
-            ApplySchemasToEngines();
-            AddSelf();
+            _pendingPeerState = null;
+            _pendingPeerStateFlushed = true;
+            _peerActiveLastTick = false;
+            _lastSnapshotResponseAt = 0f;
+            _synchronizer.SetPlayerState(NativePlayer.Id, _synchronizer.MyState);
+            _session.Start();
             EnsurePump();
-            StartHeartbeatClock();
             Application.runInBackground = true;
             _connected = true;
             _connecting = false;
             var payload = new GP_Data("{\"success\":true}");
             NativeMainThread.Run(() => GP_Multiplayer.NativeEmit("connect", payload));
             GP_Logger.Info("Multiplayer", "connected channel=" + _channelId + " player=" + NativePlayer.Id +
-                                          " tickRate=" + _tickRate +
-                                          " globalDivider=" + GlobalTickDivider);
+                                          " tickRate=" + TickRate +
+                                          " globalDivider=" + _synchronizer.GlobalTickDivider);
             return new MultiplayerConnectResultData { success = true };
-        }
-
-        static string EnsureProtobufEndpoint(string endpoint)
-        {
-            if (string.IsNullOrEmpty(endpoint))
-                endpoint = NativeCore.CentrifugeWs;
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return endpoint.Replace("?format=protobuf", "").Replace("&format=protobuf", "");
-#else
-            if (endpoint.IndexOf("format=", StringComparison.OrdinalIgnoreCase) >= 0)
-                return endpoint;
-            return endpoint + (endpoint.IndexOf('?') >= 0 ? "&" : "?") + "format=protobuf";
-#endif
         }
 
         public static void CloseLocal() => Cleanup(false);
@@ -326,54 +253,72 @@ namespace GamePush.Native
 
         public static void DefinePlayerSchema(string schema)
         {
-            _playerSchema = schema ?? "{}";
-            ApplySchemasToEngines();
+            _pendingPlayerSchema = schema ?? "{}";
+            _synchronizer?.DefinePlayerSchema(_pendingPlayerSchema);
         }
 
         public static void DefineGlobalSchema(string schema)
         {
-            _globalSchema = schema ?? "{}";
-            ApplySchemasToEngines();
+            _pendingGlobalSchema = schema ?? "{}";
+            _synchronizer?.DefineGlobalSchema(_pendingGlobalSchema);
         }
 
         public static void SetMode(string mode)
         {
-            if (string.Equals(mode, "fast", StringComparison.OrdinalIgnoreCase))
+            _pendingMode = mode ?? "smooth";
+            ApplyPendingMode(_connected);
+        }
+
+        static void ApplyPendingMode(bool restartHost)
+        {
+            var fast = string.Equals(_pendingMode, "fast", StringComparison.OrdinalIgnoreCase);
+            var tickRate = fast ? 60 : 20;
+            var bufferMin = fast ? 50 : 100;
+            var bufferMax = fast ? 100 : 300;
+            _synchronizer?.SetMode(tickRate, bufferMin, bufferMax);
+            _nextTick = 0;
+            if (restartHost && _session != null && _session.IsHost)
             {
-                _tickRate = 60;
-                _bufferMinMs = 50;
-                _bufferMaxMs = 100;
+                _stateManager.ResetSendState();
+                _stateManager.StartSending();
+                _stateManager.SendFullSnapshot();
             }
-            else
-            {
-                _tickRate = 20;
-                _bufferMinMs = 100;
-                _bufferMaxMs = 300;
-            }
-            _tickCounter = 0;
-            ApplySchemasToEngines();
         }
 
         public static void SetPlayerState(string state)
         {
+            if (!_connected || _synchronizer == null)
+                return;
             var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
-            incoming = GP_NativeSchema.FilterReadonly(incoming, _myState, _playerSchema);
-            _myState = GpJson.MergeDelta(_myState, incoming);
-            PlayerStates[NativePlayer.Id] = _myState;
+            incoming = GP_NativeSchema.FilterReadonly(incoming, _synchronizer.MyState, _synchronizer.PlayerSchema);
+            if (!GpJson.HasPartialChanges(incoming, _synchronizer.MyState))
+                return;
+            var merged = GpJson.MergeDelta(_synchronizer.MyState, incoming);
+            _synchronizer.SetMyState(merged);
+            _synchronizer.SetPlayerState(NativePlayer.Id, merged);
+            if (_session != null && _session.IsHost)
+                GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(_synchronizer.PlayersStateJson()));
+            else
+            {
+                _pendingPeerState = string.IsNullOrEmpty(_pendingPeerState)
+                    ? incoming
+                    : GpJson.MergeDelta(_pendingPeerState, incoming);
+                _pendingPeerStateFlushed = false;
+            }
         }
 
         public static void SetGlobalState(string state)
         {
-            if (!IsHost)
+            if (_session == null || !_session.IsHost || _synchronizer == null)
                 return;
             var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
-            incoming = GP_NativeSchema.FilterReadonly(incoming, _globalState, _globalSchema);
-            _globalState = GpJson.MergeDelta(_globalState, incoming);
+            incoming = GP_NativeSchema.FilterReadonly(incoming, _synchronizer.GlobalState, _synchronizer.GlobalSchema);
+            _synchronizer.SetGlobalState(GpJson.MergeDelta(_synchronizer.GlobalState, incoming));
         }
 
         public static void SendMessage(string eventName, string data, string options)
         {
-            if (!_connected)
+            if (!_connected || _transport == null)
                 return;
             var target = "all";
             var echo = false;
@@ -391,350 +336,138 @@ namespace GamePush.Native
             var payload = "{\"eventName\":" + GpJson.Quote(eventName ?? "") +
                           ",\"data\":" + (string.IsNullOrEmpty(data) ? "null" : data) +
                           ",\"target\":" + GpJson.Quote(target) + "}";
-            Publish(CustomEvent, payload, false);
+            _transport.Send(NativeMultiplayerWire.CustomEvent, payload, NativePlayer.Id);
             if (echo || target == NativePlayer.Id.ToString(CultureInfo.InvariantCulture))
                 EmitCustom(NativePlayer.Id, eventName, data);
         }
 
-        public static string ConnectedPlayersJson()
+        public static void NotifyInitializerChanged()
         {
-            var sb = new StringBuilder();
-            sb.Append('[');
-            var first = true;
-            foreach (var pair in Players)
-            {
-                if (!first) sb.Append(',');
-                first = false;
-                sb.Append(PlayerJson(pair.Value));
-            }
-            sb.Append(']');
-            return sb.ToString();
+            if (_connected && _session != null && _session.IsHost)
+                InitMissingPlayers();
         }
 
-        public static string PlayersStateJson()
-        {
-            var sb = new StringBuilder();
-            sb.Append("{\"players\":[");
-            var first = true;
-            foreach (var pair in PlayerStates)
-            {
-                if (!first) sb.Append(',');
-                first = false;
-                sb.Append("{\"playerId\":");
-                sb.Append(GpJson.Quote(pair.Key.ToString(CultureInfo.InvariantCulture)));
-                sb.Append(",\"state\":");
-                sb.Append(GpJson.Quote(pair.Value ?? "{}"));
-                sb.Append('}');
-            }
-            sb.Append("]}");
-            return sb.ToString();
-        }
+        public static string ConnectedPlayersJson() =>
+            _session != null ? _session.ConnectedPlayersJson() : "[]";
 
-        public static string MyStateJson() => _myState;
-        public static string GlobalStateJson() => _globalState;
+        public static string PlayersStateJson() =>
+            _synchronizer != null ? _synchronizer.PlayersStateJson() : "{\"players\":[]}";
+
+        public static string MyStateJson() => _synchronizer != null ? _synchronizer.MyState : "{}";
+        public static string GlobalStateJson() => _synchronizer != null ? _synchronizer.GlobalState : "{}";
 
         public static string NetworkStatsJson() =>
-            "{\"ping\":" + _selfPing +
-            ",\"bufferSize\":" + _playersInterp.BufferSize +
-            ",\"bufferDelay\":" + _playersInterp.BufferDelay.ToString("0.###", CultureInfo.InvariantCulture) + "}";
+            _synchronizer != null
+                ? _synchronizer.NetworkStatsJson(_session != null ? _session.SelfPing : 0)
+                : "{\"ping\":0,\"bufferSize\":0,\"bufferDelay\":0}";
+
+        public static string InterpolationStatsJson() =>
+            _synchronizer != null
+                ? _synchronizer.InterpolationStatsJson()
+                : "{\"seqGapCount\":0,\"snapshotRequestCount\":0,\"bufferSize\":0,\"bufferDelay\":0}";
 
         public static string RuntimeCapabilitiesJson() =>
             "{\"connect\":true,\"disconnect\":true,\"setPlayerState\":true,\"setGlobalState\":true,\"sendMessage\":true,\"hostMigrationEvents\":true}";
 
-        static int GlobalTickDivider =>
-            Math.Max(1, (int)Math.Round(_tickRate / (float)GlobalTargetSendRate));
-
         public static void Tick(float now)
         {
-            if (!_connected)
+            if (!_connected || _synchronizer == null || _session == null)
                 return;
-            if (!IsHost)
-                SampleInterpolation(now * 1000.0);
-            if (now >= _nextTick)
-            {
-                var dt = 1f / Math.Max(1, _tickRate);
-                _nextTick = now + dt;
-                if (IsHost)
-                {
-                    PlayerStates[NativePlayer.Id] = _myState;
-                    SendHostPlayers();
-                    if (_tickCounter % GlobalTickDivider == 0)
-                        SendHostGlobal();
-                    _tickCounter++;
-                }
-                else if (!string.IsNullOrEmpty(_myState) && _myState != "{}")
-                    Publish(PeerState, _myState, true);
-                GP_Multiplayer.NativeEmitTick(dt * 1000f);
-            }
-        }
-
-        static void OnHeartbeatClock()
-        {
-            if (!_connected)
+            _session.Tick(now);
+            if (!_session.IsHost)
+                _synchronizer.SampleInterpolation(now * 1000.0);
+            if (now < _nextTick)
                 return;
-            var now = Time.realtimeSinceStartup;
-            SendHeartbeat();
-            CheckTimeouts(now);
-            if (IsHost)
+            var dt = 1f / Math.Max(1, TickRate);
+            _nextTick = now + dt;
+            if (_session.IsHost)
             {
-                if (_hostAnnounceRetry1 > 0 && now >= _hostAnnounceRetry1)
-                {
-                    _hostAnnounceRetry1 = 0;
-                    AnnounceHost();
-                }
-                if (_hostAnnounceRetry2 > 0 && now >= _hostAnnounceRetry2)
-                {
-                    _hostAnnounceRetry2 = 0;
-                    AnnounceHost();
-                }
-            }
-        }
-
-        static void EnqueueHeartbeatClock()
-        {
-            if (Interlocked.Exchange(ref _heartbeatQueued, 1) == 1)
-                return;
-            NativeMainThread.Run(() =>
-            {
-                Interlocked.Exchange(ref _heartbeatQueued, 0);
-                OnHeartbeatClock();
-            });
-        }
-
-        static void StartHeartbeatClock()
-        {
-            StopHeartbeatClock();
-            _heartbeatClock = new Timer(_ => EnqueueHeartbeatClock(), null,
-                TimeSpan.Zero, TimeSpan.FromSeconds(HeartbeatInterval));
-        }
-
-        static void StopHeartbeatClock()
-        {
-            try { _heartbeatClock?.Dispose(); }
-            catch { /* ignore */ }
-            _heartbeatClock = null;
-            Interlocked.Exchange(ref _heartbeatQueued, 0);
-        }
-
-        static string BuildPlayersPayload()
-        {
-            var sb = new StringBuilder();
-            sb.Append("{\"players\":{");
-            var first = true;
-            foreach (var pair in PlayerStates)
-            {
-                if (!first)
-                    sb.Append(',');
-                first = false;
-                sb.Append(GpJson.Quote(pair.Key.ToString(CultureInfo.InvariantCulture)));
-                sb.Append(':');
-                sb.Append(string.IsNullOrEmpty(pair.Value) ? "{}" : pair.Value);
-            }
-            sb.Append("}}");
-            return sb.ToString();
-        }
-
-        static void SendHostPlayers()
-        {
-            if (!IsHost || !_connected || !_transportLive)
-                return;
-            var current = BuildPlayersPayload();
-            int type;
-            string payload;
-            if (string.IsNullOrEmpty(_lastSentPlayers))
-            {
-                type = StateUpdate;
-                payload = current;
-                _playersActiveLastTick = true;
+                _synchronizer.SetPlayerState(NativePlayer.Id, _synchronizer.MyState);
+                _stateManager.TickHostSend();
             }
             else
+                FlushPendingPeerState();
+            GP_Multiplayer.NativeEmitTick(dt * 1000f);
+        }
+
+        static void FlushPendingPeerState()
+        {
+            if (_session == null || _session.IsHost || _stateManager == null)
             {
-                var delta = GpJson.CalculateDelta(_lastSentPlayers, current);
-                if (delta == null)
+                _peerActiveLastTick = false;
+                return;
+            }
+            if (_session.HostId <= 0)
+                return;
+            if (_pendingPeerStateFlushed || _pendingPeerState == null)
+            {
+                if (_peerActiveLastTick)
                 {
-                    if (!_playersActiveLastTick)
-                        return;
-                    _playersActiveLastTick = false;
-                    Publish(StateDelta, "{}");
-                    return;
+                    _peerActiveLastTick = false;
+                    _stateManager.SendMyStateToHost("{}");
                 }
-                type = StateDelta;
-                payload = delta;
-                _playersActiveLastTick = true;
+                return;
             }
-            Publish(type, payload);
-            _lastSentPlayers = current;
+            _stateManager.SendMyStateToHost(_pendingPeerState);
+            _pendingPeerState = null;
+            _pendingPeerStateFlushed = true;
+            _peerActiveLastTick = true;
         }
 
-        static void SendHostGlobal()
+        static void HandleWire(NativeMultiplayerWireMessage message)
         {
-            if (!IsHost || !_connected || !_transportLive)
+            if (_session == null || _synchronizer == null)
                 return;
-            var current = string.IsNullOrEmpty(_globalState) ? "{}" : _globalState;
-            int type;
-            string payload;
-            if (string.IsNullOrEmpty(_lastSentGlobal))
+            if (message == null || message.SenderId <= 0)
             {
-                type = GlobalStateUpdate;
-                payload = current;
-                _globalActiveLastTick = true;
+                GP_Logger.Warn("Multiplayer", "Dropped wire message with invalid senderId");
+                return;
             }
-            else
+            _session.HandleMessage(message);
+            switch (message.Type)
             {
-                var delta = GpJson.CalculateDelta(_lastSentGlobal, current);
-                if (delta == null)
-                {
-                    if (!_globalActiveLastTick)
-                        return;
-                    _globalActiveLastTick = false;
-                    Publish(GlobalStateDelta, "{}");
-                    return;
-                }
-                type = GlobalStateDelta;
-                payload = delta;
-                _globalActiveLastTick = true;
+                case NativeMultiplayerWire.StateUpdate:
+                    if (_session.ShouldAcceptHostState(message.SenderId))
+                        _synchronizer.HandleHostPlayersSnapshot(message.Payload, message.Seq, message.Timestamp);
+                    break;
+                case NativeMultiplayerWire.StateDelta:
+                    if (_session.ShouldAcceptHostState(message.SenderId))
+                        _synchronizer.HandleHostPlayersDelta(message.Payload, message.Seq, message.Timestamp);
+                    break;
+                case NativeMultiplayerWire.PeerState:
+                    if (_session.IsHost && message.SenderId != NativePlayer.Id && message.SenderId > 0)
+                        _synchronizer.HandlePeerState(message.SenderId, message.Payload, message.Timestamp);
+                    break;
+                case NativeMultiplayerWire.GlobalStateUpdate:
+                    if (_session.ShouldAcceptHostState(message.SenderId))
+                        _synchronizer.HandleHostGlobalSnapshot(message.Payload, message.Seq, message.Timestamp);
+                    break;
+                case NativeMultiplayerWire.GlobalStateDelta:
+                    if (_session.ShouldAcceptHostState(message.SenderId))
+                        _synchronizer.HandleHostGlobalDelta(message.Payload, message.Seq, message.Timestamp);
+                    break;
             }
-            Publish(type, payload);
-            _lastSentGlobal = current;
         }
 
-        static void SendHeartbeat()
+        static void HandleTransportReconnect()
         {
-            RefreshSelfMetrics();
-            Players.TryGetValue(NativePlayer.Id, out var self);
-            var duration = self != null ? self.sessionDuration : 0;
-            var stability = self != null
-                ? self.connectionStability.ToString("0.##", CultureInfo.InvariantCulture)
-                : "1";
-            var payload = "{\"sessionDuration\":" + duration +
-                          ",\"sentAt\":" + (Time.realtimeSinceStartup * 1000f).ToString("0.###", CultureInfo.InvariantCulture) +
-                          ",\"ping\":" + _selfPing + ",\"name\":" + GpJson.Quote(NativePlayer.GetString("name")) +
-                          ",\"stability\":" + stability + "}";
-            Publish(Heartbeat, payload, false);
+            if (!_connected)
+                return;
+            _transport?.MarkLive();
+            _stateManager?.StopSending();
+            _stateManager?.ResetSendState();
+            _synchronizer?.ClearReceiveState();
+            _session?.HandleReconnect();
         }
 
-        static void RefreshSelfMetrics()
+        static void HandleTransportDrop(string reason)
         {
-            if (!Players.TryGetValue(NativePlayer.Id, out var self))
+            if (!_connected)
                 return;
-            self.sessionDuration = (int)((Time.realtimeSinceStartup - _sessionStart) * 1000f);
-            self.ping = _selfPing;
-            self.connectionStability = NativeHostSelector.CalculateSelfStability(
-                _selfReconnectCount, _selfFreezeCount, _selfPingJitterEma);
-        }
-
-        static void ElectHost()
-        {
-            RefreshSelfMetrics();
-            var list = new List<PlayerSlot>(Players.Values);
-            if (list.Count == 0)
-                return;
-
-            if (!Players.TryGetValue(_hostId, out var currentHost))
-            {
-                var selected = NativeHostSelector.SelectHost(list);
-                if (selected == null)
-                    return;
-                ApplyHost(selected.playerId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), false);
-                if (IsHost)
-                    AnnounceHost();
-                return;
-            }
-
-            if (!NativeHostSelector.ShouldMigrateHost(currentHost, list))
-                return;
-            var next = NativeHostSelector.SelectHost(list);
-            if (next == null || next.playerId == currentHost.playerId)
-                return;
-            if (_lastMigrationTime > 0 && Time.realtimeSinceStartup - _lastMigrationTime < HostRecheckInterval)
-                return;
-            if (NativeHostSelector.IsPingSignificantlyWorse(currentHost.ping, next.ping))
-                return;
-            if (!NativeHostSelector.IsPingSignificantlyBetter(currentHost.ping, next.ping)
-                && next.connectionStability <= currentHost.connectionStability)
-                return;
-            var wasHost = IsHost;
-            ApplyHost(next.playerId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), false);
-            _lastMigrationTime = Time.realtimeSinceStartup;
-            if (wasHost)
-                AnnounceHost(next.playerId);
-        }
-
-        internal static string BuildHostMigrationPayload(int newHostId, long electedAt)
-        {
-            return "{\"newHostId\":" + newHostId +
-                   ",\"hostElectedAt\":" + electedAt.ToString(CultureInfo.InvariantCulture) + "}";
-        }
-
-        static void AnnounceHost(int newHostId = 0)
-        {
-            var hostId = newHostId > 0 ? newHostId : NativePlayer.Id;
-            if (hostId <= 0)
-                return;
-            if (newHostId <= 0 && !IsHost)
-                return;
-            Publish(HostMigration, BuildHostMigrationPayload(hostId, _hostElectedAt), false);
-        }
-
-        static void ScheduleHostAnnounceRetries()
-        {
-            var now = Time.realtimeSinceStartup;
-            _hostAnnounceRetry1 = now + 0.5f;
-            _hostAnnounceRetry2 = now + 1f;
-        }
-
-        static void ApplyHost(int newHost, long electedAt, bool fromRemote)
-        {
-            if (newHost <= 0)
-                return;
-            if (_hostId == newHost)
-                return;
-            if (fromRemote && IsHost && newHost != NativePlayer.Id)
-            {
-                var keep = _hostElectedAt != 0 && (electedAt == 0 || _hostElectedAt <= electedAt);
-                if (keep)
-                {
-                    GP_Logger.Info("Host", "conflict keep self=" + NativePlayer.Id +
-                                           " elected=" + _hostElectedAt + " vs " + electedAt);
-                    AnnounceHost();
-                    return;
-                }
-                GP_Logger.Info("Host", "conflict yield to=" + newHost +
-                                       " elected=" + electedAt + " vs " + _hostElectedAt);
-            }
-            var old = _hostId;
-            var wasHost = IsHost;
-            _hostId = newHost;
-            _hostElectedAt = electedAt > 0 ? electedAt : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            foreach (var pair in Players)
-                pair.Value.isHost = pair.Value.playerId == newHost;
-            if (old != 0)
-            {
-                GP_Multiplayer.NativeEmit("hostMigrated",
-                    new GP_Data("{\"oldHost\":" + old + ",\"newHost\":" + newHost + "}"));
-            }
-            if (IsHost && !wasHost)
-                GP_Multiplayer.NativeEmit("becameHost");
-            else if (!IsHost && wasHost)
-                GP_Multiplayer.NativeEmit("becamePeer");
-            if (wasHost && !IsHost)
-            {
-                _lastSentPlayers = null;
-                _lastSentGlobal = null;
-            }
-            if (IsHost)
-            {
-                InitMissingPlayers();
-                _lastSentPlayers = null;
-                _lastSentGlobal = null;
-                _tickCounter = 0;
-                SendHostPlayers();
-                SendHostGlobal();
-            }
-            GP_Logger.Info("Host", "old=" + old + " new=" + newHost +
-                                   " self=" + NativePlayer.Id +
-                                   " isHost=" + IsHost +
-                                   " remote=" + fromRemote);
+            GP_Logger.Error("Centrifugo", "dropped: " + (reason ?? "disconnected"));
+            Cleanup(false);
+            GP_Multiplayer.NativeEmit("disconnect",
+                new GP_Data("{\"reason\":\"" + GpJson.Escape(reason ?? "disconnected") + "\"}"));
         }
 
         static void InitMissingPlayers()
@@ -744,243 +477,30 @@ namespace GamePush.Native
 
         static async Task InitMissingPlayersAsync()
         {
-            var missing = new List<KeyValuePair<int, PlayerSlot>>();
-            foreach (var pair in Players)
+            if (_session == null || _synchronizer == null || !_session.IsHost)
+                return;
+            var missing = new List<KeyValuePair<int, NativeMultiplayerPlayer>>();
+            foreach (var pair in _session.Players)
             {
                 if (pair.Key == NativePlayer.Id)
                     continue;
-                if (PlayerStates.ContainsKey(pair.Key))
+                if (_synchronizer.HasPlayerState(pair.Key))
                     continue;
                 missing.Add(pair);
             }
             var changed = false;
             foreach (var pair in missing)
             {
-                var state = await GP_Multiplayer.NativeInitPlayerAsync(pair.Key, ToConnected(pair.Value));
+                var state = await GP_Multiplayer.NativeInitPlayerAsync(
+                    pair.Key, NativeMultiplayerSession.ToConnected(pair.Value));
                 if (!string.IsNullOrEmpty(state) && state != "null")
                 {
-                    PlayerStates[pair.Key] = state;
+                    _synchronizer.SetPlayerState(pair.Key, state);
                     changed = true;
                 }
             }
-            if (changed && IsHost)
-            {
-                _lastSentPlayers = null;
-                SendHostPlayers();
-            }
-        }
-
-        static float _lastTimeoutCheck;
-
-        static void CheckTimeouts(float now)
-        {
-            if (!_transportLive || now < _reconnectGraceUntil)
-                return;
-            if (_lastTimeoutCheck > 0f && now - _lastTimeoutCheck > HeartbeatTimeout)
-            {
-                var frozenMs = (now - _lastTimeoutCheck) * 1000f;
-                GP_Logger.Info("Multiplayer", "frozen " + frozenMs.ToString("0", CultureInfo.InvariantCulture) + "ms");
-                var frozen = new List<int>(LastBeat.Keys);
-                for (var i = 0; i < frozen.Count; i++)
-                    LastBeat[frozen[i]] = now;
-                _lastTimeoutCheck = now;
-                _selfFreezeCount++;
-                if (IsHost)
-                {
-                    _lastSentPlayers = null;
-                    _lastSentGlobal = null;
-                    SendHostPlayers();
-                    SendHostGlobal();
-                }
-                return;
-            }
-            _lastTimeoutCheck = now;
-            if (_selfEchoLastAt > 0f && now - _selfEchoLastAt > HostHeartbeatTimeout)
-            {
-                GP_Logger.Info("Multiplayer", "self-echo delayed " +
-                               ((now - _selfEchoLastAt) * 1000f).ToString("0", CultureInfo.InvariantCulture) +
-                               "ms — skip timeouts");
-                return;
-            }
-            var dead = new List<int>();
-            foreach (var pair in LastBeat)
-            {
-                if (pair.Key == NativePlayer.Id)
-                    continue;
-                var limit = pair.Key == _hostId ? HostHeartbeatTimeout : HeartbeatTimeout;
-                if (now - pair.Value > limit)
-                    dead.Add(pair.Key);
-            }
-            foreach (var id in dead)
-                RemovePlayer(id);
-            if (_hostId != 0 && !Players.ContainsKey(_hostId))
-            {
-                _hostId = 0;
-                ElectHost();
-            }
-            if (_hostId == 0 && now >= _reconnectGraceUntil && now - _sessionStart > HeartbeatInterval * 3f)
-                ElectHost();
-            if (_hostId != 0 && IsHost && now - _lastHostRecheckTime > HostRecheckInterval)
-            {
-                _lastHostRecheckTime = now;
-                ElectHost();
-            }
-        }
-
-        static void OnBytes(byte[] data)
-        {
-            if (data == null || data.Length == 0)
-                return;
-            var text = Encoding.UTF8.GetString(data);
-            HandleWire(text);
-        }
-
-        static void HandleWire(string json)
-        {
-            var type = GpJson.GetInt(json, "t");
-            var sender = GpJson.GetInt(json, "s");
-            var seq = ReadSeq(json);
-            var payload = GpJson.GetObject(json, "p") ?? "{}";
-            var timestamp = GpJson.GetLong(json, "ts");
-            if (timestamp <= 0)
-                timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            LastBeat[sender] = Time.realtimeSinceStartup;
-            NoteWire(type, sender);
-            switch (type)
-            {
-                case Heartbeat:
-                    HandleHeartbeat(sender, payload);
-                    break;
-                case HostMigration:
-                    if (sender != NativePlayer.Id)
-                    {
-                        var newHost = GpJson.GetInt(payload, "newHostId");
-                        var elected = GpJson.GetLong(payload, "hostElectedAt");
-                        ApplyHost(newHost, elected, true);
-                    }
-                    break;
-                case StateUpdate:
-                    if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyPlayersSnapshot(payload, seq, timestamp);
-                    break;
-                case StateDelta:
-                    if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyPlayersDelta(payload, seq, timestamp);
-                    break;
-                case PeerState:
-                    if (IsHost && sender != NativePlayer.Id && sender > 0)
-                    {
-                        PlayerStates.TryGetValue(sender, out var current);
-                        var incoming = GP_NativeSchema.FilterReadonly(payload, current, _playerSchema);
-                        PlayerStates[sender] = GpJson.MergeDelta(current, incoming);
-                        GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
-                    }
-                    break;
-                case GlobalStateUpdate:
-                    if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyGlobalSnapshot(payload, seq, timestamp);
-                    break;
-                case GlobalStateDelta:
-                    if (!IsHost && (_hostId == 0 || sender == _hostId))
-                        ApplyGlobalDelta(payload, seq, timestamp);
-                    break;
-                case SnapshotRequest:
-                    if (IsHost && sender != NativePlayer.Id)
-                    {
-                        _lastSentPlayers = null;
-                        _lastSentGlobal = null;
-                        SendHostPlayers();
-                        SendHostGlobal();
-                    }
-                    break;
-                case CustomEvent:
-                    if (sender != NativePlayer.Id)
-                        HandleCustom(sender, payload);
-                    break;
-            }
-        }
-
-        static void NoteWire(int type, int sender)
-        {
-            var bit = 1 << Math.Min(type, 16);
-            if ((_loggedWire & bit) != 0)
-                return;
-            _loggedWire |= bit;
-            GP_Logger.Info("Wire", "t=" + type + " from=" + sender);
-        }
-
-        static void HandleHeartbeat(int sender, string payload)
-        {
-            if (sender == NativePlayer.Id)
-            {
-                _selfEchoLastAt = Time.realtimeSinceStartup;
-                var sentAt = GpJson.GetFloat(payload, "sentAt", -1f);
-                if (sentAt >= 0f)
-                {
-                    var raw = Math.Max(0, (int)Math.Round(Time.realtimeSinceStartup * 1000f - sentAt));
-                    if (_selfPing != 0)
-                    {
-                        var jitter = Math.Abs(raw - _selfPing);
-                        _selfPingJitterEma = _selfPingJitterEma * 0.8f + jitter * 0.2f;
-                    }
-                    _selfPing = _selfPing == 0 ? raw : (int)Math.Round(_selfPing * 0.7f + raw * 0.3f);
-                }
-                if (Players.TryGetValue(NativePlayer.Id, out var self))
-                    self.ping = _selfPing;
-                return;
-            }
-
-            if (!Players.TryGetValue(sender, out var slot))
-            {
-                slot = new PlayerSlot
-                {
-                    playerId = sender,
-                    name = GpJson.TryGetString(payload, "name", out var n) ? n : "",
-                    connectionStability = Math.Max(0f, Math.Min(1f, GpJson.GetFloat(payload, "stability", 1f))),
-                    ping = GpJson.GetInt(payload, "ping"),
-                    sessionDuration = GpJson.GetInt(payload, "sessionDuration")
-                };
-                Players[sender] = slot;
-                LastBeat[sender] = Time.realtimeSinceStartup;
-                var joined = "{\"player\":" + PlayerJson(slot) + ",\"isSelf\":" +
-                             (sender == NativePlayer.Id ? "true" : "false") + "}";
-                GP_Multiplayer.NativeEmit("playerJoined", new GP_Data(joined));
-                if (IsHost)
-                {
-                    InitMissingPlayers();
-                    AnnounceHost();
-                    ScheduleHostAnnounceRetries();
-                }
-            }
-            else
-            {
-                slot.ping = GpJson.GetInt(payload, "ping");
-                slot.sessionDuration = GpJson.GetInt(payload, "sessionDuration");
-                slot.connectionStability = GpJson.GetFloat(payload, "stability", slot.connectionStability);
-                slot.isHost = sender == _hostId;
-            }
-        }
-
-        static void HandleCustom(int sender, string payload)
-        {
-            var eventName = GpJson.TryGetString(payload, "eventName", out var name) ? name : "";
-            var target = GpJson.TryGetString(payload, "target", out var t) ? t : "all";
-            if (target != "all" && target != NativePlayer.Id.ToString(CultureInfo.InvariantCulture))
-                return;
-            var data = GpJson.GetObject(payload, "data");
-            if (string.IsNullOrEmpty(data))
-            {
-                if (GpJson.TryGetString(payload, "data", out var raw) && !string.IsNullOrEmpty(raw))
-                    data = raw;
-                else
-                    data = "null";
-            }
-            else if (data.Length >= 2 && data[0] == '"')
-            {
-                if (GpJson.TryGetString(payload, "data", out var raw) && raw != null)
-                    data = raw;
-            }
-            EmitCustom(sender, eventName, data);
+            if (changed && _session != null && _session.IsHost)
+                _stateManager.SendFullSnapshot();
         }
 
         static void EmitCustom(int sender, string eventName, string data)
@@ -993,370 +513,22 @@ namespace GamePush.Native
             GP_Multiplayer.NativeEmit("customEvent", new GP_Data(json));
         }
 
-        static int ReadSeq(string json)
-        {
-            if (!GpJson.TryGetString(json, "sq", out var raw) || string.IsNullOrEmpty(raw))
-                return -1;
-            return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed)
-                ? parsed
-                : -1;
-        }
-
-        static void RequestSnapshot()
-        {
-            var now = Time.realtimeSinceStartup;
-            if (now - _lastSnapshotRequestAt < 1f)
-                return;
-            _lastSnapshotRequestAt = now;
-            Publish(SnapshotRequest, "{}", true);
-        }
-
-        static void ApplyPlayersSnapshot(string payload, int seq, long timestamp)
-        {
-            var map = GpJson.GetObject(payload, "players") ?? payload;
-            var keys = GpJson.ObjectKeys(map);
-            foreach (var key in keys)
-            {
-                if (!int.TryParse(key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
-                    continue;
-                var state = GpJson.GetObject(map, key);
-                if (string.IsNullOrEmpty(state))
-                    continue;
-                if (id == NativePlayer.Id && PlayerStates.ContainsKey(id)
-                    && !string.IsNullOrEmpty(_myState) && _myState != "{}")
-                    continue;
-                PlayerStates[id] = state;
-            }
-            _playersHaveBase = true;
-            _lastFullPlayersJson = payload;
-            if (seq >= 0)
-                _lastPlayersSeq = seq;
-            PushPlayersBuffer(payload, timestamp);
-            GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
-        }
-
-        static void ApplyPlayersDelta(string payload, int seq, long timestamp)
-        {
-            if (!_playersHaveBase || string.IsNullOrEmpty(_lastFullPlayersJson))
-            {
-                RequestSnapshot();
-                return;
-            }
-            if (seq >= 0 && _lastPlayersSeq >= 0 && seq != _lastPlayersSeq + 1)
-            {
-                _playersHaveBase = false;
-                _lastFullPlayersJson = null;
-                _lastPlayersSeq = -1;
-                RequestSnapshot();
-                return;
-            }
-            _lastFullPlayersJson = GpJson.MergeDelta(_lastFullPlayersJson, payload);
-            var map = GpJson.GetObject(_lastFullPlayersJson, "players") ?? _lastFullPlayersJson;
-            var keys = GpJson.ObjectKeys(map);
-            foreach (var key in keys)
-            {
-                if (!int.TryParse(key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
-                    continue;
-                var state = GpJson.GetObject(map, key);
-                if (string.IsNullOrEmpty(state))
-                    continue;
-                if (id == NativePlayer.Id)
-                {
-                    PlayerStates[id] = _myState;
-                    continue;
-                }
-                PlayerStates[id] = state;
-            }
-            if (seq >= 0)
-                _lastPlayersSeq = seq;
-            PushPlayersBuffer(_lastFullPlayersJson, timestamp);
-            GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
-        }
-
-        static void ApplyGlobalSnapshot(string payload, int seq, long timestamp)
-        {
-            _globalState = string.IsNullOrEmpty(payload) ? "{}" : payload;
-            _lastFullGlobalJson = _globalState;
-            if (seq >= 0)
-                _lastGlobalSeq = seq;
-            PushGlobalBuffer(_globalState, timestamp);
-            GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
-        }
-
-        static void ApplyGlobalDelta(string payload, int seq, long timestamp)
-        {
-            if (string.IsNullOrEmpty(_lastFullGlobalJson) || _lastFullGlobalJson == "{}")
-            {
-                RequestSnapshot();
-                return;
-            }
-            if (seq >= 0 && _lastGlobalSeq >= 0 && seq != _lastGlobalSeq + 1)
-            {
-                _globalState = "{}";
-                _lastFullGlobalJson = null;
-                _lastGlobalSeq = -1;
-                RequestSnapshot();
-                return;
-            }
-            var merged = GpJson.MergeDelta(_lastFullGlobalJson, payload);
-            if (seq >= 0)
-                _lastGlobalSeq = seq;
-            if (string.Equals(merged, _lastFullGlobalJson, StringComparison.Ordinal))
-                return;
-            _lastFullGlobalJson = merged;
-            _globalState = merged;
-            PushGlobalBuffer(merged, timestamp);
-            GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
-        }
-
-        static void PushPlayersBuffer(string payload, long timestamp)
-        {
-            var tree = GpJson.Parse(payload);
-            if (tree == null)
-                return;
-            _playersInterp.AddStateWithGapFill(timestamp, tree, 1000.0 / Math.Max(1, _tickRate));
-        }
-
-        static void PushGlobalBuffer(string payload, long timestamp)
-        {
-            var tree = GpJson.Parse(payload);
-            if (tree == null)
-                return;
-            _globalInterp.AddStateWithGapFill(
-                timestamp, tree, (1000.0 / Math.Max(1, _tickRate)) * GlobalTickDivider);
-        }
-
-        static void ApplySchemasToEngines()
-        {
-            _playersInterp.SetTickRate(_tickRate);
-            _globalInterp.SetTickRate(_tickRate);
-            _playersInterp.SetBufferLimits(_bufferMinMs, _bufferMaxMs);
-            _globalInterp.SetBufferLimits(_bufferMinMs, _bufferMaxMs);
-            _playersInterp.SetSchema(GpJson.ParseObject(_playerSchema));
-            _globalInterp.SetSchema(GpJson.ParseObject(_globalSchema));
-        }
-
-        static void SampleInterpolation(double nowMs)
-        {
-            var interpolated = _playersInterp.Interpolate(nowMs);
-            if (interpolated != null && !ReferenceEquals(interpolated, _previousInterpolatedPlayers))
-            {
-                _previousInterpolatedPlayers = interpolated;
-                if (ApplyInterpolatedPlayers(interpolated))
-                    GP_Multiplayer.NativeEmit("playersUpdated", new GP_Data(PlayersStateJson()));
-            }
-
-            var interpolatedGlobal = _globalInterp.Interpolate(nowMs);
-            if (interpolatedGlobal != null && !ReferenceEquals(interpolatedGlobal, _previousInterpolatedGlobal))
-            {
-                _previousInterpolatedGlobal = interpolatedGlobal;
-                _globalState = GpJson.Stringify(interpolatedGlobal);
-                GP_Multiplayer.NativeEmit("globalStateUpdated", new GP_Data(_globalState));
-            }
-        }
-
-        static bool ApplyInterpolatedPlayers(object interpolated)
-        {
-            Dictionary<string, object> players = null;
-            if (interpolated is Dictionary<string, object> root)
-            {
-                if (root.TryGetValue("players", out var node))
-                    players = node as Dictionary<string, object>;
-                if (players == null)
-                    players = root;
-            }
-            if (players == null)
-                return false;
-            var changed = false;
-            foreach (var pair in players)
-            {
-                if (!int.TryParse(pair.Key, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
-                    continue;
-                if (id == NativePlayer.Id)
-                {
-                    PlayerStates[id] = _myState;
-                    continue;
-                }
-                var json = GpJson.Stringify(pair.Value);
-                if (!PlayerStates.TryGetValue(id, out var current)
-                    || !string.Equals(current, json, StringComparison.Ordinal))
-                    changed = true;
-                PlayerStates[id] = json;
-            }
-            return changed;
-        }
-
-        static void Publish(int type, string payloadJson, bool toHost = false, Action<bool> onDone = null)
-        {
-            var sub = toHost ? _hostSub : _stateSub;
-            if (sub == null || !_connected || !_transportLive)
-            {
-                onDone?.Invoke(false);
-                return;
-            }
-            var json = "{\"t\":" + type +
-                       ",\"s\":" + NativePlayer.Id +
-                       ",\"ts\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() +
-                       ",\"p\":" + (string.IsNullOrEmpty(payloadJson) ? "null" : payloadJson);
-            if (type == StateUpdate || type == StateDelta)
-            {
-                _playersSeq++;
-                json += ",\"sq\":" + _playersSeq;
-            }
-            else if (type == GlobalStateUpdate || type == GlobalStateDelta)
-            {
-                _globalSendSeq++;
-                json += ",\"sq\":" + _globalSendSeq;
-            }
-            json += "}";
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var reportSendError = type == StateUpdate || type == StateDelta ||
-                                  type == GlobalStateUpdate || type == GlobalStateDelta;
-            sub.Publish(bytes, ok =>
-            {
-                if (!ok && reportSendError)
-                {
-                    GP_Logger.Info("Centrifugo", "sendState failed t=" + type);
-                    GP_Multiplayer.NativeEmit("error:sendState",
-                        new GP_Data("{\"message\":\"publish failed\",\"t\":" + type + "}"));
-                }
-                onDone?.Invoke(ok);
-            });
-        }
-
-        static void AddSelf()
-        {
-            var self = new PlayerSlot
-            {
-                playerId = NativePlayer.Id,
-                name = NativePlayer.GetString("name"),
-                connectionStability = 1
-            };
-            Players[self.playerId] = self;
-            LastBeat[self.playerId] = Time.realtimeSinceStartup;
-            PlayerStates[self.playerId] = _myState;
-        }
-
-        static void RemovePlayer(int id)
-        {
-            if (!Players.TryGetValue(id, out var slot))
-                return;
-            Players.Remove(id);
-            LastBeat.Remove(id);
-            PlayerStates.Remove(id);
-            GP_Multiplayer.NativeEmit("playerLeft", new GP_Data(PlayerJson(slot)));
-        }
-
-        static void HandleTransportInterrupted()
-        {
-            if (!_connected)
-                return;
-            GP_Logger.Warn("Centrifugo", "reconnecting");
-            _reconnectGraceUntil = Time.realtimeSinceStartup + 2.5f;
-            TouchLastBeats();
-        }
-
-        static void HandleTransportReconnect()
-        {
-            if (!_connected)
-                return;
-            var wasHost = IsHost;
-            _transportLive = true;
-            _hostId = 0;
-            _hostElectedAt = 0;
-            foreach (var pair in Players)
-                pair.Value.isHost = false;
-            _reconnectGraceUntil = Time.realtimeSinceStartup + 2.5f;
-            _selfReconnectCount++;
-            TouchLastBeats();
-            _lastSentPlayers = null;
-            _lastSentGlobal = null;
-            _lastHostRecheckTime = 0f;
-            _tickCounter = 0;
-            _playersHaveBase = false;
-            _lastFullPlayersJson = null;
-            _lastFullGlobalJson = null;
-            _lastPlayersSeq = -1;
-            _lastGlobalSeq = -1;
-            _previousInterpolatedPlayers = null;
-            _previousInterpolatedGlobal = null;
-            _playersInterp.Clear();
-            _globalInterp.Clear();
-            ApplySchemasToEngines();
-            if (wasHost)
-                GP_Multiplayer.NativeEmit("becamePeer");
-            GP_Logger.Info("Centrifugo", "reconnected host-reset self=" + NativePlayer.Id);
-        }
-
-        static void TouchLastBeats()
-        {
-            var now = Time.realtimeSinceStartup;
-            var ids = new List<int>(LastBeat.Keys);
-            for (var i = 0; i < ids.Count; i++)
-                LastBeat[ids[i]] = now;
-            _lastTimeoutCheck = now;
-        }
-
-        static void NoteFocusLost()
-        {
-            if (!_connected)
-                return;
-            _reconnectGraceUntil = Time.realtimeSinceStartup + 2.5f;
-            TouchLastBeats();
-        }
-
-        static void HandleTransportDrop(string reason)
-        {
-            GP_Logger.Error("Centrifugo", "dropped: " + (reason ?? "disconnected"));
-            Cleanup(false);
-            GP_Multiplayer.NativeEmit("disconnect",
-                new GP_Data("{\"reason\":\"" + GpJson.Escape(reason ?? "disconnected") + "\"}"));
-        }
-
         static void Cleanup(bool emit)
         {
             _connected = false;
             _connecting = false;
-            StopHeartbeatClock();
-            try { _hostSub?.Unsubscribe(); } catch { /* ignore */ }
-            try { _stateSub?.Unsubscribe(); } catch { /* ignore */ }
-            try { _centrifuge?.Dispose(); } catch { /* ignore */ }
-            _hostSub = null;
-            _stateSub = null;
-            _centrifuge = null;
-            Players.Clear();
-            PlayerStates.Clear();
-            LastBeat.Clear();
-            _hostId = 0;
-            _hostElectedAt = 0;
-            _loggedWire = 0;
-            _transportLive = false;
-            _reconnectGraceUntil = 0f;
-            _lastSentPlayers = null;
-            _lastSentGlobal = null;
-            _playersActiveLastTick = false;
-            _globalActiveLastTick = false;
-            _lastPlayersSeq = -1;
-            _lastGlobalSeq = -1;
-            _lastSnapshotRequestAt = 0f;
-            _playersHaveBase = false;
-            _lastFullPlayersJson = null;
-            _lastFullGlobalJson = null;
-            _previousInterpolatedPlayers = null;
-            _previousInterpolatedGlobal = null;
-            _playersInterp.Clear();
-            _globalInterp.Clear();
-            _lastHostRecheckTime = 0f;
-            _lastMigrationTime = 0f;
-            _hostAnnounceRetry1 = 0f;
-            _hostAnnounceRetry2 = 0f;
-            _selfReconnectCount = 0;
-            _selfFreezeCount = 0;
-            _selfPingJitterEma = 0f;
-            _selfPing = 0;
-            _selfEchoLastAt = 0f;
-            _tickCounter = 0;
-            _globalState = "{}";
+            _pendingPeerState = null;
+            _pendingPeerStateFlushed = true;
+            _peerActiveLastTick = false;
+            _lastSnapshotResponseAt = 0f;
+            try { _session?.Stop(); } catch { /* ignore */ }
+            try { _stateManager?.Cleanup(); } catch { /* ignore */ }
+            try { _synchronizer?.Clear(); } catch { /* ignore */ }
+            try { _transport?.Dispose(); } catch { /* ignore */ }
+            _session = null;
+            _stateManager = null;
+            _synchronizer = null;
+            _transport = null;
             if (_pump != null)
             {
                 UnityEngine.Object.Destroy(_pump);
@@ -1374,36 +546,7 @@ namespace GamePush.Native
                     ?? NativeMainThread.Instance.gameObject.AddComponent<NativePump>();
         }
 
-        static string PlayerJson(PlayerSlot slot)
-        {
-            return "{\"playerId\":" + slot.playerId +
-                   ",\"isHost\":" + (slot.isHost ? "true" : "false") +
-                   ",\"ping\":" + slot.ping +
-                   ",\"connectionStability\":" + slot.connectionStability.ToString("0.###", CultureInfo.InvariantCulture) +
-                   ",\"sessionDuration\":" + slot.sessionDuration + "}";
-        }
-
-        static MultiplayerConnectedPlayerData ToConnected(PlayerSlot slot)
-        {
-            return new MultiplayerConnectedPlayerData
-            {
-                playerId = slot.playerId,
-                isHost = slot.isHost,
-                ping = slot.ping,
-                connectionStability = slot.connectionStability,
-                sessionDuration = slot.sessionDuration
-            };
-        }
-
-        public sealed class PlayerSlot
-        {
-            public int playerId;
-            public string name;
-            public bool isHost;
-            public int ping;
-            public float connectionStability = 1;
-            public int sessionDuration;
-        }
+        static void NoteFocusLost() => _session?.NoteFocusLost();
 
         sealed class NativePump : MonoBehaviour
         {

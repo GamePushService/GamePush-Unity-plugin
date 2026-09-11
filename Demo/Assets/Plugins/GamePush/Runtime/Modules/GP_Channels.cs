@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -1378,7 +1379,21 @@ namespace GamePush
             _onOpenChatError?.Invoke();
         }
 
-        private void CallOnCreateChannel(string data) => OnCreateChannel?.Invoke(JsonUtility.FromJson<CreateChannelData>(data));
+        private void CallOnCreateChannel(string data)
+        {
+            try
+            {
+                var channel = JsonUtility.FromJson<CreateChannelData>(data);
+                if (channel == null || channel.id <= 0)
+                    throw new InvalidOperationException("createChannel returned an invalid channel id");
+                OnCreateChannel?.Invoke(channel);
+            }
+            catch (Exception exception)
+            {
+                GP_Logger.Error("Channels", "createChannel response parse failed: " + exception.Message + " payload=" + data);
+                OnCreateChannelError?.Invoke();
+            }
+        }
         private void CallOnCreateChannelError() => OnCreateChannelError?.Invoke();
 
 

@@ -6,14 +6,14 @@ namespace GamePush.Native
     {
         const int SignificantPingDiff = 100;
 
-        public static NativeMultiplayer.PlayerSlot SelectHost(List<NativeMultiplayer.PlayerSlot> players)
+        public static NativeMultiplayerPlayer SelectHost(List<NativeMultiplayerPlayer> players)
         {
             if (players == null || players.Count == 0)
                 return null;
             if (players.Count == 1)
                 return players[0];
 
-            NativeMultiplayer.PlayerSlot best = players[0];
+            NativeMultiplayerPlayer best = players[0];
             for (var i = 1; i < players.Count; i++)
             {
                 var candidate = players[i];
@@ -24,8 +24,8 @@ namespace GamePush.Native
         }
 
         public static bool ShouldMigrateHost(
-            NativeMultiplayer.PlayerSlot currentHost,
-            List<NativeMultiplayer.PlayerSlot> players)
+            NativeMultiplayerPlayer currentHost,
+            List<NativeMultiplayerPlayer> players)
         {
             var optimal = SelectHost(players);
             return optimal != null && currentHost != null && optimal.playerId != currentHost.playerId;
@@ -46,7 +46,7 @@ namespace GamePush.Native
         public static bool IsPingSignificantlyWorse(int currentHostPing, int candidatePing) =>
             candidatePing - currentHostPing > SignificantPingDiff;
 
-        static bool BetterThan(NativeMultiplayer.PlayerSlot a, NativeMultiplayer.PlayerSlot b)
+        static bool BetterThan(NativeMultiplayerPlayer a, NativeMultiplayerPlayer b)
         {
             if (a.connectionStability != b.connectionStability)
                 return a.connectionStability > b.connectionStability;
