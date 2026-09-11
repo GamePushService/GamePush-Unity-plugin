@@ -246,40 +246,18 @@ namespace GamePushEditor.Play2Web
             catch { /* already gone */ }
         }
 
-        // The overlay has to cover the rendered image, not the whole Game view tab: its position
-        // is the editor window minus the toolbar, narrowed down to the render target so a fixed
-        // aspect ratio keeps the web UI aligned with what the player actually sees.
+        // Cover the pixels the player actually sees. targetInContent is zoom-content space
+        // (origin at the centre, Scale ignored) so on a Retina Mac the default 2x Game view
+        // scale leaves a half-size overlay sitting in the middle. targetInParent / targetInView
+        // already include that scale, the toolbar, and letterboxing.
         static RectInt GameViewScreenRect(EditorWindow gameView)
         {
             if (gameView == null)
                 return default;
 
-            var view = gameView.position;
-            // EditorWindow.position starts at the top of the dock area, tab strip included, while
-            // its height already excludes that strip. The difference against the host view is the
-            // tab strip, and the Game view toolbar sits right below it.
-            var content = new Rect(
-                view.x,
-                view.y + TabStripHeight(gameView) + GameViewToolbarPoints,
-                view.width,
-                Mathf.Max(1f, view.height - GameViewToolbarPoints));
-
-            var area = content;
-            var target = TargetInContent(gameView);
-            if (target.HasValue && target.Value.width > 1f && target.Value.height > 1f)
-            {
-                var center = content.center;
-                var placed = new Rect(
-                    center.x + target.Value.x,
-                    center.y + target.Value.y,
-                    target.Value.width,
-                    target.Value.height);
-                area = Rect.MinMaxRect(
-                    Mathf.Max(placed.xMin, content.xMin),
-                    Mathf.Max(placed.yMin, content.yMin),
-                    Mathf.Min(placed.xMax, content.xMax),
-                    Mathf.Min(placed.yMax, content.yMax));
-            }
+            var area = GameViewVisibleRect(gameView);
+            if (area.width < 2f || area.height < 2f)
+                return default;
 
             // Win32 SetWindowPos is pixels; Cocoa NSWindow.setFrame is points (Unity's native unit).
 #if UNITY_EDITOR_WIN
@@ -294,11 +272,83 @@ namespace GamePushEditor.Play2Web
                 Mathf.Max(2, Mathf.RoundToInt(area.height * scale)));
         }
 
-        static float TabStripHeight(EditorWindow gameView)
+        static Rect GameViewVisibleRect(EditorWindow gameView)
         {
-            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var parent = typeof(EditorWindow).GetField("m_Parent", flags)?.GetValue(gameView);
-            var screen = parent?.GetType().GetProperty("screenPosition", flags)?.GetValue(parent) as Rect?;
+            var parentScreen = ParentScreenPosition(gameView);
+            var content = GameViewContentRect(gameView, parentScreen);
+            var placed = GameViewTargetRect(gameView, parentScreen, content);
+            return placed.HasValue ? Intersect(placed.Value, content) : content;
+        }
+
+        static Rect GameViewContentRect(EditorWindow gameView, Rect? parentScreen)
+        {
+            if (parentScreen.HasValue)
+            {
+                var viewInParent = ReadRect(gameView, "viewInParent");
+                if (viewInParent.HasValue && viewInParent.Value.width > 1f && viewInParent.Value.height > 1f)
+                    return new Rect(
+                        parentScreen.Value.x + viewInParent.Value.x,
+                        parentScreen.Value.y + viewInParent.Value.y,
+                        viewInParent.Value.width,
+                        viewInParent.Value.height);
+
+                var tab = TabStripHeight(gameView, parentScreen);
+                return new Rect(
+                    parentScreen.Value.x,
+                    parentScreen.Value.y + tab + GameViewToolbarPoints,
+                    parentScreen.Value.width,
+                    Mathf.Max(1f, parentScreen.Value.height - tab - GameViewToolbarPoints));
+            }
+
+            // EditorWindow.position starts at the top of the dock area, tab strip included,
+            // while its height already excludes that strip.
+            var view = gameView.position;
+            var strip = TabStripHeight(gameView, null);
+            return new Rect(
+                view.x,
+                view.y + strip + GameViewToolbarPoints,
+                view.width,
+                Mathf.Max(1f, view.height - GameViewToolbarPoints));
+        }
+
+        static Rect? GameViewTargetRect(EditorWindow gameView, Rect? parentScreen, Rect content)
+        {
+            if (parentScreen.HasValue)
+            {
+                var targetInParent = ReadRect(gameView, "targetInParent");
+                if (targetInParent.HasValue && targetInParent.Value.width > 1f && targetInParent.Value.height > 1f)
+                    return new Rect(
+                        parentScreen.Value.x + targetInParent.Value.x,
+                        parentScreen.Value.y + targetInParent.Value.y,
+                        targetInParent.Value.width,
+                        targetInParent.Value.height);
+            }
+
+            var targetInView = ReadRect(gameView, "targetInView");
+            if (targetInView.HasValue && targetInView.Value.width > 1f && targetInView.Value.height > 1f)
+                return new Rect(
+                    content.x + targetInView.Value.x,
+                    content.y + targetInView.Value.y,
+                    targetInView.Value.width,
+                    targetInView.Value.height);
+
+            return null;
+        }
+
+        static Rect Intersect(Rect a, Rect b)
+        {
+            var xMin = Mathf.Max(a.xMin, b.xMin);
+            var yMin = Mathf.Max(a.yMin, b.yMin);
+            var xMax = Mathf.Min(a.xMax, b.xMax);
+            var yMax = Mathf.Min(a.yMax, b.yMax);
+            if (xMax - xMin < 2f || yMax - yMin < 2f)
+                return b;
+            return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+        }
+
+        static float TabStripHeight(EditorWindow gameView, Rect? parentScreen)
+        {
+            var screen = parentScreen ?? ParentScreenPosition(gameView);
             if (!screen.HasValue)
                 return 0f;
 
@@ -306,13 +356,36 @@ namespace GamePushEditor.Play2Web
             return strip > 0f && strip < 60f ? strip : 0f;
         }
 
-        static Rect? TargetInContent(EditorWindow gameView)
+        static Rect? ParentScreenPosition(EditorWindow window)
         {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var property = gameView.GetType().GetProperty("targetInContent", flags);
-            if (property == null)
+            var parent = typeof(EditorWindow).GetField("m_Parent", flags)?.GetValue(window);
+            return ReadRect(parent, "screenPosition");
+        }
+
+        static Rect? ReadRect(object obj, string name)
+        {
+            if (obj == null || string.IsNullOrEmpty(name))
                 return null;
-            return property.GetValue(gameView) as Rect?;
+
+            const BindingFlags flags =
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            for (var type = obj.GetType(); type != null && type != typeof(object); type = type.BaseType)
+            {
+                var property = type.GetProperty(name, flags);
+                if (property == null)
+                    continue;
+                try
+                {
+                    if (property.GetValue(obj) is Rect rect)
+                        return rect;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         static EditorWindow FindGameView()

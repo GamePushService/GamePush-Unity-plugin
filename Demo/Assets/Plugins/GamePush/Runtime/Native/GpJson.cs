@@ -166,6 +166,35 @@ namespace GamePush.Native
             return delta == null ? null : Stringify(delta);
         }
 
+        public static bool HasPartialChanges(string partial, string existing)
+        {
+            if (string.Equals(partial, existing, StringComparison.Ordinal))
+                return false;
+            if (IsEmptyObject(partial))
+                return false;
+            return HasPartialChangesNode(Parse(partial), Parse(existing));
+        }
+
+        static bool HasPartialChangesNode(object partial, object existing)
+        {
+            if (ReferenceEquals(partial, existing))
+                return false;
+            if (partial == null || existing == null)
+                return !ReferenceEquals(partial, existing);
+            if (partial is List<object> || existing is List<object>)
+                return !string.Equals(Stringify(partial), Stringify(existing), StringComparison.Ordinal);
+            if (!(partial is Dictionary<string, object> partialObj) ||
+                !(existing is Dictionary<string, object> existingObj))
+                return !Equals(partial, existing);
+            foreach (var pair in partialObj)
+            {
+                existingObj.TryGetValue(pair.Key, out var current);
+                if (HasPartialChangesNode(pair.Value, current))
+                    return true;
+            }
+            return false;
+        }
+
         public static List<string> GetObjectArray(string json, string key)
         {
             if (TryGetNode(json, key, out var node) && node is List<object> list)
