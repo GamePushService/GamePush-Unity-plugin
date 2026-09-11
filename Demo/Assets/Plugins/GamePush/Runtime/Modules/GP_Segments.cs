@@ -15,8 +15,10 @@ namespace GamePush
         private void CallOnSegmentEnter(string tag) { OnSegmentEnter?.Invoke(tag); }
         private void CallOnSegmentLeave(string tag) { OnSegmentLeave?.Invoke(tag); }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Segments_List();
+        #endif
         public static string List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -29,8 +31,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Segments_Has(string tag);
+        #endif
         public static bool Has(string tag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

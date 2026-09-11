@@ -24,8 +24,10 @@ namespace GamePush
         private static event Action<Dictionary<string, string>> _onPlatformSuccess;
         private static event Action<string> _onPlatformError;
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Variables_Fetch();
+        #endif
         public static void Fetch(Action<List<VariablesData>> onFetchSuccess = null, Action onFetchError = null)
         {
             _onSuccess = onFetchSuccess;
@@ -39,8 +41,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_Has(string key);
+        #endif
         public static bool Has(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -52,8 +56,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern int GP_Variables_GetNumberInt(string key);
+        #endif
         public static int GetInt(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -65,8 +71,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern float GP_Variables_GetFloat(string key);
+        #endif
         public static float GetFloat(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -78,8 +86,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_GetString(string key);
+        #endif
         public static string GetString(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -91,8 +101,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_GetBool(string key);
+        #endif
         public static bool GetBool(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -105,8 +117,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_GetImage(string key);
+        #endif
         public static string GetImage(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -118,8 +132,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_GetFile(string key);
+        #endif
         public static string GetFile(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -131,8 +147,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Variables_IsPlatformVariablesAvailable();
+        #endif
         public static bool IsPlatformVariablesAvailable()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -144,8 +162,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Variables_FetchPlatformVariables(string options = null);
+        #endif
 
         public static void FetchPlatformVariables(Dictionary<string, string> optionsDict, Action<Dictionary<string, string>> onPlatformFetchSuccess = null, Action<string> onPlatformFetchError = null)
         {

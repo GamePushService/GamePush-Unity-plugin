@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
 using GamePush.Utilities;
+using GamePush.Native;
+using GamePush.Overlays;
 using System;
 
 namespace GamePush
@@ -11,6 +14,7 @@ namespace GamePush
     public class GP_Channels : GP_Module
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Channels);
+
         #region Actions
 
         public static event UnityAction<CreateChannelData> OnCreateChannel;
@@ -157,25 +161,257 @@ namespace GamePush
         private static event Action _onOpenChatError;
         private static event Action _onCloseChat;
 
+        internal static void NativeFireFetchChannels(List<FetchChannelData> list, bool more) => OnFetchChannels?.Invoke(list, more);
+        internal static void NativeFireFetchChannelsError() => OnFetchChannelsError?.Invoke();
+        internal static void NativeFireFetchChannel(FetchChannelData data) => OnFetchChannel?.Invoke(data);
+        internal static void NativeFireFetchChannelError() => OnFetchChannelError?.Invoke();
+        internal static void NativeFireCreateChannel(CreateChannelData data) => OnCreateChannel?.Invoke(data);
+        internal static void NativeFireCreateChannelError() => OnCreateChannelError?.Invoke();
+        internal static void NativeFireUpdateChannel(UpdateChannelData data) => OnUpdateChannel?.Invoke(data);
+        internal static void NativeFireUpdateChannelError() => OnUpdateChannelError?.Invoke();
+        internal static void NativeFireJoinSuccess() => OnJoinSuccess?.Invoke();
+        internal static void NativeFireJoinError() => OnJoinError?.Invoke();
+        internal static void NativeFireLeaveSuccess() => OnLeaveSuccess?.Invoke();
+        internal static void NativeFireLeaveError() => OnLeaveError?.Invoke();
+        internal static void NativeFireFetchMembers(GP_Data data, bool more) => OnFetchMembers?.Invoke(data, more);
+        internal static void NativeFireFetchMembersError() => OnFetchMembersError?.Invoke();
+
+        // Offsets for the FetchMore* calls, which take no offset in the public API.
+        private static int _messagesLoaded;
+        private static int _personalMessagesLoaded;
+        private static int _feedMessagesLoaded;
+
+        internal static void NativeFireFetchMessages(Native.NativeChatPage page, bool more)
+        {
+            _messagesLoaded = more ? _messagesLoaded + page.items.Count : page.items.Count;
+            var data = new GP_Data(page.json);
+            if (more)
+                OnFetchMoreMessages?.Invoke(data, page.more);
+            else
+                OnFetchMessages?.Invoke(data, page.more);
+        }
+
+        internal static void NativeFireFetchMessagesError(bool more)
+        {
+            if (more)
+                OnFetchMoreMessagesError?.Invoke();
+            else
+                OnFetchMessagesError?.Invoke();
+        }
+
+        internal static void NativeFireFetchPersonalMessages(Native.NativeChatPage page, bool more)
+        {
+            _personalMessagesLoaded = more ? _personalMessagesLoaded + page.items.Count : page.items.Count;
+            var data = new GP_Data(page.json);
+            if (more)
+                OnFetchMorePersonalMessages?.Invoke(data, page.more);
+            else
+                OnFetchPersonalMessages?.Invoke(data, page.more);
+        }
+
+        internal static void NativeFireFetchPersonalMessagesError(bool more)
+        {
+            if (more)
+                OnFetchMorePersonalMessagesError?.Invoke();
+            else
+                OnFetchPersonalMessagesError?.Invoke();
+        }
+
+        internal static void NativeFireFetchFeedMessages(Native.NativeChatPage page, bool more)
+        {
+            _feedMessagesLoaded = more ? _feedMessagesLoaded + page.items.Count : page.items.Count;
+            var data = new GP_Data(page.json);
+            if (more)
+                OnFetchMoreFeedMessages?.Invoke(data, page.more);
+            else
+                OnFetchFeedMessages?.Invoke(data, page.more);
+        }
+
+        internal static void NativeFireFetchFeedMessagesError(bool more)
+        {
+            if (more)
+                OnFetchMoreFeedMessagesError?.Invoke();
+            else
+                OnFetchFeedMessagesError?.Invoke();
+        }
+
+        internal static void NativeFireSendMessage(string raw) => OnSendMessage?.Invoke(new GP_Data(raw ?? "{}"));
+        internal static void NativeFireSendMessageError() => OnSendMessageError?.Invoke();
+        internal static void NativeFireIncomingMessage(string raw) => OnMessage?.Invoke(new GP_Data(raw ?? "{}"));
+
+        internal static void NativeFireEditMessage(string raw)
+        {
+            OnEditMessageSuccess?.Invoke(new GP_Data(raw ?? "{}"));
+            OnEditMessageEvent?.Invoke(UtilityJSON.Get<MessageData>(raw ?? "{}"));
+        }
+
+        internal static void NativeFireEditMessageError() => OnEditMessageError?.Invoke();
+        internal static void NativeFireDeleteMessage() => OnDeleteMessageSuccess?.Invoke();
+        internal static void NativeFireDeleteMessageError() => OnDeleteMessageError?.Invoke();
+
+        internal static void NativeFireDeleteChannel(int channel_ID = 0)
+        {
+            OnDeleteChannelSuccess?.Invoke();
+            OnDeleteChannelEvent?.Invoke(channel_ID);
+        }
+
+        internal static void NativeFireDeleteChannelError() => OnDeleteChannelError?.Invoke();
+
+        internal static void NativeFireCancelJoin(int channel_ID)
+        {
+            OnCancelJoinSuccess?.Invoke();
+            OnCancelJoinEvent?.Invoke(new CancelJoinData { channelId = channel_ID });
+        }
+
+        internal static void NativeFireCancelJoinError() => OnCancelJoinError?.Invoke();
+
+        internal static void NativeFireKick(int channel_ID, int player_ID)
+        {
+            OnKick?.Invoke();
+            OnLeaveEvent?.Invoke(new MemberLeaveData { channelId = channel_ID, playerId = player_ID });
+        }
+
+        internal static void NativeFireKickError() => OnKickError?.Invoke();
+
+        internal static void NativeFireMute(int channel_ID, int player_ID, string unmuteAt)
+        {
+            OnMuteSuccess?.Invoke();
+            OnMuteEvent?.Invoke(new MuteData { channelId = channel_ID, playerId = player_ID, unmuteAt = unmuteAt });
+        }
+
+        internal static void NativeFireMuteError() => OnMuteError?.Invoke();
+
+        internal static void NativeFireUnmute(int channel_ID, int player_ID)
+        {
+            OnUnmuteSuccess?.Invoke();
+            OnUnmuteEvent?.Invoke(new UnmuteData { channelId = channel_ID, playerId = player_ID });
+        }
+
+        internal static void NativeFireUnmuteError() => OnUnmuteError?.Invoke();
+        internal static void NativeFireSendInvite(int channel_ID, int player_ID) => OnSendInvite?.Invoke();
+        internal static void NativeFireSendInviteError() => OnSendInviteError?.Invoke();
+
+        internal static void NativeFireCancelInvite(int channel_ID, int player_ID)
+        {
+            OnCancelInviteSuccess?.Invoke();
+            OnCancelInviteEvent?.Invoke(new CancelInviteData { channelId = channel_ID, playerToId = player_ID });
+        }
+
+        internal static void NativeFireCancelInviteError() => OnCancelInviteError?.Invoke();
+        internal static void NativeFireAcceptInvite(int channel_ID) => OnAcceptInvite?.Invoke();
+        internal static void NativeFireAcceptInviteError() => OnAcceptInviteError?.Invoke();
+
+        internal static void NativeFireRejectInvite(int channel_ID)
+        {
+            OnRejectInviteSuccess?.Invoke();
+            OnRejectInviteEvent?.Invoke(new RejectInviteData { channelId = channel_ID });
+        }
+
+        internal static void NativeFireRejectInviteError() => OnRejectInviteError?.Invoke();
+        internal static void NativeFireAcceptJoinRequest(int channel_ID, int player_ID) => OnAcceptJoinRequest?.Invoke();
+        internal static void NativeFireAcceptJoinRequestError() => OnAcceptJoinRequestError?.Invoke();
+
+        internal static void NativeFireRejectJoinRequest(int channel_ID, int player_ID)
+        {
+            OnRejectJoinRequestSuccess?.Invoke();
+            OnRejectJoinRequestEvent?.Invoke(new RejectJoinRequestData { channelId = channel_ID, playerId = player_ID });
+        }
+
+        internal static void NativeFireRejectJoinRequestError() => OnRejectJoinRequestError?.Invoke();
+
+        internal static void NativeFireFetchChannelInvites(GP_Data data, bool more)
+        {
+            if (more)
+                OnFetchMoreChannelInvites?.Invoke(data, false);
+            else
+                OnFetchChannelInvites?.Invoke(data, false);
+        }
+
+        internal static void NativeFireFetchChannelInvitesError(bool more)
+        {
+            if (more)
+                OnFetchMoreChannelInvitesError?.Invoke();
+            else
+                OnFetchChannelInvitesError?.Invoke();
+        }
+
+        internal static void NativeFireFetchJoinRequests(GP_Data data, bool more)
+        {
+            if (more)
+                OnFetchMoreJoinRequests?.Invoke(data, false);
+            else
+                OnFetchJoinRequests?.Invoke(data, false);
+        }
+
+        internal static void NativeFireFetchJoinRequestsError(bool more)
+        {
+            if (more)
+                OnFetchMoreJoinRequestsError?.Invoke();
+            else
+                OnFetchJoinRequestsError?.Invoke();
+        }
+
+        internal static void NativeFireOpenChat()
+        {
+            OnOpenChat?.Invoke();
+            _onOpenChat?.Invoke();
+        }
+
+        internal static void NativeFireOpenChatError()
+        {
+            OnOpenChatError?.Invoke();
+            _onOpenChatError?.Invoke();
+        }
+
+        internal static void NativeFireCloseChat()
+        {
+            OnCloseChat?.Invoke();
+            _onCloseChat?.Invoke();
+        }
+
         #endregion
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_OpenChat(int channel_ID);
+        #endif
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_OpenChatWithTags(int channel_ID, string tags);
+        #endif
 
         public static void OpenChat(int channel_ID, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenChat(channel_ID);
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Channel, channel_ID, "")) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenChat", channel_ID)) return;
 
             ConsoleLog("OPEN CHAT: CHANNEL ID: " + channel_ID);
             _onOpenChat?.Invoke();
 #endif
+        }
+
+        private static bool OpenNativeChat(NativeChatScope scope, int target, string tags)
+        {
+            if (!GamePushHost.UseNativeCore)
+                return false;
+            // -10 is the module's sentinel for "the project's main chat".
+            if (scope == NativeChatScope.Channel && target == -10)
+                target = MainChatId();
+            if (scope == NativeChatScope.Channel && target <= 0)
+                return false;
+            return GP_Overlays.Open(GP_OverlayKind.Chat, new GP_ChatArgs
+            {
+                scope = scope,
+                target = target,
+                tags = tags ?? ""
+            });
         }
 
         public static void OpenChat(string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
@@ -183,9 +419,12 @@ namespace GamePush
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenChatWithTags(-10, tags);
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Channel, -10, tags)) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenChatWithTags", -10, tags)) return;
 
             ConsoleLog("OPEN CHAT");
             _onOpenChat?.Invoke();
@@ -197,9 +436,12 @@ namespace GamePush
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenChatWithTags(channel_ID, tags);
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Channel, channel_ID, tags)) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenChatWithTags", channel_ID, tags)) return;
 
             ConsoleLog("OPEN CHAT: CHANNEL ID: " + channel_ID);
             _onOpenChat?.Invoke();
@@ -211,54 +453,71 @@ namespace GamePush
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenChat(-10);
-            WebGLInput.captureAllKeyboardInput = false;
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Channel, -10, "")) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenChat", -10)) return;
 
             ConsoleLog("OPEN CHAT");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_OpenPersonalChat(int player_ID, string tags);
+        #endif
         public static void OpenPersonalChat(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenPersonalChat(player_ID, tags);
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Personal, player_ID, tags)) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenPersonalChat", player_ID, tags)) return;
 
             ConsoleLog("OPEN PERSONAL CHAT: PLAYER ID: " + player_ID);
             _onOpenChat?.Invoke();
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_OpenFeed(int player_ID, string tags);
+        #endif
         public static void OpenFeed(int player_ID, string tags, Action onOpen = null, Action onClose = null, Action onOpenError = null)
         {
             _onOpenChat = onOpen;
             _onCloseChat = onClose;
             _onOpenChatError = onOpenError;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_OpenFeed(player_ID, tags);
+            GP_WebGLInput.Release();
 #else
+            if (OpenNativeChat(NativeChatScope.Feed, player_ID, tags)) return;
+            if (GP_Play2Web.Call("GP_Channels_OpenFeed", player_ID, tags)) return;
 
             ConsoleLog("OPEN FEED: PLAYER ID: " + player_ID);
             _onOpenChat?.Invoke();
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Channels_IsMainChatEnabled();
+        #endif
         public static bool IsMainChatEnabled()
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             return GP_Channels_IsMainChatEnabled() == "true";
 #else
+            if (GamePushHost.UseNativeCore)
+                return NativeCore.MainChatEnabled;
+            if (GP_Play2Web.TryGetBool("GP_Channels_IsMainChatEnabled", out var _gpLive)) return _gpLive;
 
             Console.Log("IS MAIN CHAT ENABLED: TRUE");
             return true;
@@ -266,13 +525,18 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern int GP_Channels_MainChatId();
+        #endif
         public static int MainChatId()
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             return GP_Channels_MainChatId();
 #else
+            if (GamePushHost.UseNativeCore)
+                return NativeCore.MainChatId;
+            if (GP_Play2Web.TryGetInt("GP_Channels_MainChatId", out var _gpLiveInt)) return _gpLiveInt;
 
             Console.Log("MAIN CHAT ID: 0");
             return 0;
@@ -280,517 +544,820 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_Join(int channel_ID, string password);
+        #endif
         public static void Join(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Join(channel_ID, "");
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Join(channel_ID, "");
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Join", channel_ID, "")) return;
 
             ConsoleLog("JOIN");
 #endif
         }
         public static void Join(int channel_ID, string password)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Join(channel_ID, password);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Join(channel_ID, password);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Join", channel_ID, password)) return;
 
             ConsoleLog("JOIN");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_CancelJoin(int channel_ID);
+        #endif
         public static void CancelJoin(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_CancelJoin(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.CancelJoin(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_CancelJoin", channel_ID)) return;
 
             ConsoleLog("CANCEL JOIN");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_Leave(int channel_ID);
+        #endif
         public static void Leave(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Leave(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Leave(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Leave", channel_ID)) return;
 
             ConsoleLog("LEAVE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_Kick(int channel_ID, int player_ID);
+        #endif
         public static void Kick(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Kick(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Kick(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Kick", channel_ID, player_ID)) return;
 
             ConsoleLog("KICK");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_Mute_Seconds(int channel_ID, int player_ID, int seconds);
+        #endif
         public static void Mute(int channel_ID, int player_ID, int seconds)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Mute_Seconds(channel_ID, player_ID, seconds);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Mute(channel_ID, player_ID, seconds, null);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Mute_Seconds", channel_ID, player_ID, seconds)) return;
 
             ConsoleLog("MUTE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_Mute_UnmuteAt(int channel_ID, int player_ID, string unmuteAt);
+        #endif
         public static void Mute(int channel_ID, int player_ID, string unmuteAT)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_Mute_UnmuteAt(channel_ID, player_ID, unmuteAT);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Mute(channel_ID, player_ID, 0, unmuteAT);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_Mute_UnmuteAt", channel_ID, player_ID, unmuteAT)) return;
 
             ConsoleLog("MUTE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_UnMute(int channel_ID, int player_ID);
+        #endif
         public static void UnMute(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_UnMute(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.Unmute(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_UnMute", channel_ID, player_ID)) return;
 
             ConsoleLog("UNMUTE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_SendInvite(int channel_ID, int player_ID);
+        #endif
         public static void SendInvite(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_SendInvite(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.SendInvite(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_SendInvite", channel_ID, player_ID)) return;
 
             ConsoleLog("SEND INVITE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_CancelInvite(int channel_ID, int player_ID);
+        #endif
         public static void CancelInvite(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_CancelInvite(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.CancelInvite(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_CancelInvite", channel_ID, player_ID)) return;
 
             ConsoleLog("CANCEL INVITE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_AcceptInvite(int channel_ID);
+        #endif
         public static void AcceptInvite(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_AcceptInvite(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.AcceptInvite(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_AcceptInvite", channel_ID)) return;
 
             ConsoleLog("ACCEPT INVITE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_RejectInvite(int channel_ID);
+        #endif
         public static void RejectInvite(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_RejectInvite(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.RejectInvite(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_RejectInvite", channel_ID)) return;
 
             ConsoleLog("REJECT INVITE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchInvites(int limit, int offset);
+        #endif
         public static void FetchInvites(int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchInvites(limit, offset);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchInvites", limit, offset)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreInvites(int limit);
+        #endif
         public static void FetchMoreInvites(int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreInvites(limit);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreInvites", limit)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchChannelInvites(int channel_ID, int limit, int offset);
+        #endif
         public static void FetchChannelInvites(int channel_ID, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchChannelInvites(channel_ID, limit, offset);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchChannelInvites(channel_ID, limit, offset, false);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchChannelInvites", channel_ID, limit, offset)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH CHANNEL INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreChannelInvites(int channel_ID, int limit);
+        #endif
         public static void FetchMoreChannelInvites(int channel_ID, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreChannelInvites(channel_ID, limit);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreChannelInvites", channel_ID, limit)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE CHANNEL INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchSentInvites(int channel_ID, int limit, int offset);
+        #endif
         public static void FetchSentInvites(int channel_ID, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchSentInvites(channel_ID, limit, offset);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchSentInvites", channel_ID, limit, offset)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH SENT INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreSentInvites(int channel_ID, int limit);
+        #endif
         public static void FetchMoreSentInvites(int channel_ID, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreSentInvites(channel_ID, limit);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreSentInvites", channel_ID, limit)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE SENT INVITES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_AcceptJoinRequest(int channel_ID, int player_ID);
+        #endif
         public static void AcceptJoinRequest(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_AcceptJoinRequest(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.AcceptJoinRequest(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_AcceptJoinRequest", channel_ID, player_ID)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("ACCEPT JOIN REQUEST");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_RejectJoinRequest(int channel_ID, int player_ID);
+        #endif
         public static void RejectJoinRequest(int channel_ID, int player_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_RejectJoinRequest(channel_ID, player_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.RejectJoinRequest(channel_ID, player_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_RejectJoinRequest", channel_ID, player_ID)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("REJECT JOIN REQUEST");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchJoinRequests(int channel_ID, int limit, int offset);
+        #endif
         public static void FetchJoinRequests(int channel_ID, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchJoinRequests(channel_ID, limit, offset);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchJoinRequests(channel_ID, limit, offset, false);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchJoinRequests", channel_ID, limit, offset)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH JOIN REQUESTS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreJoinRequests(int channel_ID, int limit);
+        #endif
         public static void FetchMoreJoinRequests(int channel_ID, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreJoinRequests(channel_ID, limit);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreJoinRequests", channel_ID, limit)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE JOIN REQUESTS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchSentJoinRequests(int limit, int offset);
+        #endif
         public static void FetchSentJoinRequests(int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchSentJoinRequests(limit, offset);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchSentJoinRequests", limit, offset)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH SENT JOIN REQUESTS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreSentJoinRequests(int limit);
+        #endif
         public static void FetchMoreSentJoinRequests(int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreSentJoinRequests(limit);
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreSentJoinRequests", limit)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE SENT JOIN REQUESTS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_SendMessage(int channel_ID, string text, string tags);
+        #endif
         public static void SendMessage(int channel_ID, string text, string tags = "")
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_SendMessage(channel_ID, text, tags);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.SendMessage(NativeChatScope.Channel, channel_ID, text, tags);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_SendMessage", channel_ID, text, tags)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("SEND MESSAGE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_SendPersonalMessage(int player_ID, string text, string tags);
+        #endif
         public static void SendPersonalMessage(int player_ID, string text, string tags = "")
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_SendPersonalMessage(player_ID, text, tags);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.SendMessage(NativeChatScope.Personal, player_ID, text, tags);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_SendPersonalMessage", player_ID, text, tags)) return;
 
             ConsoleLog("SEND PERSONAL MESSAGE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_SendFeedMessage(int player_ID, string text, string tags);
+        #endif
         public static void SendFeedMessage(int player_ID, string text, string tags = "")
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_SendFeedMessage(player_ID, text, tags);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.SendMessage(NativeChatScope.Feed, player_ID, text, tags);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_SendFeedMessage", player_ID, text, tags)) return;
 
             ConsoleLog("SEND FEED MESSAGE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_EditMessage(string message_ID, string text);
+        #endif
         public static void EditMessage(string message_ID, string text)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_EditMessage(message_ID, text);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.EditMessage(message_ID, text);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_EditMessage", message_ID, text)) return;
 
             ConsoleLog("EDIT MESSAGE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_DeleteMessage(string message_ID);
+        #endif
         public static void DeleteMessage(string message_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_DeleteMessage(message_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.DeleteMessage(message_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_DeleteMessage", message_ID)) return;
 
             ConsoleLog("DELETE MESSAGE");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMessages(int channel_ID, string tags, int limit, int offset);
+        #endif
         public static void FetchMessages(int channel_ID, string tags, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMessages(channel_ID, tags, limit, offset);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchMessages(channel_ID, tags, limit, offset, false);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchMessages", channel_ID, tags, limit, offset)) return;
 
             ConsoleLog("FETCH MESSAGES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchPersonalMessages(int player_ID, string tags, int limit, int offset);
+        #endif
         public static void FetchPersonalMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchPersonalMessages(player_ID, tags, limit, offset);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchPersonalMessages(player_ID, tags, limit, offset, false);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchPersonalMessages", player_ID, tags, limit, offset)) return;
 
             ConsoleLog("FETCH PERSONAL MESSAGES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchFeedMessages(int player_ID, string tags, int limit, int offset);
+        #endif
         public static void FetchFeedMessages(int player_ID, string tags, int limit = 50, int offset = 0)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchFeedMessages(player_ID, tags, limit, offset);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchFeedMessages(player_ID, tags, limit, offset, false);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchFeedMessages", player_ID, tags, limit, offset)) return;
 
             ConsoleLog("FETCH FEED MESSAGES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreMessages(int channel_ID, string tags, int limit);
+        #endif
         public static void FetchMoreMessages(int channel_ID, string tags, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreMessages(channel_ID, tags, limit);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchMessages(channel_ID, tags, limit, _messagesLoaded, true);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreMessages", channel_ID, tags, limit)) return;
 
             ConsoleLog("FETCH MORE MESSAGES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMorePersonalMessages(int player_ID, string tags, int limit);
+        #endif
         public static void FetchMorePersonalMessages(int player_ID, string tags, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMorePersonalMessages(player_ID, tags, limit);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchPersonalMessages(player_ID, tags, limit, _personalMessagesLoaded, true);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchMorePersonalMessages", player_ID, tags, limit)) return;
 
             ConsoleLog("FETCH MORE PERSONAL MESSAGES");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreFeedMessages(int player_ID, string tags, int limit);
+        #endif
         public static void FetchMoreFeedMessages(int player_ID, string tags, int limit = 50)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreFeedMessages(player_ID, tags, limit);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchFeedMessages(player_ID, tags, limit, _feedMessagesLoaded, true);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreFeedMessages", player_ID, tags, limit)) return;
 
             ConsoleLog("FETCH MORE FEED MESSAGES");
 #endif
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_DeleteChannel(int channel_ID);
+        #endif
         public static void DeleteChannel(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_DeleteChannel(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.DeleteChannel(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_DeleteChannel", channel_ID)) return;
 
             ConsoleLog("DELETE CHANNEL");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchChannel(int channel_ID);
+        #endif
         public static void FetchChannel(int channel_ID)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchChannel(channel_ID);
 #else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchChannel(channel_ID);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchChannel", channel_ID)) return;
 
             ConsoleLog("FETCH CHANNEL");
 #endif
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_CreateChannel(string filter);
+        #endif
         public static void CreateChannel(CreateChannelFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_CreateChannel(JsonUtility.ToJson(filter));
 #else
-            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.CreateChannel(filter);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_CreateChannel", JsonUtility.ToJson(filter))) return;
             ConsoleLog("CREATE CHANNEL");
 #endif
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_UpdateChannel(string filter);
+        #endif
         public static void UpdateChannel(UpdateChannelFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_UpdateChannel(JsonUtility.ToJson(filter));
 #else
-            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.UpdateChannel(JsonUtility.ToJson(filter));
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_UpdateChannel", JsonUtility.ToJson(filter))) return;
             ConsoleLog("UPDATE CHANNEL");
 #endif
         }
 
+        public static void UpdateChannel(GP_Data filter)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
+            GP_Channels_UpdateChannel(filter?.Data ?? "{}");
+#else
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.UpdateChannel(filter?.Data ?? "{}");
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_UpdateChannel", filter?.Data ?? "{}")) return;
+            ConsoleLog("UPDATE CHANNEL");
+#endif
+        }
+
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchChannels(string filter);
+        #endif
         public static void FetchChannels(FetchChannelsFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchChannels(JsonUtility.ToJson(filter));
 #else
-            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchChannels(filter);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchChannels", JsonUtility.ToJson(filter))) return;
             ConsoleLog("FETCH CHANNELS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreChannels(string filter);
+        #endif
         public static void FetchMoreChannels(FetchMoreChannelsFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreChannels(JsonUtility.ToJson(filter));
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreChannels", JsonUtility.ToJson(filter))) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE CHANNELS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMembers(string filter);
+        #endif
         public static void FetchMembers(FetchMembersFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMembers(JsonUtility.ToJson(filter));
 #else
-            //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
+            if (GamePushHost.UseNativeCore)
+            {
+                NativeChannels.FetchMembers(filter);
+                return;
+            }
+            if (GP_Play2Web.Call("GP_Channels_FetchMembers", JsonUtility.ToJson(filter))) return;
             ConsoleLog("FETCH MEMBERS");
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Channels_FetchMoreMembers(string filter);
+        #endif
         public static void FetchMoreMembers(FetchMoreMembersFilter filter)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_Channels_FetchMoreMembers(JsonUtility.ToJson(filter));
 #else
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreMembers", JsonUtility.ToJson(filter))) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE MEMBERS");
 #endif
@@ -801,15 +1368,32 @@ namespace GamePush
         private void CallOnOpenChat() { OnOpenChat?.Invoke(); _onOpenChat?.Invoke(); }
         private void CallOnCloseChat()
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            WebGLInput.captureAllKeyboardInput = true;
-#endif
+            GP_WebGLInput.Restore();
             OnCloseChat?.Invoke();
             _onCloseChat?.Invoke();
         }
-        private void CallOnOpenChatError() { OnOpenChatError?.Invoke(); _onOpenChatError?.Invoke(); }
+        private void CallOnOpenChatError()
+        {
+            GP_WebGLInput.Restore();
+            OnOpenChatError?.Invoke();
+            _onOpenChatError?.Invoke();
+        }
 
-        private void CallOnCreateChannel(string data) => OnCreateChannel?.Invoke(JsonUtility.FromJson<CreateChannelData>(data));
+        private void CallOnCreateChannel(string data)
+        {
+            try
+            {
+                var channel = JsonUtility.FromJson<CreateChannelData>(data);
+                if (channel == null || channel.id <= 0)
+                    throw new InvalidOperationException("createChannel returned an invalid channel id");
+                OnCreateChannel?.Invoke(channel);
+            }
+            catch (Exception exception)
+            {
+                GP_Logger.Error("Channels", "createChannel response parse failed: " + exception.Message + " payload=" + data);
+                OnCreateChannelError?.Invoke();
+            }
+        }
         private void CallOnCreateChannelError() => OnCreateChannelError?.Invoke();
 
 
@@ -1291,6 +1875,9 @@ namespace GamePush
         public bool canKickPlayer = true;
         public bool canAcceptJoinRequest = true;
         public bool canMutePlayer = true;
+        public bool canSetValue = true;
+        public bool canAddValue = true;
+        public bool canSubtractValue = true;
     }
 
     [System.Serializable]
@@ -1305,6 +1892,9 @@ namespace GamePush
         public bool canKickPlayer = false;
         public bool canAcceptJoinRequest = false;
         public bool canMutePlayer = false;
+        public bool canSetValue = false;
+        public bool canAddValue = false;
+        public bool canSubtractValue = false;
     }
 
     [System.Serializable]
@@ -1319,5 +1909,8 @@ namespace GamePush
         public bool canKickPlayer = false;
         public bool canAcceptJoinRequest = false;
         public bool canMutePlayer = false;
+        public bool canSetValue = false;
+        public bool canAddValue = false;
+        public bool canSubtractValue = false;
     }
 }

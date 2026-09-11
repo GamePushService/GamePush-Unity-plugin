@@ -13,6 +13,7 @@ namespace GamePush.Utilities
         {
             if (string.IsNullOrEmpty(url)) return false;
 
+            url = GP_Images.FormatToPng(url);
             var request = UnityWebRequestTexture.GetTexture(url);
             AsyncOperation operation = request.SendWebRequest();
 

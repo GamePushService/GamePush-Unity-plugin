@@ -4,6 +4,39 @@ mergeInto(LibraryManager.library, {
         _UnityReady();
     },
 
+    GP_NativePlayer_Snapshot: function () {
+        var inner = typeof _GP === "function" ? _GP() : null;
+        var gp = inner && inner.gp ? inner.gp : (typeof window !== "undefined" ? window.GamePush : null);
+        if (!gp) {
+            return _ToBuff("{}");
+        }
+        var player = gp.player || {};
+        var platform = gp.platform || {};
+        var credentials = "";
+        var secretCode = "";
+        try {
+            if (typeof player.get === "function") {
+                credentials = String(player.get("credentials") || player.credentials || "");
+                secretCode = String(player.get("secretCode") || "");
+            } else {
+                credentials = String(player.credentials || "");
+                secretCode = String(player.secretCode || "");
+            }
+        } catch (e) {
+            credentials = String(player.credentials || "");
+        }
+        var json = JSON.stringify({
+            id: player.id || 0,
+            name: player.name || "",
+            avatar: player.avatar || "",
+            credentials: credentials,
+            secretCode: secretCode,
+            platform: platform.type || "",
+            tag: platform.tag || ""
+        });
+        return _ToBuff(json);
+    },
+
     /* LANGUAGE */
     GP_Current_Language: function () {
         var value = _GP().Language();
@@ -20,6 +53,10 @@ mergeInto(LibraryManager.library, {
     },
     GP_Current_AvatarGenerator: function () {
         var value = _GP().AvatarGenerator();
+        return _ToBuff(value);
+    },
+    GP_Generate_Avatar: function (hash, size) {
+        var value = _GP().GenerateAvatar(UTF8ToString(hash), size);
         return _ToBuff(value);
     },
     /* AVATAR GENERATOR */
@@ -51,6 +88,14 @@ mergeInto(LibraryManager.library, {
     },
     GP_Platform_IsSupportsCloudSaves: function () {
         var value = _GP().PlatformIsSupportsCloudSaves();
+        return _ToBuff(value);
+    },
+    GP_Platform_IsBackendAllowed: function () {
+        var value = _GP().PlatformIsBackendAllowed();
+        return _ToBuff(value);
+    },
+    GP_Platform_IsChatAvailable: function () {
+        var value = _GP().PlatformIsChatAvailable();
         return _ToBuff(value);
     },
     /* PLATFORM */
@@ -124,7 +169,8 @@ mergeInto(LibraryManager.library, {
     },
 
     GP_Player_GetString: function (key) {
-        var value = _GP().PlayerGet(UTF8ToString(key));
+        var field = UTF8ToString(key);
+        var value = _GP().PlayerHas(field) ? _GP().PlayerGet(field) : "";
         return _ToBuff(value);
     },
 
@@ -204,10 +250,12 @@ mergeInto(LibraryManager.library, {
         _GP().PlayerLoad();
     },
     GP_Player_Login: function () {
-        _GP().PlayerLogin();
+        var result = _GP().PlayerLogin();
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Player_Logout: function () {
-        _GP().PlayerLogout();
+        var result = _GP().PlayerLogout();
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Player_FetchFields: function () {
         _GP().PlayerFetchFields();
@@ -308,7 +356,8 @@ mergeInto(LibraryManager.library, {
         _GP().PaymentsFetchProducts();
     },
     GP_Payments_Purchase: function (idOrTag) {
-        _GP().PaymentsPurchase(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsPurchase(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Payments_Consume: function (idOrTag) {
         _GP().PaymentsConsume(UTF8ToString(idOrTag));
@@ -319,16 +368,33 @@ mergeInto(LibraryManager.library, {
         return _ToBuff(value);
     },
 
+    GP_Payments_Products: function () {
+        var value = _GP().PaymentsProducts();
+        return _ToBuff(value);
+    },
+
+    GP_Payments_Purchases: function () {
+        var value = _GP().PaymentsPurchases();
+        return _ToBuff(value);
+    },
+
+    GP_Payments_Has: function (idOrTag) {
+        var value = _GP().PaymentsHas(UTF8ToString(idOrTag));
+        return _ToBuff(value);
+    },
+
     /* Subscription */
     GP_Payments_IsSubscriptionsAvailable: function () {
         var value = _GP().PaymentsIsSubscriptionsAvailable();
         return _ToBuff(value);
     },
     GP_Payments_Subscribe: function (idOrTag) {
-        _GP().PaymentsSubscribe(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsSubscribe(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
     GP_Payments_Unsubscribe: function (idOrTag) {
-        _GP().PaymentsUnsubscribe(UTF8ToString(idOrTag));
+        var result = _GP().PaymentsUnsubscribe(UTF8ToString(idOrTag));
+        if (result && typeof result.catch === "function") result.catch(function () {});
     },
 
     /* Subscription */
@@ -351,8 +417,8 @@ mergeInto(LibraryManager.library, {
 
 
     /* ADS */
-    GP_Ads_ShowFullscreen: function () {
-        _GP().AdsShowFullscreen();
+    GP_Ads_ShowFullscreen: function (showCountdownOverlay) {
+        _GP().AdsShowFullscreen(UTF8ToString(showCountdownOverlay));
     },
     GP_Ads_ShowRewarded: function (Tag) {
         _GP().AdsShowRewarded(UTF8ToString(Tag));
@@ -841,11 +907,11 @@ mergeInto(LibraryManager.library, {
     /* CHANNELS */
 
     /* MULTIPLAYER */
-    GP_Multiplayer_Connect: function (query) {
-        _GP().Multiplayer_Connect(UTF8ToString(query));
+    GP_Multiplayer_Connect: function (query, generation) {
+        _GP().Multiplayer_Connect(UTF8ToString(query), generation);
     },
-    GP_Multiplayer_Disconnect: function (query) {
-        _GP().Multiplayer_Disconnect(UTF8ToString(query));
+    GP_Multiplayer_Disconnect: function (query, generation) {
+        _GP().Multiplayer_Disconnect(UTF8ToString(query), generation);
     },
     GP_Multiplayer_DefinePlayerSchema: function (schema) {
         _GP().Multiplayer_DefinePlayerSchema(UTF8ToString(schema));
@@ -901,6 +967,9 @@ mergeInto(LibraryManager.library, {
     },
     GP_Multiplayer_GlobalState: function () {
         return _ToBuff(_GP().Multiplayer_GlobalState());
+    },
+    GP_Multiplayer_RuntimeCapabilities: function () {
+        return _ToBuff(_GP().Multiplayer_RuntimeCapabilities());
     },
     /* MULTIPLAYER */
 
@@ -1224,14 +1293,46 @@ mergeInto(LibraryManager.library, {
         description, 
         textConfirm, 
         textCancel, 
-        invertButtonColors) {
+        invertButtonColors,
+        hideCancelButton) {
         _GP().WindowsShowConfirm(
             UTF8ToString(title), 
             UTF8ToString(description), 
             UTF8ToString(textConfirm), 
             UTF8ToString(textCancel),
-            UTF8ToString(invertButtonColors));
+            UTF8ToString(invertButtonColors),
+            UTF8ToString(hideCancelButton));
     },
+
+    /* FEEDBACKS */
+    GP_Feedbacks_Send: function (payload) {
+        _GP().FeedbacksSend(UTF8ToString(payload));
+    },
+    GP_Feedbacks_Open: function (type, status) {
+        _GP().FeedbacksOpen(UTF8ToString(type), UTF8ToString(status));
+    },
+    GP_Feedbacks_OpenFeedback: function (feedbackId) {
+        _GP().FeedbacksOpenFeedback(UTF8ToString(feedbackId));
+    },
+    GP_Feedbacks_Fetch: function (payload) {
+        _GP().FeedbacksFetch(UTF8ToString(payload));
+    },
+    GP_Feedbacks_FetchMore: function (payload) {
+        _GP().FeedbacksFetchMore(UTF8ToString(payload));
+    },
+    GP_Feedbacks_SendMessage: function (payload) {
+        _GP().FeedbacksSendMessage(UTF8ToString(payload));
+    },
+    /* FEEDBACKS */
+
+    /* REACTIONS */
+    GP_Reactions_Set: function (entityType, entityId, reactionType) {
+        _GP().ReactionsSet(UTF8ToString(entityType), UTF8ToString(entityId), UTF8ToString(reactionType));
+    },
+    GP_Reactions_Unset: function (entityType, entityId, reactionType) {
+        _GP().ReactionsUnset(UTF8ToString(entityType), UTF8ToString(entityId), UTF8ToString(reactionType));
+    },
+    /* REACTIONS */
 
     /* WINDOWS */
 
@@ -1278,5 +1379,28 @@ mergeInto(LibraryManager.library, {
 
 
     /* SOUNDS */
+
+    /* COOLMATH */
+    GP_CoolMath_SendEvent: function (eventNamePtr, withLevel, level) {
+        var eventName = UTF8ToString(eventNamePtr);
+        try {
+            if (typeof window === "undefined") {
+                return;
+            }
+
+            var host = window.parent || window;
+            if (!host || typeof host.cmgGameEvent !== "function") {
+                return;
+            }
+
+            if (withLevel) {
+                host.cmgGameEvent(eventName, level);
+            } else {
+                host.cmgGameEvent(eventName);
+            }
+        } catch (e) {
+        }
+    },
+    /* COOLMATH */
     
 });

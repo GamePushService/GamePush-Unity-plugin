@@ -7,8 +7,10 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Analytics);
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Analytics_Hit(string url);
+        #endif
         public static void Hit(string url)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -20,8 +22,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Analytics_Goal(string eventName, string value);
+        #endif
         public static void Goal(string eventName, string value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

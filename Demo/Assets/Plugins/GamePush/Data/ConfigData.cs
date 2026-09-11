@@ -74,8 +74,8 @@ namespace GamePush.Data
         public bool enabled;
         public string bannerId;
         public string desktopBannerId;
-        public object adServer;
-        public object adServerDesktop;
+        public string adServer;
+        public string adServerDesktop;
         public int frequency;
         public int refreshInterval;
         public int maxWidth;
@@ -233,8 +233,14 @@ namespace GamePush.Data
         public bool isAutoClaim;
         public string description;
         public Translations descriptions;
-        public List<List<Condition>> conditions;
+        public List<ConditionGroup> conditions;
         public List<Bonus> bonuses;
+    }
+
+    [System.Serializable]
+    public class ConditionGroup
+    {
+        public List<Condition> items;
     }
 
     [System.Serializable]

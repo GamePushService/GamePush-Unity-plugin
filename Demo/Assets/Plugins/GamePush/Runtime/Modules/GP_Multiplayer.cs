@@ -1,23 +1,26 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using GamePush.Native;
 
 namespace GamePush
 {
     public class GP_Multiplayer : GP_Module
     {
-        private static readonly Queue<TaskCompletionSource<MultiplayerConnectResultData>> PendingConnectOperations =
-            new Queue<TaskCompletionSource<MultiplayerConnectResultData>>();
-        private static readonly Queue<TaskCompletionSource<bool>> PendingDisconnectOperations =
-            new Queue<TaskCompletionSource<bool>>();
-#if !UNITY_EDITOR && UNITY_WEBGL
-        private static bool _connectInProgress;
-        private static bool _disconnectInProgress;
-#endif
+        private sealed class ActiveOperation<T>
+        {
+            public int Generation;
+            public TaskCompletionSource<T> Completion;
+            public CancellationTokenRegistration Cancellation = default;
+        }
+
+        private static int _operationGeneration;
+        private static ActiveOperation<MultiplayerConnectResultData> _connectOperation;
+        private static ActiveOperation<bool> _disconnectOperation;
 
         private static event UnityAction<GP_Data> _connect;
         private static event UnityAction<GP_Data> _disconnect;
@@ -39,6 +42,36 @@ namespace GamePush
         private static Func<int, MultiplayerConnectedPlayerData, Task<GP_Data>> _playerInitializerAsync;
 
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Multiplayer);
+
+#if UNITY_EDITOR
+        static bool Play2WebLive => GP_Play2Web.Enabled;
+        static bool UseJsTokens => Play2WebLive;
+        static bool NativeSession => GamePushHost.UseNativeCore || Play2WebLive;
+#elif UNITY_WEBGL && !GP_NATIVE_WEBGL
+        static bool Play2WebLive => false;
+        static bool UseJsTokens => true;
+        static bool NativeSession => true;
+#else
+        static bool Play2WebLive => false;
+        static bool UseJsTokens => false;
+        static bool NativeSession => true;
+#endif
+        static bool _liveConnected;
+        static bool _liveHost;
+
+        static GP_Data LiveGet(string method)
+        {
+#if UNITY_EDITOR
+            if (!Play2WebLive)
+                return null;
+            if (GP_Play2Web.TryGet(method, out var json) && !string.IsNullOrEmpty(json))
+                return CreateDataOrNull(json);
+            GP_Play2Web.Call(method);
+            return GP_Play2Web.TryGet(method, out json) ? CreateDataOrNull(json) : null;
+#else
+            return null;
+#endif
+        }
 
         private static GP_Data CreateDataOrNull(string data)
         {
@@ -66,24 +99,31 @@ namespace GamePush
             return data;
         }
 
-        private static Task<T> RunOperation<T>(Queue<TaskCompletionSource<T>> queue, Action action)
+        private static ActiveOperation<T> BeginOperation<T>(ref ActiveOperation<T> active)
         {
-            TaskCompletionSource<T> completionSource = new TaskCompletionSource<T>();
-            queue.Enqueue(completionSource);
-
-            try
+            if (active != null)
+                throw new InvalidOperationException("Multiplayer operation is already in progress");
+            var operation = new ActiveOperation<T>
             {
-                action();
-            }
-            catch (Exception exception)
-            {
-                if (queue.Count > 0 && ReferenceEquals(queue.Peek(), completionSource))
-                    queue.Dequeue();
+                Generation = Interlocked.Increment(ref _operationGeneration),
+                Completion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously),
+            };
+            active = operation;
+            return operation;
+        }
 
-                completionSource.TrySetException(exception);
-            }
+        private static void CancelConnect(ActiveOperation<MultiplayerConnectResultData> operation)
+        {
+            if (!ReferenceEquals(_connectOperation, operation)) return;
+            _connectOperation = null;
+            operation.Completion.TrySetCanceled();
+        }
 
-            return completionSource.Task;
+        private static void CancelDisconnect(ActiveOperation<bool> operation)
+        {
+            if (!ReferenceEquals(_disconnectOperation, operation)) return;
+            _disconnectOperation = null;
+            operation.Completion.TrySetCanceled();
         }
 
         private static Task<T> CreateFaultedTask<T>(Exception exception)
@@ -93,105 +133,120 @@ namespace GamePush
             return completionSource.Task;
         }
 
-        private static void CompleteSuccess<T>(Queue<TaskCompletionSource<T>> queue, T result)
+        private static bool CompleteSuccess<T>(ref ActiveOperation<T> active, int generation, T result)
         {
-            if (queue.Count > 0)
-                queue.Dequeue().TrySetResult(result);
+            ActiveOperation<T> operation = active;
+            if (operation == null || operation.Generation != generation) return false;
+            active = null;
+            operation.Cancellation.Dispose();
+            operation.Completion.TrySetResult(result);
+            return true;
         }
 
-        private static void CompleteError<T>(Queue<TaskCompletionSource<T>> queue, string data)
+        private static bool CompleteError<T>(ref ActiveOperation<T> active, int generation, string data)
         {
-            if (queue.Count > 0)
-                queue.Dequeue().TrySetException(new Exception(ExtractErrorMessage(data)));
+            ActiveOperation<T> operation = active;
+            if (operation == null || operation.Generation != generation) return false;
+            active = null;
+            operation.Cancellation.Dispose();
+            operation.Completion.TrySetException(new Exception(ExtractErrorMessage(data)));
+            return true;
         }
 
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
         [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_Connect(string query);
+        private static extern void GP_Multiplayer_Connect(string query, int generation);
         [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_Disconnect(string query);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_DefinePlayerSchema(string schema);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_DefineGlobalSchema(string schema);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_SetPlayerInitializer();
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_ClearPlayerInitializer();
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_ResolvePlayerInitializer(int requestId, string state);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_SetPlayerState(string state);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_SetGlobalState(string state);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_SetMode(string mode);
-        [DllImport("__Internal")]
-        private static extern void GP_Multiplayer_SendMessage(string eventName, string data, string options);
-        [DllImport("__Internal")]
-        private static extern int GP_Multiplayer_TickRate();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_IsConnected();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_IsHost();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_ConnectedPlayers();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_NetworkStats();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_MyState();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_PlayersState();
-        [DllImport("__Internal")]
-        private static extern string GP_Multiplayer_GlobalState();
+        private static extern void GP_Multiplayer_Disconnect(string query, int generation);
 #endif
 
-        public static Task<MultiplayerConnectResultData> connect(MultiplayerChannelQuery query)
+        public static Task<MultiplayerConnectResultData> connect(MultiplayerChannelQuery query) =>
+            connect(query, CancellationToken.None);
+
+        public static Task<MultiplayerConnectResultData> connect(MultiplayerChannelQuery query,
+            CancellationToken cancellationToken)
         {
             string payload = JsonUtility.ToJson(query ?? new MultiplayerChannelQuery());
-#if !UNITY_EDITOR && UNITY_WEBGL
-            if (_connectInProgress)
-                return CreateFaultedTask<MultiplayerConnectResultData>(new InvalidOperationException("Multiplayer connect is already in progress"));
-
-            _connectInProgress = true;
-            return RunOperation(PendingConnectOperations, () => GP_Multiplayer_Connect(payload));
-#else
+            if (UseJsTokens)
+            {
+                ActiveOperation<MultiplayerConnectResultData> operation;
+                try { operation = BeginOperation(ref _connectOperation); }
+                catch (Exception exception) { return CreateFaultedTask<MultiplayerConnectResultData>(exception); }
+                if (cancellationToken.CanBeCanceled)
+                    operation.Cancellation = cancellationToken.Register(() => CancelConnect(operation));
+                if (!ReferenceEquals(_connectOperation, operation))
+                    return operation.Completion.Task;
+                NativePlayer.Adopt(GP_Player.GetID(), GP_Player.GetName());
+#if UNITY_EDITOR
+                if (!GP_Play2Web.Call("Multiplayer_Connect", payload, operation.Generation))
+                    CompleteError(ref _connectOperation, operation.Generation, "Play2Web unavailable");
+#elif UNITY_WEBGL && !GP_NATIVE_WEBGL
+                try { GP_Multiplayer_Connect(payload, operation.Generation); }
+                catch (Exception exception)
+                {
+                    CompleteError(ref _connectOperation, operation.Generation, exception.Message);
+                }
+#endif
+                return operation.Completion.Task;
+            }
+            if (NativeSession)
+                return NativeMultiplayer.Connect(query, cancellationToken);
             ConsoleLog($"CONNECT: {payload}");
             return Task.FromResult<MultiplayerConnectResultData>(null);
-#endif
         }
 
-        public static Task disconnect(MultiplayerChannelQuery query)
+        public static Task disconnect(MultiplayerChannelQuery query) =>
+            disconnect(query, CancellationToken.None);
+
+        public static Task disconnect(MultiplayerChannelQuery query, CancellationToken cancellationToken)
         {
             string payload = JsonUtility.ToJson(query ?? new MultiplayerChannelQuery());
-#if !UNITY_EDITOR && UNITY_WEBGL
-            if (_disconnectInProgress)
-                return CreateFaultedTask<bool>(new InvalidOperationException("Multiplayer disconnect is already in progress"));
-
-            _disconnectInProgress = true;
-            return RunOperation(PendingDisconnectOperations, () => GP_Multiplayer_Disconnect(payload));
-#else
+            if (UseJsTokens)
+            {
+                ActiveOperation<bool> operation;
+                try { operation = BeginOperation(ref _disconnectOperation); }
+                catch (Exception exception) { return CreateFaultedTask<bool>(exception); }
+                if (cancellationToken.CanBeCanceled)
+                    operation.Cancellation = cancellationToken.Register(() => CancelDisconnect(operation));
+                if (!ReferenceEquals(_disconnectOperation, operation))
+                    return operation.Completion.Task;
+                NativeMultiplayer.CloseLocal();
+#if UNITY_EDITOR
+                if (!GP_Play2Web.Call("Multiplayer_Disconnect", payload, operation.Generation))
+                    CompleteError(ref _disconnectOperation, operation.Generation, "Play2Web unavailable");
+#elif UNITY_WEBGL && !GP_NATIVE_WEBGL
+                try { GP_Multiplayer_Disconnect(payload, operation.Generation); }
+                catch (Exception exception)
+                {
+                    CompleteError(ref _disconnectOperation, operation.Generation, exception.Message);
+                }
+#endif
+                return operation.Completion.Task;
+            }
+            if (NativeSession)
+                return NativeMultiplayer.Disconnect(query, cancellationToken);
             ConsoleLog($"DISCONNECT: {payload}");
             return Task.CompletedTask;
-#endif
         }
 
         public static void definePlayerSchema(GP_Data schema)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_DefinePlayerSchema(schema?.Data ?? "{}");
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.DefinePlayerSchema(schema?.Data ?? "{}");
+                return;
+            }
             ConsoleLog($"DEFINE PLAYER SCHEMA: {schema?.Data ?? "{}"}");
-#endif
         }
 
         public static void defineGlobalSchema(GP_Data schema)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_DefineGlobalSchema(schema?.Data ?? "{}");
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.DefineGlobalSchema(schema?.Data ?? "{}");
+                return;
+            }
             ConsoleLog($"DEFINE GLOBAL SCHEMA: {schema?.Data ?? "{}"}");
-#endif
         }
 
         public static Task setPlayerInitializer(Func<int, MultiplayerConnectedPlayerData, GP_Data> initializer)
@@ -212,42 +267,44 @@ namespace GamePush
 
         private static void ApplyPlayerInitializer(bool enabled)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            if (enabled)
-                GP_Multiplayer_SetPlayerInitializer();
-            else
-                GP_Multiplayer_ClearPlayerInitializer();
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.NotifyInitializerChanged();
+                ConsoleLog(enabled ? "ENABLE PLAYER INITIALIZER" : "DISABLE PLAYER INITIALIZER");
+                return;
+            }
             ConsoleLog(enabled ? "ENABLE PLAYER INITIALIZER" : "DISABLE PLAYER INITIALIZER");
-#endif
         }
 
         public static void setPlayerState(GP_Data state)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_SetPlayerState(state?.Data ?? "{}");
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.SetPlayerState(state?.Data ?? "{}");
+                return;
+            }
             ConsoleLog($"SET PLAYER STATE: {state?.Data ?? "{}"}");
-#endif
         }
 
         public static void setGlobalState(GP_Data state)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_SetGlobalState(state?.Data ?? "{}");
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.SetGlobalState(state?.Data ?? "{}");
+                return;
+            }
             ConsoleLog($"SET GLOBAL STATE: {state?.Data ?? "{}"}");
-#endif
         }
 
         public static void setMode(MultiplayerMode mode)
         {
             string value = mode == MultiplayerMode.FAST ? "fast" : "smooth";
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_SetMode(value);
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.SetMode(value);
+                return;
+            }
             ConsoleLog($"SET MODE: {value}");
-#endif
         }
 
         public static void sendMessage(string eventName, GP_Data data)
@@ -281,22 +338,21 @@ namespace GamePush
 
         private static void SendMessageInternal(string eventName, string data, string options)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_SendMessage(eventName ?? string.Empty, data, options ?? "undefined");
-#else
+            if (NativeSession)
+            {
+                NativeMultiplayer.SendMessage(eventName ?? string.Empty, data, options ?? "undefined");
+                return;
+            }
             ConsoleLog($"SEND MESSAGE: {eventName}, {data}, {options ?? "undefined"}");
-#endif
         }
 
         public static int tickRate
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return GP_Multiplayer_TickRate();
-#else
+                if (NativeSession)
+                    return NativeMultiplayer.TickRate;
                 return 0;
-#endif
             }
         }
 
@@ -304,11 +360,9 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return GP_Multiplayer_IsConnected() == "true";
-#else
+                if (NativeSession)
+                    return NativeMultiplayer.IsConnected;
                 return false;
-#endif
             }
         }
 
@@ -316,11 +370,9 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return GP_Multiplayer_IsHost() == "true";
-#else
+                if (NativeSession)
+                    return NativeMultiplayer.IsHost;
                 return false;
-#endif
             }
         }
 
@@ -328,11 +380,9 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return CreateDataOrNull(GP_Multiplayer_ConnectedPlayers());
-#else
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.ConnectedPlayersJson());
                 return null;
-#endif
             }
         }
 
@@ -340,11 +390,19 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return CreateDataOrNull(GP_Multiplayer_NetworkStats());
-#else
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.NetworkStatsJson());
                 return null;
-#endif
+            }
+        }
+
+        public static GP_Data interpolationStats
+        {
+            get
+            {
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.InterpolationStatsJson());
+                return null;
             }
         }
 
@@ -352,11 +410,9 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return CreateDataOrNull(GP_Multiplayer_MyState());
-#else
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.MyStateJson());
                 return null;
-#endif
             }
         }
 
@@ -364,11 +420,9 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return CreateDataOrNull(GP_Multiplayer_PlayersState());
-#else
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.PlayersStateJson());
                 return null;
-#endif
             }
         }
 
@@ -376,11 +430,19 @@ namespace GamePush
         {
             get
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
-                return CreateDataOrNull(GP_Multiplayer_GlobalState());
-#else
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.GlobalStateJson());
                 return null;
-#endif
+            }
+        }
+
+        public static GP_Data runtimeCapabilities
+        {
+            get
+            {
+                if (NativeSession)
+                    return CreateDataOrNull(NativeMultiplayer.RuntimeCapabilitiesJson());
+                return null;
             }
         }
 
@@ -495,13 +557,134 @@ namespace GamePush
         public static void onTick(UnityAction<float> callback) => _onTick += callback;
         public static void offTick(UnityAction<float> callback) => _onTick -= callback;
 
+        internal static void NativeEmit(string eventName, GP_Data data)
+        {
+            switch (eventName)
+            {
+                case "connect":
+                    _liveConnected = true;
+                    _connect?.Invoke(data);
+                    break;
+                case "disconnect":
+                    _liveConnected = false;
+                    _liveHost = false;
+                    _disconnect?.Invoke(data);
+                    break;
+                case "error:connect":
+                    _connectError?.Invoke(data);
+                    break;
+                case "error:disconnect":
+                    _disconnectError?.Invoke(data);
+                    break;
+                case "error:sendState":
+                    _sendStateError?.Invoke(data);
+                    break;
+                case "playerJoined":
+                    _playerJoined?.Invoke(data);
+                    break;
+                case "playerLeft":
+                    _playerLeft?.Invoke(data);
+                    break;
+                case "playersUpdated":
+                    _playersUpdated?.Invoke(data);
+                    break;
+                case "globalStateUpdated":
+                    _globalStateUpdated?.Invoke(data);
+                    break;
+                case "customEvent":
+                    _customEvent?.Invoke(data);
+                    _onMessage?.Invoke(data);
+                    break;
+                case "hostMigrated":
+                    _hostMigrated?.Invoke(data);
+                    break;
+            }
+        }
+
+        internal static void NativeEmit(string eventName)
+        {
+            switch (eventName)
+            {
+                case "becameHost":
+                    _liveHost = true;
+                    _becameHost?.Invoke();
+                    break;
+                case "becamePeer":
+                    _liveHost = false;
+                    _becamePeer?.Invoke();
+                    break;
+            }
+        }
+
+        internal static void NativeEmitMessage(GP_Data data) => _onMessage?.Invoke(data);
+        internal static void NativeEmitTick(float delta) => _onTick?.Invoke(delta);
+
+        internal static string NativeInitPlayer(int playerId, MultiplayerConnectedPlayerData player)
+        {
+            try
+            {
+                if (_playerInitializer != null)
+                {
+                    var result = _playerInitializer(playerId, player);
+                    return result?.Data ?? "null";
+                }
+            }
+            catch (Exception exception)
+            {
+                ConsoleLog("PLAYER INITIALIZER ERROR: " + exception.Message);
+            }
+            return "null";
+        }
+
+        internal static async Task<string> NativeInitPlayerAsync(int playerId, MultiplayerConnectedPlayerData player)
+        {
+            try
+            {
+                if (_playerInitializer != null)
+                {
+                    var result = _playerInitializer(playerId, player);
+                    return result?.Data ?? "null";
+                }
+                if (_playerInitializerAsync != null)
+                {
+                    var result = await _playerInitializerAsync(playerId, player);
+                    return result?.Data ?? "null";
+                }
+            }
+            catch (Exception exception)
+            {
+                ConsoleLog("PLAYER INITIALIZER ERROR: " + exception.Message);
+            }
+            return "null";
+        }
+
+        private async void CallOnMultiplayerConnectCredentials(string data)
+        {
+            MultiplayerOperationEnvelope envelope = ParseOperationEnvelope(data);
+            if (envelope.generation != 0 && (_connectOperation == null ||
+                _connectOperation.Generation != envelope.generation)) return;
+            try
+            {
+                NativePlayer.Adopt(GP_Player.GetID(), GP_Player.GetName());
+                MultiplayerConnectResultData result =
+                    await NativeMultiplayer.ConnectWithTransport(envelope.data, CancellationToken.None);
+                if (envelope.generation == 0 ||
+                    CompleteSuccess(ref _connectOperation, envelope.generation, result))
+                    _liveConnected = true;
+            }
+            catch (Exception exception)
+            {
+                CompleteError(ref _connectOperation, envelope.generation,
+                    "{\"message\":\"" + (exception.Message ?? "connect_failed").Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"}");
+            }
+        }
+
         private void CallOnMultiplayerConnect(string data)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            _connectInProgress = false;
-#endif
-            GP_Data payload = new GP_Data(data);
-            _connect?.Invoke(payload);
+            MultiplayerOperationEnvelope envelope = ParseOperationEnvelope(data);
+            if (envelope.generation != 0 && (_connectOperation == null ||
+                _connectOperation.Generation != envelope.generation)) return;
+            GP_Data payload = new GP_Data(envelope.data);
 
             MultiplayerConnectResultData result = null;
             try
@@ -512,34 +695,69 @@ namespace GamePush
             {
             }
 
-            CompleteSuccess(PendingConnectOperations, result);
+            if (envelope.generation == 0 ||
+                CompleteSuccess(ref _connectOperation, envelope.generation, result))
+            {
+#if UNITY_EDITOR
+                _liveConnected = true;
+                if (Play2WebLive)
+                {
+                    GP_Play2Web.Call("Multiplayer_IsHost");
+                    GP_Play2Web.Call("Multiplayer_ConnectedPlayers");
+                    GP_Play2Web.Call("Multiplayer_TickRate");
+                }
+#endif
+                _connect?.Invoke(payload);
+            }
         }
 
         private void CallOnMultiplayerDisconnect(string data)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            _disconnectInProgress = false;
+            MultiplayerOperationEnvelope envelope = ParseOperationEnvelope(data);
+            if (envelope.generation != 0 && (_disconnectOperation == null ||
+                _disconnectOperation.Generation != envelope.generation)) return;
+            if (envelope.generation == 0 ||
+                CompleteSuccess(ref _disconnectOperation, envelope.generation, true))
+            {
+#if UNITY_EDITOR
+                _liveConnected = false;
+                _liveHost = false;
 #endif
-            _disconnect?.Invoke(new GP_Data(data));
-            CompleteSuccess(PendingDisconnectOperations, true);
+                _disconnect?.Invoke(new GP_Data(envelope.data));
+            }
         }
 
         private void CallOnMultiplayerConnectError(string data)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            _connectInProgress = false;
-#endif
-            _connectError?.Invoke(new GP_Data(data));
-            CompleteError(PendingConnectOperations, data);
+            MultiplayerOperationEnvelope envelope = ParseOperationEnvelope(data);
+            if (envelope.generation != 0 && (_connectOperation == null ||
+                _connectOperation.Generation != envelope.generation)) return;
+            if (envelope.generation == 0 ||
+                CompleteError(ref _connectOperation, envelope.generation, envelope.data))
+                _connectError?.Invoke(new GP_Data(envelope.data));
         }
 
         private void CallOnMultiplayerDisconnectError(string data)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            _disconnectInProgress = false;
-#endif
-            _disconnectError?.Invoke(new GP_Data(data));
-            CompleteError(PendingDisconnectOperations, data);
+            MultiplayerOperationEnvelope envelope = ParseOperationEnvelope(data);
+            if (envelope.generation != 0 && (_disconnectOperation == null ||
+                _disconnectOperation.Generation != envelope.generation)) return;
+            if (envelope.generation == 0 ||
+                CompleteError(ref _disconnectOperation, envelope.generation, envelope.data))
+                _disconnectError?.Invoke(new GP_Data(envelope.data));
+        }
+
+        private static MultiplayerOperationEnvelope ParseOperationEnvelope(string data)
+        {
+            try
+            {
+                MultiplayerOperationEnvelope envelope = JsonUtility.FromJson<MultiplayerOperationEnvelope>(data);
+                if (envelope != null && envelope.wrapped) return envelope;
+            }
+            catch
+            {
+            }
+            return new MultiplayerOperationEnvelope { data = data, generation = 0 };
         }
 
         private void CallOnMultiplayerSendStateError(string data) => _sendStateError?.Invoke(new GP_Data(data));
@@ -561,8 +779,21 @@ namespace GamePush
         }
 
         private void CallOnMultiplayerHostMigrated(string data) => _hostMigrated?.Invoke(new GP_Data(data));
-        private void CallOnMultiplayerBecameHost() => _becameHost?.Invoke();
-        private void CallOnMultiplayerBecamePeer() => _becamePeer?.Invoke();
+        private void CallOnMultiplayerBecameHost()
+        {
+#if UNITY_EDITOR
+            _liveHost = true;
+#endif
+            _becameHost?.Invoke();
+        }
+
+        private void CallOnMultiplayerBecamePeer()
+        {
+#if UNITY_EDITOR
+            _liveHost = false;
+#endif
+            _becamePeer?.Invoke();
+        }
 
         private async void CallOnMultiplayerPlayerInitializerRequest(string data)
         {
@@ -591,9 +822,7 @@ namespace GamePush
                 ConsoleLog($"PLAYER INITIALIZER ERROR: {exception.Message}");
             }
 
-#if !UNITY_EDITOR && UNITY_WEBGL
-            GP_Multiplayer_ResolvePlayerInitializer(request.requestId, state);
-#endif
+            _ = state;
         }
     }
 
@@ -605,6 +834,64 @@ namespace GamePush
         public int ping;
         public float connectionStability;
         public int sessionDuration;
+    }
+
+    [Serializable]
+    public class MultiplayerPlayerJoinedData
+    {
+        public MultiplayerConnectedPlayerData player;
+        public bool isSelf;
+    }
+
+    [Serializable]
+    public class MultiplayerHostMigratedData
+    {
+        public int oldHost;
+        public int newHost;
+    }
+
+    [Serializable]
+    public class MultiplayerMessageEventData
+    {
+        public string eventName = string.Empty;
+        public string senderId = string.Empty;
+        public string data = string.Empty;
+        public double timestamp;
+    }
+
+    [Serializable]
+    public class MultiplayerPlayerStateEntryData
+    {
+        public string playerId = string.Empty;
+        public string state = string.Empty;
+    }
+
+    [Serializable]
+    public class MultiplayerPlayerStateEntriesData
+    {
+        public MultiplayerPlayerStateEntryData[] players = Array.Empty<MultiplayerPlayerStateEntryData>();
+    }
+
+    [Serializable]
+    public class MultiplayerRuntimeCapabilitiesData
+    {
+        public bool connect;
+        public bool disconnect;
+        public bool setPlayerState;
+        public bool setGlobalState;
+        public bool sendMessage;
+        public bool hostMigrationEvents;
+
+        public bool IsSupported => connect && disconnect && setPlayerState && setGlobalState &&
+                                   sendMessage && hostMigrationEvents;
+    }
+
+    [Serializable]
+    public class MultiplayerOperationEnvelope
+    {
+        public bool wrapped;
+        public int generation;
+        public string data = string.Empty;
     }
 
     [Serializable]

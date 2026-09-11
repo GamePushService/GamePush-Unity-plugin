@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90711d18003e669468e139c1956d9b7b, type: 3}
+  m_Name: GP_OverlaySkin
+  m_EditorClassIdentifier: 
+  screens:
+  - kind: 0
+    prefab: {fileID: 3423782671076081325, guid: 1a435440d4db8a24ca5f4ec221265bae, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.6
+    minSize: {x: 420, y: 260}
+    maxSize: {x: 820, y: 620}
+  - kind: 1
+    prefab: {fileID: 6165210278609672229, guid: e24bab73e44425c47918c328552f2d77, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.55
+    minSize: {x: 360, y: 400}
+    maxSize: {x: 1500, y: 1500}
+  - kind: 2
+    prefab: {fileID: 6371546513107936225, guid: de9954c46154f784f929f0391e1a594c, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.45
+    minSize: {x: 360, y: 400}
+    maxSize: {x: 1450, y: 1500}
+  - kind: 3
+    prefab: {fileID: 2645471141762823405, guid: ae51663ff4bddd74197361e1a5f7df87, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.65
+    minSize: {x: 360, y: 400}
+    maxSize: {x: 1650, y: 1500}
+  - kind: 4
+    prefab: {fileID: 602077892840384774, guid: d753a2f824a289040aaa17a811c9d87a, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 2
+    minSize: {x: 480, y: 320}
+    maxSize: {x: 2400, y: 1800}
+  - kind: 5
+    prefab: {fileID: 3752017666564685124, guid: b37eaef69d98f4f4c82162ead6b19019, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.65
+    minSize: {x: 360, y: 400}
+    maxSize: {x: 1550, y: 1500}
+  - kind: 6
+    prefab: {fileID: 6578873346013120599, guid: 74b5a9f94b246f0459d117605304fa70, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.65
+    minSize: {x: 360, y: 400}
+    maxSize: {x: 1650, y: 1500}
+  - kind: 7
+    prefab: {fileID: 8591605637771751125, guid: a7b4ac39f229f324ba4705f2ca161c4f, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.6
+    minSize: {x: 360, y: 220}
+    maxSize: {x: 720, y: 480}
+  - kind: 8
+    prefab: {fileID: 7636877042054238124, guid: 23e6298f83c7c4046b58b29614cb0869, type: 3}
+    customPrefab: {fileID: 0}
+    maxAspect: 1.6
+    minSize: {x: 360, y: 220}
+    maxSize: {x: 760, y: 520}
+  achievementRow: {fileID: 4415510587263650820, guid: 0a0b5df49cf04814da497023fb0e570b, type: 3}
+  leaderboardRow: {fileID: 8581074908957170082, guid: 76108bc300521c74ba2e0bed16a25c1e, type: 3}
+  messageRow: {fileID: 2079739167272543634, guid: 11ba356de7aa8dd418d1b52885dbdf28, type: 3}
+  memberRow: {fileID: 3384500908002396392, guid: 79f62788e30424e4c92f06d6bb66e8f4, type: 3}
+  gameCard: {fileID: 4325230659292692752, guid: a6868ae2de5240e4795379a3b8880e97, type: 3}
+  feedbackRow: {fileID: 680348351480601942, guid: b8c2c37ec4e94bd4893eb5d6530f5d1b, type: 3}
+  referenceResolution: {x: 1080, y: 1920}
+  screenPadding: {x: 48, y: 48}
+  wideThreshold: 1.15
+  spacingSmall: 8
+  spacing: 16
+  spacingLarge: 24
+  contentPadding: 24
+  controlHeight: 64
+  compactControlHeight: 52
+  paletteVersion: 1
+  backdrop: {r: 0, g: 0, b: 0, a: 0.65}
+  panel: {r: 0.055, g: 0.067, b: 0.078, a: 1}
+  header: {r: 0.075, g: 0.086, b: 0.098, a: 1}
+  sidebar: {r: 0.075, g: 0.086, b: 0.098, a: 1}
+  border: {r: 0.22, g: 0.24, b: 0.27, a: 1}
+  input: {r: 0.065, g: 0.075, b: 0.086, a: 1}
+  row: {r: 0.09, g: 0.102, b: 0.114, a: 1}
+  rowAlt: {r: 0.115, g: 0.126, b: 0.14, a: 1}
+  button: {r: 0.09, g: 0.102, b: 0.114, a: 1}
+  buttonSelected: {r: 0.115, g: 0.126, b: 0.14, a: 1}
+  accent: {r: 0.1, g: 0.72, b: 0.39, a: 1}
+  danger: {r: 0.9, g: 0.31, b: 0.31, a: 1}
+  hover: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+  pressed: {r: 0.1, g: 0.46, b: 0.28, a: 1}
+  disabled: {r: 0.2, g: 0.21, b: 0.23, a: 0.75}
+  text: {r: 0.95, g: 0.96, b: 0.98, a: 1}
+  textMuted: {r: 0.64, g: 0.67, b: 0.74, a: 1}
+  font: {fileID: 0}
+  titleSize: 42
+  bodySize: 32
+  captionSize: 26
+  panelSprite: {fileID: 21300000, guid: 5fcfda59914154145b6c5d6dc73f3831, type: 3}
+  rowSprite: {fileID: 21300000, guid: 5fcfda59914154145b6c5d6dc73f3831, type: 3}
+  buttonSprite: {fileID: 21300000, guid: 5fcfda59914154145b6c5d6dc73f3831, type: 3}
+  avatarPlaceholder: {fileID: 0}
+  iconPlaceholder: {fileID: 0}
+  closeIcon: {fileID: 21300000, guid: a11c0e11b2d44f6a9c3e7d5b8f012345, type: 3}
+  checkIcon: {fileID: 21300000, guid: a22d1f22c3e5507b0d4f8e6c90134567, type: 3}
+  lockIcon: {fileID: 21300000, guid: a33e2033d4f6618c1e509f7da1245678, type: 3}
+  plusIcon: {fileID: 21300000, guid: a44f3144e507729d2f610a8eb2356789, type: 3}
+  backIcon: {fileID: 21300000, guid: a5504255f61883ae30721b9fc346789a, type: 3}
+  sendIcon: {fileID: 21300000, guid: a6615366072994bf41832ca0d45789ab, type: 3}
+  membersIcon: {fileID: 21300000, guid: a7726477183aa5c052943db1e5689abc, type: 3}
+  muteIcon: {fileID: 21300000, guid: a8837588294bb6d163a54ec2f679abcd, type: 3}
+  kickIcon: {fileID: 21300000, guid: a99486993a5cc7e274b65fd3078abcde, type: 3}
+  circleSprite: {fileID: 21300000, guid: aa0597aa4b6dd8f385c760e4189bcdef, type: 3}

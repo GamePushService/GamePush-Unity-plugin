@@ -33,6 +33,76 @@ https://docs.gamepush.com/docs/get-start/
 
 https://docs.gamepush.com/ru/docs/get-start/
 
+## Native UI overlays (Android / Windows)
+
+On WebGL the GamePush JS SDK draws the achievement, leaderboard, chat, document, game collection,
+feedback and confirm screens itself. On Android and Windows there is no JS SDK, so the plugin ships
+its own uGUI screens and fetches the data straight from the GamePush GraphQL API.
+
+Nothing changes in your code: `GP_Achievements.Open()`, `GP_Channels.OpenChat()`,
+`GP_Leaderboard.Open()`, `GP_Documents.Open()`, `GP_GamesCollections.Open()`, `GP_Feedbacks.Open()`
+and `GP_Windows.ShowConfirm()` now show a real screen instead of writing to the console.
+
+### Enabling
+
+`Tools/GamePush` → **Native plugin**:
+
+| Toggle                    | Effect                                                                 |
+| ------------------------- | ---------------------------------------------------------------------- |
+| **UI overlays**           | Turns the native screens on. Off restores the previous no-op behaviour. |
+| **Pause game on overlay** | Sets `Time.timeScale` to 0 while any overlay is open, like ads do.      |
+
+Open **Configure** next to **UI overlays** in `Tools/GamePush`. The window edits the shared
+`GP_OverlaySkin`, previews all
+screens with local mock data and can rebuild one or all generated prefabs. Preview does not call the
+native API. The screens use TextMeshPro; import TMP Essential Resources before rebuilding.
+Rebuild actions live in this window and overwrite only
+`Assets/Plugins/GamePush/Resources/GamePush/Overlays/`.
+
+### Customising
+
+All generated screens share one modular shell, component factory and `GP_OverlaySkin`. Changing the
+palette, font, sprites, spacing or control states in the settings window applies the same design
+tokens to every default overlay on the next rebuild.
+
+1. **Template** — edit `Resources/GamePush/GP_OverlaySkin.asset` in the overlay settings window.
+2. **Custom prefab** — select an overlay and press **Create and assign custom copy**. The copy is
+   stored at a project-owned path and assigned as `customPrefab`; rebuilding defaults neither
+   overwrites the copy nor clears its assignment. Keep the view's serialized references connected.
+3. **Runtime override** — supply a prefab from code:
+
+```c
+GP_Overlays.SetPrefab(GP_OverlayKind.Achievements, myPrefab);
+```
+
+`GP_Overlays` also exposes `Open`, `Close`, `CloseTop`, `CloseAll`, `IsOpen`, `IsAnyOpen` and the
+`OnOpen` / `OnClose` / `OnAnyOpenChanged` events.
+
+### Orientation
+
+Panels are sized against the safe area rather than a fixed rectangle. Portrait uses a tall Compact
+panel; desktop and sufficiently wide mobile landscape viewports use a bounded Wide panel. The mode
+is selected from the final panel aspect, so resizing a desktop window and rotating a phone follow
+the same rules.
+
+Compact moves achievement groups to a horizontal strip, derives game/achievement grid columns from
+available width, hides only dynamic leaderboard columns and swaps Chat/Feedbacks master-detail
+panels at full width. Wide shows the achievement rail, extra leaderboard fields, channel members
+beside chat messages and the feedback thread beside its list. Chat and Feedbacks composers account
+for the mobile soft keyboard.
+
+### Chat live updates
+
+The GraphQL API exposes no subscription token for chat channels, so new messages are picked up by
+re-reading the newest page every few seconds. `NativeChannelsRealtime.Watch` / `Stop` is the seam:
+switching to a real Centrifugo subscription later only touches that file.
+
+### Example
+
+`Assets/GP_Examples/NativeOverlays/NativeOverlaysDemo.cs` — drop it on any GameObject to get a
+launcher for every overlay plus a button that forces the screen orientation, which is the fastest
+way to check both layouts on a device.
+
 # Methods List
 
 | Plugin modules                                |
@@ -935,11 +1005,15 @@ public class FilesFetchMoreFilter
 
 ### Methods
 
-| Method name | Method parameters                 | Return value |
-| ----------- | --------------------------------- | ------------ |
-| `Open`      | `Action onFullscreenOpen = null`  | void         |
-| `Close`     | `Action onFullscreenClose = null` | void         |
-| `Toggle`    | void                              | void         |
+| Method name    | Method parameters                 | Return value |
+| -------------- | --------------------------------- | ------------ |
+| `Open`         | `Action onFullscreenOpen = null`  | void         |
+| `Close`        | `Action onFullscreenClose = null` | void         |
+| `Toggle`       | void                              | void         |
+| `IsFullscreen` | void                              | bool         |
+
+On Android and Windows this maps to `Screen.fullScreen`; handheld platforms always report `true`
+since they have no windowed mode.
 
 ### Actions
 
@@ -1281,6 +1355,8 @@ public class FetchPlayerPurchases
 | `TypeAsString`           | void              | `string`     |
 | `HasIntegratedAuth`      | void              | `bool`       |
 | `IsExternalLinksAllowed` | void              | `bool`       |
+| `IsBackendAllowed`       | void              | `bool`       |
+| `IsChatAvailable`        | void              | `bool`       |
 
 ### Data structures
 

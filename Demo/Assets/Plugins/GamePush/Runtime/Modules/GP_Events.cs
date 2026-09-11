@@ -18,8 +18,10 @@ namespace GamePush
         private void CallOnEventJoin(string eventData) { OnEventJoin?.Invoke(JsonUtility.FromJson<PlayerEvents>(eventData)); }
         private void CallOnEventJoinError(string error) { OnEventJoinError?.Invoke(error); }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Events_Join(string idOrTag);
+        #endif
         public static void Join(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -30,8 +32,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Events_List();
+        #endif
         public static EventData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +49,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Events_ActiveList();
+        #endif
         public static PlayerEvents[] ActiveList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +66,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Events_GetEvent(string idOrTag);
+        #endif
         public static EventData GetEvent(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +83,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Events_IsActive(string idOrTag);
+        #endif
         public static bool IsActive(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -87,8 +97,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Events_IsJoined(string idOrTag);
+        #endif
         public static bool IsJoined(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

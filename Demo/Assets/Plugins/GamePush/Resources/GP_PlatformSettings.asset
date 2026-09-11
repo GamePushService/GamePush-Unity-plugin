@@ -14,10 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlatformToEmulate: 1
   Language: 0
-  IsMobile: 1
+  IsMobile: 0
   IsPortrait: 0
   HasIntegratedAuth: 1
+  IsLogoutAvailable: 1
   IsExternalLinksAllowed: 1
+  IsSecretCodeAuthAvailable: 1
+  IsSupportsCloudSaves: 1
+  IsBackendAllowed: 1
+  IsChatAvailable: 1
   IsLoggedIn: 1
   HasAnyCredentials: 1
   IsStub: 1

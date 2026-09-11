@@ -1,0 +1,466 @@
+// Standalone WebView2 overlay host for Play2Web.
+// Compiled on demand by GP_Play2WebOverlay with the system C# 5 compiler, so keep the
+// syntax conservative: no string interpolation, no null-conditional operators, no "out var".
+// Runs out of process on purpose: WebView2 needs an STA thread with its own message pump,
+// and a browser fault must never take the Unity editor down with it.
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+using Microsoft.Web.WebView2.Core;
+
+namespace GamePushPlay2Web
+{
+    public class OverlayForm : Form
+    {
+        const int GwlExstyle = -20;
+        const int GwlpHwndparent = -8;
+        const int WsExTransparent = 0x00000020;
+        const int WsExNoactivate = 0x08000000;
+        const int WsExToolwindow = 0x00000080;
+        const int WsExLayered = 0x00080000;
+        const uint LwaAlpha = 0x00000002;
+        const uint SwpNosize = 0x0001;
+        const uint SwpNomove = 0x0002;
+        const uint SwpNoactivate = 0x0010;
+        const uint SwpShowwindow = 0x0040;
+
+        readonly string _url;
+        readonly string _userData;
+        readonly uint _selfPid;
+        readonly System.Windows.Forms.Timer _timer = new System.Windows.Forms.Timer();
+
+        CoreWebView2Controller _controller;
+        IntPtr _owner = IntPtr.Zero;
+        bool _cover;
+        bool _clickThrough = true;
+        bool _hitBusy;
+        bool _parked;
+        Rectangle _liveBounds = new Rectangle(-32000, -32000, 800, 600);
+
+        public OverlayForm(string url, string userData)
+        {
+            _url = url;
+            _userData = userData;
+            _selfPid = (uint)Process.GetCurrentProcess().Id;
+
+            FormBorderStyle = FormBorderStyle.None;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
+            BackColor = Color.Black;
+            Bounds = new Rectangle(-32000, -32000, 800, 600);
+
+            _timer.Interval = 40;
+            _timer.Tick += OnTick;
+        }
+
+        protected override bool ShowWithoutActivation
+        {
+            get { return true; }
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= WsExNoactivate | WsExToolwindow | WsExTransparent | WsExLayered;
+                return cp;
+            }
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            ApplyTransparency();
+            if (_owner != IntPtr.Zero)
+                BindOwner(_owner);
+            StartWebView();
+            _timer.Start();
+        }
+
+        // Color keying never reaches the pixels WebView2 draws, so the overlay relies on real
+        // per-pixel alpha instead: the glass frame lets DWM composite the transparent parts of
+        // the page straight onto whatever is behind the window. The layered alpha attribute has
+        // to be re-applied after every extended style change made by the click-through toggle.
+        void ApplyTransparency()
+        {
+            if (!IsHandleCreated)
+                return;
+            SetLayeredWindowAttributes(Handle, 0, 255, LwaAlpha);
+            MARGINS margins = new MARGINS();
+            margins.Left = -1;
+            margins.Right = -1;
+            margins.Top = -1;
+            margins.Bottom = -1;
+            DwmExtendFrameIntoClientArea(Handle, ref margins);
+        }
+
+        // WinForms' TransparencyKey stops keying as soon as the extended styles are touched by
+        // the click-through toggle, so the layered attributes are owned here and re-applied
+        // after every style change.
+        void StartWebView()
+        {
+            try
+            {
+                // Keep GamePush Centrifugo alive when the overlay is parked off-screen
+                // (coop tests focus the PC player, which used to freeze WebView2).
+                CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions(
+                    "--autoplay-policy=no-user-gesture-required "
+                    + "--disable-backgrounding-occluded-windows "
+                    + "--disable-renderer-backgrounding "
+                    + "--disable-background-timer-throttling "
+                    + "--disable-features=CalculateNativeWinOcclusion");
+                CoreWebView2Environment.CreateAsync(null, _userData, options).ContinueWith(delegate(
+                    System.Threading.Tasks.Task<CoreWebView2Environment> envTask)
+                {
+                    if (envTask.IsFaulted)
+                    {
+                        Report("err env " + envTask.Exception.GetBaseException().Message);
+                        return;
+                    }
+                    BeginInvoke(new Action(delegate { CreateController(envTask.Result); }));
+                });
+            }
+            catch (Exception ex)
+            {
+                Report("err start " + ex.Message);
+            }
+        }
+
+        void CreateController(CoreWebView2Environment environment)
+        {
+            try
+            {
+                environment.CreateCoreWebView2ControllerAsync(Handle).ContinueWith(delegate(
+                    System.Threading.Tasks.Task<CoreWebView2Controller> task)
+                {
+                    if (task.IsFaulted)
+                    {
+                        Report("err controller " + task.Exception.GetBaseException().Message);
+                        return;
+                    }
+                    BeginInvoke(new Action(delegate { AttachController(task.Result); }));
+                });
+            }
+            catch (Exception ex)
+            {
+                Report("err controller " + ex.Message);
+            }
+        }
+
+        void AttachController(CoreWebView2Controller controller)
+        {
+            _controller = controller;
+            _controller.DefaultBackgroundColor = Color.FromArgb(0, 0, 0, 0);
+            _controller.ShouldDetectMonitorScaleChanges = true;
+            _controller.Bounds = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+            _controller.IsVisible = true;
+
+            CoreWebView2Settings settings = _controller.CoreWebView2.Settings;
+            settings.IsStatusBarEnabled = false;
+            settings.IsZoomControlEnabled = false;
+            settings.AreDefaultContextMenusEnabled = false;
+
+            _controller.CoreWebView2.Navigate(_url);
+            Report("ready");
+        }
+
+        public void Command(string line)
+        {
+            if (String.IsNullOrEmpty(line))
+                return;
+            string[] parts = line.Split(' ');
+            switch (parts[0])
+            {
+                case "rect":
+                    if (parts.Length >= 5)
+                        ApplyRect(ParseInt(parts[1]), ParseInt(parts[2]), ParseInt(parts[3]), ParseInt(parts[4]));
+                    break;
+                case "owner":
+                    if (parts.Length > 1)
+                        ApplyOwner(ParseHwnd(parts[1]));
+                    break;
+                case "cover":
+                    _cover = parts.Length > 1 && parts[1] == "1";
+                    if (_cover)
+                        SetClickThrough(false);
+                    break;
+                case "hide":
+                    Park();
+                    break;
+                case "nav":
+                    if (parts.Length > 1 && _controller != null)
+                        _controller.CoreWebView2.Navigate(parts[1]);
+                    break;
+                case "quit":
+                    Close();
+                    break;
+            }
+        }
+
+        void ApplyOwner(IntPtr hwnd)
+        {
+            if (hwnd == _owner)
+                return;
+            _owner = hwnd;
+            if (!IsHandleCreated || hwnd == IntPtr.Zero)
+                return;
+            BindOwner(hwnd);
+        }
+
+        void BindOwner(IntPtr hwnd)
+        {
+            SetWindowLongPtr(Handle, GwlpHwndparent, hwnd);
+            SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, SwpNomove | SwpNosize | SwpNoactivate);
+        }
+
+        void ApplyRect(int x, int y, int w, int h)
+        {
+            if (w < 2 || h < 2)
+                return;
+            _liveBounds = new Rectangle(x, y, w, h);
+            if (_controller != null)
+                _controller.Bounds = new Rectangle(0, 0, w, h);
+            // Never Form.Visible=false: WebView2 freezes JS and drops the centrifuge socket
+            // (Play2Web "transport closed" while testing coop against a PC build).
+            if (ShouldStayHidden())
+            {
+                Park();
+                return;
+            }
+            Unpark();
+        }
+
+        void Park()
+        {
+            _parked = true;
+            if (!Visible)
+                Show();
+            Bounds = new Rectangle(-32000, -32000, Math.Max(2, _liveBounds.Width), Math.Max(2, _liveBounds.Height));
+            if (_controller != null)
+                _controller.Bounds = new Rectangle(0, 0, Math.Max(2, _liveBounds.Width), Math.Max(2, _liveBounds.Height));
+        }
+
+        void Unpark()
+        {
+            _parked = false;
+            if (!Visible)
+                Show();
+            Bounds = _liveBounds;
+            if (_controller != null)
+                _controller.Bounds = new Rectangle(0, 0, _liveBounds.Width, _liveBounds.Height);
+            SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, SwpNomove | SwpNosize | SwpNoactivate | SwpShowwindow);
+        }
+
+        // Owned + not topmost: Windows hides us with the editor, and other apps stay above us.
+        // The timer still hides on its own so a paused Unity update cannot leave the overlay up.
+        bool ShouldStayHidden()
+        {
+            if (_owner == IntPtr.Zero)
+                return false;
+            if (IsIconic(_owner) || !IsWindowVisible(_owner))
+                return true;
+
+            IntPtr foreground = GetForegroundWindow();
+            if (foreground == IntPtr.Zero)
+                return true;
+
+            uint pid;
+            GetWindowThreadProcessId(foreground, out pid);
+            if (pid == _selfPid)
+                return false;
+
+            uint ownerPid;
+            GetWindowThreadProcessId(_owner, out ownerPid);
+            return pid != ownerPid;
+        }
+
+        void OnTick(object sender, EventArgs e)
+        {
+            if (ShouldStayHidden())
+            {
+                if (!_parked)
+                    Park();
+                return;
+            }
+            if (_parked)
+                Unpark();
+
+            if (_cover || _controller == null || _hitBusy)
+                return;
+
+            POINT cursor;
+            if (!GetCursorPos(out cursor))
+                return;
+            Rectangle bounds = Bounds;
+            if (!bounds.Contains(cursor.X, cursor.Y))
+            {
+                SetClickThrough(true);
+                return;
+            }
+
+            double scale = _controller.RasterizationScale;
+            if (scale <= 0.01)
+                scale = 1;
+            int cssX = (int)Math.Round((cursor.X - bounds.Left) / scale);
+            int cssY = (int)Math.Round((cursor.Y - bounds.Top) / scale);
+            string script = "(function(x,y){var f=window.__play2webHitTest;return f?!!f(x,y):false;})("
+                + cssX.ToString(CultureInfo.InvariantCulture) + ","
+                + cssY.ToString(CultureInfo.InvariantCulture) + ")";
+
+            _hitBusy = true;
+            _controller.CoreWebView2.ExecuteScriptAsync(script).ContinueWith(delegate(
+                System.Threading.Tasks.Task<string> task)
+            {
+                try
+                {
+                    BeginInvoke(new Action(delegate
+                    {
+                        _hitBusy = false;
+                        if (!task.IsFaulted)
+                            SetClickThrough(task.Result != "true");
+                    }));
+                }
+                catch
+                {
+                    _hitBusy = false;
+                }
+            });
+        }
+
+        void SetClickThrough(bool through)
+        {
+            if (_clickThrough == through)
+                return;
+            _clickThrough = through;
+            IntPtr style = GetWindowLongPtr(Handle, GwlExstyle);
+            long value = style.ToInt64();
+            value |= WsExNoactivate | WsExToolwindow | WsExLayered;
+            if (through)
+                value |= WsExTransparent;
+            else
+                value &= ~((long)WsExTransparent);
+            SetWindowLongPtr(Handle, GwlExstyle, new IntPtr(value));
+            ApplyTransparency();
+        }
+
+        static int ParseInt(string value)
+        {
+            int result;
+            Int32.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+            return result;
+        }
+
+        static IntPtr ParseHwnd(string value)
+        {
+            long result;
+            Int64.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+            return new IntPtr(result);
+        }
+
+        static void Report(string message)
+        {
+            Console.Out.WriteLine(message);
+            Console.Out.Flush();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _timer.Stop();
+            if (_controller != null)
+            {
+                try { _controller.Close(); }
+                catch { }
+                _controller = null;
+            }
+            base.OnFormClosed(e);
+        }
+
+        struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
+        struct MARGINS
+        {
+            public int Left;
+            public int Right;
+            public int Top;
+            public int Bottom;
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool GetCursorPos(out POINT point);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
+        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+        static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int index);
+        [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+        static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int index, IntPtr value);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint key, byte alpha, uint flags);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool IsIconic(IntPtr hWnd);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool IsWindowVisible(IntPtr hWnd);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+        [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+        static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS margins);
+    }
+
+    public static class Program
+    {
+        [STAThread]
+        public static int Main(string[] args)
+        {
+            string url = "about:blank";
+            string userData = Path.Combine(Path.GetTempPath(), "GamePushPlay2WebHost");
+
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (args[i] == "--url")
+                    url = args[i + 1];
+                else if (args[i] == "--user-data")
+                    userData = args[i + 1];
+            }
+
+            Directory.CreateDirectory(userData);
+            Application.EnableVisualStyles();
+
+            OverlayForm form = new OverlayForm(url, userData);
+            Thread reader = new Thread(delegate()
+            {
+                try
+                {
+                    string line;
+                    while ((line = Console.In.ReadLine()) != null)
+                    {
+                        string captured = line;
+                        if (form.IsHandleCreated)
+                            form.BeginInvoke(new Action(delegate { form.Command(captured); }));
+                    }
+                }
+                catch { }
+                try
+                {
+                    if (form.IsHandleCreated)
+                        form.BeginInvoke(new Action(delegate { form.Close(); }));
+                }
+                catch { }
+            });
+            reader.IsBackground = true;
+            reader.Start();
+
+            Application.Run(form);
+            return 0;
+        }
+    }
+}

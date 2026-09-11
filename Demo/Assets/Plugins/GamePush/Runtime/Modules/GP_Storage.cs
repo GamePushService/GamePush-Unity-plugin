@@ -37,12 +37,18 @@ namespace GamePush
         private static extern string GP_StorageSetBool(string key, bool value);
         [DllImport("__Internal")]
         private static extern string GP_StorageGetGlobal(string key);
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_StorageSetGlobalString(string key, string value);
+        #endif
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_StorageSetGlobalNumber(string key, float value);
+        #endif
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_StorageSetGlobalBool(string key, bool value);
+        #endif
 
 #endif
 

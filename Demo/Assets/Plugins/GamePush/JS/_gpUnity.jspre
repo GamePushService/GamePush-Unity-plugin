@@ -1,8 +1,148 @@
+function errorToString(error) {
+    if (!error) {
+        return '';
+    }
+    if (typeof error === 'string') {
+        return error;
+    }
+    return error.code || error.message || String(error);
+}
+
+function isExpectedUserCancel(error) {
+    const message = errorToString(error).toLowerCase();
+    return /cancel last request|user_not_logged_in|payment_rejected|payment_cancelled|purchase_cancelled|cancelled|canceled|cancel|rejected/.test(
+        message
+    );
+}
+
+function ignoreExpectedPromise(result) {
+    if (!result || typeof result.catch !== 'function') {
+        return result;
+    }
+
+    return result.catch((error) => {
+        if (!isExpectedUserCancel(error)) {
+            console.warn(error);
+        }
+    });
+}
+
+function focusGame() {
+    try {
+        window.focus();
+        const canvas = document.querySelector('#unity-canvas');
+        if (canvas && typeof canvas.focus === 'function') {
+            canvas.focus();
+        }
+    } catch (error) {
+        // ignore
+    }
+}
+
+function mapReactionCounts(reactions) {
+    if (!reactions || typeof reactions !== 'object') {
+        return [];
+    }
+
+    return Object.keys(reactions).map((type) => ({
+        type,
+        count: Number(reactions[type] || 0)
+    }));
+}
+
+function mapPlayerReactions(playerReactions) {
+    if (!Array.isArray(playerReactions)) {
+        return [];
+    }
+
+    return playerReactions.map((reaction) => ({
+        reactionType: reaction && reaction.reactionType ? reaction.reactionType : String(reaction || '')
+    }));
+}
+
+function mapEntityWithReactions(entity) {
+    if (!entity || typeof entity !== 'object') {
+        return entity;
+    }
+
+    return {
+        ...entity,
+        id: entity.id == null ? '' : String(entity.id),
+        reactions: mapReactionCounts(entity.reactions),
+        playerReactions: mapPlayerReactions(entity.playerReactions)
+    };
+}
+
+function mapFeedbackMessage(message) {
+    message = message || {};
+    return {
+        id: message.id == null ? '' : String(message.id),
+        text: message.text || '',
+        files: message.files || [],
+        attachments: message.attachments || [],
+        author: message.author || '',
+        feedbackId: message.feedbackId == null ? '' : String(message.feedbackId),
+        createdAt: message.createdAt || ''
+    };
+}
+
+function mapFeedback(feedback) {
+    feedback = feedback || {};
+    return {
+        id: feedback.id == null ? '' : String(feedback.id),
+        type: feedback.type || '',
+        text: feedback.text || '',
+        status: feedback.status || '',
+        files: feedback.files || [],
+        messages: (feedback.messages || []).map(mapFeedbackMessage),
+        playerId: Number(feedback.playerId || 0),
+        projectId: Number(feedback.projectId || 0),
+        platformId: Number(feedback.platformId || 0),
+        createdAt: feedback.createdAt || '',
+        updatedAt: feedback.updatedAt || ''
+    };
+}
+
+function mapReactionResult(result) {
+    result = result || {};
+    return {
+        entityType: result.entityType || '',
+        entityId: result.entityId == null ? '' : String(result.entityId),
+        reactionType: result.reactionType || '',
+        counter: Number(result.counter || 0)
+    };
+}
+
+function parseJsonPayload(value, fallback) {
+    if (!value) {
+        return fallback;
+    }
+    if (typeof value === 'object') {
+        return value;
+    }
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return fallback;
+    }
+}
+
 class GamePushUnityInner {
     constructor(gp) {
         this.gp = gp;
         this.multiplayerPlayerInitializerTimeoutMs = 15000;
 
+        try {
+            this.bindUnityEvents();
+        } catch (error) {
+            // Play2Web keeps this instance as the call target. If event binding throws, the
+            // previous code discarded it and fell back to the raw SDK, which has no
+            // Channels_FetchChannels / Channels_CreateChannel methods — Unity then waited forever.
+            console.warn('[GamePush Unity] event binding failed', error);
+        }
+    }
+
+    bindUnityEvents() {
         this.gp.player.on('change', () => this.trigger('CallPlayerChange'));
 
         this.gp.player.on('sync', (success) => {
@@ -231,25 +371,21 @@ class GamePushUnityInner {
         );
 
         this.gp.channels.on('fetchChannels', (result) => {
-            this.trigger('CallOnFetchChannelsCanLoadMore', result.canLoadMore);
-            this.trigger(
-                'CallOnFetchChannels',
-                JSON.stringify(result.items.map(mapChannel))
-            );
+            const page = channelPage(result);
+            this.trigger('CallOnFetchChannelsCanLoadMore', page.canLoadMore);
+            this.trigger('CallOnFetchChannels', JSON.stringify(page.items));
         });
         this.gp.channels.on('error:fetchChannels', (err) =>
             this.trigger('CallOnFetchChannelsError')
         );
 
         this.gp.channels.on('fetchMoreChannels', (result) => {
+            const page = channelPage(result);
             this.trigger(
                 'CallOnFetchMoreChannelsCanLoadMore',
-                result.canLoadMore
+                page.canLoadMore
             );
-            this.trigger(
-                'CallOnFetchMoreChannels',
-                JSON.stringify(result.items.map(mapChannel))
-            );
+            this.trigger('CallOnFetchMoreChannels', JSON.stringify(page.items));
         });
         this.gp.channels.on('error:fetchMoreChannels', (err) =>
             this.trigger('CallOnFetchMoreChannelsError')
@@ -562,68 +698,9 @@ class GamePushUnityInner {
             this.trigger('CallOnDeleteMessageError')
         );
 
-        // multiplayer
+        // multiplayer tokens only — session/events live in the Unity native kernel
         this.multiplayerPlayerInitializerRequestId = 0;
         this.multiplayerPlayerInitializerResolvers = new Map();
-
-        this.gp.multiplayer.on('connect', (result) => {
-            this.trigger('CallOnMultiplayerConnect', JSON.stringify(result));
-        });
-        this.gp.multiplayer.on('disconnect', (result) => {
-            this.clearMultiplayerPlayerInitializerResolvers();
-            this.trigger('CallOnMultiplayerDisconnect', JSON.stringify(result));
-        });
-        this.gp.multiplayer.on('error:connect', (error) => {
-            this.trigger(
-                'CallOnMultiplayerConnectError',
-                JSON.stringify(serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('error:disconnect', (error) => {
-            this.trigger(
-                'CallOnMultiplayerDisconnectError',
-                JSON.stringify(serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('error:sendState', (error) => {
-            this.trigger(
-                'CallOnMultiplayerSendStateError',
-                JSON.stringify(serializeMultiplayerError(error))
-            );
-        });
-        this.gp.multiplayer.on('playerJoined', (player) => {
-            this.trigger('CallOnMultiplayerPlayerJoined', JSON.stringify(player));
-        });
-        this.gp.multiplayer.on('playerLeft', (player) => {
-            this.trigger('CallOnMultiplayerPlayerLeft', JSON.stringify(player));
-        });
-        this.gp.multiplayer.on('playersUpdated', (playersState) => {
-            this.trigger(
-                'CallOnMultiplayerPlayersUpdated',
-                JSON.stringify(mapMultiplayerToObject(playersState))
-            );
-        });
-        this.gp.multiplayer.on('globalStateUpdated', (globalState) => {
-            this.trigger(
-                'CallOnMultiplayerGlobalStateUpdated',
-                JSON.stringify(globalState)
-            );
-        });
-        this.gp.multiplayer.on('customEvent', (event) => {
-            this.trigger('CallOnMultiplayerCustomEvent', JSON.stringify(event));
-        });
-        this.gp.multiplayer.on('becameHost', () => {
-            this.trigger('CallOnMultiplayerBecameHost');
-        });
-        this.gp.multiplayer.on('becamePeer', () => {
-            this.trigger('CallOnMultiplayerBecamePeer');
-        });
-        this.gp.multiplayer.on('hostMigrated', (data) => {
-            this.trigger('CallOnMultiplayerHostMigrated', JSON.stringify(data));
-        });
-        this.gp.multiplayer.onTick((deltaTime) => {
-            this.trigger('CallOnMultiplayerTick', String(deltaTime));
-        });
 
         //triggers
         this.gp.triggers.on('activate', ({ trigger }) => {
@@ -789,6 +866,41 @@ class GamePushUnityInner {
         this.gp.sounds.on('unmute:music', () => {
             this.trigger('CallOnSoundsUnmuteMusic')
         });
+
+        if (this.gp.payments) {
+            this.gp.payments.on('open', () => this.trigger('CallPaymentsOpen'));
+            this.gp.payments.on('close', () => {
+                this.trigger('CallPaymentsClose');
+                focusGame();
+            });
+        }
+
+        if (this.gp.feedbacks) {
+            this.gp.feedbacks.on('event:feedbackMessage', (message) =>
+                this.trigger('CallFeedbacksMessageEvent', JSON.stringify(mapFeedbackMessage(message)))
+            );
+            this.gp.feedbacks.on('event:feedbackCreated', (feedback) =>
+                this.trigger('CallFeedbacksCreatedEvent', JSON.stringify(mapFeedback(feedback)))
+            );
+            this.gp.feedbacks.on('event:feedbackStatusUpdated', (feedback) =>
+                this.trigger('CallFeedbacksStatusUpdatedEvent', JSON.stringify(mapFeedback(feedback)))
+            );
+            this.gp.feedbacks.on('event:feedbackPlatformStatusUpdated', (feedback) =>
+                this.trigger(
+                    'CallFeedbacksPlatformStatusUpdatedEvent',
+                    JSON.stringify(mapFeedback(feedback))
+                )
+            );
+        }
+
+        if (this.gp.reactions) {
+            this.gp.reactions.on('event:set', (result) =>
+                this.trigger('CallReactionsSetEvent', JSON.stringify(mapReactionResult(result)))
+            );
+            this.gp.reactions.on('event:unset', (result) =>
+                this.trigger('CallReactionsUnsetEvent', JSON.stringify(mapReactionResult(result)))
+            );
+        }
     }
 
     async trigger(eventName, value) {
@@ -835,6 +947,9 @@ class GamePushUnityInner {
     AvatarGenerator() {
         return this.gp.avatarGenerator;
     }
+    GenerateAvatar(hash, size) {
+        return this.gp.generateAvatar(hash, size);
+    }
 
     PlatformType() {
         return this.gp.platform.type;
@@ -857,6 +972,12 @@ class GamePushUnityInner {
     PlatformIsSupportsCloudSaves() {
         return this.toUnity(this.gp.platform.isSupportsCloudSaves);
     }
+    PlatformIsBackendAllowed() {
+        return this.toUnity(this.gp.platform.isBackendAllowed);
+    }
+    PlatformIsChatAvailable() {
+        return this.toUnity(this.gp.platform.isChatAvailable);
+    }
 
     AppTitle() {
         return this.gp.app.title;
@@ -871,13 +992,16 @@ class GamePushUnityInner {
         return this.gp.app.url;
     }
     AppRequestReview() {
-        return this.gp.app.requestReview().then((result) => {
-            if (result.success) {
-                this.trigger('CallReviewResult', result.rating);
-            } else {
-                this.trigger('CallReviewClose', result.error);
-            }
-        });
+        return ignoreExpectedPromise(
+            this.gp.app.requestReview().then((result) => {
+                if (result.success) {
+                    this.trigger('CallReviewResult', result.rating);
+                } else {
+                    this.trigger('CallReviewClose', result.error);
+                }
+                focusGame();
+            })
+        );
     }
 
     AppCanRequestReview() {
@@ -889,9 +1013,11 @@ class GamePushUnityInner {
     }
 
     AppAddShortcut() {
-        return this.gp.app
-            .addShortcut()
-            .then((success) => this.trigger('CallAddShortcut', success));
+        return ignoreExpectedPromise(
+            this.gp.app
+                .addShortcut()
+                .then((success) => this.trigger('CallAddShortcut', success))
+        );
     }
 
     AppCanAddShortcut() {
@@ -1009,13 +1135,23 @@ class GamePushUnityInner {
     }
 
     PlayerLoad() {
-        return this.gp.player.load();
+        return ignoreExpectedPromise(this.gp.player.load());
     }
     PlayerLogin() {
-        return this.gp.player.login();
+        const result = this.gp.player.login();
+        if (result && typeof result.finally === 'function') {
+            return ignoreExpectedPromise(result.finally(() => focusGame()));
+        }
+        focusGame();
+        return ignoreExpectedPromise(result);
     }
     PlayerLogout() {
-        return this.gp.player.logout();
+        const result = this.gp.player.logout();
+        if (result && typeof result.finally === 'function') {
+            return ignoreExpectedPromise(result.finally(() => focusGame()));
+        }
+        focusGame();
+        return ignoreExpectedPromise(result);
     }
     PlayerFetchFields() {
         this.gp.player.fetchFields();
@@ -1418,9 +1554,11 @@ class GamePushUnityInner {
                 window.focus();
             })
             .catch((err) => {
-                console.warn(err);
+                if (!isExpectedUserCancel(err)) {
+                    console.warn(err);
+                }
                 this.trigger('CallPaymentsPurchaseError');
-                window.focus();
+                focusGame();
             });
     }
     PaymentsConsume(idOrTag) {
@@ -1446,6 +1584,20 @@ class GamePushUnityInner {
         return this.toUnity(this.gp.payments.isAvailable);
     }
 
+    PaymentsProducts() {
+        return this.toUnity((this.gp.payments && this.gp.payments.products) || []);
+    }
+
+    PaymentsPurchases() {
+        return this.toUnity((this.gp.payments && this.gp.payments.purchases) || []);
+    }
+
+    PaymentsHas(idOrTag) {
+        const id = parseInt(idOrTag, 10) || 0;
+        const query = id > 0 ? id : idOrTag;
+        return this.toUnity(this.gp.payments.has(query));
+    }
+
     // Subscriptions
     PaymentsIsSubscriptionsAvailable() {
         return this.toUnity(this.gp.payments.isSubscriptionsAvailable);
@@ -1464,7 +1616,9 @@ class GamePushUnityInner {
                 }
             })
             .catch((err) => {
-                console.warn(err);
+                if (!isExpectedUserCancel(err)) {
+                    console.warn(err);
+                }
                 this.trigger('CallPaymentsSubscribeError');
             });
     }
@@ -1482,40 +1636,46 @@ class GamePushUnityInner {
                 }
             })
             .catch((err) => {
-                console.warn(err);
+                if (!isExpectedUserCancel(err)) {
+                    console.warn(err);
+                }
                 this.trigger('CallPaymentsUnsubscribeError');
             });
     }
 
     FullscreenOpen() {
-        return this.gp.fullscreen.open();
+        return ignoreExpectedPromise(this.gp.fullscreen.open());
     }
     FullscreenClose() {
-        return this.gp.fullscreen.close();
+        return ignoreExpectedPromise(this.gp.fullscreen.close());
     }
     FullscreenToggle() {
-        return this.gp.fullscreen.toggle();
+        return ignoreExpectedPromise(this.gp.fullscreen.toggle());
     }
 
     // ADS
-    AdsShowFullscreen() {
-        return this.gp.ads.showFullscreen();
+    AdsShowFullscreen(showCountdownOverlay) {
+        const options = {};
+        if (this.getBoolean(showCountdownOverlay) === true) {
+            options.showCountdownOverlay = true;
+        }
+        return ignoreExpectedPromise(this.gp.ads.showFullscreen(options));
     }
     AdsShowRewarded(idOrTag) {
         this.lastRewardedTag = idOrTag;
-        return this.gp.ads.showRewardedVideo();
+        return ignoreExpectedPromise(this.gp.ads.showRewardedVideo());
     }
     AdsShowPreloader() {
-        return this.gp.ads.showPreloader();
+        return ignoreExpectedPromise(this.gp.ads.showPreloader());
     }
     AdsShowSticky() {
-        return this.gp.ads.showSticky();
+        return ignoreExpectedPromise(this.gp.ads.showSticky());
     }
     AdsCloseSticky() {
-        return this.gp.ads.closeSticky();
+        return ignoreExpectedPromise(this.gp.ads.closeSticky());
     }
     AdsRefreshSticky() {
-        return this.gp.ads.refreshSticky();
+        return ignoreExpectedPromise(this.gp.ads.refreshSticky());
     }
 
     AdsIsAdblockEnabled() {
@@ -1570,16 +1730,16 @@ class GamePushUnityInner {
 
     /* SOCIAL */
     SocialsShare(text, url, image) {
-        return this.gp.socials.share({ text, url, image });
+        return ignoreExpectedPromise(this.gp.socials.share({ text, url, image }));
     }
     SocialsPost(text, url, image) {
-        return this.gp.socials.post({ text, url, image });
+        return ignoreExpectedPromise(this.gp.socials.post({ text, url, image }));
     }
     SocialsInvite(text, url, image) {
-        return this.gp.socials.invite({ text, url, image });
+        return ignoreExpectedPromise(this.gp.socials.invite({ text, url, image }));
     }
     SocialsJoinCommunity() {
-        return this.gp.socials.joinCommunity();
+        return ignoreExpectedPromise(this.gp.socials.joinCommunity());
     }
     SocialsCommunityLink() {
         return this.toUnity(this.gp.socials.communityLink);
@@ -1623,7 +1783,7 @@ class GamePushUnityInner {
     GamesCollectionsOpen(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
         const query = id > 0 ? { id } : { tag: idOrTag || 'ANY' };
-        return this.gp.gamesCollections.open(query);
+        return ignoreExpectedPromise(this.gp.gamesCollections.open(query));
     }
     GamesCollectionsFetch(idOrTag) {
         const id = parseInt(idOrTag, 10) || 0;
@@ -1888,7 +2048,7 @@ class GamePushUnityInner {
                 this.trigger('CallFilesFetchCanLoadMore', result.canLoadMore);
                 this.trigger(
                     'CallFilesFetchSuccess',
-                    JSON.stringify(result.items)
+                    JSON.stringify(((result && result.items) || []).map(mapEntityWithReactions))
                 );
             })
             .catch((err) => {
@@ -1907,7 +2067,7 @@ class GamePushUnityInner {
                 );
                 this.trigger(
                     'CallFilesFetchMoreSuccess',
-                    JSON.stringify(result.items)
+                    JSON.stringify(((result && result.items) || []).map(mapEntityWithReactions))
                 );
             })
             .catch((err) => {
@@ -1921,7 +2081,7 @@ class GamePushUnityInner {
         if (channel_ID == -10) {
             this.gp.channels.openChat();
         } else {
-            this.gp.channels.openChat({ channel_ID });
+            this.gp.channels.openChat({ id: channel_ID });
         }
     }
 
@@ -1935,7 +2095,7 @@ class GamePushUnityInner {
             });
         } else {
             this.gp.channels.openChat({
-                channel_ID,
+                id: channel_ID,
                 tags: tags
                     .split(',')
                     .map((o) => o.trim())
@@ -1946,7 +2106,7 @@ class GamePushUnityInner {
 
     Channels_Open_Personal_Chat(player_ID, tags) {
         this.gp.channels.openPersonalChat({
-            player_ID,
+            playerId: player_ID,
             tags: tags
                 .split(',')
                 .map((o) => o.trim())
@@ -1956,7 +2116,7 @@ class GamePushUnityInner {
 
     Channels_Open_Feed(player_ID, tags) {
         this.gp.channels.openFeed({
-            player_ID,
+            playerId: player_ID,
             tags: tags
                 .split(',')
                 .map((o) => o.trim())
@@ -1973,7 +2133,17 @@ class GamePushUnityInner {
     }
 
     Channels_Join(channelId, password) {
-        this.gp.channels.join({ channelId, password });
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.join !== 'function') {
+            this.trigger('CallOnJoinError');
+            return;
+        }
+        Promise.resolve(channels.join({ channelId, password }))
+            .then(() => this.trigger('CallOnJoinSuccess'))
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnJoinError');
+            });
     }
 
     Channels_CancelJoin(channelId) {
@@ -1981,7 +2151,17 @@ class GamePushUnityInner {
     }
 
     Channels_Leave(channelId) {
-        this.gp.channels.leave({ channelId });
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.leave !== 'function') {
+            this.trigger('CallOnLeaveError');
+            return;
+        }
+        Promise.resolve(channels.leave({ channelId }))
+            .then(() => this.trigger('CallOnLeaveSuccess'))
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnLeaveError');
+            });
     }
 
     Channels_Kick(channelId, playerId) {
@@ -2273,27 +2453,101 @@ class GamePushUnityInner {
     }
 
     Channels_FetchChannel(channelId) {
-        this.gp.channels.fetchChannel({ channelId });
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.fetchChannel !== 'function') {
+            this.trigger('CallOnFetchChannelError');
+            return;
+        }
+        Promise.resolve(channels.fetchChannel({ channelId }))
+            .then((channel) => this.trigger(
+                'CallOnFetchChannel',
+                JSON.stringify(mapChannel(channel))
+            ))
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnFetchChannelError');
+            });
     }
 
     Channels_CreateChannel(filter) {
-        const query = JSON.parse(filter);
-        this.gp.channels.createChannel({ ...query, private: query.ch_private });
+        const query = parseJsonPayload(filter, {});
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.createChannel !== 'function') {
+            this.trigger('CallOnCreateChannelError');
+            return;
+        }
+        Promise.resolve(channels.createChannel({ ...query, private: query.ch_private }))
+            .then((channel) => {
+                const mapped = mapChannel(channel);
+                if (!mapped || Number(mapped.id || 0) <= 0) {
+                    throw new Error('createChannel returned an invalid channel id');
+                }
+                console.info('[GamePush Unity] createChannel id=' + mapped.id + ' source=js');
+                this.trigger('CallOnCreateChannel', JSON.stringify(mapped));
+            })
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnCreateChannelError');
+            });
     }
 
     Channels_UpdateChannel(filter) {
-        const query = JSON.parse(filter);
-        this.gp.channels.updateChannel({ ...query, private: query.ch_private });
+        const query = parseJsonPayload(filter, {});
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.updateChannel !== 'function') {
+            this.trigger('CallOnUpdateChannelError');
+            return;
+        }
+        Promise.resolve(channels.updateChannel({ ...query, private: query.ch_private }))
+            .then((channel) => this.trigger(
+                'CallOnUpdateChannel',
+                JSON.stringify(mapChannel(channel))
+            ))
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnUpdateChannelError');
+            });
     }
 
     Channels_FetchChannels(filter) {
-        const query = JSON.parse(filter);
-        this.gp.channels.fetchChannels(query);
+        const query = sanitizeFetchChannelsQuery(parseJsonPayload(filter, {}));
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.fetchChannels !== 'function') {
+            this.trigger('CallOnFetchChannelsError');
+            return;
+        }
+        Promise.resolve(channels.fetchChannels(query))
+            .then((result) => {
+                const page = channelPage(result);
+                this.trigger('CallOnFetchChannelsCanLoadMore', page.canLoadMore);
+                this.trigger('CallOnFetchChannels', JSON.stringify(page.items));
+            })
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnFetchChannelsError');
+            });
     }
 
     Channels_FetchMoreChannels(filter) {
-        const query = JSON.parse(filter);
-        this.gp.channels.fetchMoreChannels(query);
+        const query = sanitizeFetchChannelsQuery(parseJsonPayload(filter, {}));
+        const channels = this.gp.channels;
+        if (!channels || typeof channels.fetchMoreChannels !== 'function') {
+            this.trigger('CallOnFetchMoreChannelsError');
+            return;
+        }
+        Promise.resolve(channels.fetchMoreChannels(query))
+            .then((result) => {
+                const page = channelPage(result);
+                this.trigger(
+                    'CallOnFetchMoreChannelsCanLoadMore',
+                    page.canLoadMore
+                );
+                this.trigger('CallOnFetchMoreChannels', JSON.stringify(page.items));
+            })
+            .catch((err) => {
+                console.warn(err);
+                this.trigger('CallOnFetchMoreChannelsError');
+            });
     }
 
     Channels_FetchMembers(filter) {
@@ -2308,139 +2562,77 @@ class GamePushUnityInner {
     // Channels
 
     // Multiplayer
-    Multiplayer_Connect(query) {
-        ignoreMultiplayerPromise(
-            this.gp.multiplayer.connect(parseMultiplayerJson(query, {}))
-        );
-    }
-
-    Multiplayer_Disconnect(query) {
-        ignoreMultiplayerPromise(
-            this.gp.multiplayer.disconnect(parseMultiplayerJson(query, {}))
-        );
-    }
-
-    Multiplayer_DefinePlayerSchema(schema) {
-        this.gp.multiplayer.definePlayerSchema(parseMultiplayerJson(schema, {}));
-    }
-
-    Multiplayer_DefineGlobalSchema(schema) {
-        this.gp.multiplayer.defineGlobalSchema(parseMultiplayerJson(schema, {}));
-    }
-
-    Multiplayer_SetPlayerInitializer() {
-        this.gp.multiplayer.setPlayerInitializer(async (playerId, player) => {
-            const requestId = ++this.multiplayerPlayerInitializerRequestId;
-
-            return await new Promise((resolve) => {
-                const timeoutId = window.setTimeout(() => {
-                    this.multiplayerPlayerInitializerResolvers.delete(requestId);
-                    resolve(null);
-                }, this.multiplayerPlayerInitializerTimeoutMs);
-
-                this.multiplayerPlayerInitializerResolvers.set(requestId, {
-                    resolve,
-                    timeoutId
-                });
-
+    Multiplayer_Connect(query, generation) {
+        const input = parseMultiplayerJson(query, {});
+        const service = this.gp && this.gp._services && this.gp._services.multiplayerService;
+        const fetchInfo = service && typeof service.connectPlayer === 'function'
+            ? service.connectPlayer(input)
+            : Promise.reject(new Error('multiplayerService.connectPlayer missing'));
+        Promise.resolve(fetchInfo)
+            .then((info) => {
+                const payload = info && typeof info === 'object' ? Object.assign({}, info) : {};
+                payload.playerId = this.gp.player && this.gp.player.id;
+                payload.playerName = this.gp.player && this.gp.player.name;
                 this.trigger(
-                    'CallOnMultiplayerPlayerInitializerRequest',
-                    JSON.stringify({
-                        requestId,
-                        playerId,
-                        player
-                    })
+                    'CallOnMultiplayerConnectCredentials',
+                    wrapMultiplayerOperation(generation, payload)
                 );
-            });
-        });
+            })
+            .catch((error) => this.trigger(
+                'CallOnMultiplayerConnectError',
+                wrapMultiplayerOperation(generation, serializeMultiplayerError(error))
+            ));
     }
 
-    Multiplayer_ClearPlayerInitializer() {
-        this.clearMultiplayerPlayerInitializerResolvers();
-        this.gp.multiplayer.setPlayerInitializer(null);
+    Multiplayer_Disconnect(query, generation) {
+        const input = parseMultiplayerJson(query, {});
+        const service = this.gp && this.gp._services && this.gp._services.multiplayerService;
+        const run = service && typeof service.disconnectPlayer === 'function'
+            ? service.disconnectPlayer(input)
+            : Promise.resolve(true);
+        Promise.resolve(run)
+            .then((result) => this.trigger(
+                'CallOnMultiplayerDisconnect',
+                wrapMultiplayerOperation(generation, result)
+            ))
+            .catch((error) => this.trigger(
+                'CallOnMultiplayerDisconnectError',
+                wrapMultiplayerOperation(generation, serializeMultiplayerError(error))
+            ));
     }
 
-    Multiplayer_ResolvePlayerInitializer(requestId, state) {
-        const resolver =
-            this.multiplayerPlayerInitializerResolvers.get(requestId) || null;
-
-        if (!resolver) {
-            return;
-        }
-
-        this.multiplayerPlayerInitializerResolvers.delete(requestId);
-        window.clearTimeout(resolver.timeoutId);
-        resolver.resolve(parseMultiplayerJson(state, null));
-    }
-
+    Multiplayer_DefinePlayerSchema() {}
+    Multiplayer_DefineGlobalSchema() {}
+    Multiplayer_SetPlayerInitializer() {}
+    Multiplayer_ClearPlayerInitializer() {}
+    Multiplayer_ResolvePlayerInitializer() {}
     clearMultiplayerPlayerInitializerResolvers() {
         if (!this.multiplayerPlayerInitializerResolvers) {
             return;
         }
-
-        this.multiplayerPlayerInitializerResolvers.forEach((resolver) => {
-            window.clearTimeout(resolver.timeoutId);
-            resolver.resolve(null);
-        });
         this.multiplayerPlayerInitializerResolvers.clear();
     }
-
-    Multiplayer_SetPlayerState(state) {
-        this.gp.multiplayer.setPlayerState(parseMultiplayerJson(state, {}));
-    }
-
-    Multiplayer_SetGlobalState(state) {
-        this.gp.multiplayer.setGlobalState(parseMultiplayerJson(state, {}));
-    }
-
-    Multiplayer_SetMode(mode) {
-        this.gp.multiplayer.setMode(mode);
-    }
-
-    Multiplayer_SendMessage(eventName, data, options) {
-        const parsedData = parseMultiplayerJson(data, null);
-        const parsedOptions = normalizeMultiplayerSendOptions(
-            parseMultiplayerJson(options, undefined)
-        );
-
-        if (typeof parsedOptions === 'undefined') {
-            this.gp.multiplayer.sendMessage(eventName, parsedData);
-            return;
-        }
-
-        this.gp.multiplayer.sendMessage(eventName, parsedData, parsedOptions);
-    }
-
-    Multiplayer_TickRate() {
-        return this.gp.multiplayer.tickRate;
-    }
-
-    Multiplayer_IsConnected() {
-        return this.toUnity(this.gp.multiplayer.isConnected);
-    }
-
-    Multiplayer_IsHost() {
-        return this.toUnity(this.gp.multiplayer.isHost);
-    }
-
-    Multiplayer_ConnectedPlayers() {
-        return this.toUnity(this.gp.multiplayer.connectedPlayers);
-    }
-
-    Multiplayer_NetworkStats() {
-        return this.toUnity(this.gp.multiplayer.networkStats);
-    }
-
-    Multiplayer_MyState() {
-        return this.toUnity(this.gp.multiplayer.myState);
-    }
-
-    Multiplayer_PlayersState() {
-        return this.toUnity(mapMultiplayerToObject(this.gp.multiplayer.playersState));
-    }
-
-    Multiplayer_GlobalState() {
-        return this.toUnity(this.gp.multiplayer.globalState);
+    Multiplayer_SetPlayerState() {}
+    Multiplayer_SetGlobalState() {}
+    Multiplayer_SetMode() {}
+    Multiplayer_SendMessage() {}
+    Multiplayer_TickRate() { return 0; }
+    Multiplayer_IsConnected() { return this.toUnity(false); }
+    Multiplayer_IsHost() { return this.toUnity(false); }
+    Multiplayer_ConnectedPlayers() { return this.toUnity([]); }
+    Multiplayer_NetworkStats() { return this.toUnity({ ping: 0, bufferSize: 0, bufferDelay: 0 }); }
+    Multiplayer_MyState() { return this.toUnity({}); }
+    Multiplayer_PlayersState() { return this.toUnity([]); }
+    Multiplayer_GlobalState() { return this.toUnity({}); }
+    Multiplayer_RuntimeCapabilities() {
+        return this.toUnity({
+            connect: true,
+            disconnect: true,
+            setPlayerState: true,
+            setGlobalState: true,
+            sendMessage: true,
+            hostMigrationEvents: true
+        });
     }
     // Multiplayer
 
@@ -2773,7 +2965,7 @@ class GamePushUnityInner {
                 this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
                 this.trigger(
                     'CallImagesFetchSuccess',
-                    JSON.stringify(result.items)
+                    JSON.stringify(((result && result.items) || []).map(mapEntityWithReactions))
                 );
             })
             .catch((err) => {
@@ -2789,7 +2981,7 @@ class GamePushUnityInner {
                 this.trigger('CallImagesFetchCanLoadMore', result.canLoadMore);
                 this.trigger(
                     'CallImagesFetchSuccess',
-                    JSON.stringify(result.items)
+                    JSON.stringify(((result && result.items) || []).map(mapEntityWithReactions))
                 );
             })
             .catch((err) => {
@@ -2946,34 +3138,240 @@ class GamePushUnityInner {
     }
     //Storage
     
+    // Feedbacks
+    FeedbacksSend(payload) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksSendError', 'not_supported');
+            return;
+        }
+
+        const data = parseJsonPayload(payload, {});
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .send({
+                    type: data.type,
+                    text: data.text,
+                    files: data.files || []
+                })
+                .then((feedback) => {
+                    this.trigger('CallFeedbacksSend', JSON.stringify(mapFeedback(feedback)));
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksSendError', errorToString(error));
+                })
+        );
+    }
+
+    FeedbacksOpen(type, status) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksOpenListError', 'not_supported');
+            return;
+        }
+
+        const query = {};
+        if (type) query.type = type;
+        if (status) query.status = status;
+
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .open(query)
+                .then(() => {
+                    this.trigger('CallFeedbacksOpenList');
+                    this.trigger('CallFeedbacksCloseList');
+                    focusGame();
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksOpenListError', errorToString(error));
+                    focusGame();
+                })
+        );
+    }
+
+    FeedbacksOpenFeedback(feedbackId) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksOpenFeedbackError', 'not_supported');
+            return;
+        }
+
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .openFeedback({ feedbackId })
+                .then(() => {
+                    this.trigger('CallFeedbacksOpenFeedback');
+                    this.trigger('CallFeedbacksCloseFeedback');
+                    focusGame();
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksOpenFeedbackError', errorToString(error));
+                    focusGame();
+                })
+        );
+    }
+
+    FeedbacksFetch(payload) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksFetchError', 'not_supported');
+            return;
+        }
+
+        const filter = parseJsonPayload(payload, {});
+        const query = { limit: Number(filter.limit || 20) };
+        if (filter.type) query.type = filter.type;
+        if (filter.status) query.status = filter.status;
+
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .fetch(query)
+                .then((result) => {
+                    this.trigger(
+                        'CallFeedbacksFetchSuccess',
+                        JSON.stringify({
+                            items: ((result && result.items) || []).map(mapFeedback),
+                            canLoadMore: !!(result && result.canLoadMore)
+                        })
+                    );
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksFetchError', errorToString(error));
+                })
+        );
+    }
+
+    FeedbacksFetchMore(payload) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksFetchMoreError', 'not_supported');
+            return;
+        }
+
+        const filter = parseJsonPayload(payload, {});
+        const query = { limit: Number(filter.limit || 20) };
+        if (filter.type) query.type = filter.type;
+        if (filter.status) query.status = filter.status;
+
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .fetchMore(query)
+                .then((result) => {
+                    this.trigger(
+                        'CallFeedbacksFetchMoreSuccess',
+                        JSON.stringify({
+                            items: ((result && result.items) || []).map(mapFeedback),
+                            canLoadMore: !!(result && result.canLoadMore)
+                        })
+                    );
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksFetchMoreError', errorToString(error));
+                })
+        );
+    }
+
+    FeedbacksSendMessage(payload) {
+        if (!this.gp.feedbacks) {
+            this.trigger('CallFeedbacksSendMessageError', 'not_supported');
+            return;
+        }
+
+        const data = parseJsonPayload(payload, {});
+        ignoreExpectedPromise(
+            this.gp.feedbacks
+                .sendMessage({
+                    feedbackId: data.feedbackId,
+                    text: data.text,
+                    files: data.files || []
+                })
+                .then((message) => {
+                    this.trigger(
+                        'CallFeedbacksSendMessage',
+                        JSON.stringify(mapFeedbackMessage(message))
+                    );
+                })
+                .catch((error) => {
+                    this.trigger('CallFeedbacksSendMessageError', errorToString(error));
+                })
+        );
+    }
+    // Feedbacks
+
+    // Reactions
+    ReactionsSet(entityType, entityId, reactionType) {
+        if (!this.gp.reactions) {
+            this.trigger('CallReactionsSetError', 'not_supported');
+            return;
+        }
+
+        ignoreExpectedPromise(
+            this.gp.reactions
+                .set({ entityType, entityId, reactionType })
+                .then((result) => {
+                    this.trigger(
+                        'CallReactionsSet',
+                        JSON.stringify(mapReactionResult({ entityType, entityId, reactionType, ...(result || {}) }))
+                    );
+                })
+                .catch((error) => {
+                    this.trigger('CallReactionsSetError', errorToString(error));
+                })
+        );
+    }
+
+    ReactionsUnset(entityType, entityId, reactionType) {
+        if (!this.gp.reactions) {
+            this.trigger('CallReactionsUnsetError', 'not_supported');
+            return;
+        }
+
+        ignoreExpectedPromise(
+            this.gp.reactions
+                .unset({ entityType, entityId, reactionType })
+                .then((result) => {
+                    this.trigger(
+                        'CallReactionsUnset',
+                        JSON.stringify(mapReactionResult({ entityType, entityId, reactionType, ...(result || {}) }))
+                    );
+                })
+                .catch((error) => {
+                    this.trigger('CallReactionsUnsetError', errorToString(error));
+                })
+        );
+    }
+    // Reactions
+
     //Windows
     
     WindowsShowConfirmDefault(){
         this.gp.windows.showConfirm({})
             .then((result) => {
             this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
-        });
+        })
+            .catch((error) => {
+                if (!isExpectedUserCancel(error)) {
+                    console.warn(error);
+                }
+                this.trigger('CallWindowsShowConfirm', 'false');
+            });
     }
     
-    WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors) {
-        invertButtonColors = this.getBoolean(invertButtonColors)
-        
-        console.log("Data: " 
-            + "\n " + title 
-            + "\n " + description 
-            + "\n " + textConfirm 
-            + "\n " + textCancel 
-            + "\n " + invertButtonColors);
-        
+    WindowsShowConfirm(title, description, textConfirm, textCancel, invertButtonColors, hideCancelButton) {
+        invertButtonColors = this.getBoolean(invertButtonColors);
+        hideCancelButton = this.getBoolean(hideCancelButton);
+
         this.gp.windows.showConfirm({
             title,
             description,
             textConfirm,
             textCancel,
-            invertButtonColors
+            invertButtonColors,
+            hideCancelButton
         })
             .then((result) => {
                 this.trigger('CallWindowsShowConfirm', JSON.stringify(result));
+            })
+            .catch((error) => {
+                if (!isExpectedUserCancel(error)) {
+                    console.warn(error);
+                }
+                this.trigger('CallWindowsShowConfirm', 'false');
             });
     }
     //Windows
@@ -3039,6 +3437,41 @@ function mapChannel(channel = {}) {
     };
 }
 
+function channelListItems(result) {
+    if (Array.isArray(result)) {
+        return result;
+    }
+    const items = result && result.items;
+    if (Array.isArray(items)) {
+        return items;
+    }
+    if (items && typeof items.values === 'function') {
+        return Array.from(items.values());
+    }
+    return [];
+}
+
+function channelPage(result) {
+    return {
+        items: channelListItems(result).map(mapChannel),
+        canLoadMore: !!(result && result.canLoadMore)
+    };
+}
+
+function sanitizeFetchChannelsQuery(query) {
+    query = query && typeof query === 'object' ? Object.assign({}, query) : {};
+    // Unity JsonUtility serializes unset int[] as []. GamePush treats that as
+    // "match these ids", so the list comes back empty and some SDK builds skip
+    // the fetchChannels event entirely.
+    if (!Array.isArray(query.ids) || query.ids.length === 0) {
+        delete query.ids;
+    }
+    if (query.search == null || query.search === '') {
+        delete query.search;
+    }
+    return query;
+}
+
 function mapItemWithChannel(item = {}) {
     return {
         ...item,
@@ -3099,6 +3532,80 @@ function mapMultiplayerToObject(value) {
         result[String(key)] = item;
     });
     return result;
+}
+
+function mapMultiplayerStateEntries(value) {
+    const entries = [];
+    if (value instanceof Map) {
+        value.forEach((state, playerId) => entries.push({
+            playerId: String(playerId),
+            state: JSON.stringify(state || {})
+        }));
+    } else if (value && typeof value === 'object') {
+        Object.keys(value).forEach((playerId) => entries.push({
+            playerId: String(playerId),
+            state: JSON.stringify(value[playerId] || {})
+        }));
+    }
+    entries.sort((a, b) => a.playerId.localeCompare(b.playerId));
+    return { players: entries };
+}
+
+function serializeConnectedPlayers(value) {
+    function normalize(item, key) {
+        if (!item || typeof item !== 'object') return null;
+        const rawId = item.playerId != null ? item.playerId : (item.id != null ? item.id : key);
+        const playerId = Number(rawId);
+        if (!Number.isFinite(playerId) || playerId <= 0) return null;
+        return {
+            playerId: playerId,
+            isHost: !!(item.isHost || item.host),
+            ping: Number(item.ping || 0),
+            connectionStability: Number(item.connectionStability || 0),
+            sessionDuration: Number(item.sessionDuration || 0)
+        };
+    }
+    if (!value) return [];
+    const list = [];
+    if (Array.isArray(value)) {
+        value.forEach(function (item) {
+            const player = normalize(item);
+            if (player) list.push(player);
+        });
+        return list;
+    }
+    if (value instanceof Map) {
+        value.forEach(function (item, key) {
+            const player = normalize(item, key);
+            if (player) list.push(player);
+        });
+        return list;
+    }
+    if (typeof value === 'object') {
+        Object.keys(value).forEach(function (key) {
+            const player = normalize(value[key], key);
+            if (player) list.push(player);
+        });
+    }
+    return list;
+}
+
+function normalizeMultiplayerEvent(event) {
+    event = event || {};
+    return {
+        eventName: event.eventName || '',
+        senderId: String(typeof event.senderId === 'undefined' ? '' : event.senderId),
+        data: JSON.stringify(typeof event.data === 'undefined' ? null : event.data),
+        timestamp: Number(event.timestamp || 0)
+    };
+}
+
+function wrapMultiplayerOperation(generation, value) {
+    return JSON.stringify({
+        wrapped: true,
+        generation: Number(generation || 0),
+        data: JSON.stringify(typeof value === 'undefined' ? null : value)
+    });
 }
 
 function normalizeMultiplayerSendOptions(options) {

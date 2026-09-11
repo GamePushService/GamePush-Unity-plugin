@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
+using GamePush.Native;
 
 namespace GamePush
 {
@@ -27,14 +28,19 @@ namespace GamePush
         private static string Hindi = "hi";
         private static string Indonesian = "id";
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Current_Language();
+        #endif
         public static Language Current()
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             return ConvertToEnum(GP_Current_Language());
 #else
-
+            if (GamePushHost.UseNativeCore)
+                return Application.systemLanguage == SystemLanguage.Russian ? Language.Russian : Language.English;
+            if (GP_Play2Web.TryGet("Language", out var live))
+                return ConvertToEnum(live);
             ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
             return GP_Settings.instance.GetLanguage();
 #endif
@@ -42,24 +48,30 @@ namespace GamePush
 
         public static string CurrentISO()
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             return GP_Current_Language();
 #else
-
+            if (GamePushHost.UseNativeCore)
+                return Application.systemLanguage == SystemLanguage.Russian ? "ru" : "en";
+            if (GP_Play2Web.TryGet("Language", out var live))
+                return live;
             ConsoleLog("CURRENT: " + GP_Settings.instance.GetLanguage().ToString());
             return ConvertToString(GP_Settings.instance.GetLanguage());
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_ChangeLanguage(string lang);
+        #endif
         public static void Change(Language lang, Action<Language> onLanguageChange = null)
         {
             _onChangeLanguage = onLanguageChange;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_ChangeLanguage(ConvertToString(lang));
 #else
-
+            if (GP_Play2Web.Call("ChangeLanguage", ConvertToString(lang)))
+                return;
             ConsoleLog("CHANGE: " + lang.ToString());
             OnChangeLanguage?.Invoke(lang);
             _onChangeLanguage?.Invoke(lang);
@@ -69,10 +81,11 @@ namespace GamePush
         public static void Change(string lang, Action<Language> onLanguageChange = null)
         {
             _onChangeLanguage = onLanguageChange;
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
             GP_ChangeLanguage(lang);
 #else
-
+            if (GP_Play2Web.Call("ChangeLanguage", lang))
+                return;
             ConsoleLog("CHANGE: " + lang);
             OnChangeLanguage?.Invoke(ConvertToEnum(lang));
             _onChangeLanguage?.Invoke(ConvertToEnum(lang));

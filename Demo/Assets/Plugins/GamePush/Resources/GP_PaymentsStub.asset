@@ -13,22 +13,16 @@ MonoBehaviour:
   m_Name: GP_PaymentsStub
   m_EditorClassIdentifier: 
   products:
-  - id: 123
-    tag: your_tag
-    name: Name
-    description: Desc
+  - id: 20632
+    tag: p_demo
+    name: Demo
+    description: Test Purchase
     icon: 
     iconSmall: 
     price: 100
     currency: RUB
-    currencySymbol: ~
+    currencySymbol: руб.
     isSubscription: 0
-    period: 0
-    trialPeriod: 0
-  purchases:
-  - productId: 123
-    payload: 
-    createdAt: 
-    expiredAt: 
-    gift: 0
-    subscribed: 0
+    period: 30
+    trialPeriod: 3
+  purchases: []

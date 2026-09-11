@@ -21,8 +21,10 @@ namespace GamePush
         private void CallOnRewardsAcceptError(string error) { OnRewardsAcceptError?.Invoke(error); }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Rewards_Give(string idOrTag, bool lazy);
+        #endif
         public static void Give(string idOrTag, bool lazy = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -33,8 +35,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Rewards_Accept(string idOrTag);
+        #endif
         public static void Accept(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +49,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_List();
+        #endif
         public static RewardData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +66,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_GivenList();
+        #endif
         public static PlayerReward[] GivenList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +83,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_GetReward(string idOrTag);
+        #endif
         public static AllRewardData GetReward(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -90,8 +100,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_Has(string idOrTag);
+        #endif
         public static bool Has(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -104,8 +116,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_HasAccepted(string idOrTag);
+        #endif
         public static bool HasAccepted(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -118,8 +132,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Rewards_HasUnaccepted(string idOrTag);
+        #endif
         public static bool HasUnaccepted(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

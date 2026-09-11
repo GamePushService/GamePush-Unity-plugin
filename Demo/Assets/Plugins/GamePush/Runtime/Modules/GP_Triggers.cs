@@ -18,8 +18,10 @@ namespace GamePush
         private void CallOnTriggerClaim(string trigger) { OnTriggerClaim?.Invoke(JsonUtility.FromJson<TriggerData>(trigger)); }
         private void CallOnTriggerClaimError(string error) { OnTriggerClaimError?.Invoke(error); }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Triggers_Claim(string idOrTag);
+        #endif
         public static void Claim(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -30,8 +32,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Triggers_List();
+        #endif
         public static TriggerData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +49,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Triggers_ActivatedList();
+        #endif
         public static TriggerActive[] ActivatedList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -60,8 +66,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Triggers_GetTrigger(string idOrTag);
+        #endif
         public static TriggerAllData GetTrigger(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -75,8 +83,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Triggers_IsActivated(string idOrTag);
+        #endif
         public static bool IsActivated(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -87,8 +97,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Triggers_IsClaimed(string idOrTag);
+        #endif
         public static bool IsClaimed(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

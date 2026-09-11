@@ -26,8 +26,10 @@ namespace GamePush
         private static event Action<string> _onUniqueValueDeleteError;
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_UniquesRegister(string tag, string value);
+        #endif
         public static void Register(
             string tag,
             string value,
@@ -44,8 +46,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_UniquesGet(string tag);
+        #endif
         public static string Get(string tag)
         {
 
@@ -59,8 +63,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_UniquesList();
+        #endif
         public static UniquesData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -72,8 +78,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_UniquesCheck(string tag, string value);
+        #endif
         public static void Check(
             string tag,
             string value,
@@ -90,8 +98,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_UniquesDelete(string tag);
+        #endif
         public static void Delete(
             string tag,
             Action<string> onUniqueValueDelete = null,

@@ -19,6 +19,8 @@ namespace GamePush
         [SerializeField] public bool IsExternalLinksAllowed = true;
         [SerializeField] public bool IsSecretCodeAuthAvailable = true;
         [SerializeField] public bool IsSupportsCloudSaves = true;
+        [SerializeField] public bool IsBackendAllowed = true;
+        [SerializeField] public bool IsChatAvailable = true;
         [Header("Player")]
         [SerializeField] public bool IsLoggedIn = true;
         [SerializeField] public bool HasAnyCredentials = true;

@@ -45,12 +45,18 @@ namespace GamePush
         private static extern void GP_Sounds_MuteSFX();
         [DllImport("__Internal")]
         private static extern void GP_Sounds_MuteMusic();
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Sounds_Unmute();
+        #endif
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Sounds_UnmuteSFX();
+        #endif
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Sounds_UnmuteMusic();
+        #endif
 #endif
         #endregion
 
