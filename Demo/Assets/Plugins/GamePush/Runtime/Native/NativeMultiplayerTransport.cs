@@ -17,13 +17,12 @@ namespace GamePush.Native
         NativeSubscription _hostSub;
         NativeSubscription _stateSub;
         bool _live;
+        bool _socketReady;
+        bool _everReady;
         int _loggedWire;
 
-        // The initial Connect() waits for both subscriptions. During a reconnect the
-        // WebGL bridge may not repeat the subscribe acknowledgement even though the
-        // socket is usable; gating the whole multiplayer loop on that callback can leave
-        // a creator without heartbeat/host election forever.
-        public bool IsLive => _live && _centrifuge != null;
+        public bool IsLive => _live && _socketReady && _centrifuge != null &&
+                              _hostSub?.IsSubscribed == true && _stateSub?.IsSubscribed == true;
 
         public async Task Connect(string credentialsJson, CancellationToken cancellationToken)
         {
@@ -59,17 +58,29 @@ namespace GamePush.Native
                 _centrifuge.Connected += () =>
                 {
                     GP_Logger.Info("Centrifugo", "connected");
+                    _socketReady = true;
                     connected.TrySetResult(true);
+                    UpdateReadiness();
                 };
                 _centrifuge.Reconnecting += () =>
                 {
                     _live = false;
+                    _socketReady = false;
                     _hostSub?.MarkUnsubscribed();
                     _stateSub?.MarkUnsubscribed();
-                    NativeMainThread.Run(() => Reconnecting?.Invoke());
+                    Reconnecting?.Invoke();
                 };
-                _centrifuge.Reconnected += () => NativeMainThread.Run(() => Reconnected?.Invoke());
-                _centrifuge.Disconnected += reason => NativeMainThread.Run(() => Disconnected?.Invoke(reason));
+                _centrifuge.Reconnected += () =>
+                {
+                    _socketReady = true;
+                    UpdateReadiness();
+                };
+                _centrifuge.Disconnected += reason =>
+                {
+                    _live = false;
+                    _socketReady = false;
+                    Disconnected?.Invoke(reason);
+                };
                 _hostSub = _centrifuge.Subscribe(hostChannel, hostToken);
                 _stateSub = _centrifuge.Subscribe(stateChannel, stateToken);
                 _hostSub.Publication += OnBytes;
@@ -78,11 +89,13 @@ namespace GamePush.Native
                 {
                     GP_Logger.Info("Centrifugo", "subscribed host=" + hostChannel);
                     hostReady.TrySetResult(true);
+                    UpdateReadiness();
                 };
                 _stateSub.Subscribed += () =>
                 {
                     GP_Logger.Info("Centrifugo", "subscribed state=" + stateChannel);
                     stateReady.TrySetResult(true);
+                    UpdateReadiness();
                 };
                 _centrifuge.Connect(endpoint, token);
                 _hostSub.Subscribe();
@@ -103,11 +116,19 @@ namespace GamePush.Native
                     throw new TimeoutException("Centrifugo connection timeout:" + pending);
                 }
                 await ready;
-                _live = true;
+                UpdateReadiness();
             }
         }
 
-        public void MarkLive() => _live = true;
+        void UpdateReadiness()
+        {
+            if (_live || !_socketReady || _hostSub?.IsSubscribed != true ||
+                _stateSub?.IsSubscribed != true) return;
+            _live = true;
+            bool reconnect = _everReady;
+            _everReady = true;
+            if (reconnect) Reconnected?.Invoke();
+        }
 
         public void Send(int type, string payloadJson, int senderId, int seq = -1) =>
             Publish(_stateSub, type, payloadJson, senderId, seq);
@@ -117,8 +138,17 @@ namespace GamePush.Native
 
         void Publish(NativeSubscription sub, int type, string payloadJson, int senderId, int seq)
         {
-            if (sub == null || !_live)
+            if (sub == null || !IsLive || !sub.IsSubscribed)
+            {
+                if (type == NativeMultiplayerWire.StateUpdate || type == NativeMultiplayerWire.StateDelta ||
+                    type == NativeMultiplayerWire.GlobalStateUpdate || type == NativeMultiplayerWire.GlobalStateDelta)
+                {
+                    GP_Logger.Warn("Centrifugo", "publish skipped: transport not live t=" + type);
+                    GP_Multiplayer.NativeEmit("error:sendState",
+                        new GP_Data("{\"message\":\"transport not ready\",\"t\":" + type + "}"));
+                }
                 return;
+            }
             var json = "{\"t\":" + type +
                        ",\"s\":" + senderId +
                        ",\"ts\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() +
@@ -144,7 +174,7 @@ namespace GamePush.Native
 
         void OnBytes(byte[] data)
         {
-            if (data == null || data.Length == 0)
+            if (!IsLive || data == null || data.Length == 0)
                 return;
             var text = Encoding.UTF8.GetString(data);
             var type = GpJson.GetInt(text, "t");
@@ -154,6 +184,15 @@ namespace GamePush.Native
             var timestamp = GpJson.GetLong(text, "ts");
             if (timestamp <= 0)
                 timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            else
+            {
+                var nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                if (timestamp > nowMs + 60000L)
+                {
+                    GP_Logger.Warn("Wire", "future timestamp clamped type=" + type);
+                    timestamp = nowMs;
+                }
+            }
             NoteWire(type, sender);
             Message?.Invoke(new NativeMultiplayerWireMessage
             {

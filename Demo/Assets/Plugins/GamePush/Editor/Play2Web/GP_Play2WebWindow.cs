@@ -99,8 +99,17 @@ namespace GamePushEditor.Play2Web
 
             DrawPlayTestButtons();
 
-            if (GUILayout.Button("Open GamePush settings"))
-                EditorApplication.ExecuteMenuItem("Tools/GamePush");
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Open GamePush settings"))
+                    EditorApplication.ExecuteMenuItem("Tools/GamePush");
+
+                if (GUILayout.Button("Clear log", GUILayout.Width(90)))
+                {
+                    ClearLog();
+                    Repaint();
+                }
+            }
 
             GUILayout.Space(8);
             EditorGUILayout.LabelField("Log", EditorStyles.boldLabel);

@@ -22,16 +22,27 @@ namespace GamePush.Native
         static bool _connecting;
         static int _channelId;
         static float _nextTick;
+        static float _lastTick;
         static string _pendingPeerState;
         static bool _pendingPeerStateFlushed = true;
         static bool _peerActiveLastTick;
         static float _lastSnapshotResponseAt;
+        static float _nextSnapshotRequestAt;
+        static bool _authorityReady;
+        static int _pendingOldHost;
+        static int _authorityGeneration;
+        static readonly HashSet<int> InitializingPlayers = new HashSet<int>();
         static string _pendingPlayerSchema = "{}";
         static string _pendingGlobalSchema = "{}";
         static string _pendingMode = "smooth";
 
         public static bool IsConnected => _connected;
         public static bool IsHost => _session != null && _session.IsHost;
+        public static bool IsReady => _connected && _authorityReady && _transport?.IsLive == true &&
+                                      _session != null && _session.HostId > 0;
+        public static int HostId => _session?.HostId ?? 0;
+        public static string AuthoritativeGlobalStateJson() =>
+            _synchronizer?.AuthoritativeGlobalState ?? "{}";
         public static int TickRate =>
             _synchronizer != null
                 ? _synchronizer.TickRate
@@ -127,7 +138,7 @@ namespace GamePush.Native
             _transport.Message += HandleWire;
             _synchronizer.SnapshotRequest += () =>
             {
-                if (_connected && _session != null && !_session.IsHost)
+                if (_connected && _session != null && !_session.IsHost && _session.HostId > 0)
                     _transport.SendToHost(NativeMultiplayerWire.SnapshotRequest, "{}", NativePlayer.Id);
             };
             _synchronizer.PeerStateChanged += (playerId, state) =>
@@ -159,33 +170,17 @@ namespace GamePush.Native
                 if (_session != null && _session.IsHost)
                     _stateManager.SendFullSnapshot();
             };
-            _session.HostMigrated += (oldHost, newHost) =>
-                GP_Multiplayer.NativeEmit("hostMigrated",
-                    new GP_Data("{\"oldHost\":" + oldHost + ",\"newHost\":" + newHost + "}"));
-            _session.BecameHost += () =>
-            {
-                _stateManager.ResetSendState();
-                _stateManager.StartSending();
-                InitMissingPlayers();
-                GP_Multiplayer.NativeEmit("becameHost");
-            };
-            _session.BecamePeer += () =>
-            {
-                _stateManager.StopSending();
-                _stateManager.ResetSendState();
-                GP_Multiplayer.NativeEmit("becamePeer");
-            };
+            _session.HostChanged += HandleHostChanged;
             _session.CustomEvent += EmitCustom;
             _session.PageUnfrozen += frozenMs =>
             {
                 GP_Logger.Info("Multiplayer", "Resyncing state after " +
                                frozenMs.ToString("0", CultureInfo.InvariantCulture) + "ms freeze");
-                if (_session != null && _session.IsHost)
+                if (IsReady && _session.IsHost)
                 {
-                    _stateManager.ResetSendState();
                     _stateManager.SendFullSnapshot();
                 }
-                else if (!string.IsNullOrEmpty(_synchronizer.MyState) && _synchronizer.MyState != "{}")
+                else if (IsReady && !string.IsNullOrEmpty(_synchronizer.MyState) && _synchronizer.MyState != "{}")
                 {
                     _pendingPeerState = _synchronizer.MyState;
                     _pendingPeerStateFlushed = false;
@@ -204,14 +199,70 @@ namespace GamePush.Native
             };
         }
 
+        static void HandleHostChanged(int oldHost, int newHost)
+        {
+            _authorityGeneration++;
+            InitializingPlayers.Clear();
+            _authorityReady = false;
+            _pendingOldHost = oldHost;
+            _stateManager.StopSending();
+            _stateManager.ResetSendState();
+            _synchronizer.ClearReceiveState();
+            _pendingPeerState = null;
+            _pendingPeerStateFlushed = true;
+            _peerActiveLastTick = false;
+            _nextSnapshotRequestAt = 0f;
+            _lastSnapshotResponseAt = float.NegativeInfinity;
+            GP_Multiplayer.NativeEmit("awaitingHost");
+            if (newHost <= 0) return;
+            if (_session.IsHost)
+            {
+                _authorityReady = true;
+                _stateManager.StartSending();
+                EmitAuthorityReady();
+                InitMissingPlayers();
+                _stateManager.SendFullSnapshot();
+            }
+            else RequestHostSnapshot();
+        }
+
+        static void RequestHostSnapshot()
+        {
+            if (!_connected || _transport?.IsLive != true || _session == null ||
+                _session.IsHost || _session.HostId <= 0 || Time.realtimeSinceStartup < _nextSnapshotRequestAt)
+                return;
+            _nextSnapshotRequestAt = Time.realtimeSinceStartup + 1f;
+            _transport.SendToHost(NativeMultiplayerWire.SnapshotRequest, "{}", NativePlayer.Id);
+        }
+
+        static void CompletePeerSynchronization()
+        {
+            if (_authorityReady || _transport?.IsLive != true || _session.HostId <= 0 ||
+                _session.IsHost || !_synchronizer.HasHostSnapshot) return;
+            _authorityReady = true;
+            EmitAuthorityReady();
+            // A new host needs a complete current state, not a delta addressed to its predecessor.
+            _pendingPeerState = _synchronizer.MyState;
+            _pendingPeerStateFlushed = false;
+        }
+
+        static void EmitAuthorityReady()
+        {
+            if (_pendingOldHost > 0 && _pendingOldHost != _session.HostId)
+                GP_Multiplayer.NativeEmit("hostMigrated", new GP_Data(
+                    "{\"oldHost\":" + _pendingOldHost + ",\"newHost\":" + _session.HostId + "}"));
+            GP_Multiplayer.NativeEmit(_session.IsHost ? "becameHost" : "becamePeer");
+            _pendingOldHost = 0;
+        }
+
         static MultiplayerConnectResultData FinishConnect()
         {
             _nextTick = 0;
+            _lastTick = Time.realtimeSinceStartup;
             _pendingPeerState = null;
             _pendingPeerStateFlushed = true;
             _peerActiveLastTick = false;
             _lastSnapshotResponseAt = 0f;
-            _synchronizer.SetPlayerState(NativePlayer.Id, _synchronizer.MyState);
             _session.Start();
             EnsurePump();
             Application.runInBackground = true;
@@ -277,9 +328,9 @@ namespace GamePush.Native
             var bufferMax = fast ? 100 : 300;
             _synchronizer?.SetMode(tickRate, bufferMin, bufferMax);
             _nextTick = 0;
+            _lastTick = Time.realtimeSinceStartup;
             if (restartHost && _session != null && _session.IsHost)
             {
-                _stateManager.ResetSendState();
                 _stateManager.StartSending();
                 _stateManager.SendFullSnapshot();
             }
@@ -287,7 +338,7 @@ namespace GamePush.Native
 
         public static void SetPlayerState(string state)
         {
-            if (!_connected || _synchronizer == null)
+            if (!IsReady || _synchronizer == null)
                 return;
             var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
             incoming = GP_NativeSchema.FilterReadonly(incoming, _synchronizer.MyState, _synchronizer.PlayerSchema);
@@ -309,16 +360,16 @@ namespace GamePush.Native
 
         public static void SetGlobalState(string state)
         {
-            if (_session == null || !_session.IsHost || _synchronizer == null)
+            if (!IsReady || !_session.IsHost || _synchronizer == null)
                 return;
-            var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
-            incoming = GP_NativeSchema.FilterReadonly(incoming, _synchronizer.GlobalState, _synchronizer.GlobalSchema);
-            _synchronizer.SetGlobalState(GpJson.MergeDelta(_synchronizer.GlobalState, incoming));
+            // Like JS setGlobalState, the host replaces the complete authoritative
+            // world. Readonly filtering is for peer input, not host-owned collection IDs.
+            _synchronizer.SetGlobalState(string.IsNullOrEmpty(state) ? "{}" : state);
         }
 
         public static void SendMessage(string eventName, string data, string options)
         {
-            if (!_connected || _transport == null)
+            if (!IsReady || _transport == null)
                 return;
             var target = "all";
             var echo = false;
@@ -335,7 +386,9 @@ namespace GamePush.Native
             }
             var payload = "{\"eventName\":" + GpJson.Quote(eventName ?? "") +
                           ",\"data\":" + (string.IsNullOrEmpty(data) ? "null" : data) +
-                          ",\"target\":" + GpJson.Quote(target) + "}";
+                          ",\"target\":" + (int.TryParse(target, NumberStyles.Integer,
+                              CultureInfo.InvariantCulture, out var targetId)
+                              ? targetId.ToString(CultureInfo.InvariantCulture) : GpJson.Quote(target)) + "}";
             _transport.Send(NativeMultiplayerWire.CustomEvent, payload, NativePlayer.Id);
             if (echo || target == NativePlayer.Id.ToString(CultureInfo.InvariantCulture))
                 EmitCustom(NativePlayer.Id, eventName, data);
@@ -374,20 +427,26 @@ namespace GamePush.Native
             if (!_connected || _synchronizer == null || _session == null)
                 return;
             _session.Tick(now);
+            if (!_authorityReady) RequestHostSnapshot();
             if (!_session.IsHost)
                 _synchronizer.SampleInterpolation(now * 1000.0);
             if (now < _nextTick)
                 return;
-            var dt = 1f / Math.Max(1, TickRate);
-            _nextTick = now + dt;
+            var dt = Math.Max(0f, now - _lastTick);
+            _lastTick = now;
+            _nextTick = now + 1f / Math.Max(1, TickRate);
+            // Let gameplay capture the current pose/world before publishing this tick,
+            // especially the first full player state after authority is restored.
+            GP_Multiplayer.NativeEmitTick(dt * 1000f);
+            if (!_connected || _session == null) return;
             if (_session.IsHost)
             {
-                _synchronizer.SetPlayerState(NativePlayer.Id, _synchronizer.MyState);
+                if (_synchronizer.HasMyState)
+                    _synchronizer.SetPlayerState(NativePlayer.Id, _synchronizer.MyState);
                 _stateManager.TickHostSend();
             }
             else
                 FlushPendingPeerState();
-            GP_Multiplayer.NativeEmitTick(dt * 1000f);
         }
 
         static void FlushPendingPeerState()
@@ -397,7 +456,7 @@ namespace GamePush.Native
                 _peerActiveLastTick = false;
                 return;
             }
-            if (_session.HostId <= 0)
+            if (!IsReady)
                 return;
             if (_pendingPeerStateFlushed || _pendingPeerState == null)
             {
@@ -421,6 +480,12 @@ namespace GamePush.Native
             if (message == null || message.SenderId <= 0)
             {
                 GP_Logger.Warn("Multiplayer", "Dropped wire message with invalid senderId");
+                return;
+            }
+            if (message.Type < NativeMultiplayerWire.StateUpdate ||
+                message.Type > NativeMultiplayerWire.SnapshotRequest)
+            {
+                GP_Logger.Warn("Multiplayer", "Dropped wire message with unknown type=" + message.Type);
                 return;
             }
             _session.HandleMessage(message);
@@ -447,16 +512,13 @@ namespace GamePush.Native
                         _synchronizer.HandleHostGlobalDelta(message.Payload, message.Seq, message.Timestamp);
                     break;
             }
+            CompletePeerSynchronization();
         }
 
         static void HandleTransportReconnect()
         {
             if (!_connected)
                 return;
-            _transport?.MarkLive();
-            _stateManager?.StopSending();
-            _stateManager?.ResetSendState();
-            _synchronizer?.ClearReceiveState();
             _session?.HandleReconnect();
         }
 
@@ -477,13 +539,12 @@ namespace GamePush.Native
 
         static async Task InitMissingPlayersAsync()
         {
-            if (_session == null || _synchronizer == null || !_session.IsHost)
+            if (!IsReady || !_session.IsHost)
                 return;
+            int generation = _authorityGeneration;
             var missing = new List<KeyValuePair<int, NativeMultiplayerPlayer>>();
             foreach (var pair in _session.Players)
             {
-                if (pair.Key == NativePlayer.Id)
-                    continue;
                 if (_synchronizer.HasPlayerState(pair.Key))
                     continue;
                 missing.Add(pair);
@@ -491,12 +552,25 @@ namespace GamePush.Native
             var changed = false;
             foreach (var pair in missing)
             {
-                var state = await GP_Multiplayer.NativeInitPlayerAsync(
-                    pair.Key, NativeMultiplayerSession.ToConnected(pair.Value));
-                if (!string.IsNullOrEmpty(state) && state != "null")
+                if (generation != _authorityGeneration || !IsReady || !_session.IsHost) return;
+                if (!InitializingPlayers.Add(pair.Key)) continue;
+                try
                 {
-                    _synchronizer.SetPlayerState(pair.Key, state);
-                    changed = true;
+                    var state = await GP_Multiplayer.NativeInitPlayerAsync(
+                        pair.Key, NativeMultiplayerSession.ToConnected(pair.Value));
+                    if (generation != _authorityGeneration || !IsReady || !_session.IsHost) return;
+                    if (_session.Players.ContainsKey(pair.Key) && !_synchronizer.HasPlayerState(pair.Key) &&
+                        !string.IsNullOrEmpty(state) && state != "null")
+                    {
+                        _synchronizer.SetPlayerState(pair.Key, state);
+                        if (pair.Key == NativePlayer.Id)
+                            _synchronizer.SetMyState(state);
+                        changed = true;
+                    }
+                }
+                finally
+                {
+                    if (generation == _authorityGeneration) InitializingPlayers.Remove(pair.Key);
                 }
             }
             if (changed && _session != null && _session.IsHost)
@@ -505,6 +579,7 @@ namespace GamePush.Native
 
         static void EmitCustom(int sender, string eventName, string data)
         {
+            if (!IsReady) return;
             var json = "{\"eventName\":" + GpJson.Quote(eventName ?? "") +
                        ",\"senderId\":" + GpJson.Quote(sender.ToString(CultureInfo.InvariantCulture)) +
                        ",\"data\":" + GpJson.Quote(data ?? "null") +
@@ -515,7 +590,12 @@ namespace GamePush.Native
 
         static void Cleanup(bool emit)
         {
+            _authorityGeneration++;
+            InitializingPlayers.Clear();
             _connected = false;
+            _authorityReady = false;
+            _pendingOldHost = 0;
+            _nextSnapshotRequestAt = 0f;
             _connecting = false;
             _pendingPeerState = null;
             _pendingPeerStateFlushed = true;

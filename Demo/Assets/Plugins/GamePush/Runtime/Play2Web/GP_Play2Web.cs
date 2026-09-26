@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using GamePush.Data;
 using UnityEngine;
 
 namespace GamePush
@@ -40,7 +39,8 @@ namespace GamePush
             }
         }
 
-        public static bool Enabled => Application.isPlaying && (Requested || ProjectData.SDK_LIVE);
+        // Match the editor host: only Play Test requests a Play2Web session.
+        public static bool Enabled => Application.isPlaying && Requested;
 
         public static bool IsReady { get; private set; }
 

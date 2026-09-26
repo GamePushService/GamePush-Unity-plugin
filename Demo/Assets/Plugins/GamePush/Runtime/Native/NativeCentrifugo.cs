@@ -239,8 +239,11 @@ namespace GamePush.Native
                 NativeMainThread.Run(() => Publication?.Invoke(data));
             }, () =>
             {
-                IsSubscribed = true;
-                NativeMainThread.Run(() => Subscribed?.Invoke());
+                NativeMainThread.Run(() =>
+                {
+                    IsSubscribed = true;
+                    Subscribed?.Invoke();
+                });
             });
 #else
             var options = new CentrifugeSubscriptionOptions { Token = _token ?? "" };
@@ -252,8 +255,11 @@ namespace GamePush.Native
             };
             sub.Subscribed += (s, e) =>
             {
-                IsSubscribed = true;
-                NativeMainThread.Run(() => Subscribed?.Invoke());
+                NativeMainThread.Run(() =>
+                {
+                    IsSubscribed = true;
+                    Subscribed?.Invoke();
+                });
             };
             sub.Subscribe();
             _native = sub;
@@ -262,9 +268,14 @@ namespace GamePush.Native
 
         public void Publish(byte[] data, Action<bool> onDone = null)
         {
+            if (!IsSubscribed || data == null)
+            {
+                onDone?.Invoke(false);
+                return;
+            }
 #if UNITY_WEBGL && !UNITY_EDITOR
-            GpWebSocketBridge.Publish(_channel, data);
-            onDone?.Invoke(true);
+            bool sent = GpWebSocketBridge.Publish(_channel, data);
+            onDone?.Invoke(sent);
 #else
             if (_native == null || data == null)
             {
@@ -315,6 +326,8 @@ namespace GamePush.Native
 
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void GP_NativeWs_Publish(string channel, string base64);
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern int GP_NativeWs_IsConnected();
 
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void GP_NativeWs_Unsubscribe(string channel);
@@ -345,9 +358,11 @@ namespace GamePush.Native
             GP_NativeWs_Subscribe(channel, token);
         }
 
-        public static void Publish(string channel, byte[] data)
+        public static bool Publish(string channel, byte[] data)
         {
+            if (GP_NativeWs_IsConnected() == 0) return false;
             GP_NativeWs_Publish(channel, Convert.ToBase64String(data ?? Array.Empty<byte>()));
+            return true;
         }
 
         public static void Unsubscribe(string channel)

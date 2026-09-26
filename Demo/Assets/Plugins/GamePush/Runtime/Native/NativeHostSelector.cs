@@ -54,7 +54,7 @@ namespace GamePush.Native
                 return a.sessionDuration > b.sessionDuration;
             if (a.ping != b.ping)
                 return a.ping < b.ping;
-            return false;
+            return a.playerId < b.playerId;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace GamePush.Native
 
         public void SendFullSnapshot()
         {
-            if (!_transport.IsLive)
+            if (!_sending || !_transport.IsLive)
                 return;
             _lastSentPlayers = null;
             _lastSentGlobal = null;

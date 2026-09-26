@@ -11,8 +11,11 @@ namespace GamePush.Native
             var schema = GpJson.ParseObject(schemaJson);
             if (schema == null || schema.Count == 0)
                 return state;
-            var filtered = FilterReadonlyFields(GpJson.Parse(state), GpJson.Parse(existing), schema);
-            return GpJson.Stringify(filtered);
+            var parsed = GpJson.Parse(state);
+            if (parsed == null)
+                return string.IsNullOrEmpty(existing) ? "{}" : existing;
+            var filtered = FilterReadonlyFields(parsed, GpJson.Parse(existing), schema);
+            return GpJson.Stringify(filtered) ?? "{}";
         }
 
         public static object FilterReadonlyFields(object state, object existingState, Dictionary<string, object> schema)

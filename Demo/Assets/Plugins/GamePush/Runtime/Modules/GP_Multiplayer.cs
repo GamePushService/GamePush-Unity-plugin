@@ -35,6 +35,7 @@ namespace GamePush
         private static event UnityAction<GP_Data> _hostMigrated;
         private static event UnityAction _becameHost;
         private static event UnityAction _becamePeer;
+        private static event UnityAction _awaitingHost;
         private static event UnityAction<GP_Data> _onMessage;
         private static event UnityAction<float> _onTick;
 
@@ -376,6 +377,11 @@ namespace GamePush
             }
         }
 
+        public static bool isReady => NativeSession && NativeMultiplayer.IsReady;
+        public static int hostId => NativeSession ? NativeMultiplayer.HostId : 0;
+        public static GP_Data authoritativeGlobalState => NativeSession
+            ? CreateDataOrNull(NativeMultiplayer.AuthoritativeGlobalStateJson()) : null;
+
         public static GP_Data connectedPlayers
         {
             get
@@ -530,6 +536,9 @@ namespace GamePush
         {
             switch (eventName)
             {
+                case "awaitingHost":
+                    _awaitingHost += callback;
+                    break;
                 case "becameHost":
                     _becameHost += callback;
                     break;
@@ -543,6 +552,9 @@ namespace GamePush
         {
             switch (eventName)
             {
+                case "awaitingHost":
+                    _awaitingHost -= callback;
+                    break;
                 case "becameHost":
                     _becameHost -= callback;
                     break;
@@ -605,6 +617,10 @@ namespace GamePush
         {
             switch (eventName)
             {
+                case "awaitingHost":
+                    _liveHost = false;
+                    _awaitingHost?.Invoke();
+                    break;
                 case "becameHost":
                     _liveHost = true;
                     _becameHost?.Invoke();

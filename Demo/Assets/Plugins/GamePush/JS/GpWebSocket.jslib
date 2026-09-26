@@ -110,23 +110,29 @@ var LibraryGPNativeWs = {
     handleFrame: function (raw) {
       if (raw && typeof raw !== "string" && raw.byteLength !== undefined)
         raw = new TextDecoder().decode(raw);
-      if (typeof raw === "string" && GPNativeWs.isPing(raw, null)) {
-        GPNativeWs.handleOne(raw, {});
-        return;
+      // Centrifugo can put several newline-delimited JSON replies in one frame.
+      // Parse them independently so a bad reply does not hide later subscriptions.
+      var replies = typeof raw === "string" ? raw.replace(/^\uFEFF/, "").split("\n") : [raw];
+      for (var i = 0; i < replies.length; i++) {
+        var reply = replies[i];
+        if (typeof reply === "string") {
+          reply = reply.trim();
+          if (!reply) continue;
+        }
+        var msg;
+        try {
+          msg = typeof reply === "string" ? JSON.parse(reply) : reply;
+        } catch (e) {
+          console.warn("[GP] ws invalid JSON reply (" + reply.length + " chars): " + e.message);
+          continue;
+        }
+        if (Array.isArray(msg)) {
+          for (var j = 0; j < msg.length; j++)
+            GPNativeWs.handleOne(reply, msg[j]);
+        } else {
+          GPNativeWs.handleOne(reply, msg);
+        }
       }
-      var msg = null;
-      try {
-        msg = typeof raw === "string" ? JSON.parse(raw) : raw;
-      } catch (e) {
-        return;
-      }
-      if (Array.isArray(msg)) {
-        var i;
-        for (i = 0; i < msg.length; i++)
-          GPNativeWs.handleOne(raw, msg[i]);
-        return;
-      }
-      GPNativeWs.handleOne(raw, msg);
     },
 
     flushSubs: function () {
@@ -234,6 +240,10 @@ var LibraryGPNativeWs = {
     GPNativeWs.sendCmd({
       publish: { channel: channel, data: data }
     });
+  },
+
+  GP_NativeWs_IsConnected: function () {
+    return GPNativeWs.connected ? 1 : 0;
   },
 
   GP_NativeWs_Unsubscribe: function (channelPtr) {
