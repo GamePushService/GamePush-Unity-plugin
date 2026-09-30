@@ -412,6 +412,21 @@ namespace GamePush
 #endif
         }
         
+        /// <summary>Current SDK regional hub. Empty when unavailable before SDK initialization.</summary>
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern string GP_Player_GetLocation();
+#endif
+        public static string GetLocation()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return GP_Player_GetLocation();
+#else
+            if (GP_Play2Web.TryGet("player:location", out var location)) return location;
+            return GamePushHost.UseNativeCore ? NativePlayer.GetString("location") : string.Empty;
+#endif
+        }
+
         public static string GetString(string key)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL

@@ -1301,15 +1301,19 @@ namespace GamePush
         #endif
         public static void FetchChannels(FetchChannelsFilter filter)
         {
+            string json = JsonUtility.ToJson(filter);
+            // An empty location means no hub filter, not an empty SDK enum value.
+            if (string.IsNullOrEmpty(filter?.location))
+                json = json.Replace(",\"location\":\"\"", string.Empty);
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
-            GP_Channels_FetchChannels(JsonUtility.ToJson(filter));
+            GP_Channels_FetchChannels(json);
 #else
             if (GamePushHost.UseNativeCore)
             {
                 NativeChannels.FetchChannels(filter);
                 return;
             }
-            if (GP_Play2Web.Call("GP_Channels_FetchChannels", JsonUtility.ToJson(filter))) return;
+            if (GP_Play2Web.Call("GP_Channels_FetchChannels", json)) return;
             ConsoleLog("FETCH CHANNELS");
 #endif
         }
@@ -1320,10 +1324,13 @@ namespace GamePush
         #endif
         public static void FetchMoreChannels(FetchMoreChannelsFilter filter)
         {
+            string json = JsonUtility.ToJson(filter);
+            if (string.IsNullOrEmpty(filter?.location))
+                json = json.Replace(",\"location\":\"\"", string.Empty);
 #if !UNITY_EDITOR && UNITY_WEBGL && !GP_NATIVE_WEBGL
-            GP_Channels_FetchMoreChannels(JsonUtility.ToJson(filter));
+            GP_Channels_FetchMoreChannels(json);
 #else
-            if (GP_Play2Web.Call("GP_Channels_FetchMoreChannels", JsonUtility.ToJson(filter))) return;
+            if (GP_Play2Web.Call("GP_Channels_FetchMoreChannels", json)) return;
             //if (GP_ConsoleController.Instance.ChannelConsoleLogs)
             ConsoleLog("FETCH MORE CHANNELS");
 #endif
@@ -1819,6 +1826,8 @@ namespace GamePush
         public int[] ids;
         public string[] tags;
         public string search;
+        /// <summary>Regional hub: AUTO, RU, EU, NA or APAC. Empty searches all hubs.</summary>
+        public string location;
         public bool onlyJoined = false;
         public bool onlyOwned = false;
         public int limit = 100;
@@ -1831,6 +1840,8 @@ namespace GamePush
         public int[] ids;
         public string[] tags;
         public string search;
+        /// <summary>Regional hub: AUTO, RU, EU, NA or APAC. Empty searches all hubs.</summary>
+        public string location;
         public bool onlyJoined = false;
         public bool onlyOwned = false;
         public int limit;

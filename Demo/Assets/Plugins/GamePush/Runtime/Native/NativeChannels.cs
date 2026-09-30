@@ -26,6 +26,8 @@ namespace GamePush.Native
                     input["ids"] = filter.ids;
                 if (!string.IsNullOrEmpty(filter?.search))
                     input["search"] = filter.search;
+                if (!string.IsNullOrEmpty(filter?.location))
+                    input["location"] = filter.location;
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchChannels, input);
                 ThrowIfProblem(json);
                 var result = GpJson.GetObject(json, "result") ?? json;

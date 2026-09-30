@@ -1,5 +1,11 @@
 mergeInto(LibraryManager.library, {
 
+    GP_Player_GetLocation: function () {
+        var inner = typeof _GP === "function" ? _GP() : null;
+        var gp = inner && inner.gp ? inner.gp : (typeof window !== "undefined" ? window.GamePush : null);
+        return _ToBuff(gp && gp.player ? String(gp.player.location || "") : "");
+    },
+
     GP_UnityReady: function () {
         _UnityReady();
     },
