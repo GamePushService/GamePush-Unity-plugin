@@ -37,7 +37,7 @@ namespace GamePush.Native
             var json = await NativeCore.Client.Fetch(NativeQueries.FetchGamesCollection, input,
                 new Dictionary<string, object> { ["url"] = NativeCore.PlatformType ?? "" });
             NativeRun.ThrowIfProblem(json);
-            var result = GpJson.GetObject(json, "result");
+            var result = NativeRun.Result(json);
 
             var games = new List<Games>();
             foreach (var item in GpJson.GetObjectArray(result, "games"))

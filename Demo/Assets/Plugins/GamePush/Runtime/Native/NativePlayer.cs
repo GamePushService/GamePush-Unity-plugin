@@ -252,7 +252,7 @@ namespace GamePush.Native
         static async Task<string> FetchLoginStatusCredentials(GraphQLClient client)
         {
             var json = await client.Fetch(NativeQueries.GetPlayerLoginStatus);
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                 return "";
             return GpJson.TryGetString(result, "credentials", out var cred) ? cred ?? "" : "";
@@ -260,7 +260,7 @@ namespace GamePush.Native
 
         static void ApplyResult(string json, GraphQLClient client)
         {
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
             {
                 var msg = GpJson.TryGetString(result, "message", out var problem) ? problem : "player_problem";
@@ -430,7 +430,7 @@ namespace GamePush.Native
                 ["isFirstRequest"] = true
             }, new Dictionary<string, object> { ["withToken"] = true });
 
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "PlayerSyncConflict")
             {
                 var chosen = PickLoggedInConflictPlayer(result, credentials);
@@ -525,7 +525,7 @@ namespace GamePush.Native
 
         static bool IsSuccess(string json)
         {
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                 return false;
             return GpJson.GetBool(result, "success");

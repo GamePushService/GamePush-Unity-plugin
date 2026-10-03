@@ -15,7 +15,7 @@ namespace GamePush.Native
         public static async Task<(List<FetchProducts> products, List<FetchPlayerPurchases> purchases)> Fetch()
         {
             var json = await NativeCore.Client.Fetch(NativeQueries.FetchPlayerPurchases);
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             ThrowIfProblem(result, "fetch_products");
             var products = ParseProducts(GpJson.GetObjectArray(result, "products"));
             var purchases = ParsePurchases(GpJson.GetObjectArray(result, "playerPurchases"), products);
@@ -71,7 +71,7 @@ namespace GamePush.Native
                 input["orderStatus"] = OrderPaid;
 
             var json = await NativeCore.Client.Fetch(NativeQueries.GetPlayerPurchase, input);
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             if (IsProblem(result, out var message))
             {
                 if (IsNotFound(message))
@@ -436,7 +436,7 @@ namespace GamePush.Native
 
         static (FetchProducts product, FetchPlayerPurchases purchase) ParsePurchaseOutput(string json, string action)
         {
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = NativeRun.Result(json);
             ThrowIfProblem(result, action);
             var product = ParseProduct(GpJson.GetObject(result, "product"));
             var purchase = ParsePurchase(GpJson.GetObject(result, "purchase"),

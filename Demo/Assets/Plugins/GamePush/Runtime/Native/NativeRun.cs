@@ -38,9 +38,15 @@ namespace GamePush.Native
             Execute();
         }
 
+        /// <summary>
+        /// Returns the payload of the aliased "result" field. GraphQLClient already unwraps
+        /// single-field responses, so the payload may arrive with or without the wrapper.
+        /// </summary>
+        public static string Result(string json) => GpJson.GetObject(json, "result") ?? json;
+
         public static void ThrowIfProblem(string json)
         {
-            var result = GpJson.GetObject(json, "result") ?? json;
+            var result = Result(json);
             if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                 throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "problem");
         }

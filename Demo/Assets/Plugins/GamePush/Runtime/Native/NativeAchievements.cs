@@ -51,7 +51,7 @@ namespace GamePush.Native
             {
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchAchievementsConfig);
                 NativeRun.ThrowIfProblem(json);
-                var result = GpJson.GetObject(json, "result");
+                var result = NativeRun.Result(json);
                 Catalog.Clear();
                 foreach (var item in GpJson.GetObjectArray(result, "achievements"))
                     Catalog.Add(ParseAchievement(item));
@@ -72,7 +72,7 @@ namespace GamePush.Native
             {
                 var json = await NativeCore.Client.Fetch(NativeQueries.UnlockAchievement, Target(idOrTag, 2));
                 NativeRun.ThrowIfProblem(json);
-                var result = GpJson.GetObject(json, "result");
+                var result = NativeRun.Result(json);
                 ApplyPlayerEntry(result);
                 NativeMainThread.Run(() => GP_Achievements.NativeFireUnlock(idOrTag));
             }, error => GP_Achievements.NativeFireUnlockError(error), "achievements");
@@ -86,7 +86,7 @@ namespace GamePush.Native
                 input["progress"] = progress;
                 var json = await NativeCore.Client.Fetch(NativeQueries.SetAchievementProgress, input);
                 NativeRun.ThrowIfProblem(json);
-                ApplyPlayerEntry(GpJson.GetObject(json, "result"));
+                ApplyPlayerEntry(NativeRun.Result(json));
                 NativeMainThread.Run(() => GP_Achievements.NativeFireProgress(idOrTag));
             }, () => GP_Achievements.NativeFireProgressError(), "achievements");
         }

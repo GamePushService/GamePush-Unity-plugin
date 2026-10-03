@@ -34,7 +34,7 @@ namespace GamePush.Native
                 var input = ScopedInput(idOrTag, variant, "DESC", 10, 0, includeFields);
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchPlayerRatingScoped, input);
                 NativeRun.ThrowIfProblem(json);
-                var player = NativeLeaderboard.ParseEntry(GpJson.GetObject(GpJson.GetObject(json, "result"), "player"));
+                var player = NativeLeaderboard.ParseEntry(GpJson.GetObject(NativeRun.Result(json), "player"));
                 var position = player?.position ?? 0;
                 NativeMainThread.Run(() =>
                     GP_LeaderboardScoped.NativeFirePlayerRating(idOrTag, variant, position));

@@ -33,7 +33,7 @@ namespace GamePush.Native
                 new Dictionary<string, object> { ["type"] = string.IsNullOrEmpty(type) ? DefaultType : type },
                 new Dictionary<string, object> { ["format"] = string.IsNullOrEmpty(format) ? "TXT" : format });
             NativeRun.ThrowIfProblem(json);
-            var result = GpJson.GetObject(json, "result");
+            var result = NativeRun.Result(json);
             return GpJson.TryGetString(result, "content", out var content) ? content ?? "" : "";
         }
     }

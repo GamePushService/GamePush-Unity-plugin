@@ -75,7 +75,7 @@ namespace GamePush.Native
                 var input = TopInput(orderBy, order, 10, 0, "");
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchPlayerRating, input);
                 NativeRun.ThrowIfProblem(json);
-                var result = GpJson.GetObject(json, "result");
+                var result = NativeRun.Result(json);
                 var player = ParseEntry(GpJson.GetObject(result, "player"));
                 var position = player?.position ?? 0;
                 NativeMainThread.Run(() => GP_Leaderboard.NativeFirePlayerRating(tag, position));
@@ -131,7 +131,7 @@ namespace GamePush.Native
         internal static NativeLeaderboardResult Compose(string json, bool wantsMe, string withMe, int showNearest)
         {
             var result = new NativeLeaderboardResult();
-            var top = GpJson.GetObject(json, "result");
+            var top = NativeRun.Result(json);
             var leaderboard = GpJson.GetObject(top, "leaderboard");
             if (!string.IsNullOrEmpty(leaderboard))
                 result.name = GpJson.TryGetString(leaderboard, "name", out var name) ? name ?? "" : "";

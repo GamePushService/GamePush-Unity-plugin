@@ -31,7 +31,7 @@ namespace GamePush.Native
 
                 var json = await NativeCore.Client.Fetch(NativeQueries.CreateFeedback, input);
                 NativeRun.ThrowIfProblem(json);
-                var feedback = ParseFeedback(GpJson.GetObject(json, "result"));
+                var feedback = ParseFeedback(NativeRun.Result(json));
                 NativeMainThread.Run(() => GP_Feedbacks.NativeFireSend(feedback));
             }, error => GP_Feedbacks.NativeFireSendError(error), "feedbacks");
         }
@@ -71,7 +71,7 @@ namespace GamePush.Native
                 var json = await NativeCore.Client.Fetch(NativeQueries.FetchFeedback,
                     new Dictionary<string, object> { ["feedbackId"] = feedbackId ?? "" });
                 NativeRun.ThrowIfProblem(json);
-                var feedback = ParseFeedback(GpJson.GetObject(json, "result"));
+                var feedback = ParseFeedback(NativeRun.Result(json));
                 NativeMainThread.Run(() => onDone?.Invoke(feedback));
             }, error => onError?.Invoke(error), "feedbacks");
         }
@@ -91,7 +91,7 @@ namespace GamePush.Native
 
                 var json = await NativeCore.Client.Fetch(NativeQueries.SendFeedbackMessage, input);
                 NativeRun.ThrowIfProblem(json);
-                var message = ParseMessage(GpJson.GetObject(json, "result"));
+                var message = ParseMessage(NativeRun.Result(json));
                 NativeMainThread.Run(() =>
                 {
                     GP_Feedbacks.NativeFireSendMessage(message);
@@ -119,7 +119,7 @@ namespace GamePush.Native
 
             var json = await NativeCore.Client.Fetch(NativeQueries.FetchFeedbacks, input);
             NativeRun.ThrowIfProblem(json);
-            var result = GpJson.GetObject(json, "result");
+            var result = NativeRun.Result(json);
 
             var items = new List<FeedbackData>();
             foreach (var item in GpJson.GetObjectArray(result, "feedbacks"))

@@ -63,7 +63,7 @@ namespace GamePush.Native
                 var json = await NativeCore.Client.Fetch(NativeQueries.ConnectMultiplayer,
                     new Dictionary<string, object> { ["channelId"] = _channelId });
                 cancellationToken.ThrowIfCancellationRequested();
-                var result = GpJson.GetObject(json, "result") ?? json;
+                var result = NativeRun.Result(json);
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                     throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "connect_problem");
                 await OpenSession(result, cancellationToken);
@@ -91,7 +91,7 @@ namespace GamePush.Native
             _connecting = true;
             try
             {
-                var result = GpJson.GetObject(json, "result") ?? json;
+                var result = NativeRun.Result(json);
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                     throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "connect_problem");
                 var channelId = GpJson.GetInt(result, "channelId");

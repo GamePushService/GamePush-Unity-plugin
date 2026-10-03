@@ -71,7 +71,7 @@ namespace GamePush.Native
             {
                 var json = await NativeCore.Client.Fetch(NativeQueries.JoinChannel,
                     new Dictionary<string, object> { ["channelId"] = channelId });
-                var result = GpJson.GetObject(json, "result") ?? json;
+                var result = NativeRun.Result(json);
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                 {
                     var message = GpJson.TryGetString(result, "message", out var text) ? text : "problem";
@@ -123,7 +123,7 @@ namespace GamePush.Native
 
                 var json = await NativeCore.Client.Fetch(query, input);
                 NativeRun.ThrowIfProblem(json);
-                var raw = GpJson.GetObject(json, "result");
+                var raw = NativeRun.Result(json);
                 var message = ParseMessage(raw);
                 NativeMainThread.Run(() =>
                 {
@@ -147,7 +147,7 @@ namespace GamePush.Native
                     ["text"] = text ?? ""
                 });
                 NativeRun.ThrowIfProblem(json);
-                var raw = GpJson.GetObject(json, "result");
+                var raw = NativeRun.Result(json);
                 NativeMainThread.Run(() => GP_Channels.NativeFireEditMessage(raw));
             }, () => GP_Channels.NativeFireEditMessageError(), "channels");
         }
@@ -259,7 +259,7 @@ namespace GamePush.Native
                         ["offset"] = offset
                     });
                 NativeRun.ThrowIfProblem(json);
-                var items = GpJson.GetObject(GpJson.GetObject(json, "result"), "items") ?? "[]";
+                var items = GpJson.GetObject(NativeRun.Result(json), "items") ?? "[]";
                 NativeMainThread.Run(() => GP_Channels.NativeFireFetchChannelInvites(new GP_Data(items), more));
             }, () => GP_Channels.NativeFireFetchChannelInvitesError(more), "channels");
         }
@@ -276,7 +276,7 @@ namespace GamePush.Native
                         ["offset"] = offset
                     });
                 NativeRun.ThrowIfProblem(json);
-                var items = GpJson.GetObject(GpJson.GetObject(json, "result"), "items") ?? "[]";
+                var items = GpJson.GetObject(NativeRun.Result(json), "items") ?? "[]";
                 NativeMainThread.Run(() => GP_Channels.NativeFireFetchJoinRequests(new GP_Data(items), more));
             }, () => GP_Channels.NativeFireFetchJoinRequestsError(more), "channels");
         }
@@ -316,7 +316,7 @@ namespace GamePush.Native
 
             var json = await NativeCore.Client.Fetch(query, input);
             NativeRun.ThrowIfProblem(json);
-            var items = GpJson.GetObjectArray(GpJson.GetObject(json, "result"), "items");
+            var items = GpJson.GetObjectArray(NativeRun.Result(json), "items");
 
             var page = new NativeChatPage();
             var sb = new StringBuilder();
