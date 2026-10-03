@@ -1,0 +1,469 @@
+(function () {
+  (function blockJsCentrifugo() {
+    var re = /format=protobuf/i;
+    function dummySocket(url) {
+      var ws = {
+        binaryType: "blob",
+        bufferedAmount: 0,
+        extensions: "",
+        protocol: "",
+        readyState: 0,
+        url: String(url || ""),
+        onopen: null,
+        onerror: null,
+        onclose: null,
+        onmessage: null,
+        send: function () {},
+        close: function () {
+          if (ws.readyState === 3) return;
+          ws.readyState = 3;
+          if (typeof ws.onclose === "function")
+            ws.onclose({ code: 1000, reason: "", wasClean: true });
+        },
+        addEventListener: function (type, fn) {
+          if (type === "open") ws.onopen = fn;
+          else if (type === "error") ws.onerror = fn;
+          else if (type === "close") ws.onclose = fn;
+          else if (type === "message") ws.onmessage = fn;
+        },
+        removeEventListener: function () {},
+        dispatchEvent: function () { return false; }
+      };
+      setTimeout(function () {
+        if (ws.readyState === 3) return;
+        ws.readyState = 3;
+        if (typeof ws.onerror === "function")
+          ws.onerror({ type: "error" });
+        if (typeof ws.onclose === "function")
+          ws.onclose({ code: 1000, reason: "", wasClean: true });
+      }, 0);
+      return ws;
+    }
+    function dummyEventSource() {
+      var es = {
+        readyState: 2,
+        close: function () {},
+        addEventListener: function () {},
+        removeEventListener: function () {},
+        onerror: null
+      };
+      setTimeout(function () {
+        if (typeof es.onerror === "function")
+          es.onerror({ type: "error" });
+      }, 0);
+      return es;
+    }
+    var NativeWS = window.WebSocket;
+    if (NativeWS && !NativeWS.__gpNativeSkipPb) {
+      function WrappedWS(url, protocols) {
+        if (re.test(String(url || "")))
+          return dummySocket(url);
+        return protocols === undefined ? new NativeWS(url) : new NativeWS(url, protocols);
+      }
+      WrappedWS.prototype = NativeWS.prototype;
+      WrappedWS.CONNECTING = NativeWS.CONNECTING;
+      WrappedWS.OPEN = NativeWS.OPEN;
+      WrappedWS.CLOSING = NativeWS.CLOSING;
+      WrappedWS.CLOSED = NativeWS.CLOSED;
+      WrappedWS.__gpNativeSkipPb = true;
+      window.WebSocket = WrappedWS;
+    }
+    if (typeof window.fetch === "function" && !window.fetch.__gpNativeSkipPb) {
+      var nativeFetch = window.fetch.bind(window);
+      function wrappedFetch(input, init) {
+        var url = typeof input === "string" ? input : (input && input.url) || "";
+        if (re.test(url))
+          return Promise.resolve(new Response("", { status: 503, statusText: "unavailable" }));
+        return nativeFetch(input, init);
+      }
+      wrappedFetch.__gpNativeSkipPb = true;
+      window.fetch = wrappedFetch;
+    }
+    var NativeES = window.EventSource;
+    if (NativeES && !NativeES.__gpNativeSkipPb) {
+      function WrappedES(url, config) {
+        if (re.test(String(url || "")))
+          return dummyEventSource();
+        return config === undefined ? new NativeES(url) : new NativeES(url, config);
+      }
+      WrappedES.prototype = NativeES.prototype;
+      WrappedES.CONNECTING = NativeES.CONNECTING;
+      WrappedES.OPEN = NativeES.OPEN;
+      WrappedES.CLOSED = NativeES.CLOSED;
+      WrappedES.__gpNativeSkipPb = true;
+      window.EventSource = WrappedES;
+    }
+  })();
+
+  var statusEl = document.getElementById("play2web-status");
+  function setStatus(text, isError) {
+    console.log("[Play2Web]", text);
+    if (!statusEl) return;
+    if (isError) {
+      statusEl.style.display = "block";
+      statusEl.textContent = text;
+    } else {
+      statusEl.style.display = "none";
+    }
+  }
+
+  window.focus = function () {};
+  window.__play2webHitTest = function (x, y) {
+    var list = document.elementsFromPoint(x, y) || [];
+    for (var i = 0; i < list.length; i++) {
+      var el = list[i];
+      if (!el || el === document.documentElement || el === document.body) continue;
+      if (el.id === "play2web-root" || el.id === "play2web-status") continue;
+      var cs = window.getComputedStyle(el);
+      if (!cs || cs.pointerEvents === "none" || cs.visibility === "hidden" || cs.display === "none") continue;
+      if (parseFloat(cs.opacity) === 0) continue;
+      return true;
+    }
+    return false;
+  };
+  function forceTransparentPage() {
+    document.documentElement.style.background = "transparent";
+    if (document.body) document.body.style.background = "transparent";
+    var root = document.getElementById("play2web-root");
+    if (root) root.style.background = "transparent";
+  }
+  forceTransparentPage();
+  function dispatchToUnity(_go, method, arg) {
+    send({ type: "event", method: method, arg: arg == null ? "" : String(arg) });
+    if (shouldShow(method)) send({ type: "overlay", show: true });
+    if (shouldHide(method)) send({ type: "overlay", show: false });
+  }
+
+  // The GamePush bridge is written against a Unity WebGL page: it awaits the loader awaiter and
+  // calls the global SendMessage. Providing both lets the stock bridge run unmodified here.
+  window._unityAwaiter = { ready: Promise.resolve(), done: function () {} };
+  window._unityInnerAwaiter = window._unityAwaiter;
+  window.SendMessage = dispatchToUnity;
+  window.unityInstance = { SendMessage: dispatchToUnity };
+
+  var cfg = window.__GP_PLAY2WEB__ || {};
+  var bridge = null;
+  var gpRef = null;
+  var queue = [];
+  var sending = false;
+
+  function send(obj) {
+    queue.push(JSON.stringify(obj));
+    flush();
+  }
+
+  function flush() {
+    if (sending || !queue.length) return;
+    sending = true;
+    var body = queue.shift();
+    fetch("/from-browser", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body
+    }).catch(function () {
+      queue.unshift(body);
+    }).then(function () {
+      sending = false;
+      if (queue.length) flush();
+    });
+  }
+
+  function connect() {
+    var es = new EventSource("/events");
+    es.onopen = function () {
+      setStatus("connected");
+      if (gpRef)
+        emitReady();
+    };
+    es.onerror = function () { /* EventSource reconnects itself */ };
+    es.onmessage = function (ev) {
+      var msg;
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      if (msg.type === "call")
+        invoke(msg.method, msg.args || []);
+    };
+  }
+
+  function normalize(name) {
+    return String(name || "").replace(/^GP_/, "").replace(/_/g, "").toLowerCase();
+  }
+
+  function resolve(name) {
+    var want = normalize(name);
+    var target = bridge || gpRef;
+    if (target && typeof target[name] === "function")
+      return target[name].bind(target);
+    var obj = target;
+    while (obj && obj !== Object.prototype) {
+      var names = Object.getOwnPropertyNames(obj);
+      for (var i = 0; i < names.length; i++) {
+        var key = names[i];
+        if (typeof obj[key] !== "function") continue;
+        if (normalize(key) === want) return obj[key].bind(target);
+      }
+      obj = Object.getPrototypeOf(obj);
+    }
+    if (gpRef && want === "gameready" && typeof gpRef.gameStart === "function")
+      return gpRef.gameStart.bind(gpRef);
+    return null;
+  }
+
+  function invoke(method, args) {
+    var fn = resolve(method);
+    if (!fn) {
+      send({ type: "log", arg: "missing JS method " + method });
+      return;
+    }
+    try {
+      args = args || [];
+      var mapped = [];
+      for (var i = 0; i < args.length; i++) {
+        var a = args[i];
+        if (a === "True") mapped.push(true);
+        else if (a === "False") mapped.push(false);
+        else if (typeof a === "string" && /^-?\d+$/.test(a)) mapped.push(Number(a));
+        else mapped.push(a);
+      }
+      var result = fn.apply(bridge || gpRef, mapped);
+      if (result && typeof result.then === "function") {
+        result.catch(function (err) {
+          send({ type: "log", arg: String(err && err.message || err) });
+        });
+      } else if (result !== undefined) {
+        send({ type: "snapshot", entries: [{ k: method, v: toUnity(result) }] });
+      }
+    } catch (err) {
+      send({ type: "log", arg: String(err && err.message || err) });
+    }
+  }
+
+  function toUnity(value) {
+    switch (typeof value) {
+      case "boolean":
+      case "number":
+        return String(value);
+      case "object":
+        try {
+          if (value instanceof Map) return JSON.stringify(Array.from(value.values()));
+          return JSON.stringify(value);
+        } catch (e) { return ""; }
+      case "undefined":
+        return "";
+      default:
+        return String(value);
+    }
+  }
+
+  function collectSnapshot(gp) {
+    var ads = gp.ads || {};
+    var player = gp.player || {};
+    var platform = gp.platform || {};
+    var payments = gp.payments || {};
+    var entries = [
+      kv("PlatformType", platform.type),
+      kv("PlatformTag", platform.tag),
+      kv("PlatformHasIntegratedAuth", platform.hasIntegratedAuth),
+      kv("PlatformIsLogoutAvailable", platform.isLogoutAvailable),
+      kv("PlatformIsExternalLinksAllowed", platform.isExternalLinksAllowed),
+      kv("PlatformIsSecretCodeAuthAvailable", platform.isSecretCodeAuthAvailable),
+      kv("PlatformIsSupportsCloudSaves", platform.isSupportsCloudSaves),
+      kv("PlatformIsBackendAllowed", platform.isBackendAllowed),
+      kv("PlatformIsChatAvailable", platform.isChatAvailable),
+      kv("Language", gp.language),
+      kv("IsMobile", gp.isMobile),
+      kv("IsPortrait", gp.isPortrait),
+      kv("IsDev", gp.isDev),
+      kv("IsAllowedOrigin", gp.isAllowedOrigin),
+      kv("IsPaused", gp.isPaused),
+      kv("PlayerGetID", player.id),
+      kv("PlayerGetScore", player.score),
+      kv("PlayerGetName", player.name),
+      kv("PlayerGetAvatar", player.avatar),
+      kv("PlayerIsLoggedIn", player.isLoggedIn),
+      kv("PlayerIsStub", player.isStub),
+      kv("PlayerHasAnyCredentials", player.hasAnyCredentials),
+      kv("AdsIsAdblockEnabled", ads.isAdblockEnabled),
+      kv("AdsIsStickyAvailable", ads.isStickyAvailable),
+      kv("AdsIsFullscreenAvailable", ads.isFullscreenAvailable),
+      kv("AdsIsRewardedAvailable", ads.isRewardedAvailable),
+      kv("AdsIsPreloaderAvailable", ads.isPreloaderAvailable),
+      kv("AdsIsStickyPlaying", ads.isStickyPlaying),
+      kv("AdsIsFullscreenPlaying", ads.isFullscreenPlaying),
+      kv("AdsIsRewardedPlaying", ads.isRewardedPlaying),
+      kv("AdsIsPreloaderPlaying", ads.isPreloaderPlaying),
+      kv("AdsIsCountdownOverlayEnabled", ads.isCountdownOverlayEnabled),
+      kv("AdsIsRewardedFailedOverlayEnabled", ads.isRewardedFailedOverlayEnabled),
+      kv("AdsCanShowFullscreenBeforeGamePlay", ads.canShowFullscreenBeforeGamePlay),
+      kv("PaymentsIsAvailable", payments.isAvailable),
+      kv("PaymentsIsSubscriptionsAvailable", payments.isSubscriptionsAvailable),
+      kv("Channels_IsMainChatEnabled", gp.channels && gp.channels.isMainChatEnabled),
+      kv("Channels_MainChatId", gp.channels && gp.channels.mainChatId)
+    ];
+    try {
+      var fields = player.fields || [];
+      for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        if (!field || !field.key) continue;
+        entries.push(kv("player:" + field.key, player.get ? player.get(field.key) : field.value));
+      }
+    } catch (e) { /* ignore */ }
+    return entries;
+  }
+
+  function kv(k, v) { return { k: k, v: toUnity(v) }; }
+  function shouldShow(method) { return /Start$|Open$|Confirm|Login/.test(method || ""); }
+  function shouldHide(method) { return /Close$|Resume$/.test(method || ""); }
+
+  var announcedReady = false;
+  var originWarned = false;
+  function warnOriginIfNeeded(gp) {
+    if (originWarned || !gp) return;
+    var allowed = gp.isAllowedOrigin;
+    var isDev = gp.isDev;
+    if (allowed !== false && isDev !== false) return;
+    originWarned = true;
+    var origin = (location.origin || "") + "/";
+    var projectId = (cfg && cfg.projectId) || "";
+    var panel = "https://gamepush.com/panel/projects/" + projectId + "/origins";
+    var msg = allowed === false
+      ? "This origin is not allowed: " + origin + " Add it in Allowed Origins and enable it."
+      : "This origin is allowed, but the Dev checkbox is not set. Enable Dev in Allowed Origins to use test ads, payments, and developer tools.";
+    console.warn("[Play2Web]", msg);
+    send({ type: "warn", arg: msg });
+    console.warn("[Play2Web]", panel);
+    send({ type: "warn", arg: panel });
+  }
+
+  function emitReady() {
+    if (!gpRef) return;
+    if (!announcedReady) {
+      announcedReady = true;
+      send({ type: "ready" });
+    }
+    try {
+      send({ type: "snapshot", entries: collectSnapshot(gpRef) });
+    } catch (err) {
+      send({ type: "log", arg: "snapshot failed: " + err });
+    }
+  }
+
+  window.onGPError = function () {
+    setStatus("GamePush SDK failed to load", true);
+    send({ type: "log", arg: "SDK load error" });
+  };
+
+  window.onGPInit = function (gp) {
+    gpRef = gp;
+    window.GamePush = gp;
+    forceTransparentPage();
+    try {
+      // A class declaration is not a window property, so the preamble's GamePushUnityInner has
+      // to be picked up by name; window.GamePushUnity is the prebuilt bundle's older alias.
+      var Ctor = typeof GamePushUnityInner === "function" ? GamePushUnityInner : window.GamePushUnity;
+      bridge = typeof Ctor === "function" ? new Ctor(gp) : gp;
+      window.__GamePushUnityBridge = bridge;
+      send({ type: "log", arg: "bridge " + (bridge === gp ? "missing, using raw SDK" : "ready") });
+    } catch (err) {
+      bridge = gp;
+      send({ type: "log", arg: "GamePushUnity ctor: " + err });
+    }
+    warnOriginIfNeeded(gp);
+    // Ready is announced only once the bridge exists, otherwise the first calls Unity makes on
+    // connect would look for methods on the raw SDK and be dropped as missing.
+    emitReady();
+    try {
+      if (gp.player && gp.player.on) {
+        gp.player.on("change", function () { send({ type: "snapshot", entries: collectSnapshot(gp) }); });
+        gp.player.on("sync", function () { send({ type: "snapshot", entries: collectSnapshot(gp) }); });
+        gp.player.on("load", function () { send({ type: "snapshot", entries: collectSnapshot(gp) }); });
+      }
+      if (gp.ads && gp.ads.on) {
+        gp.ads.on("start", function () { send({ type: "overlay", show: true }); });
+        gp.ads.on("close", function () { send({ type: "overlay", show: false }); });
+      }
+    } catch (err) {
+      send({ type: "log", arg: String(err) });
+    }
+  };
+
+  connect();
+  send({ type: "log", arg: "loading GamePush SDK projectId=" + (cfg.projectId || "") });
+
+  var urls = [
+    "https://gs.eponesh.com/sdk/game-score.js",
+    "https://s3.gamepush.com/files/gs/sdk/game-score.js",
+    "https://s3-eu.gamepush.com/sdk/game-score.js",
+    "https://gamepush.com/sdk/game-score.js",
+    "https://gs.eponesh.com/sdk/gamepush.js",
+    "https://s3.eponesh.com/files/gs/sdk/gamepush.js"
+  ];
+  var query = "?projectId=" + encodeURIComponent(cfg.projectId || "") +
+    "&publicToken=" + encodeURIComponent(cfg.token || "") +
+    "&callback=onGPInit";
+  var loading = false;
+  var tried = {};
+  var ready = [];
+  var headsDone = 0;
+  var failed = false;
+
+  function failSdk() {
+    if (failed) return;
+    failed = true;
+    if (window.onGPError) window.onGPError();
+  }
+
+  function inject(url) {
+    if (loading || tried[url] || failed) return;
+    loading = true;
+    tried[url] = true;
+    var script = document.createElement("script");
+    script.async = 1;
+    script.src = url + query;
+    script.onerror = function () {
+      script.remove();
+      loading = false;
+      nextSdk();
+    };
+    document.head.appendChild(script);
+  }
+
+  function nextSdk() {
+    var i;
+    for (i = 0; i < ready.length; i++) {
+      if (!tried[ready[i]]) {
+        inject(ready[i]);
+        return;
+      }
+    }
+    for (i = 0; i < urls.length; i++) {
+      if (!tried[urls[i]]) {
+        inject(urls[i]);
+        return;
+      }
+    }
+    if (!loading) failSdk();
+  }
+
+  urls.forEach(function (url) {
+    var done = function (ok) {
+      headsDone++;
+      if (ok) {
+        ready.push(url);
+        inject(url);
+      } else if (headsDone >= urls.length && !loading) {
+        nextSdk();
+      }
+    };
+    try {
+      fetch(url, { method: "HEAD" }).then(function (res) {
+        done(!!(res && res.ok));
+      }).catch(function () { done(false); });
+    } catch (err) {
+      done(false);
+    }
+  });
+
+  setTimeout(function () {
+    if (!loading) nextSdk();
+  }, 5000);
+})();

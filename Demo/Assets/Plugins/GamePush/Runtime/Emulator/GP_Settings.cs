@@ -7,6 +7,7 @@ namespace GamePush
     public sealed class GP_Settings
     {
         public bool viewLogs = true;
+        public bool fullLogs = false;
         public GP_PlatformSettings platformSettings;
         public GP_PaymentsStub paymentsStub;
         

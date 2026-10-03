@@ -1,0 +1,19 @@
+{
+    "name": "GamePush.Native.OneStore",
+    "rootNamespace": "GamePush.Native",
+    "references": [
+        "GUID:e2c3782dc6445491e87d280768bacab5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "GP_ONESTORE_IAP",
+        "GP_BUILD_PAYMENTS_ONESTORE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

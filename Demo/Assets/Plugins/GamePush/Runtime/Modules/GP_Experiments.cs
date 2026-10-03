@@ -12,8 +12,10 @@ namespace GamePush
     {
         private static void ConsoleLog(string log) => GP_Logger.ModuleLog(log, ModuleName.Experiments);
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Experiments_Map();
+        #endif
         public static string Map()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -27,8 +29,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Experiments_Has(string tag, string cohort);
+        #endif
         public static bool Has(string tag, string cohort)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

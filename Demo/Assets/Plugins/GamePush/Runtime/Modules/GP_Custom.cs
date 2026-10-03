@@ -18,8 +18,10 @@ namespace GamePush
         public static event Action<string> _onCustomAsyncError;
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_CustomCall(string name, string args);
+        #endif
         public static void Call(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -31,8 +33,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_CustomGetValue(string path);
+        #endif
         public static string Value(string path)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -45,8 +49,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_CustomReturn(string name, string args);
+        #endif
         public static string Return(string name, string args = null)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -59,8 +65,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_CustomAsyncReturn(string name, string args);
+        #endif
         public static void AsyncReturn(string name, string args = null, Action<string> onCustomAsyncReturn = null, Action<string> onCustomAsyncError = null)
         {
             _onCustomAsyncReturn = onCustomAsyncReturn;

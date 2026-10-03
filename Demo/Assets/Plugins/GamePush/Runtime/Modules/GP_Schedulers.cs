@@ -47,8 +47,10 @@ namespace GamePush
         private void CallOnSchedulerJoinError(string error) { OnSchedulerJoinError?.Invoke(error); }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Schedulers_Register(string idOrTag);
+        #endif
         public static void Register(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -59,8 +61,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Schedulers_ClaimDay(string idOrTag, int day);
+        #endif
         public static void ClaimDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -71,8 +75,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Schedulers_ClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
+        #endif
         public static void ClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -83,8 +89,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Schedulers_ClaimAllDay(string idOrTag, int day);
+        #endif
         public static void ClaimAllDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -95,8 +103,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Schedulers_ClaimAllDays(string idOrTag);
+        #endif
         public static void ClaimAllDays(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -107,8 +117,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_List();
+        #endif
         public static SchedulerData[] List()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -122,8 +134,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_ActiveList();
+        #endif
         public static PlayerScheduler[] ActiveList()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -137,8 +151,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_GetScheduler(string idOrTag);
+        #endif
         public static SchedulerInfo GetScheduler(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -152,8 +168,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_GetSchedulerDay(string idOrTag, int day);
+        #endif
         public static SchedulerDayInfo GetSchedulerDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -167,8 +185,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_GetSchedulerCurrentDay(string idOrTag);
+        #endif
         public static SchedulerDayInfo GetSchedulerCurrentDay(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -182,8 +202,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_IsRegistered(string idOrTag);
+        #endif
         public static bool IsRegistered(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -197,8 +219,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_IsTodayRewardClaimed(string idOrTag);
+        #endif
         public static bool IsTodayRewardClaimed(string idOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -212,8 +236,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_CanClaimDay(string idOrTag, int day);
+        #endif
         public static bool CanClaimDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -227,8 +253,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_CanClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag);
+        #endif
         public static bool CanClaimDayAdditional(string idOrTag, int day, string triggerIdOrTag)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -241,8 +269,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Schedulers_CanClaimAllDay(string idOrTag, int day);
+        #endif
         public static bool CanClaimAllDay(string idOrTag, int day)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

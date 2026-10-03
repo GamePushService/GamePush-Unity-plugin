@@ -1,0 +1,7 @@
+<linker>
+  <assembly fullname="Centrifugal.Centrifuge" preserve="all" />
+  <assembly fullname="Google.Protobuf" preserve="all" />
+  <assembly fullname="Microsoft.Extensions.Logging.Abstractions" preserve="all" />
+  <assembly fullname="Microsoft.Extensions.DependencyInjection.Abstractions" preserve="all" />
+  <assembly fullname="System.Threading.Channels" preserve="all" />
+</linker>
