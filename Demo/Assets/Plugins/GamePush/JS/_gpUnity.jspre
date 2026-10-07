@@ -15,6 +15,92 @@ function isExpectedUserCancel(error) {
     );
 }
 
+// SDK transactions log `logger.error(reason)` right before rejecting. Some SDK
+// internals chain `.finally()` on those promises without a catch, so the same
+// reason resurfaces as an unhandled rejection and crashes Unity. Remember every
+// reason the SDK reported to drop those duplicates, whatever the message is.
+const _gpReportedReasons = {
+    objects: typeof WeakSet !== 'undefined' ? new WeakSet() : null,
+    primitives: new Map(),
+    ttl: 10000,
+    add(reason) {
+        if (reason !== null && (typeof reason === 'object' || typeof reason === 'function')) {
+            if (this.objects) this.objects.add(reason);
+            return;
+        }
+        this.primitives.set(reason, Date.now() + this.ttl);
+    },
+    has(reason) {
+        if (reason !== null && (typeof reason === 'object' || typeof reason === 'function')) {
+            return !!this.objects && this.objects.has(reason);
+        }
+        const expiresAt = this.primitives.get(reason);
+        if (expiresAt === undefined) return false;
+        if (expiresAt < Date.now()) {
+            this.primitives.delete(reason);
+            return false;
+        }
+        return true;
+    }
+};
+
+function isIgnoredSdkRejection(event) {
+    return (
+        !!event &&
+        event.type === 'unhandledrejection' &&
+        (isExpectedUserCancel(event.reason) || _gpReportedReasons.has(event.reason))
+    );
+}
+
+// The Unity loader registers its window listener before the framework loads,
+// and window listeners run in registration order, so ours always comes after.
+// Unity asks Module.errorHandler first and skips the error alert on true;
+// window.event is the rejection being dispatched at that moment.
+if (typeof Module !== 'undefined' && !Module.__gpErrorHandlerWrapped) {
+    Module.__gpErrorHandlerWrapped = true;
+    const previousErrorHandler = Module.errorHandler;
+    Module.errorHandler = function (message, filename, lineno) {
+        const event = typeof window !== 'undefined' ? window.event : null;
+        if (isIgnoredSdkRejection(event)) {
+            event.preventDefault();
+            return true;
+        }
+        return typeof previousErrorHandler === 'function'
+            ? previousErrorHandler.apply(this, arguments)
+            : false;
+    };
+}
+
+// Platforms like CrazyGames host the Unity build in their own page, so the
+// template guard in index.html is absent. This listener stops the platform's
+// own error reporters registered after the framework.
+if (typeof window !== 'undefined' && !window.__gpExpectedRejectionGuard) {
+    window.__gpExpectedRejectionGuard = true;
+
+    const originalConsoleError = console.error;
+    console.error = function (...args) {
+        try {
+            const sdkName = window.__SDKProvider || 'SDK';
+            if (args.length === 2 && args[0] === sdkName) {
+                _gpReportedReasons.add(args[1]);
+            }
+        } catch (error) {
+            // ignore
+        }
+        return originalConsoleError.apply(this, args);
+    };
+
+    window.addEventListener(
+        'unhandledrejection',
+        (event) => {
+            if (!isIgnoredSdkRejection(event)) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        },
+        true
+    );
+}
+
 function ignoreExpectedPromise(result) {
     if (!result || typeof result.catch !== 'function') {
         return result;
