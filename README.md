@@ -2,9 +2,9 @@
 
 Plugin for using [GamePush](https://gamepush.com/?r=NzQ4) in Unity games
 
-Development and support of GamePush Unity plugin - [Aristarkh Abramovsky](https://gitlab.com/kerioth)
+Development and support of the current version of GamePush Unity plugin - [Sceef](https://github.com/Sceef)
 
-Creator of early version GamePush Unity plugin - [Dinar Shagidullin](https://gitlab.com/shagidullin)
+Creators of early versions of GamePush Unity plugin - [Aristarkh Abramovsky](https://gitlab.com/kerioth), [Dinar Shagidullin](https://gitlab.com/shagidullin)
 
 ## Download
 
@@ -102,6 +102,50 @@ switching to a real Centrifugo subscription later only touches that file.
 `Assets/GP_Examples/NativeOverlays/NativeOverlaysDemo.cs` — drop it on any GameObject to get a
 launcher for every overlay plus a button that forces the screen orientation, which is the fastest
 way to check both layouts on a device.
+
+## Play2Web — test the web SDK right in the Editor (beta)
+
+Normally ads, purchases, the auth window and other GamePush popups can only be checked in a WebGL
+build uploaded to the GamePush panel. Play2Web removes that loop: it runs the real GamePush JS SDK
+in dev mode (`isDev`) next to the Unity Editor and draws its UI as a transparent overlay on top of
+the Game view. Your game keeps running in Play Mode, while SDK calls go to the live SDK and
+its windows (rewarded / fullscreen ads, purchase dialogs, popups) appear right over the game — no
+WebGL build needed.
+
+### Opening
+
+Any of these opens the **Play2Web** window:
+
+- `Tools/GamePush` → **Editor Settings** → **Open Play2Web**
+- `Edit/Project Settings/GamePush` → **Editor** → **Open Play2Web**
+
+### Running
+
+1. Add `http://127.0.0.1:<port>/` as a test origin in the GamePush panel for your project. The
+   port is shown in the Play2Web window (default `8765`; if it is busy, a free one is picked).
+2. Press **Play Test** in the Play2Web window. The regular Play button does **not** start Play2Web.
+3. **Stop** ends the session, **Restart Play Test** restarts it.
+
+Play Test always boots the `AwaitInit` scene (build index 0), even if another scene is open; if the
+scene is missing from Build Settings it is added as index 0. The scene opened in the Editor stays
+as is.
+
+The window shows the session state (Playing / Ready / Overlay), port, WebGL template, init scene
+status and a log, which is the first place to look if something does not start.
+
+### How it works
+
+- A local HTTP server on `127.0.0.1` serves a page composed from your WebGL template plus a small
+  Unity bridge script (`Temp/GamePushPlay2Web/www`).
+- The page is shown in a separate borderless browser window glued to the Game view: WebView2 on
+  Windows, WKWebView on macOS. A separate process means a browser fault cannot crash the Editor.
+- The page background is transparent, so only the SDK UI is visible over the game.
+
+### Requirements
+
+- Windows (WebView2 Runtime) or macOS. On macOS the overlay host is compiled locally on first run
+  and needs Xcode Command Line Tools: `xcode-select --install`.
+- The test origin above added in the GamePush panel.
 
 # Methods List
 
@@ -332,6 +376,18 @@ public enum GeneratorType : byte
 
 [Channels documentation](https://docs.gamepush.com/docs/channels/)
 
+### Regional hubs
+
+Channels (and multiplayer rooms built on them) live in regional hubs: `AUTO`, `RU`, `EU`, `NA`,
+`APAC`. Set `location` in `FetchChannelsFilter` / `FetchMoreChannelsFilter` to search a single hub;
+leave it empty to search all hubs. `GP_Player.GetLocation()` returns the hub the SDK picked for the
+current player (empty before SDK initialization).
+
+```c
+var filter = new FetchChannelsFilter { location = GP_Player.GetLocation() };
+GP_Channels.FetchChannels(filter);
+```
+
 ### Methods
 
 | Method name                 | Method parameters                                                                                     | Return value |
@@ -381,8 +437,8 @@ public enum GeneratorType : byte
 | `FetchChannel`              | `int channel_ID`                                                                                      | void         |
 | `CreateChannel`             | `CreateChannelFilter filter`                                                                          | void         |
 | `UpdateChannel`             | `UpdateChannelFilter filter`                                                                          | void         |
-| `FetchChannels`             | `FetchChannelsFilter filter`                                                                          | void         |
-| `FetchMoreChannels`         | `FetchMoreChannelsFilter filter`                                                                      | void         |
+| `FetchChannels`             | `FetchChannelsFilter filter` — `filter.location` selects a [regional hub](#regional-hubs)             | void         |
+| `FetchMoreChannels`         | `FetchMoreChannelsFilter filter` — `filter.location` selects a [regional hub](#regional-hubs)         | void         |
 | `FetchMembers`              | `FetchMembersFilter filter`                                                                           | void         |
 | `FetchMoreMembers`          | `FetchMoreMembersFilter filter`                                                                       | void         |
 
@@ -710,6 +766,7 @@ public class FetchChannelsFilter
     public int[] ids;
     public string[] tags;
     public string search;
+    public string location; // regional hub: AUTO, RU, EU, NA, APAC; empty = all hubs
     public bool onlyJoined = false;
     public bool onlyOwned = false;
     public int limit = 100;
@@ -723,6 +780,7 @@ public class FetchMoreChannelsFilter
     public int[] ids;
     public string[] tags;
     public string search;
+    public string location; // regional hub: AUTO, RU, EU, NA, APAC; empty = all hubs
     public bool onlyJoined = false;
     public bool onlyOwned = false;
     public int limit;
@@ -1394,6 +1452,7 @@ public enum Platform : byte
 | `GetScore`                 | void                                                       | `float`      |
 | `GetName`                  | void                                                       | `string`     |
 | `GetAvatarUrl`             | void                                                       | `string`     |
+| `GetLocation`              | void — current [regional hub](#regional-hubs): `AUTO`, `RU`, `EU`, `NA`, `APAC` | `string`     |
 | `GetAvatar`                | `Image image`                                              | void         |
 | `GetFieldName`             | `string key`                                               | `string`     |
 | `GetFieldVariantName`      | `string key, string value`                                 | `string`     |
