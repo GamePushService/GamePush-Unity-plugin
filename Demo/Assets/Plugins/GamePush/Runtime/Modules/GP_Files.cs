@@ -55,8 +55,10 @@ namespace GamePush
         private static event Action<List<FileData>, bool> _onFetchMore;
         private static event Action _onFetchMoreError;
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_Upload(string tags);
+        #endif
         public static void Upload(string tags, Action<FileData> onUpload = null, Action onUploadError = null)
         {
             _onUpload = onUpload;
@@ -71,8 +73,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_UploadUrl(string url, string filename, string tags);
+        #endif
         public static void UploadUrl(string url, string filename = "", string tags = "", Action<FileData> onUploadUrl = null, Action onUploadUrlError = null)
         {
             _onUploadUrl = onUploadUrl;
@@ -87,8 +91,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_UploadContent(string content, string filename, string tags);
+        #endif
         public static void UploadContent(string content, string filename, string tags, Action<FileData> onUploadContent = null, Action onUploadContentError = null)
         {
             _onUploadContent = onUploadContent;
@@ -103,8 +109,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_LoadContent(string url);
+        #endif
         public static void LoadContent(string url, Action<string> onLoadContent = null, Action onLoadContentError = null)
         {
             _onLoadContent = onLoadContent;
@@ -119,8 +127,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_ChooseFile(string type);
+        #endif
         public static void ChooseFile(string type, Action<string> onFileChoose = null, Action onFileChooseError = null)
         {
             _onFileChoose = onFileChoose;
@@ -135,8 +145,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_Fetch(string filter);
+        #endif
         public static void Fetch(FilesFetchFilter filter = null, Action<List<FileData>, bool> onFetch = null, Action onFetchError = null)
         {
             _onFetch = onFetch;
@@ -154,8 +166,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Files_FetchMore(string filter);
+        #endif
         public static void FetchMore(FilesFetchMoreFilter filter = null, Action<List<FileData>, bool> onFetchMore = null, Action onFetchMoreError = null)
         {
             _onFetchMore = onFetchMore;
@@ -225,6 +239,8 @@ namespace GamePush
         public string src;
         public float size;
         public string[] tags;
+        public ReactionCount[] reactions;
+        public PlayerReaction[] playerReactions;
     }
 
     [System.Serializable]

@@ -43,8 +43,10 @@ namespace GamePush
         public static event Action<string> _onImagesResize;
         public static event Action<string> _onImagesResizeError;
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_Choose();
+        #endif
         public static void Choose(Action<string> onImagesChooseFile = null, Action<string> onImagesChooseError = null)
         {
             _onImagesChooseFile = onImagesChooseFile;
@@ -58,8 +60,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_Upload(string tags);
+        #endif
         public static void Upload(string[] tags = null, Action<ImageData> onImagesUploadSuccess = null, Action<string> onImagesUploadError = null)
         {
             _onImagesUploadSuccess = onImagesUploadSuccess;
@@ -73,8 +77,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_UploadUrl(string url, string tags);
+        #endif
         public static void UploadUrl(string url, string[] tags = null, Action<ImageData> onImagesUploadUrlSuccess = null, Action<string> onImagesUploadUrlError = null)
         {
             _onImagesUploadUrlSuccess = onImagesUploadUrlSuccess;
@@ -89,8 +95,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_Fetch(string filter);
+        #endif
         public static void Fetch(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
             _onImagesFetchSuccess = onImagesFetchSuccess;
@@ -107,8 +115,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_FetchMore(string filter);
+        #endif
         public static void FetchMore(ImagesFetchFilter filter = null, Action<List<ImageData>> onImagesFetchSuccess = null, Action<string> onImagesFetchError = null)
         {
             _onImagesFetchSuccess = onImagesFetchSuccess;
@@ -125,8 +135,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Images_Resize(string filter);
+        #endif
         public static void Resize(ImageResizeData resizeData = null, Action<string> onImagesResize = null, Action<string> onImagesResizeError = null)
         {
             _onImagesResize = onImagesResize;
@@ -147,8 +159,27 @@ namespace GamePush
 
         public static string FormatUrl(string url, string format)
         {
-            string formatUrl = url.Replace(".webp", format);
-            return formatUrl;
+            if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(format))
+                return url;
+
+            if (!format.StartsWith("."))
+                format = "." + format;
+
+            var suffixStart = url.Length;
+            var query = url.IndexOf('?');
+            var hash = url.IndexOf('#');
+            if (query >= 0)
+                suffixStart = query;
+            if (hash >= 0 && hash < suffixStart)
+                suffixStart = hash;
+
+            const string webp = ".webp";
+            var path = url.Substring(0, suffixStart);
+            if (path.Length < webp.Length ||
+                !path.EndsWith(webp, StringComparison.OrdinalIgnoreCase))
+                return url;
+
+            return path.Substring(0, path.Length - webp.Length) + format + url.Substring(suffixStart);
         }
 
 
@@ -233,6 +264,8 @@ namespace GamePush
         public string[] tags;
         public int width;
         public int height;
+        public ReactionCount[] reactions;
+        public PlayerReaction[] playerReactions;
     }
 
     [System.Serializable]

@@ -20,8 +20,10 @@ namespace GamePush
         private static event Action<string> _onReviewClose;
         private static event Action<bool> _onAddShortcut;
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_Title();
+        #endif
         public static string Title()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -34,8 +36,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_Description();
+        #endif
         public static string Description()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -49,15 +53,28 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_Image();
+        #endif
 
-        public async static void GetImage(Image image)
+        public static void GetImage(Image image)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            GetImageWebGL(image);
+#else
+            ConsoleLog("GET IMAGE: -> skipped");
+#endif
+        }
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        private static async void GetImageWebGL(Image image)
         {
             string cover = GP_App_Image();
             if (cover == null || cover == "") return;
             await UtilityImage.DownloadImageAsync(cover, image);
         }
+#endif
 
         public static string ImageUrl()
         {
@@ -70,8 +87,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_Url();
+        #endif
         public static string Url()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -83,8 +102,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_ReviewRequest();
+        #endif
         public static void ReviewRequest(Action<int> onReviewResult = null, Action<string> onReviewClose = null)
         {
             _onReviewResult = onReviewResult;
@@ -98,8 +119,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_IsAlreadyReviewed();
+        #endif
         public static bool IsAlreadyReviewed()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -113,8 +136,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_CanReview();
+        #endif
         public static bool CanReview()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -130,8 +155,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_AddShortcut();
+        #endif
         public static void AddShortcut(Action<bool> onAddShortcut = null)
         {
             _onAddShortcut = onAddShortcut;
@@ -144,8 +171,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_App_CanAddShortcut();
+        #endif
         public static bool CanAddShortcut()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

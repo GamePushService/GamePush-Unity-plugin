@@ -13,8 +13,10 @@ namespace GamePush
         public static event UnityAction<bool> OnInvite;
         public static event UnityAction<bool> OnJoinCommunity;
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Socials_Share(string text, string url, string image);
+        #endif
         public static void Share(string text = "", string url = "", string image = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -26,8 +28,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Socials_Post(string text, string url, string image);
+        #endif
         public static void Post(string text = "", string url = "", string image = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -40,8 +44,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Socials_Invite(string text, string url, string image);
+        #endif
         public static void Invite(string text = "", string url = "", string image = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -54,8 +60,10 @@ namespace GamePush
         }
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern void GP_Socials_JoinCommunity();
+        #endif
         public static void JoinCommunity()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -69,8 +77,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_CommunityLink();
+        #endif
         public static string CommunityLink()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -85,8 +95,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_IsSupportsShare();
+        #endif
         public static bool IsSupportsShare()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -98,8 +110,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_IsSupportsNativeShare();
+        #endif
         public static bool IsSupportsNativeShare()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -113,8 +127,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_IsSupportsNativePosts();
+        #endif
         public static bool IsSupportsNativePosts()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -128,8 +144,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_IsSupportsNativeInvite();
+        #endif
         public static bool IsSupportsNativeInvite()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -143,8 +161,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_CanJoinCommunity();
+        #endif
         public static bool CanJoinCommunity()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -158,8 +178,10 @@ namespace GamePush
 
 
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_IsSupportsNativeCommunityJoin();
+        #endif
         public static bool IsSupportsNativeCommunityJoin()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -171,8 +193,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_MakeShareLink(string content);
+        #endif
         public static string MakeShareLink(string content = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -184,8 +208,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern int GP_Socials_GetSharePlayerID();
+        #endif
         public static int GetSharePlayerID()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -197,8 +223,10 @@ namespace GamePush
 #endif
         }
 
+        #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GP_Socials_GetShareContent();
+        #endif
         public static string GetShareContent()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL

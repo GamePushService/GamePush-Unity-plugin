@@ -11,6 +11,8 @@ namespace GamePushEditor
         [PostProcessBuild]
         public static void ModifyBuildDo(BuildTarget target, string pathToBuiltProject)
         {
+            if (target != BuildTarget.WebGL)
+                return;
             Archiving(pathToBuiltProject);
         }
     
