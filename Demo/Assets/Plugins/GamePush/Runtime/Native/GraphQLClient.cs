@@ -58,7 +58,8 @@ namespace GamePush.Native
             }
         }
 
-        public async Task<string> Fetch(string query, Dictionary<string, object> input = null, Dictionary<string, object> extraVariables = null)
+        public async Task<string> Fetch(string query, Dictionary<string, object> input = null,
+            Dictionary<string, object> extraVariables = null, int timeoutSeconds = 0)
         {
             var variables = new Dictionary<string, object>();
             if (query.IndexOf("$lang", StringComparison.Ordinal) >= 0)
@@ -79,7 +80,7 @@ namespace GamePush.Native
                 var url = root.TrimEnd('/') + "/graphql/" + _projectId;
                 try
                 {
-                    return await Post(url, body, hash);
+                    return await Post(url, body, hash, timeoutSeconds);
                 }
                 catch (Exception exception)
                 {
@@ -190,7 +191,7 @@ namespace GamePush.Native
             return sb.ToString();
         }
 
-        async Task<string> Post(string url, string body, string hash)
+        async Task<string> Post(string url, string body, string hash, int timeoutSeconds)
         {
             using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
             req.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
@@ -203,9 +204,17 @@ namespace GamePush.Native
             req.SetRequestHeader("X-Project-Token", _publicToken);
             req.SetRequestHeader("X-Language", _lang);
             req.SetRequestHeader("X-Player-Data", _playerDataB64);
+            double deadline = Time.realtimeSinceStartupAsDouble + timeoutSeconds;
             var op = req.SendWebRequest();
             while (!op.isDone)
+            {
+                if (timeoutSeconds > 0 && Time.realtimeSinceStartupAsDouble >= deadline)
+                {
+                    req.Abort();
+                    throw new TimeoutException("GraphQL request timed out");
+                }
                 await Task.Yield();
+            }
             if (req.result != UnityWebRequest.Result.Success)
                 throw new Exception(req.responseCode + ". " + req.error + " " + req.downloadHandler.text);
             var text = req.downloadHandler.text;

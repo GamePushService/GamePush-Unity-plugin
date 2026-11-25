@@ -50,9 +50,16 @@ namespace GamePush.Native
                 MinReconnectDelay = TimeSpan.FromMilliseconds(500),
                 MaxReconnectDelay = TimeSpan.FromSeconds(20)
             };
-            _client = new CentrifugeClient(endpoint, options);
-            _client.Connected += (s, e) => NativeMainThread.Run(() =>
+            var client = _client = new CentrifugeClient(endpoint, options);
+            client.Connecting += (s, e) => NativeMainThread.Run(() =>
             {
+                if (ReferenceEquals(_client, client) && _everConnected)
+                    Reconnecting?.Invoke();
+            });
+            client.Connected += (s, e) => NativeMainThread.Run(() =>
+            {
+                if (!ReferenceEquals(_client, client))
+                    return;
                 if (_everConnected)
                     Reconnected?.Invoke();
                 else
@@ -61,12 +68,14 @@ namespace GamePush.Native
                     Connected?.Invoke();
                 }
             });
-            _client.Disconnected += (s, e) =>
+            client.Disconnected += (s, e) =>
             {
                 var code = ReadDisconnectCode(e);
                 var reason = ReadDisconnectReason(e);
                 NativeMainThread.Run(() =>
                 {
+                    if (!ReferenceEquals(_client, client))
+                        return;
                     if (IsReconnectable(code, reason))
                     {
                         GP_Logger.Warn("Centrifugo", code + " " + reason);
@@ -79,11 +88,13 @@ namespace GamePush.Native
                     }
                 });
             };
-            _client.Error += (s, e) =>
+            client.Error += (s, e) =>
             {
                 var message = FormatError(e);
                 NativeMainThread.Run(() =>
                 {
+                    if (!ReferenceEquals(_client, client))
+                        return;
                     if (IsTransientTransportMessage(message))
                         GP_Logger.Info("Centrifugo", message);
                     else
@@ -204,11 +215,10 @@ namespace GamePush.Native
 #if UNITY_WEBGL && !UNITY_EDITOR
             GpWebSocketBridge.Close();
 #else
-            try { _client?.Disconnect(); }
-            catch { /* ignore */ }
-            try { (_client as IDisposable)?.Dispose(); }
-            catch { /* ignore */ }
+            var client = _client;
             _client = null;
+            if (client != null)
+                _ = client.DisposeAsync();
 #endif
         }
     }
@@ -268,35 +278,38 @@ namespace GamePush.Native
 
         public void Publish(byte[] data, Action<bool> onDone = null)
         {
+            Action<string> callback = null;
+            if (onDone != null) callback = error => onDone(error == null);
+            PublishWithResult(data, callback);
+        }
+
+        internal void PublishWithResult(byte[] data, Action<string> onDone)
+        {
             if (!IsSubscribed || data == null)
             {
-                onDone?.Invoke(false);
+                onDone?.Invoke("not_sent");
                 return;
             }
 #if UNITY_WEBGL && !UNITY_EDITOR
-            bool sent = GpWebSocketBridge.Publish(_channel, data);
-            onDone?.Invoke(sent);
+            GpWebSocketBridge.Publish(_channel, data, onDone);
 #else
-            if (_native == null || data == null)
+            if (_native == null)
             {
-                onDone?.Invoke(false);
+                onDone?.Invoke("not_sent");
                 return;
             }
-            var task = _native.PublishAsync(data);
-            task.ContinueWith(completed =>
+            try
             {
-                NativeMainThread.Run(() =>
+                var task = _native.PublishAsync(data);
+                task.ContinueWith(completed =>
                 {
-                    if (completed.IsFaulted)
-                    {
-                        var error = completed.Exception?.GetBaseException()?.Message ?? "publish failed";
-                        GP_Logger.Info("Centrifugo", "publish: " + error);
-                        onDone?.Invoke(false);
-                    }
-                    else
-                        onDone?.Invoke(true);
+                    var error = completed.Exception?.GetBaseException()?.Message;
+                    if (completed.IsCanceled || completed.IsFaulted)
+                        error = error ?? "delivery_unknown";
+                    if (onDone != null) NativeMainThread.Run(() => onDone(error));
                 });
-            });
+            }
+            catch (Exception exception) { onDone?.Invoke(exception.Message); }
 #endif
         }
 
@@ -325,9 +338,7 @@ namespace GamePush.Native
         static extern void GP_NativeWs_Subscribe(string channel, string token);
 
         [System.Runtime.InteropServices.DllImport("__Internal")]
-        static extern void GP_NativeWs_Publish(string channel, string base64);
-        [System.Runtime.InteropServices.DllImport("__Internal")]
-        static extern int GP_NativeWs_IsConnected();
+        static extern int GP_NativeWs_Publish(string channel, string base64, int ticket);
 
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void GP_NativeWs_Unsubscribe(string channel);
@@ -358,11 +369,33 @@ namespace GamePush.Native
             GP_NativeWs_Subscribe(channel, token);
         }
 
-        public static bool Publish(string channel, byte[] data)
+        static int _nextTicket;
+        static readonly Dictionary<int, Action<string>> Publications = new Dictionary<int, Action<string>>();
+
+        public static void Publish(string channel, byte[] data, Action<string> onDone)
         {
-            if (GP_NativeWs_IsConnected() == 0) return false;
-            GP_NativeWs_Publish(channel, Convert.ToBase64String(data ?? Array.Empty<byte>()));
-            return true;
+            int ticket = 0;
+            if (onDone != null)
+            {
+                do { ticket = unchecked(++_nextTicket); }
+                while (ticket == 0 || Publications.ContainsKey(ticket));
+                Publications.Add(ticket, onDone);
+            }
+            if (GP_NativeWs_Publish(channel, Convert.ToBase64String(data), ticket) == 0 && onDone != null)
+            {
+                Publications.Remove(ticket);
+                onDone("not_sent");
+            }
+        }
+
+        public static void HandlePublishResult(string result)
+        {
+            int split = result.IndexOf('|');
+            if (split < 0 || !int.TryParse(result.Substring(0, split), out var ticket) ||
+                !Publications.TryGetValue(ticket, out var callback)) return;
+            Publications.Remove(ticket);
+            var error = result.Substring(split + 1);
+            NativeMainThread.Run(() => callback(error.Length == 0 ? null : error));
         }
 
         public static void Unsubscribe(string channel)
@@ -395,7 +428,7 @@ namespace GamePush.Native
             var data = string.IsNullOrEmpty(b64) ? Array.Empty<byte>() : Convert.FromBase64String(b64);
             if (Pubs.TryGetValue(channel, out var pub))
                 pub(data);
-            else
+            else if (channel.Length == 0)
             {
                 foreach (var pair in Pubs)
                     pair.Value(data);
@@ -406,7 +439,7 @@ namespace GamePush.Native
         {
             if (Subs.TryGetValue(channel ?? "", out var sub))
                 sub();
-            else
+            else if (string.IsNullOrEmpty(channel))
             {
                 foreach (var pair in Subs)
                     pair.Value();
@@ -418,6 +451,8 @@ namespace GamePush.Native
     {
         public void OnNativeWsOpen(string _) => GpWebSocketBridge.HandleOpen();
         public void OnNativeWsClose(string reason) => GpWebSocketBridge.HandleClose(reason);
+        [UnityEngine.Scripting.Preserve]
+        public void OnNativeWsPublishResult(string result) => GpWebSocketBridge.HandlePublishResult(result);
         public void OnNativeWsReconnecting(string reason) => GpWebSocketBridge.HandleReconnecting(reason);
         public void OnNativeWsMessage(string payload) => GpWebSocketBridge.HandleMessage(payload);
         public void OnNativeWsSubscribed(string channel) => GpWebSocketBridge.HandleSubscribed(channel);

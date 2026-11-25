@@ -1566,7 +1566,11 @@ namespace GamePush
         private void CallOnSendMessageError() => OnSendMessageError?.Invoke();
 
 
-        private void CallOnMessage(string data) => OnMessage?.Invoke(new GP_Data(data));
+        private void CallOnMessage(string data)
+        {
+            OnMessage?.Invoke(new GP_Data(data));
+            NativeChannelsRealtime.AcceptChannelMessage(data);
+        }
 
 
         private void CallOnEditMessageSuccess(string data) => OnEditMessageSuccess?.Invoke(new GP_Data(data));

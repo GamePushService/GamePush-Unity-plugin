@@ -12,6 +12,7 @@ namespace GamePush.Native
         public const float HeartbeatInterval = 1f;
         public const float HeartbeatTimeout = 4f;
         public const float HostHeartbeatTimeout = 5f;
+        const float StalledConnectionTimeout = 2f * HostHeartbeatTimeout;
         public const float HostDiscoverDelay = 1.25f;
         public const float HostRecheckInterval = 60f;
         public const float ReconnectGrace = 2.5f;
@@ -112,8 +113,13 @@ namespace GamePush.Native
 
         public void HandleMessage(NativeMultiplayerWireMessage message)
         {
-            if (!_active || message == null || message.SenderId <= 0)
+            if (message == null || message.SenderId <= 0) return;
+            if (!_active)
+            {
+                if (message.Type == NativeMultiplayerWire.CustomEvent && message.SenderId != NativePlayer.Id)
+                    HandleCustom(message.SenderId, message.Payload);
                 return;
+            }
             _lastBeat[message.SenderId] = Time.realtimeSinceStartup;
             switch (message.Type)
             {
@@ -499,11 +505,11 @@ namespace GamePush.Native
                 return;
             }
             _lastTimeoutCheck = now;
-            if (_hostId != 0 && _selfEchoLastAt > 0f && now - _selfEchoLastAt > HostHeartbeatTimeout)
+            if (_selfEchoLastAt > 0f && now - _selfEchoLastAt > HostHeartbeatTimeout)
             {
-                GP_Logger.Info("Multiplayer", "self-echo delayed " +
-                               ((now - _selfEchoLastAt) * 1000f).ToString("0", CultureInfo.InvariantCulture) +
-                               "ms — skip peer timeouts");
+                // Without a round trip to the server, stale peer heartbeats cannot identify a dropped player.
+                if (now - _selfEchoLastAt >= StalledConnectionTimeout)
+                    _transport.RecoverStalledConnection();
                 return;
             }
             var dead = new List<int>();

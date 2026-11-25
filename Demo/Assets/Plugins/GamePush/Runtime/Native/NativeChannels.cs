@@ -133,6 +133,13 @@ namespace GamePush.Native
 
         public static void FetchMembers(FetchMembersFilter filter)
         {
+            FetchMembers(filter, data => GP_Channels.NativeFireFetchMembers(data, false),
+                GP_Channels.NativeFireFetchMembersError);
+        }
+
+        internal static void FetchMembers(FetchMembersFilter filter, Action<GP_Data> onDone,
+            Action onError)
+        {
             Run(async () =>
             {
                 var input = new Dictionary<string, object>
@@ -158,8 +165,8 @@ namespace GamePush.Native
                 }
                 sb.Append(']');
                 var payload = sb.ToString();
-                NativeMainThread.Run(() => GP_Channels.NativeFireFetchMembers(new GP_Data(payload), false));
-            }, () => GP_Channels.NativeFireFetchMembersError());
+                NativeMainThread.Run(() => onDone(new GP_Data(payload)));
+            }, onError);
         }
 
         static Dictionary<string, object> Acl(object acl)

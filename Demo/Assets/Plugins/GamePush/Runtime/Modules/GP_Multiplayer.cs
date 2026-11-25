@@ -14,9 +14,13 @@ namespace GamePush
         private sealed class ActiveOperation<T>
         {
             public int Generation;
+            public CancellationToken Token;
+            public NativeMultiplayerBuffer Buffer;
             public TaskCompletionSource<T> Completion;
             public CancellationTokenRegistration Cancellation = default;
         }
+
+        internal static NativeMultiplayerBuffer JoinBuffer => _connectOperation?.Buffer;
 
         private static int _operationGeneration;
         private static ActiveOperation<MultiplayerConnectResultData> _connectOperation;
@@ -27,6 +31,8 @@ namespace GamePush
         private static event UnityAction<GP_Data> _connectError;
         private static event UnityAction<GP_Data> _disconnectError;
         private static event UnityAction<GP_Data> _sendStateError;
+        private static event UnityAction<GP_Data> _sendMessageError;
+        private static event UnityAction<GP_Data> _receiveMessageError;
         private static event UnityAction<GP_Data> _playerJoined;
         private static event UnityAction<GP_Data> _playerLeft;
         private static event UnityAction<GP_Data> _playersUpdated;
@@ -120,6 +126,17 @@ namespace GamePush
             operation.Completion.TrySetCanceled();
         }
 
+        private static async Task<MultiplayerConnectResultData> AwaitJoin(ActiveOperation<MultiplayerConnectResultData> operation)
+        {
+            try { return await operation.Completion.Task; }
+            catch
+            {
+                NativeMultiplayer.CancelJoin(operation.Buffer);
+                operation.Cancellation.Dispose();
+                throw;
+            }
+        }
+
         private static void CancelDisconnect(ActiveOperation<bool> operation)
         {
             if (!ReferenceEquals(_disconnectOperation, operation)) return;
@@ -170,13 +187,18 @@ namespace GamePush
             string payload = JsonUtility.ToJson(query ?? new MultiplayerChannelQuery());
             if (UseJsTokens)
             {
+                if (NativeMultiplayer.IsConnected)
+                    return CreateFaultedTask<MultiplayerConnectResultData>(new InvalidOperationException("Already connected to a room"));
                 ActiveOperation<MultiplayerConnectResultData> operation;
                 try { operation = BeginOperation(ref _connectOperation); }
                 catch (Exception exception) { return CreateFaultedTask<MultiplayerConnectResultData>(exception); }
+                operation.Buffer = new NativeMultiplayerBuffer { ChannelId = query?.channelId ?? 0 };
+                operation.Token = cancellationToken;
+                var join = AwaitJoin(operation);
                 if (cancellationToken.CanBeCanceled)
                     operation.Cancellation = cancellationToken.Register(() => CancelConnect(operation));
                 if (!ReferenceEquals(_connectOperation, operation))
-                    return operation.Completion.Task;
+                    return join;
                 NativePlayer.Adopt(GP_Player.GetID(), GP_Player.GetName());
 #if UNITY_EDITOR
                 if (!GP_Play2Web.Call("Multiplayer_Connect", payload, operation.Generation))
@@ -188,7 +210,7 @@ namespace GamePush
                     CompleteError(ref _connectOperation, operation.Generation, exception.Message);
                 }
 #endif
-                return operation.Completion.Task;
+                return join;
             }
             if (NativeSession)
                 return NativeMultiplayer.Connect(query, cancellationToken);
@@ -211,6 +233,12 @@ namespace GamePush
                     operation.Cancellation = cancellationToken.Register(() => CancelDisconnect(operation));
                 if (!ReferenceEquals(_disconnectOperation, operation))
                     return operation.Completion.Task;
+                var joining = _connectOperation;
+                if (joining != null)
+                {
+                    CancelConnect(joining);
+                    joining.Cancellation.Dispose();
+                }
                 NativeMultiplayer.CloseLocal();
 #if UNITY_EDITOR
                 if (!GP_Play2Web.Call("Multiplayer_Disconnect", payload, operation.Generation))
@@ -471,6 +499,12 @@ namespace GamePush
                 case "error:sendState":
                     _sendStateError += callback;
                     break;
+                case "error:sendMessage":
+                    _sendMessageError += callback;
+                    break;
+                case "error:receiveMessage":
+                    _receiveMessageError += callback;
+                    break;
                 case "playerJoined":
                     _playerJoined += callback;
                     break;
@@ -510,6 +544,12 @@ namespace GamePush
                     break;
                 case "error:sendState":
                     _sendStateError -= callback;
+                    break;
+                case "error:sendMessage":
+                    _sendMessageError -= callback;
+                    break;
+                case "error:receiveMessage":
+                    _receiveMessageError -= callback;
                     break;
                 case "playerJoined":
                     _playerJoined -= callback;
@@ -590,6 +630,12 @@ namespace GamePush
                     break;
                 case "error:sendState":
                     _sendStateError?.Invoke(data);
+                    break;
+                case "error:sendMessage":
+                    _sendMessageError?.Invoke(data);
+                    break;
+                case "error:receiveMessage":
+                    _receiveMessageError?.Invoke(data);
                     break;
                 case "playerJoined":
                     _playerJoined?.Invoke(data);
@@ -683,7 +729,7 @@ namespace GamePush
             {
                 NativePlayer.Adopt(GP_Player.GetID(), GP_Player.GetName());
                 MultiplayerConnectResultData result =
-                    await NativeMultiplayer.ConnectWithTransport(envelope.data, CancellationToken.None);
+                    await NativeMultiplayer.ConnectWithTransport(envelope.data, _connectOperation?.Token ?? CancellationToken.None);
                 if (envelope.generation == 0 ||
                     CompleteSuccess(ref _connectOperation, envelope.generation, result))
                     _liveConnected = true;

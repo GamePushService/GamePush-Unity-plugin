@@ -44,17 +44,22 @@ namespace GamePush.Overlays.Views
         readonly Dictionary<string, int> _index = new Dictionary<string, int>();
 
         GP_ChatArgs _args = new GP_ChatArgs();
+        int _bindingVersion;
         bool _loadingMore;
         bool _membersVisible;
         float _keyboardInset;
 
         public override void Bind(object args)
         {
+            int bindingVersion = ++_bindingVersion;
+            NativeChannelsRealtime.Stop();
             _args = args as GP_ChatArgs ?? new GP_ChatArgs();
+            _loadingMore = false;
             _messages.Clear();
             _index.Clear();
             _membersVisible = false;
             messageList?.Clear();
+            memberList?.Clear();
 
             SetTitle(_args.scope == NativeChatScope.Feed ? GP_OverlayStrings.Feed : GP_OverlayStrings.Chat);
             ShowLoading();
@@ -76,6 +81,7 @@ namespace GamePush.Overlays.Views
 
             if (messageList != null)
             {
+                messageList.OnNeedMore -= LoadMore;
                 messageList.OnNeedMore += LoadMore;
                 messageList.SetCanLoadMore(true);
             }
@@ -103,7 +109,10 @@ namespace GamePush.Overlays.Views
                 membersTitle.text = GP_OverlayStrings.Members;
 
             if (layoutMode != null)
+            {
+                layoutMode.ModeChanged -= OnModeChanged;
                 layoutMode.ModeChanged += OnModeChanged;
+            }
             ApplyMembersVisibility();
 
             // Reopening a chat of a different scope rebinds this view instead of creating a new
@@ -119,10 +128,16 @@ namespace GamePush.Overlays.Views
 
             NativeChannels.EnsureJoined(_args.target, () =>
             {
+                if (bindingVersion != _bindingVersion)
+                    return;
+
                 LoadPage(0, true);
                 LoadMembers();
             }, error =>
             {
+                if (bindingVersion != _bindingVersion)
+                    return;
+
                 ShowError(error);
                 GP_Channels.NativeFireOpenChatError();
             });
@@ -130,6 +145,7 @@ namespace GamePush.Overlays.Views
 
         protected override void OnClosing()
         {
+            _bindingVersion++;
             NativeChannelsRealtime.MessageReceived -= OnLiveMessage;
             NativeChannelsRealtime.Stop();
             if (messageList != null)
@@ -201,21 +217,28 @@ namespace GamePush.Overlays.Views
 
         void LoadPage(int offset, bool initial)
         {
+            int bindingVersion = _bindingVersion;
             NativeChannels.FetchMessagesForOverlay(_args.scope, _args.target, _args.tags, PageSize, offset,
                 page =>
                 {
+                    if (bindingVersion != _bindingVersion)
+                        return;
+
                     _loadingMore = false;
                     Merge(page.items);
                     messageList?.SetCanLoadMore(page.more);
                     Render(initial);
                     if (initial)
                     {
-                        GP_Channels.NativeFireOpenChat();
                         NativeChannelsRealtime.Watch(_args.scope, _args.target, _args.tags, _messages);
+                        GP_Channels.NativeFireOpenChat();
                     }
                 },
                 error =>
                 {
+                    if (bindingVersion != _bindingVersion)
+                        return;
+
                     _loadingMore = false;
                     if (initial)
                     {
@@ -295,12 +318,20 @@ namespace GamePush.Overlays.Views
             input.text = "";
             input.ActivateInputField();
 
+            int bindingVersion = _bindingVersion;
             NativeChannels.SendMessage(_args.scope, _args.target, text, _args.tags, message =>
             {
+                if (bindingVersion != _bindingVersion)
+                    return;
+
                 NativeChannelsRealtime.Acknowledge(message);
                 Merge(new List<NativeChatMessage> { message });
                 Render(true);
-            }, ShowError);
+            }, error =>
+            {
+                if (bindingVersion == _bindingVersion)
+                    ShowError(error);
+            });
         }
 
         void Delete(NativeChatMessage message)
@@ -320,15 +351,16 @@ namespace GamePush.Overlays.Views
         {
             if (memberList == null)
                 return;
-            GP_Channels.OnFetchMembers += OnMembers;
-            GP_Channels.FetchMembers(new FetchMembersFilter(_args.target));
+            int bindingVersion = _bindingVersion;
+            NativeChannels.FetchMembers(new FetchMembersFilter(_args.target), data =>
+            {
+                if (bindingVersion == _bindingVersion)
+                    BindMembers(data);
+            }, null);
         }
 
-        void OnMembers(GP_Data data, bool more)
+        void BindMembers(GP_Data data)
         {
-            GP_Channels.OnFetchMembers -= OnMembers;
-            if (memberList == null)
-                return;
             var items = GpJson.SplitArray(data?.Data);
             memberList.Bind(items.Count, (row, index) =>
             {
