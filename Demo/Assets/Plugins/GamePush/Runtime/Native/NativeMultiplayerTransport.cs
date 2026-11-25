@@ -47,11 +47,10 @@ namespace GamePush.Native
                                          " state=" + stateChannel +
                                          " tokenLen=" + (token == null ? 0 : token.Length));
 
-            const TaskCreationOptions continuation = TaskCreationOptions.RunContinuationsAsynchronously;
-            var connected = new TaskCompletionSource<bool>(continuation);
-            var hostReady = new TaskCompletionSource<bool>(continuation);
-            var stateReady = new TaskCompletionSource<bool>(continuation);
-            var dropped = new TaskCompletionSource<string>(continuation);
+            var connected = new TaskCompletionSource<bool>();
+            var hostReady = new TaskCompletionSource<bool>();
+            var stateReady = new TaskCompletionSource<bool>();
+            var dropped = new TaskCompletionSource<string>();
             var ready = Task.WhenAll(connected.Task, hostReady.Task, stateReady.Task);
             using (cancellationToken.Register(() =>
             {
