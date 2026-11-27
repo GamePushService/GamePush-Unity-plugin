@@ -6,10 +6,7 @@ using GamePush;
 namespace GamePush.Native
 {
     /// <summary>
-    /// Keeps an open chat live. The GamePush GraphQL API exposes no subscription token for chat
-    /// channels (unlike multiplayer, which hands them out via ConnectPlayerMultiplayer), so new
-    /// messages are picked up by re-reading the newest page on an interval. Watch/Stop are the seam:
-    /// swapping in a Centrifugo subscription later only touches this file.
+    /// Updates the open chat from SDK channel events and polls history for missed messages.
     /// </summary>
     public static class NativeChannelsRealtime
     {
@@ -21,6 +18,7 @@ namespace GamePush.Native
         static string _tags = "";
         static readonly HashSet<string> Seen = new HashSet<string>();
         static bool _busy;
+        static int _watchVersion;
 
         public static event Action<NativeChatMessage> MessageReceived;
 
@@ -29,6 +27,8 @@ namespace GamePush.Native
         public static void Watch(NativeChatScope scope, int target, string tags,
             IEnumerable<NativeChatMessage> known)
         {
+            _watchVersion++;
+            _busy = false;
             _scope = scope;
             _target = target;
             _tags = tags ?? "";
@@ -56,6 +56,7 @@ namespace GamePush.Native
 
         public static void Stop()
         {
+            _watchVersion++;
             if (_pump != null)
                 _pump.enabled = false;
             Seen.Clear();
@@ -69,18 +70,34 @@ namespace GamePush.Native
                 Seen.Add(message.id);
         }
 
+        internal static void AcceptChannelMessage(string json)
+        {
+            // Filtered chats still use the history request, which applies the server's tag rules.
+            if (!IsWatching || _scope != NativeChatScope.Channel || _tags.Length != 0)
+                return;
+
+            var message = NativeChannels.ParseMessage(json);
+            if (message.channelId == _target && !string.IsNullOrEmpty(message.id) && Seen.Add(message.id))
+                MessageReceived?.Invoke(message);
+        }
+
         internal static void Poll()
         {
             if (_busy || !NativeCore.Ready)
                 return;
             _busy = true;
+            int watchVersion = _watchVersion;
             NativeChannels.FetchMessagesForOverlay(_scope, _target, _tags, 25, 0, page =>
             {
+                // A completed request may belong to a chat that has already closed.
+                if (watchVersion != _watchVersion)
+                    return;
+
                 _busy = false;
                 if (page?.items == null)
                     return;
                 // The API returns newest first; replay in chronological order.
-                for (var i = page.items.Count - 1; i >= 0; i--)
+                for (var i = page.items.Count - 1; i >= 0 && watchVersion == _watchVersion; i--)
                 {
                     var message = page.items[i];
                     if (string.IsNullOrEmpty(message.id) || !Seen.Add(message.id))
@@ -88,7 +105,11 @@ namespace GamePush.Native
                     GP_Channels.NativeFireIncomingMessage(message.json);
                     MessageReceived?.Invoke(message);
                 }
-            }, _ => _busy = false);
+            }, _ =>
+            {
+                if (watchVersion == _watchVersion)
+                    _busy = false;
+            });
         }
     }
 

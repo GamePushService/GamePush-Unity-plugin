@@ -18,6 +18,8 @@ namespace GamePush.Native
         static NativeMultiplayerSession _session;
         static NativePump _pump;
 
+        static NativeMultiplayerBuffer _room;
+        static NativeMultiplayerBuffer PendingRoom => _room ?? GP_Multiplayer.JoinBuffer;
         static bool _connected;
         static bool _connecting;
         static int _channelId;
@@ -56,22 +58,26 @@ namespace GamePush.Native
             if (_connected)
                 throw new InvalidOperationException("Already connected to a room");
 
+            var room = _room = new NativeMultiplayerBuffer();
             _connecting = true;
             try
             {
-                _channelId = query != null ? query.channelId : 0;
+                _channelId = room.ChannelId = query != null ? query.channelId : 0;
                 var json = await NativeCore.Client.Fetch(NativeQueries.ConnectMultiplayer,
                     new Dictionary<string, object> { ["channelId"] = _channelId });
                 cancellationToken.ThrowIfCancellationRequested();
+                if (_room != room) throw new OperationCanceledException();
                 var result = NativeRun.Result(json);
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                     throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "connect_problem");
                 await OpenSession(result, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (_room != room) throw new OperationCanceledException();
                 return FinishConnect();
             }
             catch (Exception exception)
             {
-                _connecting = false;
+                if (_room != room) throw;
                 Cleanup(false);
                 NativeMainThread.Run(() => GP_Multiplayer.NativeEmit("error:connect",
                     new GP_Data("{\"message\":\"" + GpJson.Escape(exception.Message) + "\"}")));
@@ -88,6 +94,7 @@ namespace GamePush.Native
             if (_connected)
                 throw new InvalidOperationException("Already connected to a room");
 
+            var room = _room = GP_Multiplayer.JoinBuffer ?? new NativeMultiplayerBuffer();
             _connecting = true;
             try
             {
@@ -95,8 +102,8 @@ namespace GamePush.Native
                 if (GpJson.TryGetString(result, "__typename", out var typeName) && typeName == "Problem")
                     throw new Exception(GpJson.TryGetString(result, "message", out var msg) ? msg : "connect_problem");
                 var channelId = GpJson.GetInt(result, "channelId");
-                if (channelId > 0)
-                    _channelId = channelId;
+                if (channelId > 0) room.ChannelId = channelId;
+                _channelId = room.ChannelId;
                 var playerId = GpJson.GetInt(result, "playerId");
                 var playerName = GpJson.TryGetString(result, "playerName", out var name) ? name : "";
                 if (playerId > 0)
@@ -104,11 +111,13 @@ namespace GamePush.Native
                 if (NativePlayer.Id <= 0)
                     throw new Exception("Play2Web player id missing");
                 await OpenSession(result, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (_room != room) throw new OperationCanceledException();
                 return FinishConnect();
             }
             catch (Exception exception)
             {
-                _connecting = false;
+                if (_room != room) throw;
                 Cleanup(false);
                 NativeMainThread.Run(() => GP_Multiplayer.NativeEmit("error:connect",
                     new GP_Data("{\"message\":\"" + GpJson.Escape(exception.Message) + "\"}")));
@@ -171,7 +180,7 @@ namespace GamePush.Native
                     _stateManager.SendFullSnapshot();
             };
             _session.HostChanged += HandleHostChanged;
-            _session.CustomEvent += EmitCustom;
+            _session.CustomEvent += ReceiveCustom;
             _session.PageUnfrozen += frozenMs =>
             {
                 GP_Logger.Info("Multiplayer", "Resyncing state after " +
@@ -213,15 +222,15 @@ namespace GamePush.Native
             _peerActiveLastTick = false;
             _nextSnapshotRequestAt = 0f;
             _lastSnapshotResponseAt = float.NegativeInfinity;
+            int generation = _authorityGeneration;
             GP_Multiplayer.NativeEmit("awaitingHost");
-            if (newHost <= 0) return;
+            if (newHost <= 0 || generation != _authorityGeneration) return;
             if (_session.IsHost)
             {
                 _authorityReady = true;
                 _stateManager.StartSending();
                 EmitAuthorityReady();
-                InitMissingPlayers();
-                _stateManager.SendFullSnapshot();
+                if (IsReady && IsHost) _stateManager.SendFullSnapshot();
             }
             else RequestHostSnapshot();
         }
@@ -240,19 +249,41 @@ namespace GamePush.Native
             if (_authorityReady || _transport?.IsLive != true || _session.HostId <= 0 ||
                 _session.IsHost || !_synchronizer.HasHostSnapshot) return;
             _authorityReady = true;
-            EmitAuthorityReady();
+            ApplyBufferedPlayerChanges();
             // A new host needs a complete current state, not a delta addressed to its predecessor.
             _pendingPeerState = _synchronizer.MyState;
             _pendingPeerStateFlushed = false;
+            EmitAuthorityReady();
         }
 
         static void EmitAuthorityReady()
         {
-            if (_pendingOldHost > 0 && _pendingOldHost != _session.HostId)
-                GP_Multiplayer.NativeEmit("hostMigrated", new GP_Data(
-                    "{\"oldHost\":" + _pendingOldHost + ",\"newHost\":" + _session.HostId + "}"));
-            GP_Multiplayer.NativeEmit(_session.IsHost ? "becameHost" : "becamePeer");
-            _pendingOldHost = 0;
+            var room = _room;
+            int generation = _authorityGeneration;
+            room.Holding = true;
+            room.PreparingHost = IsHost;
+            try
+            {
+                int oldHost = _pendingOldHost;
+                _pendingOldHost = 0;
+                if (oldHost > 0 && oldHost != HostId)
+                    GP_Multiplayer.NativeEmit("hostMigrated", new GP_Data(
+                        "{\"oldHost\":" + oldHost + ",\"newHost\":" + HostId + "}"));
+                if (_authorityGeneration == generation && IsReady)
+                    GP_Multiplayer.NativeEmit(IsHost ? "becameHost" : "becamePeer");
+                if (generation == _authorityGeneration && IsHost)
+                {
+                    room.PreparingHost = false;
+                    InitMissingPlayers();
+                    if (generation == _authorityGeneration) ApplyBufferedPlayerChanges();
+                }
+            }
+            finally
+            {
+                room.PreparingHost = false;
+                room.Holding = false;
+            }
+            FlushMessages(room);
         }
 
         static MultiplayerConnectResultData FinishConnect()
@@ -263,7 +294,9 @@ namespace GamePush.Native
             _pendingPeerStateFlushed = true;
             _peerActiveLastTick = false;
             _lastSnapshotResponseAt = 0f;
+            var room = _room;
             _session.Start();
+            if (room != _room) throw new OperationCanceledException();
             EnsurePump();
             Application.runInBackground = true;
             _connected = true;
@@ -274,6 +307,12 @@ namespace GamePush.Native
                                           " tickRate=" + TickRate +
                                           " globalDivider=" + _synchronizer.GlobalTickDivider);
             return new MultiplayerConnectResultData { success = true };
+        }
+
+        internal static void CancelJoin(NativeMultiplayerBuffer room)
+        {
+            if (_connecting && ReferenceEquals(room, _room)) Cleanup(false);
+            else room.Cancel();
         }
 
         public static void CloseLocal() => Cleanup(false);
@@ -338,8 +377,13 @@ namespace GamePush.Native
 
         public static void SetPlayerState(string state)
         {
-            if (!IsReady || _synchronizer == null)
+            if (!IsReady || (IsHost && (_room.PreparingHost || InitializingPlayers.Contains(NativePlayer.Id))))
+            {
+                var room = PendingRoom;
+                if (room != null && !GpJson.IsEmptyObject(state))
+                    room.PlayerChanges = GpJson.ComposeDelta(room.PlayerChanges, state);
                 return;
+            }
             var incoming = string.IsNullOrEmpty(state) ? "{}" : state;
             incoming = GP_NativeSchema.FilterReadonly(incoming, _synchronizer.MyState, _synchronizer.PlayerSchema);
             if (!GpJson.HasPartialChanges(incoming, _synchronizer.MyState))
@@ -358,6 +402,14 @@ namespace GamePush.Native
             }
         }
 
+        static void ApplyBufferedPlayerChanges()
+        {
+            if (!IsReady || (IsHost && (_room.PreparingHost || InitializingPlayers.Contains(NativePlayer.Id)))) return;
+            var changes = _room.PlayerChanges;
+            _room.PlayerChanges = null;
+            if (changes != null) SetPlayerState(changes);
+        }
+
         public static void SetGlobalState(string state)
         {
             if (!IsReady || !_session.IsHost || _synchronizer == null)
@@ -369,8 +421,52 @@ namespace GamePush.Native
 
         public static void SendMessage(string eventName, string data, string options)
         {
-            if (!IsReady || _transport == null)
+            SubmitMessage(new NativeMultiplayerBuffer.Message { Name = eventName, Data = data, Options = options });
+        }
+
+        static void ReceiveCustom(int sender, string eventName, string data)
+        {
+            SubmitMessage(new NativeMultiplayerBuffer.Message {
+                Sender = sender, Name = eventName, Data = data,
+                Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            });
+        }
+
+        static void SubmitMessage(NativeMultiplayerBuffer.Message message)
+        {
+            var room = PendingRoom;
+            message.ChannelId = room?.ChannelId ?? 0;
+            if (room == null)
+                message.ReportError("not_connected");
+            else if (!IsReady || room.Holding || room.HasMessages)
+                room.Enqueue(message);
+            else
+                DispatchMessage(message);
+        }
+
+        static void FlushMessages(NativeMultiplayerBuffer room)
+        {
+            if (room == null || room.Holding || !room.HasMessages) return;
+            room.Holding = true;
+            try
+            {
+                // Bound callback-generated work in a single frame.
+                for (int i = 0; i < 128 && room == _room && IsReady && room.HasMessages; i++)
+                    DispatchMessage(room.Dequeue());
+            }
+            finally { room.Holding = false; }
+        }
+
+        static void DispatchMessage(NativeMultiplayerBuffer.Message message)
+        {
+            var eventName = message.Name;
+            var data = message.Data;
+            if (message.Sender != 0)
+            {
+                EmitCustom(message.Sender, eventName, data, message.Timestamp);
                 return;
+            }
+            var options = message.Options;
             var target = "all";
             var echo = false;
             if (!string.IsNullOrEmpty(options) && options != "undefined")
@@ -389,14 +485,14 @@ namespace GamePush.Native
                           ",\"target\":" + (int.TryParse(target, NumberStyles.Integer,
                               CultureInfo.InvariantCulture, out var targetId)
                               ? targetId.ToString(CultureInfo.InvariantCulture) : GpJson.Quote(target)) + "}";
-            _transport.Send(NativeMultiplayerWire.CustomEvent, payload, NativePlayer.Id);
+            _transport.SendCustom(payload, NativePlayer.Id, message.ReportError);
             if (echo || target == NativePlayer.Id.ToString(CultureInfo.InvariantCulture))
-                EmitCustom(NativePlayer.Id, eventName, data);
+                EmitCustom(NativePlayer.Id, eventName, data, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         }
 
         public static void NotifyInitializerChanged()
         {
-            if (_connected && _session != null && _session.IsHost)
+            if (IsReady && IsHost && !_room.PreparingHost)
                 InitMissingPlayers();
         }
 
@@ -426,7 +522,10 @@ namespace GamePush.Native
         {
             if (!_connected || _synchronizer == null || _session == null)
                 return;
-            _session.Tick(now);
+            var session = _session;
+            session.Tick(now);
+            FlushMessages(_room);
+            if (_session != session) return;
             if (!_authorityReady) RequestHostSnapshot();
             if (!_session.IsHost)
                 _synchronizer.SampleInterpolation(now * 1000.0);
@@ -488,7 +587,9 @@ namespace GamePush.Native
                 GP_Logger.Warn("Multiplayer", "Dropped wire message with unknown type=" + message.Type);
                 return;
             }
-            _session.HandleMessage(message);
+            var session = _session;
+            session.HandleMessage(message);
+            if (session != _session) return;
             switch (message.Type)
             {
                 case NativeMultiplayerWire.StateUpdate:
@@ -512,7 +613,7 @@ namespace GamePush.Native
                         _synchronizer.HandleHostGlobalDelta(message.Payload, message.Seq, message.Timestamp);
                     break;
             }
-            CompletePeerSynchronization();
+            if (session == _session) CompletePeerSynchronization();
         }
 
         static void HandleTransportReconnect()
@@ -570,26 +671,31 @@ namespace GamePush.Native
                 }
                 finally
                 {
-                    if (generation == _authorityGeneration) InitializingPlayers.Remove(pair.Key);
+                    if (generation == _authorityGeneration)
+                    {
+                        InitializingPlayers.Remove(pair.Key);
+                        if (pair.Key == NativePlayer.Id) ApplyBufferedPlayerChanges();
+                    }
                 }
             }
             if (changed && _session != null && _session.IsHost)
                 _stateManager.SendFullSnapshot();
         }
 
-        static void EmitCustom(int sender, string eventName, string data)
+        static void EmitCustom(int sender, string eventName, string data, long timestamp)
         {
-            if (!IsReady) return;
             var json = "{\"eventName\":" + GpJson.Quote(eventName ?? "") +
                        ",\"senderId\":" + GpJson.Quote(sender.ToString(CultureInfo.InvariantCulture)) +
                        ",\"data\":" + GpJson.Quote(data ?? "null") +
-                       ",\"timestamp\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "}";
+                       ",\"timestamp\":" + timestamp + "}";
             GP_Logger.Info("Wire", "t=5 event=" + eventName + " from=" + sender);
             GP_Multiplayer.NativeEmit("customEvent", new GP_Data(json));
         }
 
         static void Cleanup(bool emit)
         {
+            var room = _room;
+            _room = null;
             _authorityGeneration++;
             InitializingPlayers.Clear();
             _connected = false;
@@ -614,6 +720,7 @@ namespace GamePush.Native
                 UnityEngine.Object.Destroy(_pump);
                 _pump = null;
             }
+            room?.Cancel();
             if (emit)
                 GP_Multiplayer.NativeEmit("disconnect", new GP_Data("{\"reason\":\"cleanup\"}"));
         }

@@ -20,6 +20,8 @@ namespace GamePush.Native
         bool _socketReady;
         bool _everReady;
         int _loggedWire;
+        string _credentials;
+        CancellationTokenSource _recovery;
 
         public bool IsLive => _live && _socketReady && _centrifuge != null &&
                               _hostSub?.IsSubscribed == true && _stateSub?.IsSubscribed == true;
@@ -27,6 +29,7 @@ namespace GamePush.Native
         public async Task Connect(string credentialsJson, CancellationToken cancellationToken)
         {
             NativeMainThread.Ensure();
+            _credentials = credentialsJson;
             var connection = GpJson.GetObject(credentialsJson, "connection");
             var hostInfo = GpJson.GetObject(credentialsJson, "hostSubscription");
             var stateInfo = GpJson.GetObject(credentialsJson, "stateSubscription");
@@ -47,6 +50,8 @@ namespace GamePush.Native
             var connected = new TaskCompletionSource<bool>();
             var hostReady = new TaskCompletionSource<bool>();
             var stateReady = new TaskCompletionSource<bool>();
+            var dropped = new TaskCompletionSource<string>();
+            var ready = Task.WhenAll(connected.Task, hostReady.Task, stateReady.Task);
             using (cancellationToken.Register(() =>
             {
                 connected.TrySetCanceled();
@@ -54,56 +59,70 @@ namespace GamePush.Native
                 stateReady.TrySetCanceled();
             }))
             {
-                _centrifuge = new NativeCentrifugo();
-                _centrifuge.Connected += () =>
+                var client = _centrifuge = new NativeCentrifugo();
+                client.Connected += () =>
                 {
+                    if (!ReferenceEquals(_centrifuge, client)) return;
                     GP_Logger.Info("Centrifugo", "connected");
                     _socketReady = true;
                     connected.TrySetResult(true);
                     UpdateReadiness();
                 };
-                _centrifuge.Reconnecting += () =>
+                client.Reconnecting += () =>
                 {
-                    _live = false;
-                    _socketReady = false;
-                    _hostSub?.MarkUnsubscribed();
-                    _stateSub?.MarkUnsubscribed();
-                    Reconnecting?.Invoke();
+                    if (ReferenceEquals(_centrifuge, client))
+                        MarkReconnecting();
                 };
-                _centrifuge.Reconnected += () =>
+                client.Reconnected += () =>
                 {
+                    if (!ReferenceEquals(_centrifuge, client)) return;
                     _socketReady = true;
                     UpdateReadiness();
                 };
-                _centrifuge.Disconnected += reason =>
+                client.Disconnected += reason =>
                 {
+                    if (!ReferenceEquals(_centrifuge, client)) return;
                     _live = false;
                     _socketReady = false;
-                    Disconnected?.Invoke(reason);
+                    if (ready.IsCompletedSuccessfully)
+                        Disconnected?.Invoke(reason);
+                    else
+                        dropped.TrySetResult(reason);
                 };
-                _hostSub = _centrifuge.Subscribe(hostChannel, hostToken);
-                _stateSub = _centrifuge.Subscribe(stateChannel, stateToken);
-                _hostSub.Publication += OnBytes;
-                _stateSub.Publication += OnBytes;
+                _hostSub = client.Subscribe(hostChannel, hostToken);
+                _stateSub = client.Subscribe(stateChannel, stateToken);
+                _hostSub.Publication += OnPublication;
+                _stateSub.Publication += OnPublication;
+
+                void OnPublication(byte[] data)
+                {
+                    if (ReferenceEquals(_centrifuge, client))
+                        OnBytes(data);
+                }
+
                 _hostSub.Subscribed += () =>
                 {
+                    if (!ReferenceEquals(_centrifuge, client)) return;
                     GP_Logger.Info("Centrifugo", "subscribed host=" + hostChannel);
                     hostReady.TrySetResult(true);
                     UpdateReadiness();
                 };
                 _stateSub.Subscribed += () =>
                 {
+                    if (!ReferenceEquals(_centrifuge, client)) return;
                     GP_Logger.Info("Centrifugo", "subscribed state=" + stateChannel);
                     stateReady.TrySetResult(true);
                     UpdateReadiness();
                 };
-                _centrifuge.Connect(endpoint, token);
+                client.Connect(endpoint, token);
                 _hostSub.Subscribe();
                 _stateSub.Subscribe();
 
                 var timeout = Task.Delay(10000, cancellationToken);
-                var ready = Task.WhenAll(connected.Task, hostReady.Task, stateReady.Task);
-                var winner = await Task.WhenAny(ready, timeout);
+                var winner = await Task.WhenAny(ready, timeout, dropped.Task);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (winner == dropped.Task)
+                    throw new InvalidOperationException(await dropped.Task);
                 if (winner != ready)
                 {
                     var pending = "";
@@ -117,6 +136,47 @@ namespace GamePush.Native
                 }
                 await ready;
                 UpdateReadiness();
+            }
+        }
+
+        void MarkReconnecting()
+        {
+            bool wasLive = _live;
+            _live = false;
+            _socketReady = false;
+            _hostSub?.MarkUnsubscribed();
+            _stateSub?.MarkUnsubscribed();
+            if (wasLive)
+                Reconnecting?.Invoke();
+        }
+
+        public void RecoverStalledConnection()
+        {
+            if (!IsLive || _recovery != null)
+                return;
+
+            _recovery = new CancellationTokenSource();
+            _ = RecoverConnection(_recovery);
+        }
+
+        async Task RecoverConnection(CancellationTokenSource recovery)
+        {
+            try
+            {
+                MarkReconnecting();
+                recovery.Token.ThrowIfCancellationRequested();
+                CloseConnection();
+                await Connect(_credentials, recovery.Token);
+            }
+            catch (Exception exception)
+            {
+                if (!recovery.IsCancellationRequested)
+                    Disconnected?.Invoke(exception.Message);
+            }
+            finally
+            {
+                _recovery = null;
+                recovery.Dispose();
             }
         }
 
@@ -136,12 +196,20 @@ namespace GamePush.Native
         public void SendToHost(int type, string payloadJson, int senderId, int seq = -1) =>
             Publish(_hostSub, type, payloadJson, senderId, seq);
 
-        void Publish(NativeSubscription sub, int type, string payloadJson, int senderId, int seq)
+        public void SendCustom(string payloadJson, int senderId, Action<string> onError) =>
+            Publish(_stateSub, NativeMultiplayerWire.CustomEvent, payloadJson, senderId, -1, onError);
+
+        void Publish(NativeSubscription sub, int type, string payloadJson, int senderId, int seq, Action<string> onError = null)
         {
+            var reportSendError = type == NativeMultiplayerWire.PeerState ||
+                                  type == NativeMultiplayerWire.StateUpdate ||
+                                  type == NativeMultiplayerWire.StateDelta ||
+                                  type == NativeMultiplayerWire.GlobalStateUpdate ||
+                                  type == NativeMultiplayerWire.GlobalStateDelta;
             if (sub == null || !IsLive || !sub.IsSubscribed)
             {
-                if (type == NativeMultiplayerWire.StateUpdate || type == NativeMultiplayerWire.StateDelta ||
-                    type == NativeMultiplayerWire.GlobalStateUpdate || type == NativeMultiplayerWire.GlobalStateDelta)
+                onError?.Invoke("not_sent");
+                if (reportSendError)
                 {
                     GP_Logger.Warn("Centrifugo", "publish skipped: transport not live t=" + type);
                     GP_Multiplayer.NativeEmit("error:sendState",
@@ -157,27 +225,31 @@ namespace GamePush.Native
                 json += ",\"sq\":" + seq;
             json += "}";
             var bytes = Encoding.UTF8.GetBytes(json);
-            var reportSendError = type == NativeMultiplayerWire.StateUpdate ||
-                                  type == NativeMultiplayerWire.StateDelta ||
-                                  type == NativeMultiplayerWire.GlobalStateUpdate ||
-                                  type == NativeMultiplayerWire.GlobalStateDelta;
-            sub.Publish(bytes, ok =>
+            if (onError == null && !reportSendError)
             {
-                if (!ok && reportSendError)
+                sub.PublishWithResult(bytes, null);
+                return;
+            }
+            sub.PublishWithResult(bytes, error =>
+            {
+                if (error == null) return;
+                onError?.Invoke(error);
+                if (reportSendError && IsLive && (ReferenceEquals(sub, _stateSub) || ReferenceEquals(sub, _hostSub)))
                 {
-                    GP_Logger.Info("Centrifugo", "sendState failed t=" + type);
                     GP_Multiplayer.NativeEmit("error:sendState",
-                        new GP_Data("{\"message\":\"publish failed\",\"t\":" + type + "}"));
+                        new GP_Data("{\"message\":" + GpJson.Quote(error) + ",\"t\":" + type + "}"));
                 }
             });
         }
 
         void OnBytes(byte[] data)
         {
-            if (!IsLive || data == null || data.Length == 0)
+            if (data == null || data.Length == 0 || (!IsLive && _stateSub?.IsSubscribed != true))
                 return;
             var text = Encoding.UTF8.GetString(data);
             var type = GpJson.GetInt(text, "t");
+            // The room channel may deliver an event before the host subscription is ready.
+            if (!IsLive && type != NativeMultiplayerWire.CustomEvent) return;
             var sender = GpJson.GetInt(text, "s");
             var seq = ReadSeq(text);
             var payload = GpJson.GetObject(text, "p") ?? "{}";
@@ -236,15 +308,24 @@ namespace GamePush.Native
 #endif
         }
 
-        public void Dispose()
+        void CloseConnection()
         {
             _live = false;
+            _socketReady = false;
+            var client = _centrifuge;
+            _centrifuge = null;
             try { _hostSub?.Unsubscribe(); } catch { /* ignore */ }
             try { _stateSub?.Unsubscribe(); } catch { /* ignore */ }
-            try { _centrifuge?.Dispose(); } catch { /* ignore */ }
+            try { client?.Dispose(); } catch { /* ignore */ }
             _hostSub = null;
             _stateSub = null;
-            _centrifuge = null;
+        }
+
+        public void Dispose()
+        {
+            _recovery?.Cancel();
+            CloseConnection();
+            _credentials = null;
             Message = null;
             Reconnecting = null;
             Reconnected = null;

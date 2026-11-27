@@ -314,7 +314,7 @@ namespace GamePush.Native
                     ? NativeQueries.FetchFeedMessages
                     : NativeQueries.FetchChannelMessages;
 
-            var json = await NativeCore.Client.Fetch(query, input);
+            var json = await NativeCore.Client.Fetch(query, input, timeoutSeconds: 8);
             NativeRun.ThrowIfProblem(json);
             var items = GpJson.GetObjectArray(NativeRun.Result(json), "items");
 

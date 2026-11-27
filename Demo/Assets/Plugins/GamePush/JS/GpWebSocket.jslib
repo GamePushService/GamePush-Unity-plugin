@@ -7,6 +7,7 @@ var LibraryGPNativeWs = {
     token: "",
     wanted: {},
     pending: {},
+    publications: {},
     connected: false,
     closedByUser: false,
     reconnectTimer: 0,
@@ -38,6 +39,20 @@ var LibraryGPNativeWs = {
       return GPNativeWs.sendJson(cmd);
     },
 
+    finishPublish: function (id, error) {
+      var publication = GPNativeWs.publications[id];
+      if (!publication) return;
+      delete GPNativeWs.publications[id];
+      clearTimeout(publication.timer);
+      SendMessage(GPNativeWs.gameObject, "OnNativeWsPublishResult", publication.ticket + "|" + error);
+    },
+
+    interruptPublishes: function () {
+      Object.keys(GPNativeWs.publications).forEach(function (id) {
+        GPNativeWs.finishPublish(id, "delivery_unknown");
+      });
+    },
+
     isPing: function (raw, msg) {
       if (typeof raw === "string") {
         var trimmed = raw.replace(/^\uFEFF/, "").trim();
@@ -55,8 +70,12 @@ var LibraryGPNativeWs = {
       if (info && typeof info === "object")
         reason = String(info.reason || info.code || "disconnect");
       GPNativeWs.connected = false;
+      GPNativeWs.interruptPublishes();
       GPNativeWs.log("ws disconnect " + reason);
-      SendMessage(GPNativeWs.gameObject, "OnNativeWsReconnecting", reason);
+      if (!GPNativeWs.closedByUser && !GPNativeWs.reconnectTimer) {
+        GPNativeWs.scheduleReconnect();
+        SendMessage(GPNativeWs.gameObject, "OnNativeWsReconnecting", reason);
+      }
     },
 
     handleOne: function (raw, msg) {
@@ -66,6 +85,11 @@ var LibraryGPNativeWs = {
         return;
       }
       if (!msg) return;
+      if (msg.id && GPNativeWs.publications[msg.id]) {
+        var error = msg.error ? "rejected: " + (msg.error.message || msg.error.code || "error") : "";
+        GPNativeWs.finishPublish(msg.id, error);
+        return;
+      }
       if (msg.error) {
         var errCh = msg.id && GPNativeWs.pending[msg.id] ? GPNativeWs.pending[msg.id] : "";
         delete GPNativeWs.pending[msg.id];
@@ -127,11 +151,12 @@ var LibraryGPNativeWs = {
           continue;
         }
         if (Array.isArray(msg)) {
-          for (var j = 0; j < msg.length; j++)
+          for (var j = 0; j < msg.length && !GPNativeWs.reconnectTimer; j++)
             GPNativeWs.handleOne(reply, msg[j]);
         } else {
           GPNativeWs.handleOne(reply, msg);
         }
+        if (GPNativeWs.reconnectTimer) return;
       }
     },
 
@@ -160,10 +185,12 @@ var LibraryGPNativeWs = {
 
     openSocket: function () {
       GPNativeWs.clearTimer();
+      GPNativeWs.interruptPublishes();
       GPNativeWs.connected = false;
       try {
         if (GPNativeWs.ws) {
           try {
+            GPNativeWs.ws.onopen = null;
             GPNativeWs.ws.onclose = null;
             GPNativeWs.ws.onerror = null;
             GPNativeWs.ws.onmessage = null;
@@ -180,10 +207,14 @@ var LibraryGPNativeWs = {
           GPNativeWs.sendJson({ id: GPNativeWs.nextId++, connect: { token: GPNativeWs.token || "" } });
         };
         ws.onmessage = function (ev) {
-          GPNativeWs.handleFrame(ev.data);
+          if (ws === GPNativeWs.ws && !GPNativeWs.reconnectTimer && !GPNativeWs.closedByUser)
+            GPNativeWs.handleFrame(ev.data);
         };
         ws.onclose = function (ev) {
+          if (ws !== GPNativeWs.ws) return;
+          GPNativeWs.ws = null;
           GPNativeWs.connected = false;
+          GPNativeWs.interruptPublishes();
           var reason = String((ev && ev.reason) || "closed");
           var code = ev && ev.code != null ? ev.code : 0;
           GPNativeWs.log("ws close " + code + " " + reason);
@@ -191,8 +222,7 @@ var LibraryGPNativeWs = {
             SendMessage(GPNativeWs.gameObject, "OnNativeWsClose", reason);
             return;
           }
-          SendMessage(GPNativeWs.gameObject, "OnNativeWsReconnecting", reason);
-          GPNativeWs.scheduleReconnect();
+          GPNativeWs.noteDisconnect({ reason: reason });
         };
         ws.onerror = function () {};
       } catch (e) {
@@ -229,17 +259,28 @@ var LibraryGPNativeWs = {
     }
   },
 
-  GP_NativeWs_Publish: function (channelPtr, base64Ptr) {
+  GP_NativeWs_Publish: function (channelPtr, base64Ptr, ticket) {
     var channel = UTF8ToString(channelPtr) || "";
     var b64 = UTF8ToString(base64Ptr) || "";
-    if (!GPNativeWs.connected) return;
+    if (!GPNativeWs.connected) return 0;
     var json = "";
     try { json = decodeURIComponent(escape(atob(b64))); } catch (e) { json = ""; }
     var data;
     try { data = JSON.parse(json); } catch (e) { data = json; }
-    GPNativeWs.sendCmd({
-      publish: { channel: channel, data: data }
-    });
+    var command = { publish: { channel: channel, data: data } };
+    try {
+      if (!GPNativeWs.sendCmd(command)) return 0;
+    } catch (e) {
+      return 0;
+    }
+    if (ticket) {
+      var id = command.id;
+      GPNativeWs.publications[id] = {
+        ticket: ticket,
+        timer: setTimeout(function () { GPNativeWs.finishPublish(id, "delivery_unknown"); }, 10000)
+      };
+    }
+    return 1;
   },
 
   GP_NativeWs_IsConnected: function () {
@@ -257,13 +298,13 @@ var LibraryGPNativeWs = {
 
   GP_NativeWs_Close: function () {
     GPNativeWs.closedByUser = true;
+    GPNativeWs.interruptPublishes();
     GPNativeWs.clearTimer();
     GPNativeWs.wanted = {};
     GPNativeWs.pending = {};
     GPNativeWs.connected = false;
     if (!GPNativeWs.ws) return;
-    try { GPNativeWs.ws.close(); } catch (e) {}
-    GPNativeWs.ws = null;
+    try { GPNativeWs.ws.close(); } catch (e) { GPNativeWs.ws = null; }
   }
 };
 

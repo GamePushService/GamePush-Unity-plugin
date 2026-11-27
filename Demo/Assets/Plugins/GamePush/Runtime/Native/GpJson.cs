@@ -154,6 +154,18 @@ namespace GamePush.Native
             return Stringify(MergeObjects(stateObj, deltaObj));
         }
 
+        // Pending patches are composed before their snapshot is available. Keep deletion
+        // markers until applying the result to that snapshot.
+        internal static string ComposeDelta(string pending, string delta)
+        {
+            if (IsEmptyObject(pending)) return delta;
+            var previous = Parse(pending) as Dictionary<string, object>;
+            var next = Parse(delta) as Dictionary<string, object>;
+            return previous != null && next != null
+                ? Stringify(MergeObjects(previous, next, preserveDeletes: true))
+                : delta;
+        }
+
         public static string CalculateDelta(string prev, string next)
         {
             if (string.Equals(prev, next, StringComparison.Ordinal))
@@ -346,12 +358,12 @@ namespace GamePush.Native
         }
 
         static Dictionary<string, object> MergeObjects(
-            Dictionary<string, object> state, Dictionary<string, object> delta)
+            Dictionary<string, object> state, Dictionary<string, object> delta, bool preserveDeletes = false)
         {
             var map = new Dictionary<string, object>(state);
             foreach (var pair in delta)
             {
-                if (IsDeleteSentinel(pair.Value))
+                if (!preserveDeletes && IsDeleteSentinel(pair.Value))
                 {
                     map.Remove(pair.Key);
                     continue;
@@ -359,7 +371,7 @@ namespace GamePush.Native
                 if (pair.Value is Dictionary<string, object> deltaChild
                     && map.TryGetValue(pair.Key, out var current)
                     && current is Dictionary<string, object> stateChild)
-                    map[pair.Key] = MergeObjects(stateChild, deltaChild);
+                    map[pair.Key] = MergeObjects(stateChild, deltaChild, preserveDeletes);
                 else
                     map[pair.Key] = pair.Value;
             }

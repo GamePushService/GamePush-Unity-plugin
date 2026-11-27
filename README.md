@@ -169,6 +169,7 @@ status and a log, which is the first place to look if something does not start.
 | [GP_Language](#GP_Language)                   |
 | [GP_Leaderboard](#GP_Leaderboard)             |
 | [GP_LeaderboardScoped](#GP_LeaderboardScoped) |
+| [GP_Multiplayer](#gp_multiplayer)             |
 | [GP_Payments](#GP_Payments)                   |
 | [GP_Platform](#GP_Platform)                   |
 | [GP_Player](#GP_Player)                       |
@@ -371,6 +372,25 @@ public enum GeneratorType : byte
     robohash_cats,
 }
 ```
+
+## GP_Multiplayer
+
+During a join or host migration, the SDK merges local `setPlayerState` calls.
+A peer sends its first player state on a network tick after receiving the selected
+host's player snapshot. Changes made in `becamePeer` are included in that send.
+
+The room buffers outgoing `sendMessage` calls and incoming custom events while waiting
+for authority. Delivery resumes after the `becamePeer` or `becameHost` callbacks,
+in queue order. The shared limit is 128 messages and 256 KiB of UTF-8 names, data,
+and options per room. Leaving the room cancels its queued outgoing messages.
+
+Subscribe with `GP_Multiplayer.on("error:sendMessage", handler)` to handle an
+outgoing failure, or `"error:receiveMessage"` for an incoming queue overflow.
+The `GP_Data` error includes `channelId`, `eventName`, `data`, `options`, and
+`message`. WebGL reports `not_sent` for a local socket refusal, `rejected: …` for
+a server rejection, and `delivery_unknown` when the connection closes or ten seconds
+elapse before a publish reply. For a turn that can be retried, include a stable turn ID
+in the data and have the recipient ignore duplicate IDs.
 
 ## GP_Channels
 
